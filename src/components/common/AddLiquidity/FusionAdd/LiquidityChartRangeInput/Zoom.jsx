@@ -11,7 +11,7 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
     () => [
       () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleBy, 2),
       () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleBy, 0.5),
-      () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleTo, 0.5),
+      () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleTo, 1),
     ],
     [svg],
   )

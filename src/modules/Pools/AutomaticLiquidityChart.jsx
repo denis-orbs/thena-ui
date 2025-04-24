@@ -42,7 +42,6 @@ export default function AutomaticLiquidityChart({ currencyA, currencyB, position
       interactive={false}
       handleShow={handleShow}
       position={position}
-      showZoom={false}
     />
   )
 }

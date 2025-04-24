@@ -446,7 +446,7 @@ export default function VotePage() {
           </Box>
         </div>
 
-        <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Casted`} />
+        <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Cast`} />
 
         <div className='flex flex-col gap-4'>
           <div className='flex justify-between gap-4 max-lg:flex-col'>

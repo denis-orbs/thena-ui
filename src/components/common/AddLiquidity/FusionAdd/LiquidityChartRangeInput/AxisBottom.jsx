@@ -32,7 +32,7 @@ export const AxisBottom = ({ xScale, innerHeight, offset = 0 }) =>
   useMemo(
     () => (
       <g className='axis-bottom' transform={`translate(0, ${innerHeight + offset})`}>
-        <Axis axisGenerator={axisBottom(xScale).tickFormat(tickFormat)} />
+        <Axis axisGenerator={axisBottom(xScale).ticks(5).tickFormat(tickFormat)} />
       </g>
     ),
     [innerHeight, offset, xScale],

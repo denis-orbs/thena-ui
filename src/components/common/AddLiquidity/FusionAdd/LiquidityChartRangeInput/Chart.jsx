@@ -41,14 +41,29 @@ export function Chart({
     [width, height, margins],
   )
 
+  const [leftDomain, rightDomain] = useMemo(() => {
+    let midPrice = current
+    const filteredSeries = series.filter(item => item.price0 < 1e10).sort((a, b) => a.price0 - b.price0)
+    const seriesLength = filteredSeries.length
+
+    if (seriesLength > 1) {
+      let midIndex = Math.floor(seriesLength / 2)
+      if (seriesLength > 50) {
+        midIndex = filteredSeries.reduce(
+          (maxIdx, item, idx) => (item.activeLiquidity > filteredSeries[maxIdx].activeLiquidity ? idx : maxIdx),
+          0,
+        )
+      }
+      midPrice = filteredSeries[midIndex].price0
+    }
+
+    return [midPrice * zoomLevels.initialMin, midPrice * zoomLevels.initialMax]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, JSON.stringify(series), zoomLevels.initialMax, zoomLevels.initialMin])
+
   const { xScale, yScale } = useMemo(() => {
     const scales = {
-      xScale: scaleLinear()
-        .domain([
-          current * (isFullRange ? 0.2 : zoomLevels.initialMin),
-          current * (isFullRange ? 1.6 : zoomLevels.initialMax),
-        ])
-        .range([0, innerWidth]),
+      xScale: scaleLinear().domain([leftDomain, rightDomain]).range([0, innerWidth]),
       yScale: scaleLinear()
         .domain([0, max(series, yAccessor)])
         .range([innerHeight, 0]),
@@ -60,7 +75,20 @@ export function Chart({
     }
 
     return scales
-  }, [current, isFullRange, zoomLevels.initialMin, zoomLevels.initialMax, innerWidth, series, innerHeight, zoom])
+  }, [leftDomain, rightDomain, innerWidth, series, innerHeight, zoom])
+
+  const { brushXScale } = useMemo(() => {
+    const scales = scaleLinear()
+      .domain([current * zoomLevels.initialMin, current * zoomLevels.initialMax])
+      .range([0, innerWidth])
+
+    if (zoom) {
+      const newXscale = zoom.rescaleX(scales)
+      scales.domain(newXscale.domain())
+    }
+
+    return { brushXScale: scales }
+  }, [current, zoomLevels.initialMin, zoomLevels.initialMax, innerWidth, zoom])
 
   useEffect(() => {
     // reset zoom as necessary
@@ -69,9 +97,9 @@ export function Chart({
 
   useEffect(() => {
     if (!brushDomain) {
-      onBrushDomainChange(xScale.domain(), undefined)
+      onBrushDomainChange(brushXScale.domain(), undefined)
     }
-  }, [brushDomain, onBrushDomainChange, xScale])
+  }, [brushDomain, brushXScale, onBrushDomainChange, xScale])
 
   return (
     <>
@@ -158,7 +186,7 @@ export function Chart({
                 xScale={xScale}
                 interactive={interactive}
                 brushLabelValue={brushLabels}
-                brushExtent={brushDomain ?? xScale.domain()}
+                brushExtent={brushDomain ?? brushXScale.domain()}
                 innerWidth={innerWidth}
                 innerHeight={innerHeight}
                 setBrushExtent={onBrushDomainChange}
