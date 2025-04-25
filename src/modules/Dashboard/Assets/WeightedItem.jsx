@@ -5,7 +5,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useClaimWeightedPoolFees, usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
+import { useClaimWeightedPoolFees } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { InfoIcon } from '@/svgs'
@@ -23,35 +23,17 @@ function WeightedItem({ position, isStake }) {
 
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
-  const { claimableFee, depositValue, mutatePosition } = usePositionData(position, isStake)
+  const { claimableFee, depositValue } = position
 
   // const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
 
   const onClaim = useCallback(
     async () =>
       await onClaimFees(position, () => {
-        mutatePosition()
+        // mutatePosition()
       }),
-    [onClaimFees, position, mutatePosition],
+    [onClaimFees, position],
   )
-
-  // const weightsPrice = useMemo(() => {
-  //   let totalWeight = 0
-
-  //   const totalUsd = (depositValue?.tokens || []).reduce((sum, token) => sum + token.price * token.amount, 0)
-
-  //   const weights = (depositValue?.tokens || []).map((token, index) => {
-  //     const tokenUsd = token.price * token.amount
-  //     if (index === depositValue.tokens.length - 1) return 100 - totalWeight
-  //     const weight = (tokenUsd / totalUsd) * 100
-  //     if (index < depositValue.tokens.length - 1) {
-  //       totalWeight += weight
-  //     }
-  //     return weight
-  //   })
-
-  //   return weights
-  // }, [depositValue.tokens])
 
   const { addReward } = useFarmRewards()
   useEffect(() => {

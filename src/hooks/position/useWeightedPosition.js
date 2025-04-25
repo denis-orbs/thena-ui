@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import useSWR from 'swr'
 
 import { useAssets } from '@/context/assetsContext'
@@ -6,29 +6,11 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '../useWallet'
 import { getWeightedPoolData } from '../weightedPool/useWeigtedPool'
 
-const getWeightedPosition = async ({ positions = [], chainId, account, assets }) =>
-  await Promise.all(
-    positions.map(async position => {
-      const { claimableFee, depositValue } = await getWeightedPoolData({
-        pool: position,
-        chainId,
-        account,
-        isStaked: position.staked,
-        assets,
-      })
-      return {
-        position,
-        apr: Number(position.apr.replace('%', '')),
-        depositLiquidity: depositValue.depositUsd.toNumber(),
-        rewardUsd: Number(claimableFee?.total),
-      }
-    }),
-  )
-
 export const useWeightedPositions = (positions = []) => {
   const { account, chainId } = useWallet()
   const assets = useAssets()
   const prevData = useRef([])
+  console.log({ positions })
   const {
     data: positionsData,
     isLoading,
@@ -36,8 +18,8 @@ export const useWeightedPositions = (positions = []) => {
   } = useSWR(
     positions.length > 0 && ['get weighted data position', chainId, account, positions],
     () =>
-      getWeightedPosition({
-        positions,
+      getWeightedPoolData({
+        pools: positions,
         assets,
         chainId,
         account,
@@ -47,13 +29,14 @@ export const useWeightedPositions = (positions = []) => {
     },
   )
 
-  if (positionsData && !isLoading) {
+  const _positionData = useMemo(() => {
+    if (!positionsData || isLoading || error) {
+      return prevData.current
+    }
+
     prevData.current = positionsData
-  }
+    return positionsData
+  }, [error, isLoading, positionsData])
 
-  if (error || isLoading) {
-    return { positionsData: prevData.current, isLoading: false }
-  }
-
-  return { positionsData, isLoading }
+  return _positionData
 }

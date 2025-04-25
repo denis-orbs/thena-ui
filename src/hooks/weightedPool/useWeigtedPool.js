@@ -12,7 +12,7 @@ import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
-import { callMulti, readCall, waitCall } from '@/lib/contractActions'
+import { batchCallMulti, callMulti, readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getGaugeContract,
@@ -1260,128 +1260,123 @@ export const usePositionData = (pool, isStaked) => {
   return { claimableFee: isStaked ? result : claimableFeeUnStake, depositValue, mutatePosition }
 }
 
-export const getWeightedPoolData = async ({ pool, chainId, account, assets, isStaked }) => {
-  const poolContract = getWeightedPoolContract(pool?.address, chainId)
-  const gaugeContract = getWeightedGaugeContract(pool?.gauge?.address, chainId)
-  const contractGetBalance = isStaked ? gaugeContract : poolContract
-  const vaultContract = getWeightedPoolVaultContract(chainId)
-  let data
-  if (Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED) {
-    data = await callMulti([
-      {
-        ...poolContract,
+export const getWeightedPoolData = async ({ pools = [], chainId, account, assets }) => {
+  try {
+    const poolContracts = pools.map(pool => getWeightedPoolContract(pool?.address, chainId))
+    const gaugeContracts = pools.map(pool => getWeightedGaugeContract(pool?.gauge?.address, chainId))
+    const vaultContract = getWeightedPoolVaultContract(chainId)
+    const feesContracts = await batchCallMulti(
+      poolContracts.map(contract => ({
+        ...contract,
         functionName: 'feesContract',
-      },
-      {
-        ...poolContract,
+      })),
+    )
+
+    const totalSupplies = await batchCallMulti(
+      poolContracts.map(contract => ({
+        ...contract,
         functionName: 'totalSupply',
-      },
-      {
-        ...contractGetBalance,
+      })),
+    )
+
+    const balancesOfPools = await batchCallMulti(
+      pools.map((pool, index) => ({
+        ...(pool.staked ? gaugeContracts[index] : poolContracts[index]),
         functionName: 'balanceOf',
         args: [account],
-      },
-      {
+      })),
+    )
+
+    const getPoolTokens = await batchCallMulti(
+      pools.map(pool => ({
         ...vaultContract,
         functionName: 'getPoolTokens',
         args: [pool?.poolId],
-      },
-    ])
-  }
-  // const { data, refetch: mutateTokens } = useReadContracts({
-  //   contracts: [
-  //     {
-  //       ...poolContract,
-  //       functionName: 'feesContract',
-  //     },
-  //     {
-  //       ...poolContract,
-  //       functionName: 'totalSupply',
-  //     },
-  //     {
-  //       ...contractGetBalance,
-  //       functionName: 'balanceOf',
-  //       args: [account],
-  //     },
-  //     {
-  //       ...vaultContract,
-  //       functionName: 'getPoolTokens',
-  //       args: [pool?.poolId],
-  //     },
-  //   ],
-  //   query: {
-  //     enabled: Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED,
-  //   },
-  // })
-
-  const poolFeeContract = data?.[0]
-  const lpTokenTotalSupply = new BigNumber(data?.[1] ?? 0)
-  const lpTokenBalance = new BigNumber(data?.[2] ?? 0)
-  const tokenAddresses = data?.[3]?.[0] || []
-  const tokenAmounts = data?.[3]?.[1] || []
-
-  // const { data: expectedFees = [], refetch: mutateFees } = useReadContract({
-  //   address: poolFeeContract,
-  //   abi: weightedPoolFeesAbi,
-  //   functionName: 'expectedFees',
-  //   args: [account],
-  //   query: {
-  //     enabled: Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED,
-  //   },
-  // })
-
-  let expectedFees = []
-  if (Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED) {
-    expectedFees = await readCall(
-      { address: poolFeeContract, abi: weightedPoolFeesAbi },
-      'expectedFees',
-      [account],
-      chainId,
+      })),
     )
-  }
 
-  const mappedToken = {}
-  tokenAddresses.forEach(address => {
-    const token = (pool?.tokens || []).find(item => getAddress(item.address) === getAddress(address))
-    mappedToken[address] = token
-  })
+    const weightedValues = pools.map((_, index) => {
+      const poolFeeContract = feesContracts[index]
+      const lpTokenTotalSupply = new BigNumber(totalSupplies[index] ?? 0)
+      const lpTokenBalance = new BigNumber(balancesOfPools[index] ?? 0)
+      const tokenAddresses = getPoolTokens[index]?.[0] || []
+      const tokenAmounts = getPoolTokens[index]?.[1] || []
+      return { poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts }
+    })
 
-  const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
+    const expectedFeesOfPools = await batchCallMulti(
+      feesContracts.map(item => ({
+        address: item,
+        abi: weightedPoolFeesAbi,
+        functionName: 'expectedFees',
+        args: [account],
+      })),
+    )
 
-  const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
-  const depositValue = {
-    tokens: tokenAddresses.map((address, index) => {
-      const token = mappedToken[address]
-      return {
-        ...token,
-        amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
+    const weightedDatas = []
+    for (let i = 0; i < pools.length; i++) {
+      const pool = pools[i]
+      const { poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts } = weightedValues[i]
+      let expectedFees = []
+      if (Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED) {
+        expectedFees = expectedFeesOfPools[i]
       }
-    }, []),
-    depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
-  }
 
-  let total = new BigNumber(0)
-  const tokenList = tokenAddresses.map((address, index) => {
-    const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-    total = total.plus(fee.times(mappedToken[address].price))
+      const mappedToken = {}
+      tokenAddresses.forEach(address => {
+        const token = (pool?.tokens || []).find(item => getAddress(item.address) === getAddress(address))
+        mappedToken[address] = token
+      })
 
-    return {
-      address,
-      fee,
-      ...mappedToken[address],
+      const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
+
+      const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
+      const depositValue = {
+        tokens: tokenAddresses.map((address, index) => {
+          const token = mappedToken[address]
+          return {
+            ...token,
+            amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
+          }
+        }, []),
+        depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
+      }
+
+      let total = new BigNumber(0)
+      const tokenList = tokenAddresses.map((address, index) => {
+        const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
+        total = total.plus(fee.times(mappedToken[address].price))
+
+        return {
+          address,
+          fee,
+          ...mappedToken[address],
+        }
+      })
+
+      const claimableFeeUnStake = {
+        total,
+        tokenList,
+      }
+      let claimableFeeStake
+      if (pool.gauge.address !== zeroAddress) {
+        claimableFeeStake = await getGaugeReward(gaugeContracts[i], assets, account, chainId)
+      }
+      weightedDatas.push({
+        ...pool,
+        apr: Number(pool?.apr?.replace('%', '')),
+        claimableFee: pool.staked ? claimableFeeStake : claimableFeeUnStake,
+        depositValue,
+        depositLiquidity: depositValue.depositUsd.toNumber(),
+        rewardUsd: Number((pool.staked ? claimableFeeStake : claimableFeeUnStake)?.total),
+      })
     }
-  })
-
-  const claimableFeeUnStake = {
-    total,
-    tokenList,
+    console.log({ weightedDatas })
+    return weightedDatas
+  } catch (error) {
+    console.log(error)
+    return []
   }
-  let claimableFeeStake
-  if (pool.gauge.address !== zeroAddress) {
-    claimableFeeStake = await getGaugeReward(gaugeContract, assets, account, chainId)
-  }
-
-  return { claimableFee: isStaked ? claimableFeeStake : claimableFeeUnStake, depositValue }
 }
 
 export const useWeightedPositionList = () => {
