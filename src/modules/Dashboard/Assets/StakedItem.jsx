@@ -104,7 +104,7 @@ function StakedItem({ position }) {
     () => ({
       title: position?.title,
       tvl: position?.tvl?.toNumber() ?? 0,
-      apr: position?.apr?.toNumber() ?? 0,
+      apr: position?.gauge?.apr.toNumber() ?? 0,
       account: {
         totalLp: position?.account?.totalLp?.toNumber(),
         gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
@@ -134,8 +134,8 @@ function StakedItem({ position }) {
       position?.account?.totalLp,
       position?.address,
       position?.allowed,
-      position?.apr,
       position?.fee,
+      position?.gauge?.apr,
       position?.title,
       position?.token0,
       position?.token1,

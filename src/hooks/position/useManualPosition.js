@@ -146,7 +146,7 @@ export const useManualPositions = manualPositions => {
 
   const prevFeesList = useRef([])
   const { data: feesList, isLoading: isLoadingFeesList } = useSWR(
-    account && manualPositions.length > 0 ? ['manuals/fee', manualPositions, account, chainId] : null,
+    account && manualPositions.length > 0 && chainId ? ['manuals/fee', manualPositions, account, chainId] : null,
     () => fetchManualInfo(manualPositions, account, chainId),
     {
       refreshInterval: 60000,
@@ -163,7 +163,9 @@ export const useManualPositions = manualPositions => {
 
   const prevAddressList = useRef([])
   const { data: addressList, isLoading: isLoadingAddress } = useSWR(
-    manualPositions.length && chainId > 0 && ['get pool address list manual', chainId, account, manualPositions],
+    manualPositions.length &&
+      chainId > 0 &&
+      account && ['get pool address list manual', chainId, account, manualPositions],
     () => getListComputePoolAddress(manualPositions, chainId, getAsset),
     {
       refreshInterval: 0,
@@ -193,7 +195,9 @@ export const useManualPositions = manualPositions => {
 
   const prevFarmingList = useRef([])
   const { data: farmingList, isLoading: isLoadingFarmingList } = useSWR(
-    _addressList.length > 0 && chainId && ['getFusionFarmingDataList manual', chainId, account, _addressList],
+    _addressList.length > 0 &&
+      chainId &&
+      account && ['getFusionFarmingDataList manual', chainId, account, _addressList],
     () =>
       getFusionFarmingListData({
         // call to subgraph
@@ -215,7 +219,7 @@ export const useManualPositions = manualPositions => {
 
   const prevAnnualPoolFeesPools = useRef([])
   const { data: annualPoolFeesPools, isLoading: isLoadingAnnualPool } = useSWR(
-    _addressList.length > 0 && chainId && ['get fusion fees pools', chainId, account, _addressList],
+    _addressList.length > 0 && chainId && account && ['get fusion fees pools', chainId, account, _addressList],
     () => getFusionFeesData({ chainId, poolIds: _addressList }),
     {
       refreshInterval: 0,
@@ -233,7 +237,7 @@ export const useManualPositions = manualPositions => {
 
   const prevFarmInfoList = useRef([])
   const { data: farmInfoList = [], isLoadingFarmInfoList } = useSWR(
-    _addressList.length > 0 && ['getFarmInfoList manual'],
+    _addressList.length > 0 && account && chainId && ['getFarmInfoList manual', chainId, account],
     () => getFarmInfoList(_addressList, _farmingList),
     {
       refreshInterval: 0,
@@ -248,77 +252,85 @@ export const useManualPositions = manualPositions => {
     return farmInfoList
   }, [farmInfoList, isLoadingFarmInfoList])
 
-  if (!_fusionStates || _fusionStates.length <= 0) return []
-  const result = manualPositions.map((farmPos, index) => {
-    const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
-    const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
-    const fees = _feesList[index]
-    const position = fusion
-      ? new Position({
-          pool: fusion,
-          liquidity: new BigNumber(liquidity).toString(10),
-          tickLower,
-          tickUpper,
-        })
-      : undefined
+  const result = useMemo(
+    () =>
+      !_fusionStates || _fusionStates.length <= 0
+        ? []
+        : manualPositions.map((farmPos, index) => {
+            const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
+            const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [
+              PoolState.NOT_EXISTS,
+              null,
+            ]
+            const fees = _feesList[index]
+            const position = fusion
+              ? new Position({
+                  pool: fusion,
+                  liquidity: new BigNumber(liquidity).toString(10),
+                  tickLower,
+                  tickUpper,
+                })
+              : undefined
 
-    const amount0 = position ? position.amount0.toExact() : 0
-    const amount1 = position ? position.amount1.toExact() : 0
-    const amount0InUsd = BigNumber(amount0) * asset0.price
-    const amount1InUsd = BigNumber(amount1) * asset1.price
-    const token0 = getToken(asset0.address, getAsset)
-    const token1 = getToken(asset1.address, getAsset)
-    const apr = (() => {
-      if (!tickLower || !tickUpper || !position) return BigNumber(0)
-      const farmInfo = _farmInfoList[index]
-      const { earnPercent = 0 } = farmInfo || {}
-      const tvl = amount0InUsd + amount1InUsd
+            const amount0 = position ? position.amount0.toExact() : 0
+            const amount1 = position ? position.amount1.toExact() : 0
+            const amount0InUsd = BigNumber(amount0) * asset0.price
+            const amount1InUsd = BigNumber(amount1) * asset1.price
+            const token0 = getToken(asset0.address, getAsset)
+            const token1 = getToken(asset1.address, getAsset)
+            const apr = (() => {
+              if (!tickLower || !tickUpper || !position) return BigNumber(0)
+              const farmInfo = _farmInfoList[index]
+              const { earnPercent = 0 } = farmInfo || {}
+              const tvl = amount0InUsd + amount1InUsd
 
-      const totalLiquidity = fusion && fusion.liquidity ? fusion.liquidity : undefined
-      const annualPoolFees = _annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
-      const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
-      const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
-      return feeAPR
-    })()
+              const totalLiquidity = fusion && fusion.liquidity ? fusion.liquidity : undefined
+              const annualPoolFees = _annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
+              const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+              const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
+              return feeAPR
+            })()
 
-    const { reward0, reward1 } = {
-      reward0: {
-        token: token0,
-        amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
-      },
-      reward1: {
-        token: token1,
-        amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
-      },
-    }
+            const { reward0, reward1 } = {
+              reward0: {
+                token: token0,
+                amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
+              },
+              reward1: {
+                token: token1,
+                amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
+              },
+            }
 
-    const feesInUsd = (() => {
-      let usdFee = new BigNumber(0)
-      if (fees) {
-        usdFee = fromWei(fees ? fees[0] : 0, asset0.decimals)
-          .times(asset0?.price ?? 0)
-          .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1?.price ?? 0))
-      }
-      return usdFee
-    })()
-    const fiatValueOfLiquidity = amount0InUsd + amount1InUsd
+            const feesInUsd = (() => {
+              let usdFee = new BigNumber(0)
+              if (fees) {
+                usdFee = fromWei(fees ? fees[0] : 0, asset0.decimals)
+                  .times(asset0?.price ?? 0)
+                  .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1?.price ?? 0))
+              }
+              return usdFee
+            })()
+            const fiatValueOfLiquidity = amount0InUsd + amount1InUsd
 
-    const firstPercent = ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2)
-    return {
-      ...farmPos,
-      apr: apr.toNumber(),
-      fees,
-      feesInUsd,
-      fiatValueOfLiquidity,
-      firstPercent,
-      rewards: [reward0, reward1],
-      rewardUsd: Number(feesInUsd),
-      virtualPool: null,
-      fusionState,
-      fusion,
-      poolAddress,
-    }
-  })
+            const firstPercent = ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2)
+            return {
+              ...farmPos,
+              apr: apr.toNumber(),
+              fees,
+              feesInUsd,
+              fiatValueOfLiquidity,
+              firstPercent,
+              rewards: [reward0, reward1],
+              rewardUsd: Number(feesInUsd),
+              virtualPool: null,
+              fusionState,
+              fusion,
+              poolAddress,
+            }
+          }),
+    [_annualPoolFeesPools, _farmInfoList, _feesList, _fusionStates, getAsset, manualPositions],
+  )
 
   return result
 }

@@ -149,7 +149,7 @@ export const useFarmPositions = farmPositions => {
 
   const prevFarmAddressList = useRef([])
   const { data: farmAddressList, isLoading: isLoadingFarmAddress } = useSWR(
-    farmPositions.length && chainId > 0 && ['get pool address list', chainId, account, farmPositions],
+    farmPositions.length && account && chainId > 0 && ['get pool address list', chainId, account, farmPositions],
     () => getListComputePoolAddress(farmPositions, chainId, getAsset),
     {
       refreshInterval: 60000,
@@ -167,7 +167,9 @@ export const useFarmPositions = farmPositions => {
 
   const prevFarmingList = useRef([])
   const { data: farmingList, isLoading: isLoadingFarmingList } = useSWR(
-    _farmAddressList.length > 0 && chainId && ['getFusionFarmingDataList', chainId, account, _farmAddressList],
+    _farmAddressList.length > 0 &&
+      account &&
+      chainId && ['getFusionFarmingDataList', chainId, account, _farmAddressList],
     () =>
       getFusionFarmingListData({
         // call to subgraph
@@ -189,7 +191,7 @@ export const useFarmPositions = farmPositions => {
 
   const prevAnnualPoolFeesPools = useRef([])
   const { data: annualPoolFeesPools, isLoading: isLoadingAnnualPool } = useSWR(
-    _farmAddressList.length > 0 && chainId && ['get fusion fees pools', chainId, account, _farmAddressList],
+    _farmAddressList.length > 0 && account && chainId && ['get fusion fees pools', chainId, account, _farmAddressList],
     () => getFusionFeesData({ chainId, poolIds: _farmAddressList }),
     {
       refreshInterval: 60000,
@@ -208,7 +210,7 @@ export const useFarmPositions = farmPositions => {
 
   const prevPoolKeys = useRef([])
   const { data: poolKeys = [], isLoading: isLoadingPoolKeys } = useSWR(
-    _farmAddressList.length > 0 && chainId && ['getPoolToKey', chainId, account, _farmAddressList],
+    _farmAddressList.length > 0 && chainId && account && ['getPoolToKey', chainId, account, _farmAddressList],
     () => getPoolKey(_farmAddressList, chainId),
     {
       refreshInterval: 60000,
@@ -225,8 +227,8 @@ export const useFarmPositions = farmPositions => {
 
   const prevFarmRewardsList = useRef([])
   const { data: farmRewardsList = [], isLoading: isLoadingFarmRewards } = useSWR(
-    poolKeys.length > 0 && chainId && ['getFarmRewardsList'],
-    () => getFarmRewardList(farmPositions, poolKeys, chainId),
+    poolKeys.length > 0 && account && ['getFarmRewardsList', poolKeys, chainId, account],
+    () => getFarmRewardList(farmPositions, poolKeys, chainId, account),
     {
       refreshInterval: 60000,
     },
@@ -243,7 +245,10 @@ export const useFarmPositions = farmPositions => {
 
   const prevFarmInfoList = useRef([])
   const { data: farmInfoList = [], isLoadingFarmInfoList } = useSWR(
-    _farmAddressList.length > 0 && _farmingList.length > 0 && ['getFarmInfoList'],
+    _farmAddressList.length > 0 &&
+      account &&
+      _farmingList.length > 0 &&
+      chainId && ['getFarmInfoList', account, _farmAddressList, _farmingList, chainId],
     () => getFarmInfoList(_farmAddressList, _farmingList),
     {
       refreshInterval: 60000,
@@ -268,98 +273,123 @@ export const useFarmPositions = farmPositions => {
     return fusionStates
   }, [fusionStates, prevFusionStates])
 
-  if (!_fusionStates || _fusionStates.length <= 0) return []
-  const result = farmPositions.map((farmPos, index) => {
-    const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
-    const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
-    const farmRewardData = _farmRewardsList[index]
+  const result = useMemo(
+    () =>
+      !_fusionStates || _fusionStates.length <= 0
+        ? []
+        : farmPositions.map((farmPos, index) => {
+            const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
+            const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [
+              PoolState.NOT_EXISTS,
+              null,
+            ]
+            const farmRewardData = _farmRewardsList[index]
 
-    const farmingData = _farmingList.find(item => item.pool.toLowerCase() === _farmAddressList[index]) ?? {}
-    const position = fusion
-      ? new Position({
-          pool: fusion,
-          liquidity: new BigNumber(liquidity).toString(10),
-          tickLower,
-          tickUpper,
-        })
-      : undefined
+            const farmingData = _farmingList.find(item => item.pool.toLowerCase() === _farmAddressList[index]) ?? {}
+            const position = fusion
+              ? new Position({
+                  pool: fusion,
+                  liquidity: new BigNumber(liquidity).toString(10),
+                  tickLower,
+                  tickUpper,
+                })
+              : undefined
 
-    const amount0 = position ? position.amount0.toExact() : 0
-    const amount1 = position ? position.amount1.toExact() : 0
-    const amount0InUsd = BigNumber(amount0) * asset0.price
-    const amount1InUsd = BigNumber(amount1) * asset1.price
+            const amount0 = position ? position.amount0.toExact() : 0
+            const amount1 = position ? position.amount1.toExact() : 0
+            const amount0InUsd = BigNumber(amount0) * asset0.price
+            const amount1InUsd = BigNumber(amount1) * asset1.price
 
-    const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}
-    const tokenReward = getAsset(rewardToken)
-    const tokenBonus = getAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
-    const rewardPerSecond = fromWei(rewardRate)
-      .times(tokenReward?.price ?? 0)
-      .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
-    // -----------------ok--------
-    const apr = (() => {
-      if (!tickLower || !tickUpper || !position) return BigNumber(0)
-      const farmInfo = _farmInfoList[index]
-      const { earnPercent = 0, totalLiquidityInFarm } = farmInfo || {}
-      const tvl = amount0InUsd + amount1InUsd
-      const totalLiquidity = fusion && fusion.liquidity ? fusion.liquidity : undefined
-      const annualPoolFees = _annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
+            const {
+              rewardRate = '0',
+              rewardToken,
+              bonusRewardRate = '0',
+              bonusRewardToken,
+              virtualPool,
+            } = farmingData || {}
+            const tokenReward = getAsset(rewardToken)
+            const tokenBonus = getAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
+            const rewardPerSecond = fromWei(rewardRate)
+              .times(tokenReward?.price ?? 0)
+              .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
+            // -----------------ok--------
+            const apr = (() => {
+              if (!tickLower || !tickUpper || !position) return BigNumber(0)
+              const farmInfo = _farmInfoList[index]
+              const { earnPercent = 0, totalLiquidityInFarm } = farmInfo || {}
+              const tvl = amount0InUsd + amount1InUsd
+              const totalLiquidity = fusion && fusion.liquidity ? fusion.liquidity : undefined
+              const annualPoolFees = _annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
 
-      const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
-      const farmApr = tvl
-        ? rewardPerSecond
-            .times(farmRatio)
-            .times(86400 * 365)
-            .div(tvl)
-            .times(100)
-        : BigNumber(0)
+              const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
+              const farmApr = tvl
+                ? rewardPerSecond
+                    .times(farmRatio)
+                    .times(86400 * 365)
+                    .div(tvl)
+                    .times(100)
+                : BigNumber(0)
 
-      const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
-      const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
-      return farmApr.plus(feeAPR)
-    })()
+              const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+              const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
+              return farmApr.plus(feeAPR)
+            })()
 
-    const THE = getAsset(Contracts.THE[chainId])
-    const WBNB = getAsset(Contracts.WBNB[chainId])
+            const THE = getAsset(Contracts.THE[chainId])
+            const WBNB = getAsset(Contracts.WBNB[chainId])
 
-    const { reward0, reward1 } = {
-      reward0: {
-        token: THE,
-        amount: CurrencyAmount.fromRawAmount(THE, BigNumber(farmRewardData?.[0] ?? 0n)),
-      },
-      reward1: {
-        token: WBNB,
-        amount: CurrencyAmount.fromRawAmount(WBNB, BigNumber(farmRewardData?.[1] ?? 0n)),
-      },
-    }
+            const { reward0, reward1 } = {
+              reward0: {
+                token: THE,
+                amount: CurrencyAmount.fromRawAmount(THE, BigNumber(farmRewardData?.[0] ?? 0n)),
+              },
+              reward1: {
+                token: WBNB,
+                amount: CurrencyAmount.fromRawAmount(WBNB, BigNumber(farmRewardData?.[1] ?? 0n)),
+              },
+            }
 
-    const feesInUsd = (() => {
-      let usdFee = new BigNumber(0)
-      if (farmRewardData) {
-        usdFee = usdFee
-          .plus(fromWei(farmRewardData[0]).times(THE.price))
-          .plus(fromWei(farmRewardData[1]).times(WBNB.price))
-      }
-      return usdFee
-    })()
-    const fiatValueOfLiquidity = amount0InUsd + amount1InUsd
+            const feesInUsd = (() => {
+              let usdFee = new BigNumber(0)
+              if (farmRewardData) {
+                usdFee = usdFee
+                  .plus(fromWei(farmRewardData[0]).times(THE.price))
+                  .plus(fromWei(farmRewardData[1]).times(WBNB.price))
+              }
+              return usdFee
+            })()
+            const fiatValueOfLiquidity = amount0InUsd + amount1InUsd
 
-    const firstPercent = ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2)
-    return {
-      ...farmPos,
-      key: _poolKeys[index],
-      apr: apr.toNumber(),
-      feesInUsd,
-      fiatValueOfLiquidity,
-      firstPercent,
-      rewards: [reward0, reward1],
-      rewardUsd: Number(feesInUsd),
-      virtualPool,
-      farmRewardData,
-      fusionState,
-      fusion,
-      poolAddress,
-    }
-  })
+            const firstPercent = ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2)
+            return {
+              ...farmPos,
+              key: _poolKeys[index],
+              apr: apr.toNumber(),
+              feesInUsd,
+              fiatValueOfLiquidity,
+              firstPercent,
+              rewards: [reward0, reward1],
+              rewardUsd: Number(feesInUsd),
+              virtualPool,
+              farmRewardData,
+              fusionState,
+              fusion,
+              poolAddress,
+            }
+          }),
+    [
+      _annualPoolFeesPools,
+      _farmAddressList,
+      _farmInfoList,
+      _farmRewardsList,
+      _farmingList,
+      _fusionStates,
+      _poolKeys,
+      chainId,
+      farmPositions,
+      getAsset,
+    ],
+  )
 
   return result
 }

@@ -10,13 +10,12 @@ export const useWeightedPositions = (positions = []) => {
   const { account, chainId } = useWallet()
   const assets = useAssets()
   const prevData = useRef([])
-  console.log({ positions })
   const {
     data: positionsData,
     isLoading,
     error,
   } = useSWR(
-    positions.length > 0 && ['get weighted data position', chainId, account, positions],
+    positions.length > 0 && ['get weighted data position', chainId, account, assets, positions],
     () =>
       getWeightedPoolData({
         pools: positions,
@@ -25,18 +24,20 @@ export const useWeightedPositions = (positions = []) => {
         account,
       }),
     {
-      refreshInterval: 0,
+      refreshInterval: 60000,
     },
   )
 
   const _positionData = useMemo(() => {
-    if (!positionsData || isLoading || error) {
-      return prevData.current
+    if ((!positionsData || isLoading || error) && positions.length > 0) {
+      return prevData.current || []
     }
 
     prevData.current = positionsData
-    return positionsData
-  }, [error, isLoading, positionsData])
+    return positionsData || []
+  }, [error, isLoading, positions.length, positionsData])
+
+  if (!positions || positions.length === 0) return []
 
   return _positionData
 }

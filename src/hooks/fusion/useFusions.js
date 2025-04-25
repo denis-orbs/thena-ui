@@ -274,7 +274,7 @@ const getMultiFusionState = async (contracts, pools, poolAddressList, chainId, g
 }
 
 export const useGetMultipleFusionState = (pools, poolAddressList) => {
-  const { chainId } = useWallet()
+  const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
   const contracts = (pools || []).map((pool, index) => {
     const { version } = pool
@@ -284,10 +284,12 @@ export const useGetMultipleFusionState = (pools, poolAddressList) => {
   })
   const prevData = useRef([])
   const { data, isLoading } = useSWR(
-    contracts.length > 0 && ['get fusion state list', contracts],
+    contracts.length > 0 &&
+      account &&
+      chainId && ['get fusion state list', contracts, pools, poolAddressList, account, chainId],
     () => getMultiFusionState(contracts, pools, poolAddressList, chainId, getAsset),
     {
-      refreshInterval: 0,
+      refreshInterval: 60000,
     },
   )
 

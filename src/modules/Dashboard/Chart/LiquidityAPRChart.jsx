@@ -17,10 +17,10 @@ function LiquidityAPRChart({ data = [], className }) {
 
   const formatData = key => {
     const items = data.map(d => {
-      const value = key === 'depositLiquidity' ? d.depositLiquidity : Number(d.apr) || 0
+      const value = key === 'depositLiquidity' ? d.fiatValueOfLiquidity : Number(d.apr) || 0
 
       return {
-        label: d.position.symbol,
+        label: d.symbol,
         value,
       }
     })

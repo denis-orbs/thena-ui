@@ -9,40 +9,21 @@ import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
 function AssetsOverview({ positions }) {
-  console.log({ positions })
   const t = useTranslations()
 
-  // const filterVersion = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+  const filterVersion = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
 
-  // const { positionsData: positionsManual = [] } = useManualPositions(filterVersion.filter(pos => pos.type === 'Manual'))
-  // const { positionsData: positionsWeighted = [] } = useWeightedPositions(
-  //   filterVersion.filter(pos => pos.tokens && Array.isArray(pos.tokens)),
-  // )
-
-  // const { positionsData: stakedPositions = [] } = useNormalStakedPositions(
-  //   filterVersion.filter(
-  //     pos => pos.type !== 'Manual' && !pos.tokens && !Array.isArray(pos.tokens) && pos.account.gaugeBalance.gt(0),
-  //   ),
-  // )
-
-  // const { positionsData: unStakedPositions = [] } = useNormalUnStakedPositions(
-  //   filterVersion.filter(
-  //     pos => pos.type !== 'Manual' && !pos.tokens && !Array.isArray(pos.tokens) && pos.account.walletBalance.gt(0),
-  //   ),
-  // )
-
-  const positionsValue = []
   const { totalProvided, totalRewards, totalPools } = useMemo(() => {
-    const providedValue = positionsValue.reduce((sum, item) => sum + Number(item.depositLiquidity), 0)
-    const rewardsValue = positionsValue.reduce((sum, item) => sum + item.rewardUsd, 0)
-    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: positionsValue.length }
+    const providedValue = filterVersion.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
+    const rewardsValue = filterVersion.reduce((sum, item) => sum + item.rewardUsd, 0)
+    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: filterVersion.length }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positionsValue, positionsValue.length])
+  }, [filterVersion, filterVersion.length])
 
   const positionHaveRewards = useMemo(
-    () => positionsValue.filter(pos => pos.rewardUsd > 0),
+    () => filterVersion.filter(pos => pos.rewardUsd > 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [positionsValue, totalRewards],
+    [filterVersion, totalRewards],
   )
   const { onClaimAllRewardPosition } = useRewardPosition()
 
@@ -73,7 +54,7 @@ function AssetsOverview({ positions }) {
           </PrimaryButton>
         </div>
         <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart data={positionsValue} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
+          <LiquidityAPRChart data={filterVersion} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
         </div>
       </div>
     </div>

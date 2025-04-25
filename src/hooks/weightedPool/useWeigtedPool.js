@@ -1367,11 +1367,10 @@ export const getWeightedPoolData = async ({ pools = [], chainId, account, assets
         apr: Number(pool?.apr?.replace('%', '')),
         claimableFee: pool.staked ? claimableFeeStake : claimableFeeUnStake,
         depositValue,
-        depositLiquidity: depositValue.depositUsd.toNumber(),
+        fiatValueOfLiquidity: depositValue.depositUsd.toNumber(),
         rewardUsd: Number((pool.staked ? claimableFeeStake : claimableFeeUnStake)?.total),
       })
     }
-    console.log({ weightedDatas })
     return weightedDatas
   } catch (error) {
     console.log(error)
@@ -1384,22 +1383,22 @@ export const useWeightedPositionList = () => {
   const { weightedPools = [] } = usePairs()
 
   const getWeightedHasPositions = useCallback(async () => {
-    const results = await Promise.all(
-      weightedPools.map(async pool => {
-        const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
-        let gaugeBalance
-        if (pool.gauge.address !== zeroAddress) {
-          const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
-          gaugeBalance = await getBalance(gaugeContract, account, chainId)
-        }
-        const poolBalance = await getBalance(weightedPoolContract, account, chainId)
-        return {
-          pool,
-          hasPositionNotStaked: !isInvalidAmount(poolBalance),
-          hasPositionStaked: !isInvalidAmount(gaugeBalance),
-        }
-      }),
-    )
+    const results = []
+    for (let i = 0; i < weightedPools.length; i++) {
+      const pool = weightedPools[i]
+      const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+      let gaugeBalance
+      if (pool.gauge.address !== zeroAddress) {
+        const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+        gaugeBalance = await getBalance(gaugeContract, account, chainId)
+      }
+      const poolBalance = await getBalance(weightedPoolContract, account, chainId)
+      results.push({
+        pool,
+        hasPositionNotStaked: !isInvalidAmount(poolBalance),
+        hasPositionStaked: !isInvalidAmount(gaugeBalance),
+      })
+    }
     return results
       .filter(result => result.hasPositionNotStaked || result.hasPositionStaked)
       .map(result => ({
@@ -1416,7 +1415,6 @@ export const useWeightedPositionList = () => {
       refreshInterval: 60000,
     },
   )
-
   return data || []
 }
 

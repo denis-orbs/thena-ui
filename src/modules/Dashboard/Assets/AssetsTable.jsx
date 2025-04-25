@@ -1,8 +1,9 @@
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import Dropdown from '@/components/dropdown'
+import useWallet from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
@@ -35,13 +36,20 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
 const ITEMS_PER_PAGE = 10
 function AssetsTable({ positions = [] }) {
   const t = useTranslations()
+  const { account, chainId } = useWallet()
   const [itemPerPage, setItemPerPage] = useState(ITEMS_PER_PAGE)
   const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = Math.ceil(positions.length / itemPerPage)
 
-  const paginatedPositions = positions.slice((currentPage - 1) * itemPerPage, currentPage * itemPerPage)
-  console.log({ paginatedPositions })
+  const paginatedPositions = useMemo(
+    () => positions.slice((currentPage - 1) * itemPerPage, currentPage * itemPerPage),
+    [currentPage, itemPerPage, positions],
+  )
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [itemPerPage, account, chainId])
   return (
     <div className='w-full rounded-lg max-md:px-0'>
       {/* Header */}
@@ -72,8 +80,8 @@ function AssetsTable({ positions = [] }) {
                 </>
               ) : (
                 <>
-                  {item.account.gaugeBalance.gt(0) && <StakedItem position={item} />}
-                  {item.account.walletBalance.gt(0) && <NotStakedItem position={item} />}
+                  {item.staked && <StakedItem position={item} />}
+                  {!item.staked && <NotStakedItem position={item} />}
                 </>
               )}
             </React.Fragment>
