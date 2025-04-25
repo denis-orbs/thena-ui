@@ -9,7 +9,7 @@ import { rewardsContext, useGetVeRewardV2 } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGuageAllHarvset } from '@/hooks/useGauge'
 import usePrices from '@/hooks/usePrices'
-import { useNftFeesClaim, useTheNftAccountInfo } from '@/hooks/useTheNft'
+import { useNftClaimAllReward, useTheNftAccountInfo } from '@/hooks/useTheNft'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
@@ -24,13 +24,13 @@ function ClaimableRewards() {
   const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = currentRewardsV3
   const { veTHEs } = useVeTHEsContext()
   const { currentRewardsV2, refetchVetheRewardV2 } = useGetVeRewardV2()
-  const { claimableUSD: theNftRewards } = useTheNftAccountInfo()
+  const { claimableUSD, pendingReward: royaltyRewards } = useTheNftAccountInfo()
   const { rewards } = useFarmRewards()
 
   const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
   const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
   const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
-  const { onHarvest: onHarvestNft, pending: pendingClaimNft } = useNftFeesClaim()
+  const { onTheNftClaim, pending: theNftPending } = useNftClaimAllReward()
 
   const farmedPools = useMemo(() => pools.filter(item => item.account.gaugeEarned.gt(0)), [pools])
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
@@ -64,6 +64,8 @@ function ClaimableRewards() {
     [totalVotingV2Rewards, totalVotingV3Rewards],
   )
 
+  const theNftRewards = useMemo(() => claimableUSD.plus(royaltyRewards), [claimableUSD, royaltyRewards])
+
   const totalRewards = useMemo(
     () => farmedRewards + votingRewards + theNftRewards.toNumber(),
     [farmedRewards, theNftRewards, votingRewards],
@@ -94,27 +96,27 @@ function ClaimableRewards() {
       await handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
     }
 
-    // Harvest theNft rewards
-    if (!pendingClaimNft && theNftRewards.gt(0)) await onHarvestNft()
+    // Harvest theNft royalty rewards
+    if (!theNftPending && theNftRewards.gt(0)) await onTheNftClaim()
   }, [
-    allPendingV2,
-    allPendingV3,
-    currentRewardsV2,
-    farmedPools,
-    farmedRewards,
-    filteredVeTHEs,
-    handleClaimAll,
-    handleClaimAllV2,
-    onGaugeAllHarvest,
-    onHarvestNft,
     pending,
-    pendingClaimNft,
-    refetchVetheRewardV2,
-    refreshVetheRewardV3,
-    theNftRewards,
+    farmedRewards,
+    allPendingV2,
     totalVotingV2Rewards,
+    allPendingV3,
     totalVotingV3Rewards,
+    theNftPending,
+    theNftRewards,
+    onTheNftClaim,
+    onGaugeAllHarvest,
+    farmedPools,
+    handleClaimAllV2,
+    currentRewardsV2,
+    refetchVetheRewardV2,
+    handleClaimAll,
     veRewardsV3,
+    filteredVeTHEs,
+    refreshVetheRewardV3,
   ])
 
   return (
