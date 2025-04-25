@@ -1261,6 +1261,7 @@ export const usePositionData = (pool, isStaked) => {
 }
 
 export const getWeightedPoolData = async ({ pools = [], chainId, account, assets }) => {
+  if (pools.length === 0) return []
   try {
     const poolContracts = pools.map(pool => getWeightedPoolContract(pool?.address, chainId))
     const gaugeContracts = pools.map(pool => getWeightedGaugeContract(pool?.gauge?.address, chainId))

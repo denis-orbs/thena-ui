@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
-import { useMemo, useRef } from 'react'
-import useSWR from 'swr'
+import { useMemo } from 'react'
 import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
@@ -15,6 +14,7 @@ import { fromWei } from '@/lib/utils'
 import { getToken, useGetAssetFn } from '../fusion/Tokens'
 import { getFarmInfoList } from '../fusion/useEstimateAPR'
 import { getListComputePoolAddress, PoolState, useGetMultipleFusionState } from '../fusion/useFusions'
+import { useCachedSWR } from '../useCachedSWR'
 import usePrevious from '../usePrevious'
 import useWallet from '../useWallet'
 
@@ -141,116 +141,86 @@ const getFusionFeesData = async ({ chainId, poolIds }) => {
 
 export const useManualPositions = manualPositions => {
   const { chainId, account } = useWallet()
-  // const pools = usePools()
   const { getAsset } = useGetAssetFn()
 
-  const prevFeesList = useRef([])
-  const { data: feesList, isLoading: isLoadingFeesList } = useSWR(
-    account && manualPositions.length > 0 && chainId ? ['manuals/fee', manualPositions, account, chainId] : null,
-    () => fetchManualInfo(manualPositions, account, chainId),
-    {
-      refreshInterval: 60000,
-    },
+  // Fees list for manual positions
+  const feesListKey = useMemo(
+    () =>
+      account && manualPositions.length > 0 && chainId ? ['manuals/fee', manualPositions, account, chainId] : null,
+    [account, manualPositions, chainId],
   )
 
-  const _feesList = useMemo(() => {
-    if (!feesList || isLoadingFeesList) {
-      return prevFeesList.current
-    }
-    prevFeesList.current = feesList
-    return feesList
-  }, [feesList, isLoadingFeesList])
+  const { data: feesList } = useCachedSWR(feesListKey, () => fetchManualInfo(manualPositions, account, chainId), {
+    refreshInterval: 60000,
+  })
 
-  const prevAddressList = useRef([])
-  const { data: addressList, isLoading: isLoadingAddress } = useSWR(
-    manualPositions.length &&
-      chainId > 0 &&
-      account && ['get pool address list manual', chainId, account, manualPositions],
+  // Pool address list
+  const addressListKey = useMemo(
+    () =>
+      manualPositions.length && chainId > 0 && account
+        ? ['get pool address list manual', chainId, account, manualPositions]
+        : null,
+    [manualPositions, chainId, account],
+  )
+
+  const { data: addressList } = useCachedSWR(
+    addressListKey,
     () => getListComputePoolAddress(manualPositions, chainId, getAsset),
-    {
-      refreshInterval: 0,
-    },
+    { refreshInterval: 60000 },
   )
 
-  const _addressList = useMemo(() => {
-    if (!addressList || isLoadingAddress) {
-      return prevAddressList.current
-    }
-
-    prevAddressList.current = addressList
-    return addressList
-  }, [addressList, isLoadingAddress])
-
-  const fusionStates = useGetMultipleFusionState(manualPositions, _addressList)
-
+  // Fusion states
+  const fusionStates = useGetMultipleFusionState(manualPositions, addressList)
   const prevFusionStates = usePrevious(fusionStates)
 
   const _fusionStates = useMemo(() => {
     if ((!fusionStates || fusionStates.length <= 0) && prevFusionStates) {
       return prevFusionStates || []
     }
-
     return fusionStates
   }, [fusionStates, prevFusionStates])
 
-  const prevFarmingList = useRef([])
-  const { data: farmingList, isLoading: isLoadingFarmingList } = useSWR(
-    _addressList.length > 0 &&
-      chainId &&
-      account && ['getFusionFarmingDataList manual', chainId, account, _addressList],
+  // Farming list data
+  const farmingListKey = useMemo(
+    () =>
+      addressList?.length > 0 && chainId && account
+        ? ['getFusionFarmingDataList manual', chainId, account, addressList]
+        : null,
+    [addressList, chainId, account],
+  )
+
+  const { data: farmingList } = useCachedSWR(
+    farmingListKey,
     () =>
       getFusionFarmingListData({
-        // call to subgraph
-        poolIds: _addressList,
+        poolIds: addressList,
         chainId,
       }),
-    {
-      refreshInterval: 0,
-    },
-  )
-  const _farmingList = useMemo(() => {
-    if (!farmingList || isLoadingFarmingList) {
-      return prevFarmingList.current
-    }
-
-    prevFarmingList.current = farmingList
-    return farmingList
-  }, [farmingList, isLoadingFarmingList])
-
-  const prevAnnualPoolFeesPools = useRef([])
-  const { data: annualPoolFeesPools, isLoading: isLoadingAnnualPool } = useSWR(
-    _addressList.length > 0 && chainId && account && ['get fusion fees pools', chainId, account, _addressList],
-    () => getFusionFeesData({ chainId, poolIds: _addressList }),
-    {
-      refreshInterval: 0,
-    },
+    { refreshInterval: 60000 },
   )
 
-  const _annualPoolFeesPools = useMemo(() => {
-    if (!annualPoolFeesPools || isLoadingAnnualPool) {
-      return prevAnnualPoolFeesPools.current
-    }
-
-    prevAnnualPoolFeesPools.current = annualPoolFeesPools
-    return annualPoolFeesPools
-  }, [annualPoolFeesPools, isLoadingAnnualPool])
-
-  const prevFarmInfoList = useRef([])
-  const { data: farmInfoList = [], isLoadingFarmInfoList } = useSWR(
-    _addressList.length > 0 && account && chainId && ['getFarmInfoList manual', chainId, account],
-    () => getFarmInfoList(_addressList, _farmingList),
-    {
-      refreshInterval: 0,
-    },
+  // Annual pool fees
+  const annualPoolKey = useMemo(
+    () =>
+      addressList?.length > 0 && chainId && account ? ['get fusion fees pools', chainId, account, addressList] : null,
+    [addressList, chainId, account],
   )
-  const _farmInfoList = useMemo(() => {
-    if (!farmInfoList || isLoadingFarmInfoList) {
-      return prevFarmInfoList.current
-    }
 
-    prevFarmInfoList.current = farmInfoList
-    return farmInfoList
-  }, [farmInfoList, isLoadingFarmInfoList])
+  const { data: annualPoolFeesPools } = useCachedSWR(
+    annualPoolKey,
+    () => getFusionFeesData({ chainId, poolIds: addressList }),
+    { refreshInterval: 60000 },
+  )
+
+  // Farm info list
+  const farmInfoKey = useMemo(
+    () => (addressList?.length > 0 && account && chainId ? ['getFarmInfoList manual', chainId, account] : null),
+    [addressList, account, chainId],
+  )
+
+  const { data: farmInfoList = [] } = useCachedSWR(farmInfoKey, () => getFarmInfoList(addressList, farmingList), {
+    refreshInterval: 60000,
+  })
 
   const result = useMemo(
     () =>
@@ -262,7 +232,7 @@ export const useManualPositions = manualPositions => {
               PoolState.NOT_EXISTS,
               null,
             ]
-            const fees = _feesList[index]
+            const fees = feesList[index]
             const position = fusion
               ? new Position({
                   pool: fusion,
@@ -280,12 +250,12 @@ export const useManualPositions = manualPositions => {
             const token1 = getToken(asset1.address, getAsset)
             const apr = (() => {
               if (!tickLower || !tickUpper || !position) return BigNumber(0)
-              const farmInfo = _farmInfoList[index]
+              const farmInfo = farmInfoList[index]
               const { earnPercent = 0 } = farmInfo || {}
               const tvl = amount0InUsd + amount1InUsd
 
               const totalLiquidity = fusion && fusion.liquidity ? fusion.liquidity : undefined
-              const annualPoolFees = _annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
+              const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
               const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
               const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
               return feeAPR
@@ -329,7 +299,7 @@ export const useManualPositions = manualPositions => {
               poolAddress,
             }
           }),
-    [_annualPoolFeesPools, _farmInfoList, _feesList, _fusionStates, getAsset, manualPositions],
+    [annualPoolFeesPools, farmInfoList, feesList, _fusionStates, getAsset, manualPositions],
   )
 
   return result

@@ -125,7 +125,7 @@ function WeightedItem({ position, isStake }) {
         </div>
       </div>
       {isStake ? (
-        <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+        <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
           <TextButton disabled={unstakePending} className='w-full' onClick={() => setPopupStake(true)}>
             {t('Unstake')}
           </TextButton>
@@ -141,7 +141,7 @@ function WeightedItem({ position, isStake }) {
           </EmphasisButton>
         </div>
       ) : (
-        <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+        <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
           <TextButton
             disabled={stakePending || position.gauge.address === zeroAddress}
             className='h-11 w-full'

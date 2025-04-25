@@ -233,7 +233,7 @@ function StakedItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {version === 2 ? (
           // Version 2 actions
           <>

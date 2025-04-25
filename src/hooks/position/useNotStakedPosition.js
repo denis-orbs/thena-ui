@@ -1,12 +1,12 @@
 import BigNumber from 'bignumber.js'
-import { useMemo, useRef } from 'react'
-import useSWR from 'swr'
+import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { simulateCall } from '@/lib/contractActions'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
+import { useCachedSWR } from '../useCachedSWR'
 import useWallet from '../useWallet'
 
 const getFeesOfPools = async (pools, chainId) => {
@@ -40,29 +40,24 @@ const getFeesOfPools = async (pools, chainId) => {
 
 export const useNotStakedPositions = positions => {
   const { chainId, account } = useWallet()
-  const prevData = useRef([])
-  const { data, isLoading } = useSWR(
-    chainId && positions.length > 0 && ['getFeesOfPoolsStakedPosition', chainId, positions, account],
-    () => getFeesOfPools(positions, chainId),
-    {
-      refreshInterval: 60000,
-    },
+
+  const dataKey = useMemo(
+    () => (chainId && positions.length > 0 ? ['getFeesOfPoolsStakedPosition', chainId, positions, account] : null),
+    [chainId, positions, account],
   )
-  const _data = useMemo(() => {
-    if (!data || isLoading) return prevData.current
-    prevData.current = data
-    return data
-  }, [data, isLoading])
+
+  const { data } = useCachedSWR(dataKey, () => getFeesOfPools(positions, chainId), { refreshInterval: 60000 })
+
   return useMemo(
     () =>
       positions.map((pos, index) => ({
         ...pos,
-        ...(_data?.[index] ?? {}),
+        ...(data?.[index] ?? {}),
         apr: pos.feeApr,
-        rewardUsd: Number(_data?.[index]?.feesInUsd),
+        rewardUsd: Number(data?.[index]?.feesInUsd),
         fiatValueOfLiquidity: pos.account.totalUsd.minus(pos.account.stakedUsd),
         staked: false,
       })),
-    [_data, positions],
+    [data, positions],
   )
 }

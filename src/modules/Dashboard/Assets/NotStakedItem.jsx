@@ -224,7 +224,7 @@ function NotStakedItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {!migrationOptions && (
           <PrimaryButton className='w-full flex-1' onClick={() => setPopup(true)}>
             {t('Stake')}

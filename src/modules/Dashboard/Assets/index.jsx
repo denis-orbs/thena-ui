@@ -49,7 +49,6 @@ function UserAssets() {
   const vaults = useVaults()
   const userManuals = useManuals()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
-  const weightedPositionList = useWeightedPositionList()
 
   const positions = useMemo(
     () => [...userPools, ...userManuals],
@@ -62,8 +61,9 @@ function UserAssets() {
   const filteredPositions = useMemo(() => updateWalletBalance(positions), [positions])
   const manualPositions = useManualPositions(filteredPositions.filter(pos => pos.type === 'Manual' && !pos.isFarming))
   const farmingPositions = useFarmPositions(filteredPositions.filter(pos => pos.type === 'Manual' && pos.isFarming))
+
+  const weightedPositionList = useWeightedPositionList()
   const weightedPositions = useWeightedPositions(weightedPositionList)
-  console.log({ weightedPositions })
   const stakedPosition = useStakedPosition(
     filteredPositions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.gaugeBalance.gt(0)),
   )

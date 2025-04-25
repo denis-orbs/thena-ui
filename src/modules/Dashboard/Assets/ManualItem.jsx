@@ -219,7 +219,7 @@ function ManualItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
+      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='flex-1' onClick={() => setRemovePopup(true)}>
             {t('Remove')}

@@ -216,7 +216,7 @@ function FarmingItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
+      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
         <OutlinedButton
           className={cn('block w-full flex-1', {
             hidden: Number(liquidity) <= 0,
