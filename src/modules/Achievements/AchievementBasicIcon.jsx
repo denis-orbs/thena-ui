@@ -1,21 +1,28 @@
-import Image from 'next/image'
-
 import './style.css'
 
+import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { cn } from '@/lib/utils'
 
-function AchievementBasicIcon({ item, showTooltip = true, className }) {
+function AchievementBasicIcon({ item, showTooltip = true, className, classNames }) {
   return (
     <div className={cn('flex cursor-pointer flex-col items-center gap-3 p-5', className)}>
-      <Image
+      {/* <Image
         data-tooltip-id={showTooltip ? item.achievement.id : ''}
         src={item.achievement.icon}
         alt=''
         width={72}
-        height={80}
+        height={48}
         className='size-28'
-      />
+      /> */}
+      <div className={cn('flex h-[80px] w-[72px] items-center justify-center overflow-hidden', classNames?.item)}>
+        <NextImage
+          data-tooltip-id={showTooltip ? item.achievement.id : ''}
+          src={item.achievement.icon}
+          alt=''
+          className='object-cover'
+        />
+      </div>
       {showTooltip && (
         <CustomTooltip
           className='z-50 text-nowrap !bg-neutral-500 after:!bg-neutral-500'

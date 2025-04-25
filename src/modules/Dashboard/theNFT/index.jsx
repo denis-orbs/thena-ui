@@ -23,7 +23,7 @@ const fetchNftInfo = async (url, nftIds) => {
 function TheNFT() {
   const { push } = useRouter()
   // const [isManageOpen, setIsManageOpen] = useState(false)
-  const { apr } = useTheNftInfo()
+  const { apr, lastEarnings } = useTheNftInfo()
   const { stakedIds, walletIds, pendingReward, userLoading } = useTheNftAccountInfo()
   const { data: yourNfts, isLoading } = useSWR(['thenft image info', [...walletIds, ...stakedIds].length], url =>
     fetchNftInfo(url, [...walletIds, ...stakedIds]),
@@ -33,31 +33,43 @@ function TheNFT() {
   const t = useTranslations()
   return (
     <div className='flex h-full flex-col gap-4 rounded-xl bg-neutral-900 py-4'>
-      <TextHeading className='px-4 font-archia text-xl font-semibold'>theNFT</TextHeading>
+      <div className='flex items-center justify-between'>
+        <TextHeading className='px-4 font-archia text-xl font-semibold'>theNFT</TextHeading>
+        {yourNfts?.length > 3 && (
+          <Paragraph className='px-4 text-sm text-neutral-500'>
+            {t('You own [number]', { number: yourNfts?.length })}
+          </Paragraph>
+        )}
+      </div>
       <div className='flex h-full flex-col justify-between gap-4'>
         {!isLoading && (!yourNfts || (yourNfts || []).length <= 0) ? (
-          <div className='my-16 flex flex-col gap-2 text-center'>
-            <TextHeading>{t('You have no theNFT in your collection')}</TextHeading>
-            <Paragraph className='text-sm'>{t('Start Passive Income')}</Paragraph>
-          </div>
+          <div className='mx-4 flex h-[140px] flex-col gap-2 bg-neutral-800 text-center md:h-[182px]' />
         ) : isLoading ? (
-          <Skeleton className='h-[140px] w-full md:h-[170px]' />
+          <Skeleton className='h-[140px] w-full md:h-[180px]' />
         ) : (
-          <div className='relative flex w-full justify-center overflow-hidden pb-4'>
+          <div className='relative flex h-[140px] w-full justify-center overflow-hidden bg-neutral-800 md:h-[180px]'>
             <div
               className={cn(
-                '-ml-[10%] flex w-[120%] gap-4 bg-neutral-800 py-2',
-                yourNfts.length < 3 && 'ml-0 w-[100%] justify-center',
+                'grid gap-2',
+                yourNfts.length === 1 && 'grids-cols-1',
+                yourNfts.length === 2 && 'grid-cols-2',
+                yourNfts.length >= 3 && 'grid-cols-3',
               )}
             >
               {yourNfts.slice(0, 3).map((nft, idx) => (
-                <div key={`thenft-${nft.id}-${idx}`} className='w-1/3 flex-shrink-0'>
-                  <NextImage className='h-auto w-full rounded-[36px] object-cover' src={nft.image} alt={nft.name} />
-                </div>
+                <NextImage
+                  key={`thenft-${nft.id}-${idx}`}
+                  className='h-full w-full object-cover'
+                  src={nft.image}
+                  alt={nft.name}
+                />
               ))}
             </div>
           </div>
         )}
+        <TextSubHeading className='px-4 text-sm'>
+          {`${t('Last Epoch Earnings')} $${formatAmount(lastEarnings)}`}
+        </TextSubHeading>
         <div className='flex justify-between px-4'>
           <div className='flex flex-col gap-2'>
             <TextSubHeading className='text-sm'>{t('Claimable Fees')}</TextSubHeading>
@@ -80,16 +92,18 @@ function TheNFT() {
             )}
           </div>
         </div>
-        <div className='grid grid-cols-2 gap-2 px-4'>
+        <div className={cn('grid grid-cols-2 gap-2 px-4', isInvalidAmount(pendingReward) && 'grid-cols-1')}>
           <EmphasisButton onClick={() => push('/dashboard/thenft')}>{t('View')}</EmphasisButton>
-          <EmphasisButton
-            disabled={isInvalidAmount(pendingReward) || pending}
-            onClick={() => {
-              onHarvest()
-            }}
-          >
-            {t('Claim')}
-          </EmphasisButton>
+          {!isInvalidAmount(pendingReward) && (
+            <EmphasisButton
+              disabled={pending}
+              onClick={() => {
+                onHarvest()
+              }}
+            >
+              {t('Claim')}
+            </EmphasisButton>
+          )}
         </div>
       </div>
     </div>
