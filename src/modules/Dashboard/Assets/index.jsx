@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
@@ -59,8 +60,12 @@ function UserAssets() {
   const t = useTranslations()
 
   const filteredPositions = useMemo(() => updateWalletBalance(positions), [positions])
-  const manualPositions = useManualPositions(filteredPositions.filter(pos => pos.type === 'Manual' && !pos.isFarming))
-  const farmingPositions = useFarmPositions(filteredPositions.filter(pos => pos.type === 'Manual' && pos.isFarming))
+  const manualPositions = useManualPositions(
+    filteredPositions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
+  )
+  const farmingPositions = useFarmPositions(
+    filteredPositions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
+  )
 
   const weightedPositionList = useWeightedPositionList()
   const weightedPositions = useWeightedPositions(weightedPositionList)

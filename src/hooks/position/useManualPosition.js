@@ -133,7 +133,6 @@ const getFusionFeesData = async ({ chainId, poolIds }) => {
     const result = groupAndAverageByPool(poolDayDatas)
     return result
   } catch (error) {
-    console.log(error)
     console.error(`[${chainId}] fusion fees data fetch error: ${JSON.stringify(error)}`)
     return 0
   }
