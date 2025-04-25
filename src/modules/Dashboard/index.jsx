@@ -42,12 +42,12 @@ function Dashboard() {
       <SpecialDivider />
       <Overview />
       <SpecialDivider />
-      <div className='flex flex-col xl:grid xl:grid-cols-3 xl:gap-4'>
+      <div className='flex flex-col md:grid md:grid-cols-3 md:gap-4'>
         <div className='col-span-1'>
           <TheNFT />
         </div>
         <SpecialDivider className='max-md:mt-4' />
-        <div className='col-span-2 md:mt-4 xl:mt-0'>
+        <div className='md col-span-2'>
           <DashboardProfile />
         </div>
       </div>

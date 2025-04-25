@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 
 import { fetchAchievements } from '@/app/arena/profile/UserCompletedAchievements'
@@ -16,6 +16,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAddress, formatAmount, sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
 
@@ -43,6 +44,37 @@ function DashboardProfile() {
     [veTHEs],
   )
 
+  const achievementsRef = useRef(null)
+  const [visibleCount, setVisibleCount] = useState()
+
+  useEffect(() => {
+    if (sortedData.length === 0) return
+    setVisibleCount(prev => {
+      if (!prev || prev === 0) return sortedData.length
+      return prev
+    })
+  }, [sortedData.length])
+
+  const windowSize = useWindowSize()
+
+  useEffect(() => {
+    const { width } = windowSize
+
+    if (width >= 834 && width < 1024) {
+      setVisibleCount(7)
+    } else if (width >= 1024 && width < 1280) {
+      setVisibleCount(9)
+    } else if (width >= 1280 && width < 1356) {
+      setVisibleCount(10)
+    } else if (width >= 1356 && width < 1536) {
+      setVisibleCount(12)
+    } else if (width >= 1536) {
+      setVisibleCount(13)
+    } else {
+      setVisibleCount(8)
+    }
+  }, [windowSize])
+
   return !isLoading && !userInfo ? (
     <Box className='flex h-full flex-col gap-1.5 !p-4 max-md:mt-4 md:gap-6'>
       <div className='my-16 flex flex-col gap-2 text-center'>
@@ -57,7 +89,7 @@ function DashboardProfile() {
         <Skeleton className='h-full w-full' />
       ) : (
         <>
-          <div className='hidden h-full flex-col justify-between md:flex'>
+          <div className='hidden h-full flex-col justify-between md:flex' ref={achievementsRef}>
             <div className='flex gap-4'>
               <div className='size-[145px]'>
                 <Image
@@ -114,13 +146,16 @@ function DashboardProfile() {
               </TextHeading>
             </div>
 
-            {sortedData.length && (
-              <div className={cn('mt-10 flex flex-wrap items-center')}>
-                {sortedData.map(item => (
-                  <AchievementBasicIcon item={item} key={item.achievement.id} className='gap-0 p-0' />
-                ))}
-              </div>
-            )}
+            <div className={cn('mt-10 flex items-center')}>
+              {sortedData.slice(0, visibleCount).map(item => (
+                <AchievementBasicIcon
+                  item={item}
+                  key={item.achievement.id}
+                  className='gap-0 p-0'
+                  classNames={{ item: 'h-[65px] w-[65px]' }}
+                />
+              ))}
+            </div>
 
             <EmphasisButton className='mt-6 w-full' onClick={() => push('/arena/profile')}>
               {t('Manage')}

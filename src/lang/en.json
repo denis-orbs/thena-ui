@@ -1526,5 +1526,6 @@
   "Socials": "Socials",
   "Open": "Open",
   "Epoch End in [seconds]": "Epoch End in {seconds} Seconds",
-  "Approve For Farming": "Approve For Farming"
+  "Approve For Farming": "Approve For Farming",
+  "You own [number]": "You own {number}"
 }
