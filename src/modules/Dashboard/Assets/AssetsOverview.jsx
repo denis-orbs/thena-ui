@@ -8,12 +8,34 @@ import { formatAmount, isInvalidAmount } from '@/lib/utils'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
-function AssetsOverview({ positionsValue }) {
+function AssetsOverview({ positions }) {
+  console.log({ positions })
   const t = useTranslations()
+
+  // const filterVersion = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+
+  // const { positionsData: positionsManual = [] } = useManualPositions(filterVersion.filter(pos => pos.type === 'Manual'))
+  // const { positionsData: positionsWeighted = [] } = useWeightedPositions(
+  //   filterVersion.filter(pos => pos.tokens && Array.isArray(pos.tokens)),
+  // )
+
+  // const { positionsData: stakedPositions = [] } = useNormalStakedPositions(
+  //   filterVersion.filter(
+  //     pos => pos.type !== 'Manual' && !pos.tokens && !Array.isArray(pos.tokens) && pos.account.gaugeBalance.gt(0),
+  //   ),
+  // )
+
+  // const { positionsData: unStakedPositions = [] } = useNormalUnStakedPositions(
+  //   filterVersion.filter(
+  //     pos => pos.type !== 'Manual' && !pos.tokens && !Array.isArray(pos.tokens) && pos.account.walletBalance.gt(0),
+  //   ),
+  // )
+
+  const positionsValue = []
   const { totalProvided, totalRewards, totalPools } = useMemo(() => {
-    const providedValue = positionsValue.reduce((sum, item) => sum + item.depositLiquidity, 0)
-    const rewarsValue = positionsValue.reduce((sum, item) => sum + item.rewardUsd, 0)
-    return { totalProvided: providedValue, totalRewards: rewarsValue, totalPools: positionsValue.length }
+    const providedValue = positionsValue.reduce((sum, item) => sum + Number(item.depositLiquidity), 0)
+    const rewardsValue = positionsValue.reduce((sum, item) => sum + item.rewardUsd, 0)
+    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: positionsValue.length }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positionsValue, positionsValue.length])
 
@@ -23,6 +45,7 @@ function AssetsOverview({ positionsValue }) {
     [positionsValue, totalRewards],
   )
   const { onClaimAllRewardPosition } = useRewardPosition()
+
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia max-md:hidden'>{t('Total Value Provided')}</TextHeading>

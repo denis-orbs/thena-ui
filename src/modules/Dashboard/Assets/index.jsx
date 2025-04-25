@@ -1,13 +1,15 @@
 import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { useVaults } from '@/context/vaultsContext'
+import { useFarmPositions } from '@/hooks/position/useFarmPosition'
+import { useManualPositions } from '@/hooks/position/useManualPosition'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, isInvalidAmount } from '@/lib/utils'
@@ -16,7 +18,6 @@ import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
-import CalculatorData from './CalculatorData'
 
 const updateWalletBalance = positions => {
   const groupedPositions = positions.reduce((map, position) => {
@@ -46,7 +47,7 @@ function UserAssets() {
   const userManuals = useManuals()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const weightedPositionList = useWeightedPositionList()
-  const [positionsValue, setPositionsValue] = useState([])
+  // const [positionsValue, setPositionsValue] = useState([])
   const positions = useMemo(
     () => [...userPools, ...userManuals, ...weightedPositionList],
     [userManuals, userPools, weightedPositionList],
@@ -55,19 +56,20 @@ function UserAssets() {
   const t = useTranslations()
 
   const filteredPositions = useMemo(() => updateWalletBalance(positions), [positions])
-
-  const collectData = useCallback(
-    data => {
-      const { position, apr, depositLiquidity, rewardUsd, index, rewards = [] } = data
-      setPositionsValue(prev => {
-        const dataUpdate = prev
-        dataUpdate[index] = { position, apr, depositLiquidity, rewardUsd, rewards }
-        return dataUpdate
-      })
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [positions],
-  )
+  const manualPositions = useManualPositions(filteredPositions.filter(pos => pos.type === 'Manual' && !pos.isFarming))
+  const farmingPositions = useFarmPositions(filteredPositions.filter(pos => pos.type === 'Manual' && pos.isFarming))
+  // const collectData = useCallback(
+  //   data => {
+  //     const { position, apr, depositLiquidity, rewardUsd, index, rewards = [] } = data
+  //     setPositionsValue(prev => {
+  //       const dataUpdate = prev
+  //       dataUpdate[index] = { position, apr, depositLiquidity, rewardUsd, rewards }
+  //       return dataUpdate
+  //     })
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [positions],
+  // )
 
   const windowSize = useWindowSize()
 
@@ -81,7 +83,7 @@ function UserAssets() {
 
   return (
     <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
-      <AssetsOverview positionsValue={positionsValue} />
+      <AssetsOverview positions={filteredPositions} />
       <div className='flex justify-between lg:hidden'>
         <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
         <div
@@ -98,10 +100,10 @@ function UserAssets() {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <AssetsTable positions={filteredPositions} />
+        <AssetsTable positions={[...manualPositions, ...farmingPositions]} />
       </motion.div>
       {/* <AssetsTable positions={filteredPositions} /> */}
-      <CalculatorData positions={filteredPositions} onData={collectData} />
+      {/* <CalculatorData positions={filteredPositions} onData={collectData} /> */}
     </Box>
   )
 }

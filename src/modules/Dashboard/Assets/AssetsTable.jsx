@@ -41,6 +41,7 @@ function AssetsTable({ positions = [] }) {
   const totalPages = Math.ceil(positions.length / itemPerPage)
 
   const paginatedPositions = positions.slice((currentPage - 1) * itemPerPage, currentPage * itemPerPage)
+  console.log({ paginatedPositions })
   return (
     <div className='w-full rounded-lg max-md:px-0'>
       {/* Header */}
@@ -58,9 +59,7 @@ function AssetsTable({ positions = [] }) {
 
       <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat max-lg:space-y-2 lg:px-4 lg:pt-8'>
         {paginatedPositions.map((item, index) =>
-          !item ? (
-            <></>
-          ) : item.type === 'Manual' ? (
+          item.type === 'Manual' ? (
             <React.Fragment key={`${item.address}-${index}`}>
               {item?.deployer === zeroAddress ? <FarmingItem position={item} /> : <ManualItem position={item} />}
             </React.Fragment>

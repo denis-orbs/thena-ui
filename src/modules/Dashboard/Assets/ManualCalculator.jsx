@@ -89,6 +89,7 @@ function ManualCalculator({ position, onData = () => {}, index }) {
       staleTime: Infinity,
     },
   })
+
   const farmingCenter = getFarmingCenterContract(chainId)
   const { data: farmRewards } = useSimulateContract({
     ...farmingCenter,

@@ -60,6 +60,14 @@ export function useToken(tokenAddress) {
   }, [asset])
 }
 
+export const getToken = (tokenAddress, getAsset = () => {}) => {
+  const asset = getAsset(tokenAddress)
+  if (!asset) return undefined
+  const token = new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+  token.logoURI = asset.logoURI ?? UNKNOWN_LOGO
+  return token
+}
+
 export const useCurrency = tokenAddress => {
   const { networkId } = useChainSettings()
   const isBNB = tokenAddress?.toUpperCase() === 'BNB'
@@ -69,6 +77,23 @@ export const useCurrency = tokenAddress => {
     currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
     currency.address = 'BNB'
     return currency
+  }
+  return token
+}
+
+export const getCurrency = (tokenAddress, chainId, getAsset = () => {}) => {
+  const isBNB = tokenAddress?.toUpperCase() === 'BNB'
+  const asset = getAsset(isBNB ? undefined : tokenAddress)
+  if (isBNB) {
+    const currency = BNB.onChain(chainId)
+    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.address = 'BNB'
+    return currency
+  }
+  const token = !asset ? undefined : new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+  if (token) {
+    token.logoURI = asset.logoURI ?? UNKNOWN_LOGO
+    return token
   }
   return token
 }
