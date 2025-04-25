@@ -100,8 +100,8 @@ export default function RemoveManualModal({
             <IconGroup
               className='-space-x-2'
               classNames={{ image: 'w-8 h-8 outline-2' }}
-              logo1={pool.asset0.logoURI}
-              logo2={pool.asset1.logoURI}
+              logo1={pool.asset0?.logoURI}
+              logo2={pool.asset1?.logoURI}
             />
             <div className='flex flex-col gap-1'>
               <TextHeading>
@@ -123,15 +123,15 @@ export default function RemoveManualModal({
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-4 w-4' src={pool.asset0.logoURI} alt='thena logo' />
-                <Paragraph className='text-sm'>Pooled {pool.asset0.symbol}</Paragraph>
+                <CircleImage className='h-4 w-4' src={pool.asset0?.logoURI} alt='thena logo' />
+                <Paragraph className='text-sm'>Pooled {pool.asset0?.symbol}</Paragraph>
               </div>
               <Paragraph>{formatAmount(liquidityValue0, false, 4)}</Paragraph>
             </div>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-4 w-4' src={pool.asset1.logoURI} alt='thena logo' />
-                <Paragraph className='text-sm'>Pooled {pool.asset1.symbol}</Paragraph>
+                <CircleImage className='h-4 w-4' src={pool.asset1?.logoURI} alt='thena logo' />
+                <Paragraph className='text-sm'>Pooled {pool.asset1?.symbol}</Paragraph>
               </div>
               <Paragraph>{formatAmount(liquidityValue1, false, 4)}</Paragraph>
             </div>

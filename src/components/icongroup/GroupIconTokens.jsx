@@ -26,10 +26,10 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
           style={{ width: width + (firstRow.length - 1) * (width * 0.75), height }}
         >
           {firstRow.map((token, index) => (
-            <React.Fragment key={`${token.address}-${index}`}>
+            <React.Fragment key={`${token?.address}-${index}`}>
               <Image
-                key={`${token.address}-${index}`}
-                src={token.logoURI || UNKNOWN_LOGO}
+                key={`${token?.address}-${index}`}
+                src={token?.logoURI || UNKNOWN_LOGO}
                 alt={`token-${index}`}
                 className={cn(
                   'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
@@ -37,15 +37,15 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                 style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                 width={width}
                 height={height}
-                data-tooltip-id={showToolTip ? `tooltip-token-${token.address}-${index}-${poolAddress}` : null}
+                data-tooltip-id={showToolTip ? `tooltip-token-${token?.address}-${index}-${poolAddress}` : null}
               />
               {showToolTip && (
                 <CustomTooltip
                   className={cn('z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500', classNames?.toolTip)}
-                  id={`tooltip-token-${token.address}-${index}-${poolAddress}`}
+                  id={`tooltip-token-${token?.address}-${index}-${poolAddress}`}
                   place='top'
                 >
-                  {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}
+                  {`${token?.symbol || 'UNKNOWN'} ${token?.weight}%`}
                 </CustomTooltip>
               )}
             </React.Fragment>
@@ -61,10 +61,10 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
             }}
           >
             {secondRow.map((token, index) => (
-              <React.Fragment key={`${token.address}-${index}`}>
+              <React.Fragment key={`${token?.address}-${index}`}>
                 <Image
-                  key={`${token.address}-${index}`}
-                  src={token.logoURI || UNKNOWN_LOGO}
+                  key={`${token?.address}-${index}`}
+                  src={token?.logoURI || UNKNOWN_LOGO}
                   alt={`token-${index}`}
                   className={cn(
                     'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
@@ -72,15 +72,15 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                   style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                   width={width}
                   height={height}
-                  data-tooltip-id={showToolTip ? `tooltip-token-${token.address}-${index}-${poolAddress}` : null}
+                  data-tooltip-id={showToolTip ? `tooltip-token-${token?.address}-${index}-${poolAddress}` : null}
                 />
                 {showToolTip && (
                   <CustomTooltip
                     className={cn('z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500', classNames?.toolTip)}
-                    id={`tooltip-token-${token.address}-${index}-${poolAddress}`}
+                    id={`tooltip-token-${token?.address}-${index}-${poolAddress}`}
                     place='top'
                   >
-                    {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}
+                    {`${token?.symbol || 'UNKNOWN'} ${token?.weight}%`}
                   </CustomTooltip>
                 )}
               </React.Fragment>

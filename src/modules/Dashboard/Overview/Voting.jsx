@@ -151,9 +151,14 @@ function Voting() {
           </span>
         </TextSubHeading>
       )}
-      <EmphasisButton className='w-full' onClick={() => push('/dashboard/vote')}>
-        {t('Vote')}
-      </EmphasisButton>
+      <div className='flex gap-3'>
+        <EmphasisButton className='w-1/2' onClick={() => push('/dashboard/rewards')}>
+          {t('Rewards')}
+        </EmphasisButton>
+        <EmphasisButton className='w-1/2' onClick={() => push('/dashboard/vote')}>
+          {t('Vote')}
+        </EmphasisButton>
+      </div>
     </Box>
   )
 }

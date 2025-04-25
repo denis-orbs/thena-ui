@@ -12,7 +12,7 @@ import { formatAmount } from '@/lib/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
 
-const COLORS = ['#F199EE', '#EA66E5', '#DC00D4', '#84007F', '#2C002A']
+const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
 function Lock() {
   const t = useTranslations()
   const { push } = useRouter()

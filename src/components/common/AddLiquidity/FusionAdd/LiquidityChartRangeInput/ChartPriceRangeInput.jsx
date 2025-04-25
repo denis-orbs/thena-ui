@@ -78,7 +78,7 @@ export default function ChartPriceRangeInput({
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
   const [boundaryPrices, setBoundaryPrices] = useState()
 
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
 
   const [firstCurrency, secondCurrency] = useMemo(

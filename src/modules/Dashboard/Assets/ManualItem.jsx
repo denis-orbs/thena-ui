@@ -58,8 +58,7 @@ function ManualItem({ position }) {
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
   const pools = usePools()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = position
-
+  const { asset0 = {}, asset1 = {}, liquidity, tickLower, tickUpper, tokenId, version } = position
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const reversePrice = false
@@ -74,8 +73,8 @@ function ManualItem({ position }) {
   )
   const { pending, onAlgebraBurn } = useAlgebraBurn(position?.version ?? 3)
 
-  const currency0 = useCurrency(asset0.address)
-  const currency1 = useCurrency(asset1.address)
+  const currency0 = useCurrency(asset0?.address)
+  const currency1 = useCurrency(asset1?.address)
   const [fusionState, fusion, poolAddress] = useFusionState({
     currencyA: currency0,
     currencyB: currency1,
@@ -115,11 +114,11 @@ function ManualItem({ position }) {
 
   const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
   const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
-  const amount0InUsd = useMemo(() => BigNumber(amount0).times(asset0.price).toNumber(), [amount0, asset0])
-  const amount1InUsd = useMemo(() => BigNumber(amount1).times(asset1.price).toNumber(), [amount1, asset1])
+  const amount0InUsd = useMemo(() => BigNumber(amount0).times(asset0?.price).toNumber(), [amount0, asset0])
+  const amount1InUsd = useMemo(() => BigNumber(amount1).times(asset1?.price).toNumber(), [amount1, asset1])
 
-  const token0 = useToken(asset0.address)
-  const token1 = useToken(asset1.address)
+  const token0 = useToken(asset0?.address)
+  const token1 = useToken(asset1?.address)
 
   const poolInfo = useMemo(
     () =>
@@ -136,14 +135,18 @@ function ManualItem({ position }) {
 
   const { reward0, reward1 } = useMemo(
     () => ({
-      reward0: {
-        token: token0,
-        amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
-      },
-      reward1: {
-        token: token1,
-        amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
-      },
+      reward0: token0
+        ? {
+            token: token0,
+            amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
+          }
+        : { token: null, amount: null },
+      reward1: token1
+        ? {
+            token: token1,
+            amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
+          }
+        : { token: null, amount: null },
     }),
     [token0, token1, fees],
   )
