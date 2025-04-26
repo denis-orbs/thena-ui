@@ -89,7 +89,7 @@ function BridgeMaintainModal({ show, onClose }) {
         {/* <PrimaryButton className='w-32' onClick={onClose}>
           OK
         </PrimaryButton> */}
-        <Link href='https://thena.zkbridge.com/' target='_blank'>
+        <Link href='https://opbnb-bridge.bnbchain.org/' target='_blank'>
           <PrimaryButton className='w-32 text-neutral-100' onClick={onClose}>
             OK
           </PrimaryButton>
