@@ -40,3 +40,15 @@ export function NewTextSubHeading({ children, className, ...props }) {
     </span>
   )
 }
+
+export function NewParagraph({ children, className, title = undefined, ...props }) {
+  return (
+    <span
+      className={cn('font-archia text-sm font-semibold text-neutral-50 md:text-base', className)}
+      title={title}
+      {...props}
+    >
+      {children}
+    </span>
+  )
+}

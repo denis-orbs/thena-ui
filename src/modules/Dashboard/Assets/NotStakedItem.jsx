@@ -10,7 +10,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
@@ -123,7 +123,7 @@ function NotStakedItem({ position }) {
     () => ({
       title: position?.title,
       tvl: position?.tvl?.toNumber() ?? 0,
-      apr: position?.apr?.toNumber() ?? 0,
+      apr: position?.gauge?.apr?.toNumber() ?? 0, // TODO recheck apr value
       account: {
         totalLp: position?.account?.totalLp?.toNumber(),
         gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
@@ -153,8 +153,8 @@ function NotStakedItem({ position }) {
       position?.account?.totalLp,
       position?.address,
       position?.allowed,
-      position?.apr,
       position?.fee,
+      position?.gauge?.apr,
       position?.title,
       position?.token0,
       position?.token1,
@@ -186,7 +186,7 @@ function NotStakedItem({ position }) {
           tokens={[position.token0, position.token1]}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-md:items-center lg:flex-col'>
-          <TextHeading>{position.symbol}</TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-md:font-semibold lg:text-xs'>
             {getDisplayedStrategy(position.title)}
           </Paragraph>
@@ -211,20 +211,22 @@ function NotStakedItem({ position }) {
           <TextSubHeading className=''>{t('Value')}</TextSubHeading>
         </div>
         <div className='flex w-1/3 flex-col'>
-          {isV1Pool && (
-            <div className='flex items-center gap-1'>
-              <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`not-stake-${position.address}`} />
-              <CustomTooltip id={`not-stake-${position.address}`}>
-                {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
-                {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}
-              </CustomTooltip>
-            </div>
-          )}
+          <div className='flex items-center gap-1'>
+            <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
+            {feesInUsd > 0 && (
+              <>
+                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`not-stake-${position.address}`} />
+                <CustomTooltip id={`not-stake-${position.address}`}>
+                  {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
+                  {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}
+                </CustomTooltip>
+              </>
+            )}
+          </div>
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {!migrationOptions && (
           <PrimaryButton className='w-full flex-1' onClick={() => setPopup(true)}>
             {t('Stake')}

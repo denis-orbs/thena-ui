@@ -74,7 +74,7 @@ export const defaultSwapFees = {
     totalUsd: new BigNumber(0),
   },
 }
-const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
+export const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   let preset
   if (GAMMA_TYPES.includes(strategy.title)) {
     preset = await fetchGammaInfo(chainId, strategy)

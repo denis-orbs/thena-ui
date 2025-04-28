@@ -8,6 +8,7 @@ import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
+import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
 import { Presets } from '@/state/fusion/reducer'
@@ -35,7 +36,6 @@ const getFusionFeesData = async ({ chainId, pool }) => {
 
     const avgPoolDayFees = poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolDayDatas.length
     const annualPoolFees = avgPoolDayFees * 365
-
     return annualPoolFees
   } catch (error) {
     console.error(`[${chainId}] fusion fees data fetch error: ${JSON.stringify(error)}`)
@@ -300,7 +300,6 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
   const rewardPerSecond = fromWei(rewardRate)
     .times(tokenReward?.price ?? 0)
     .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
-
   const { data: farmInfo } = useReadContracts({
     contracts: [
       {
@@ -322,7 +321,6 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
   const totalLiquidityInFarm = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
   const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
-
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 
   const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
@@ -336,6 +334,96 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
 
   const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
   const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
-
   return farmApr.plus(feeAPR)
+}
+
+export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl, chainId, getAsset = () => {} }) => {
+  const { liquidity, tickLower, tickUpper } = position || {}
+
+  if (!tickLower || !tickUpper || !position) return BigNumber(0)
+
+  let annualPoolFees
+  if (poolAddress) {
+    annualPoolFees = await getFusionFeesData({ chainId, pool: poolAddress })
+  }
+
+  let farmingData
+  if (!!poolAddress && position?.isFarming) {
+    farmingData = await getFusionFarmingData({ chainId, pool: poolAddress })
+  }
+
+  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}
+
+  let farmInfo
+  if (poolAddress) {
+    farmInfo = await callMulti([
+      {
+        functionName: 'globalState',
+        address: poolAddress,
+        abi: newPoolAbi,
+      },
+      {
+        functionName: 'currentLiquidity',
+        address: virtualPool ?? zeroAddress,
+        abi: eternalVirtualPoolAbi,
+      },
+    ])
+  }
+  const tokenReward = getAsset(rewardToken)
+  const tokenBonus = getAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null, chainId)
+
+  const rewardPerSecond = fromWei(rewardRate)
+    .times(tokenReward?.price ?? 0)
+    .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
+
+  const communityFee = BigNumber(farmInfo?.[0]?.[4] || 200n)
+  const totalLiquidityInFarm = BigNumber(farmInfo?.[1] ?? 1n)
+
+  const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
+
+  const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
+  const farmApr = tvl
+    ? rewardPerSecond
+        .times(farmRatio)
+        .times(86400 * 365)
+        .div(tvl)
+        .times(100)
+    : BigNumber(0)
+
+  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+  const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
+  return farmApr.plus(feeAPR)
+}
+
+const getAddress = (farmDatas, address) => {
+  const found = (farmDatas || []).find(farm => farm.pool.toLowerCase() === address)
+  if (!found) return zeroAddress
+  return found.virtualPool ?? zeroAddress
+}
+
+export const getFarmInfoList = async (poolAddressList, farmDatas) => {
+  const globalStates = await batchCallMulti(
+    poolAddressList.map(address => ({
+      functionName: 'globalState',
+      address,
+      abi: newPoolAbi,
+    })),
+  )
+
+  const currentLiquidities = await batchCallMulti(
+    poolAddressList.map(address => ({
+      functionName: 'currentLiquidity',
+      address: getAddress(farmDatas, address),
+      abi: eternalVirtualPoolAbi,
+    })),
+  )
+
+  const result = (globalStates || []).map((states, index) => {
+    const communityFee = BigNumber(states?.[4] || 200n)
+    const totalLiquidityInFarm = BigNumber(currentLiquidities?.[index] ?? 1n)
+    const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
+    return { totalLiquidityInFarm, earnPercent }
+  })
+
+  return result
 }

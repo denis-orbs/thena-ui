@@ -8,7 +8,7 @@ import { useGammaClaim } from './fusion/useGamma'
 import { useIchiClaim } from './fusion/useIchi'
 import { useGaugeHarvest } from './useGauge'
 import { useClaimFees } from './useV1Liquidity'
-import { useClaimWeightedPoolFees } from './weightedPool/useWeigtedPool'
+import { useClaimWeightedPoolFees, useGaugeHarvestWeighted } from './weightedPool/useWeigtedPool'
 
 export const useRewardPosition = () => {
   // for farming and manual
@@ -16,6 +16,7 @@ export const useRewardPosition = () => {
 
   // for weighted
   const { onClaimFees: onClaimFeesWeighted } = useClaimWeightedPoolFees()
+  const { onGaugeHarvest: onGaugeHarvestWeighted } = useGaugeHarvestWeighted()
 
   // for other staked
   const { onGammaClaim } = useGammaClaim()
@@ -25,48 +26,46 @@ export const useRewardPosition = () => {
   const { onClaimFees } = useClaimFees()
 
   const onClaimAllRewardPosition = useCallback(
-    positions => {
-      const manualPostions = positions.filter(pos => pos.position.type === 'Manual')
-      const weightedPositions = positions.filter(pos => pos.position.tokens && Array.isArray(pos.position.tokens))
-      const otherPositions = positions.filter(
-        pos => pos.position.type !== 'Manual' && !Array.isArray(pos.position.tokens),
-      )
-      if (manualPostions && manualPostions.length > 0) {
-        manualPostions.forEach(pos => {
-          onAlgebraClaim({
-            tokenId: pos.position.tokenId,
+    async positions => {
+      console.log({ positions })
+      for (let i = 0; i < positions.length; i++) {
+        const pos = positions[i]
+        if (pos.type === 'Manual') {
+          await onAlgebraClaim({
+            tokenId: pos.tokenId,
             feeValue0: pos.rewards[0].amount,
             feeValue1: pos.rewards[1].amount,
             isFarming: pos.deployer === zeroAddress,
-            poolkey: pos.position.key,
+            poolkey: pos.key,
           })
-        })
-      }
-
-      if (weightedPositions && weightedPositions.length > 0) {
-        console.log('check1')
-        weightedPositions.forEach(pos => {
-          onClaimFeesWeighted(pos.position)
-        })
-      }
-
-      if (otherPositions && otherPositions.length > 0) {
-        otherPositions.forEach(pos => {
-          if (pos.position.isStaked) {
-            if (GAMMA_TYPES.includes(pos.position.title)) {
-              onGammaClaim(pos.position)
-            } else if (ICHI_TYPES.includes(pos.position.title)) {
-              onIchiClaim(pos.position)
-            } else {
-              onGaugeHarvest(pos.position)
-            }
+        } else if (pos.tokens && Array.isArray(pos.tokens) && pos.type !== 'Manual') {
+          if (pos.staked) {
+            await onGaugeHarvestWeighted(pos)
           } else {
-            onClaimFees(pos.position)
+            await onClaimFeesWeighted(pos)
           }
-        })
+        } else if (pos.staked && pos.type !== 'Manual' && !pos.tokens && !Array.isArray(pos.tokens)) {
+          if (GAMMA_TYPES.includes(pos.title)) {
+            await onGammaClaim(pos)
+          } else if (ICHI_TYPES.includes(pos.title)) {
+            await onIchiClaim(pos)
+          } else {
+            await onGaugeHarvest(pos)
+          }
+        } else {
+          await onClaimFees(pos)
+        }
       }
     },
-    [onAlgebraClaim, onClaimFees, onClaimFeesWeighted, onGammaClaim, onGaugeHarvest, onIchiClaim],
+    [
+      onAlgebraClaim,
+      onClaimFees,
+      onClaimFeesWeighted,
+      onGammaClaim,
+      onGaugeHarvest,
+      onGaugeHarvestWeighted,
+      onIchiClaim,
+    ],
   )
 
   return { onClaimAllRewardPosition }

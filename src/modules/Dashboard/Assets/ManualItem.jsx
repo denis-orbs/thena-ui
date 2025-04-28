@@ -4,23 +4,18 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
-import { CurrencyAmount } from 'thena-sdk-core'
-import { maxUint128, zeroAddress } from 'viem'
+import { maxUint128 } from 'viem'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
-import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
+import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
-import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
-import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
-import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
@@ -56,31 +51,27 @@ function ManualItem({ position }) {
   const dispatch = useDispatch()
   const { push } = useRouter()
   const { mutateManual } = useContext(ManualsContext)
-  const { account, chainId } = useWallet()
   const pools = usePools()
-  const { asset0 = {}, asset1 = {}, liquidity, tickLower, tickUpper, tokenId, version } = position
+  const {
+    asset0,
+    asset1,
+    liquidity,
+    tickLower,
+    tickUpper,
+    tokenId,
+    version,
+    fees,
+    feesInUsd,
+    rewards,
+    fusionState,
+    fusion,
+    poolAddress,
+  } = position
+
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const reversePrice = false
-
-  // MARK: fetch data from ABI and CONTRACT
-  const { data: fees, mutate } = useSWR(
-    account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
-    () => fetchManualInfo(account, tokenId, chainId, version),
-    {
-      refreshInterval: 60000,
-    },
-  )
   const { pending, onAlgebraBurn } = useAlgebraBurn(position?.version ?? 3)
-
-  const currency0 = useCurrency(asset0?.address)
-  const currency1 = useCurrency(asset1?.address)
-  const [fusionState, fusion, poolAddress] = useFusionState({
-    currencyA: currency0,
-    currencyB: currency1,
-    isFarmingPool: position?.deployer === zeroAddress,
-    version,
-  })
 
   const tickAtLimit = useMemo(
     () => ({
@@ -112,13 +103,8 @@ function ManualItem({ position }) {
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
-  const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
-  const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
-  const amount0InUsd = useMemo(() => BigNumber(amount0).times(asset0?.price).toNumber(), [amount0, asset0])
-  const amount1InUsd = useMemo(() => BigNumber(amount1).times(asset1?.price).toNumber(), [amount1, asset1])
-
-  const token0 = useToken(asset0?.address)
-  const token1 = useToken(asset1?.address)
+  const token0 = useToken(asset0.address)
+  const token1 = useToken(asset1.address)
 
   const poolInfo = useMemo(
     () =>
@@ -126,45 +112,7 @@ function ManualItem({ position }) {
     [poolAddress, pools],
   )
 
-  const apr = useCalculateAPR({
-    position,
-    poolAddress,
-    totalLiquidity: _fusion?.liquidity,
-    tvl: amount0InUsd + amount1InUsd,
-  })
-
-  const { reward0, reward1 } = useMemo(
-    () => ({
-      reward0: token0
-        ? {
-            token: token0,
-            amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
-          }
-        : { token: null, amount: null },
-      reward1: token1
-        ? {
-            token: token1,
-            amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
-          }
-        : { token: null, amount: null },
-    }),
-    [token0, token1, fees],
-  )
-
-  const feesInUsd = useMemo(
-    () =>
-      fromWei(fees ? fees[0] : 0, asset0.decimals)
-        .times(asset0?.price ?? 0)
-        .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1?.price ?? 0)),
-    [fees, asset0, asset1],
-  )
-
-  const fiatValueOfLiquidity = useMemo(() => amount0InUsd + amount1InUsd, [amount0InUsd, amount1InUsd])
-
-  // const firstPercent = useMemo(
-  //   () => ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2),
-  //   [amount0InUsd, amount1InUsd],
-  // )
+  const [reward0, reward1] = rewards
 
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
@@ -217,9 +165,9 @@ function ManualItem({ position }) {
           tokens={[token0, token1]}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
-          <TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
-          </TextHeading>
+          </NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
@@ -250,26 +198,28 @@ function ManualItem({ position }) {
       </div>
       <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
-          <TextHeading>{formatAmount(apr.toNumber())}%</TextHeading>
+          <TextHeading>{formatAmount(position.apr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
         <div className='flex w-1/3 flex-col'>
-          <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
+          <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
           <TextSubHeading className=''>{t('Value')}</TextSubHeading>
         </div>
         <div className='flex w-1/3 flex-col'>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
-            <CustomTooltip id={`net-${tokenId}`}>
-              {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>}
-              {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>}
-            </CustomTooltip>
+            {fees && (
+              <CustomTooltip id={`net-${tokenId}`}>
+                <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>
+                <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>
+              </CustomTooltip>
+            )}
           </div>
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
+      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='flex-1' onClick={() => setRemovePopup(true)}>
             {t('Remove')}
@@ -285,13 +235,13 @@ function ManualItem({ position }) {
         )}
 
         {version === 3 && (
-          <TextButton
+          <PrimaryButton
             className={cn('flex-1', { hidden: feesInUsd.isZero() })}
             disabled={feesInUsd.isZero()}
             onClick={() => setClaimPopup(true)}
           >
             {t('Claim')}
-          </TextButton>
+          </PrimaryButton>
         )}
 
         {version === 3 && (
@@ -313,7 +263,7 @@ function ManualItem({ position }) {
         pool={position}
         reward0={reward0}
         reward1={reward1}
-        mutate={mutate}
+        mutate={() => {}}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />

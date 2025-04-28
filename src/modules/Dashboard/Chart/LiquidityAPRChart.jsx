@@ -1,6 +1,7 @@
 'use client'
 
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
+import { useMemo } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
 import { cn, formatAmount } from '@/lib/utils'
@@ -12,15 +13,18 @@ const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 const OTHER_COLOR = '#F8CCF6'
 
 function LiquidityAPRChart({ data = [], className }) {
-  const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
-  const avgApr = totalAprWeighted ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
+  const avgApr = useMemo(() => {
+    const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
+    const avg = totalAprWeighted ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
+    return avg
+  }, [data])
 
   const formatData = key => {
     const items = data.map(d => {
-      const value = key === 'depositLiquidity' ? d.depositLiquidity : Number(d.apr) || 0
+      const value = key === 'depositLiquidity' ? d.fiatValueOfLiquidity : Number(d.apr) || 0
 
       return {
-        label: d.position.symbol,
+        label: d.symbol,
         value,
       }
     })
