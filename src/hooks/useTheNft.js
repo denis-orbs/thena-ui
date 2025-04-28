@@ -18,7 +18,7 @@ import usePrices from './usePrices'
 const getFloorPrice = async () => {
   try {
     const apiKey = process.env.NEXT_PUBLIC_NFT_MARKET_API_KEY
-    const response = await fetch('https://api.element.market/openapi/v1/collection/stats?collection_slug=thenian', {
+    const response = await fetch('/element-market/openapi/v1/collection/stats?collection_slug=thenian', {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
@@ -34,15 +34,17 @@ const getFloorPrice = async () => {
 }
 
 const fetchTotalInfo = async (url, theNftContract, nftStakingContract) => {
-  const [res0, res1, res2] = await Promise.all([
+  const [res0, res1, res2, res3] = await Promise.all([
     readCall(theNftContract, 'balanceOf', [Contracts.nftStaking[ChainId.BSC]]),
     readCall(nftStakingContract, 'rewardPerSecond'),
+    readCall(theNftContract, 'totalSupply'),
     getFloorPrice(),
   ])
   return {
     totalStaked: Number(res0),
     rewardPerSecond: fromWei(res1),
-    floorPrice: res2?.usdFloorPrice ?? 5800,
+    totalSupply: Number(res2),
+    floorPrice: res3?.usdFloorPrice ?? 5800,
   }
 }
 
@@ -70,6 +72,7 @@ export const useTheNftInfo = () => {
     return {
       apr,
       lastEarnings,
+      floorPrice,
     }
   }, [data, prices])
 
@@ -77,6 +80,8 @@ export const useTheNftInfo = () => {
     totalStaked: data?.totalStaked ?? 0,
     apr: totalInfo?.apr ?? 0,
     lastEarnings: totalInfo?.lastEarnings ?? 0,
+    floorPrice: totalInfo?.floorPrice ?? 0,
+    totalSupply: data?.totalSupply ?? 0,
     isLoading,
   }
 }

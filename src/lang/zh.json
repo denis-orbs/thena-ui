@@ -365,7 +365,7 @@
   "Start Passive Income": "通过持有并质押 theNFT 开始获得被动收入。",
   "Royalties": "版税",
   "Claim theNFT minter royalties": "领取 theNFT 铸造者的版税",
-  "Original minters": "1734 个 theNFT 的原始铸造者从 theNFT 的二级销售中获得 2% 的版税，这些收益将每周定期注入该资金池中。",
+  "Original minters [totalSupply]": "{totalSupply} 个 theNFT 的原始铸造者从 theNFT 的二级销售中获得 2% 的版税，这些收益将每周定期注入该资金池中。",
   "How to Stake": "如何质押？",
   "Connect your wallet": "连接您的钱包",
   "Connect Description": "使用BNB Chain，链接您的DeFi兼容钱包。",
@@ -1526,5 +1526,9 @@
   "Open": "Open",
   "Epoch End in [seconds]": "Epoch End in {seconds} Seconds",
   "Approve For Farming": "Approve For Farming",
-  "You own [number]": "You own {number}"
+  "You own [number]": "You own {number}",
+  "Claim Royalties": "Claim Royalties",
+  "Claim TheNFT Rewards": "Claim TheNFT Rewards",
+  "Buy one": "Buy one",
+  "Floor Price": "Floor Price"
 }
