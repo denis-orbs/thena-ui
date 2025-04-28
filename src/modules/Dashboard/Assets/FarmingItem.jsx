@@ -9,7 +9,7 @@ import { zeroAddress } from 'viem'
 import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
@@ -160,16 +160,16 @@ function FarmingItem({ position }) {
           tokens={[asset0, asset1]}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
-          <TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
-          </TextHeading>
+          </NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
       <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
-        {position.type === 'Manual' ? (
+        {position.type === 'Manual' && (
           <Range
             position={position}
             currentPrice={parseFloat(
@@ -187,8 +187,6 @@ function FarmingItem({ position }) {
             )}
             liquidity={liquidity}
           />
-        ) : (
-          <></>
         )}
       </div>
       <div className='flex w-full gap-4 lg:w-[39%]'>
@@ -213,7 +211,7 @@ function FarmingItem({ position }) {
               </p>
             </CustomTooltip>
           </div>
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+          <TextSubHeading>{t('Reward')}</TextSubHeading>
         </div>
       </div>
       <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>

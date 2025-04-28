@@ -9,7 +9,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
@@ -173,7 +173,7 @@ function StakedItem({ position }) {
           tokens={[position.token0, position.token1]}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
-          <TextHeading>{position.symbol}</TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-md:font-semibold lg:text-xs'>
             {getDisplayedStrategy(position.title)}
           </Paragraph>
@@ -264,13 +264,13 @@ function StakedItem({ position }) {
               </TextButton>
             )}
 
-            <OutlinedButton
+            <PrimaryButton
               className={cn('w-full flex-1', isSwapFee && 'hidden')}
               onClick={handleHavest}
               disabled={claimPending || position.account.earnedUsd.isZero()}
             >
               {t('Harvest')}
-            </OutlinedButton>
+            </PrimaryButton>
 
             <EmphasisButton className={cn('w-full flex-1')} onClick={handleAdd}>
               {t('Add')}

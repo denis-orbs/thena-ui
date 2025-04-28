@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
@@ -14,26 +13,28 @@ const getFeesOfPools = async (pools, chainId) => {
   for (let i = 0; i < pools.length; i++) {
     const pool = pools[i]
     const isV1Pool = [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title)
+    const poolFees = {
+      feesInUsd: ZERO_VALUE,
+      reward0: ZERO_VALUE,
+      reward1: ZERO_VALUE,
+    }
+
     try {
       const fees = await simulateCall({ abi: pairAbi, address: pool.address }, 'claimFees', [], chainId)
+
       const _reward0 = isV1Pool ? fromWei(fees?.result?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
       const _reward1 = isV1Pool ? fromWei(fees?.result?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
-
       const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
       const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
-      feesOfPools.push({
-        feesInUsd: fees0.plus(fees1),
-        reward0: _reward0,
-        reward1: _reward1,
-      })
+
+      fees.feesInUsd = fees0.plus(fees1)
+      fees.reward0 = _reward0
+      fees.reward1 = _reward1
     } catch (error) {
       console.error(`Simulate failed for weighted position ${pool.address}:`, error)
-      feesOfPools.push({
-        feesInUsd: BigNumber(0),
-        reward0: 0n,
-        reward1: 0n,
-      })
     }
+
+    feesOfPools.push(poolFees)
   }
   return feesOfPools
 }

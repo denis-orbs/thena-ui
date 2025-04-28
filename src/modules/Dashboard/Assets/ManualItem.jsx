@@ -7,10 +7,10 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { maxUint128 } from 'viem'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
@@ -165,9 +165,9 @@ function ManualItem({ position }) {
           tokens={[token0, token1]}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
-          <TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
-          </TextHeading>
+          </NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
@@ -235,13 +235,13 @@ function ManualItem({ position }) {
         )}
 
         {version === 3 && (
-          <TextButton
+          <PrimaryButton
             className={cn('flex-1', { hidden: feesInUsd.isZero() })}
             disabled={feesInUsd.isZero()}
             onClick={() => setClaimPopup(true)}
           >
             {t('Claim')}
-          </TextButton>
+          </PrimaryButton>
         )}
 
         {version === 3 && (

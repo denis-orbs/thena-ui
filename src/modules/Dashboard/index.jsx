@@ -1,9 +1,7 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo } from 'react'
 
-import { NewTextSubHeading } from '@/components/typography'
 import { rewardsContext } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import usePrices from '@/hooks/usePrices'
@@ -17,8 +15,6 @@ import SpecialDivider from './SpecialDivider'
 import TheNFT from './theNFT'
 
 function Dashboard() {
-  const t = useTranslations()
-
   const prices = usePrices()
   const { veTHEs } = useVeTHEsContext()
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
@@ -36,7 +32,7 @@ function Dashboard() {
     <div className='flex flex-col gap-4'>
       <HeaderRewards totalUsd={totalUsd} />
       <div className='mt-[136px] flex flex-col rounded-xl max-md:bg-neutral-900 max-md:px-4 md:mt-[278px] md:gap-2'>
-        <NewTextSubHeading className='max-md:hidden'>{t('My Assets')}</NewTextSubHeading>
+        {/* <NewTextSubHeading className='max-md:hidden'>{t('My Assets')}</NewTextSubHeading> */}
         <UserAssets />
       </div>
       <SpecialDivider />

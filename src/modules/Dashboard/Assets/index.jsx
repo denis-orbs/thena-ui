@@ -46,44 +46,42 @@ const updateWalletBalance = positions => {
 }
 
 function UserAssets() {
+  const t = useTranslations()
+  const windowSize = useWindowSize()
   const pools = usePools()
   const vaults = useVaults()
   const userManuals = useManuals()
+
+  const [showTable, setShowTable] = useState(false)
+
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
 
-  const positions = useMemo(
-    () => [...userPools, ...userManuals],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [userManuals, userManuals.length, userPools, userPools.length],
-  )
+  const positions = useMemo(() => {
+    const pos = [...userPools, ...userManuals]
+    return updateWalletBalance(pos)
+  }, [userManuals, userPools])
 
-  const t = useTranslations()
-
-  const filteredPositions = useMemo(() => updateWalletBalance(positions), [positions])
   const manualPositions = useManualPositions(
-    filteredPositions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
+    positions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
   )
   const farmingPositions = useFarmPositions(
-    filteredPositions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
+    positions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
   )
 
   const weightedPositionList = useWeightedPositionList()
   const weightedPositions = useWeightedPositions(weightedPositionList)
+
   const stakedPosition = useStakedPosition(
-    filteredPositions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.gaugeBalance.gt(0)),
+    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.gaugeBalance.gt(0)),
   )
   const notStakedPosition = useNotStakedPositions(
-    filteredPositions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.walletBalance.gt(0)),
+    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.walletBalance.gt(0)),
   )
 
-  const allPosition = useMemo(
+  const allPositions = useMemo(
     () => [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions],
     [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
   )
-
-  const windowSize = useWindowSize()
-
-  const [showTable, setShowTable] = useState(false)
 
   useEffect(() => {
     if (windowSize.width >= 834) {
@@ -93,24 +91,23 @@ function UserAssets() {
 
   return (
     <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
-      <AssetsOverview positions={allPosition} />
-      <div className='flex justify-between lg:hidden'>
+      <AssetsOverview positions={allPositions} />
+
+      <div className='flex items-center justify-between lg:hidden'>
         <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
-        <div
-          className='flex cursor-pointer gap-2 rounded-md p-1 hover:bg-neutral-700'
-          onClick={() => setShowTable(prev => !prev)}
-        >
-          <Paragraph className='text-base font-medium'>{t(showTable ? 'Close' : 'Open')}</Paragraph>
+        <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
+          <Paragraph className='text-base font-medium text-neutral-500'>{t(showTable ? 'Close' : 'Open')}</Paragraph>
           <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
         </div>
       </div>
+
       <motion.div
         initial={{ opacity: 0, y: -10, height: 0 }}
         animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <AssetsTable positions={allPosition} />
+        <AssetsTable positions={allPositions} />
       </motion.div>
     </Box>
   )

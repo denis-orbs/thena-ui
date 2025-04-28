@@ -7,7 +7,7 @@ import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import {
   useClaimWeightedPoolFees,
   useGaugeBalance,
@@ -75,7 +75,7 @@ function WeightedItem({ position, isStake }) {
           tokens={position.tokens}
         />
         <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
-          <TextHeading>{position.symbol}</TextHeading>
+          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>Weighted</Paragraph>
         </div>
       </div>
