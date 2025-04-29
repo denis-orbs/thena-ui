@@ -15,6 +15,7 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer } from '@/hooks/useGeneral'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { formatAmount } from '@/lib/utils'
@@ -32,6 +33,7 @@ function Voting() {
   const { account, chainId } = useWallet()
   const v3PoolsWithGauge = useV3PoolsWithGauge()
   const { veTHEs } = useVeTHEsContext()
+  const windowSize = useWindowSize()
 
   const debouncedId = useDebounce(approvedId)
   const { data: isApproved } = useSWR(
@@ -115,21 +117,21 @@ function Voting() {
           {t('Voting for [value]', { value: formatAmount(totalRewards) })}
         </TextHeading>
         <VeTheDropdown
-          className='z-40 w-[145px] px-1.5 py-1'
+          className='z-40 w-[145px] px-1.5 py-1.5'
           data={veTHEs
             .filter(ve => ve.voting_amount.gt(0))
             .map(item => ({
               ...item,
               label: `veTHE #${item.id}`,
             }))}
-          selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+          selected={veTHE ? (windowSize.width < 768 ? `#${veTHE.id}` : `veTHE #${veTHE.id}`) : ''}
           setSelected={ele => setVeTHEId(ele.id)}
           placeHolder={t('Select veTHE')}
           isLocale={false}
           isApproved={isApproved}
           approvedId={approvedId}
           setApprovedId={setApprovedId}
-          classNames={{ trailingIcon: 'right-0 z-40' }}
+          classNames={{ trailingIcon: 'right-0.5 z-40', dropdown: 'pr-2 py-1.5 pl-1.5' }}
         />
       </div>
 
@@ -152,10 +154,10 @@ function Voting() {
         </TextSubHeading>
       )}
       <div className='flex gap-3'>
-        <EmphasisButton className='w-1/2' onClick={() => push('/dashboard/rewards')}>
+        <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
           {t('Rewards')}
         </EmphasisButton>
-        <EmphasisButton className='w-1/2' onClick={() => push('/dashboard/vote')}>
+        <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
           {t('Vote')}
         </EmphasisButton>
       </div>

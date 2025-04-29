@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
-import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
@@ -90,10 +89,9 @@ function UserAssets() {
   }, [windowSize.width])
 
   return (
-    <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
+    <div className=' space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent md:px-9 md:pb-11'>
       <AssetsOverview positions={allPositions} />
-
-      <div className='flex items-center justify-between lg:hidden'>
+      <div className='flex justify-between lg:hidden'>
         <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
         <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
           <Paragraph className='text-base font-medium text-neutral-500'>{t(showTable ? 'Close' : 'Open')}</Paragraph>
@@ -109,7 +107,7 @@ function UserAssets() {
       >
         <AssetsTable positions={allPositions} />
       </motion.div>
-    </Box>
+    </div>
   )
 }
 

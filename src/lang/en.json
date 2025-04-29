@@ -366,7 +366,7 @@
   "Start Passive Income": "Start earning passive income by owning & staking a theNFT.",
   "Royalties": "Royalties",
   "Claim theNFT minter royalties": "Claim theNFT minter royalties",
-  "Original minters": "The original minters of the 1734 theNFTs earn 2% from the secondary sales of theNFTs, seeded to this pool weekly.",
+  "Original minters [totalSupply]": "The original minters of the {totalSupply} theNFTs earn 2% from the secondary sales of theNFTs, seeded to this pool weekly.",
   "How to Stake": "How to Stake?",
   "Connect your wallet": "Connect your wallet",
   "Connect Description": "Connect your compatible DeFi wallet using BNB Chain.",
@@ -1526,5 +1526,9 @@
   "Open": "Open",
   "Epoch End in [seconds]": "Epoch End in {seconds} Seconds",
   "Approve For Farming": "Approve For Farming",
-  "You own [number]": "You own {number}"
+  "You own [number]": "You own {number}",
+  "Claim Royalties": "Claim Royalties",
+  "Claim TheNFT Rewards": "Claim TheNFT Rewards",
+  "Buy one": "Buy one",
+  "Floor Price": "Floor Price"
 }

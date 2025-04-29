@@ -59,7 +59,7 @@ function Lock() {
             <TextSubHeading className='text-sm'>{`${t('Max Lock Power')} ${formatAmount(totalLock)}`}</TextSubHeading>
           </div>
         </div>
-        <EmphasisButton className='w-full' onClick={() => push('/dashboard/lock')}>
+        <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
           {t('Manage')}
         </EmphasisButton>
       </div>

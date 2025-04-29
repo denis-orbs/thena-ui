@@ -79,7 +79,7 @@ function WeightedItem({ position, isStake }) {
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>Weighted</Paragraph>
         </div>
       </div>
-      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>{isStake ? 'Stake' : 'UnStake'}</div>
+      <div className='w-full min-w-[146px] text-center lg:w-[17%]'>{isStake ? 'Stake' : 'UnStake'}</div>
       <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{position.apr}</TextHeading>
@@ -124,6 +124,7 @@ function WeightedItem({ position, isStake }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
+
       {isStake ? (
         <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
           <TextButton disabled={unstakePending} className='w-full' onClick={() => setPopupStake(true)}>

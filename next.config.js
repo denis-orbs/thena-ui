@@ -111,6 +111,10 @@ const nextConfig = {
         source: '/logo-token/:path*',
         destination: 'https://cdn.thena.fi/:path*',
       },
+      {
+        source: '/element-market/:path*',
+        destination: 'https://api.element.market/:path*',
+      },
     ]
   },
 }

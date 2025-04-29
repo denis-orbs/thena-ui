@@ -174,7 +174,7 @@ function DashboardProfile() {
               width={124}
               height={124}
             />
-            <EmphasisButton className='w-full' onClick={() => push('/arena/profile')}>
+            <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/arena/profile')}>
               {t('View')}
             </EmphasisButton>
           </div>

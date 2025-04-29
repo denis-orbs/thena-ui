@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
@@ -193,24 +193,26 @@ function StakedItem({ position }) {
           <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        <div className='flex w-1/3 items-center max-lg:justify-center'>
+          <div className='flex flex-col'>
+            <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
+            <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+          </div>
         </div>
-        <div className='flex w-1/3 flex-col'>
+        <div className='flex w-1/3 flex-col max-lg:justify-end'>
           {isSwapFee ? (
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1 max-lg:justify-end'>
               <TextHeading>Auto Compound</TextHeading>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='AUTO_COMPOUND' />
+              <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id='AUTO_COMPOUND' />
               <CustomTooltip className='max-w-[320px]' id='AUTO_COMPOUND'>
                 {t('Auto Compound tooltip')}
               </CustomTooltip>
             </div>
           ) : (
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1 max-lg:justify-end'>
               <TextHeading>${formatAmount(position.account.earnedUsd)}</TextHeading>
               <InfoIcon
-                className='h-4 w-4 stroke-neutral-400'
+                className='h-4 w-4 stroke-neutral-400 max-lg:hidden'
                 data-tooltip-id={`stake-${position.address}-${position.account.earnedUsd}`}
               />
 
@@ -230,23 +232,26 @@ function StakedItem({ position }) {
               </CustomTooltip>
             </div>
           )}
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
         </div>
       </div>
       <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {version === 2 ? (
           // Version 2 actions
           <>
-            <TextButton className='w-full flex-1' onClick={() => setPopup(true)}>
+            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
               {t('Unstake')}
-            </TextButton>
+            </EmphasisButton>
 
             {migrationOptions && migrationOptions.length > 0 ? (
-              <Link href={migrationLink} className='w-full flex-1'>
-                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              <Link href={migrationLink} className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>
+                <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
-              <PrimaryButton className='w-full flex-1' onClick={() => setMigrateWarningPopup(true)}>
+              <PrimaryButton
+                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+                onClick={() => setMigrateWarningPopup(true)}
+              >
                 {t('Migrate')}
               </PrimaryButton>
             )}
@@ -255,24 +260,27 @@ function StakedItem({ position }) {
           // Version 3 actions
           <>
             {position.type === PAIR_TYPES.LSD ? (
-              <OutlinedButton className='w-full flex-1' onClick={() => setRemovePopup(true)}>
+              <OutlinedButton
+                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+                onClick={() => setRemovePopup(true)}
+              >
                 {t('Remove')}
               </OutlinedButton>
             ) : (
-              <TextButton className='w-full flex-1' onClick={() => setPopup(true)}>
+              <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
                 {t('Unstake')}
-              </TextButton>
+              </EmphasisButton>
             )}
 
             <PrimaryButton
-              className={cn('w-full flex-1', isSwapFee && 'hidden')}
+              className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
               onClick={handleHavest}
               disabled={claimPending || position.account.earnedUsd.isZero()}
             >
               {t('Harvest')}
             </PrimaryButton>
 
-            <EmphasisButton className={cn('w-full flex-1')} onClick={handleAdd}>
+            <EmphasisButton className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
               {t('Add')}
             </EmphasisButton>
           </>
