@@ -12,15 +12,6 @@ import { InfoIcon } from '@/svgs'
 
 function WeightedItem({ position, isStake }) {
   const t = useTranslations()
-  // const [isOpenRemove, setIsOpenRemove] = useState(false)
-  // const [managePopup, setManagePopup] = useState(false)
-  // const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
-  // const { gaugeBalance } = useGaugeBalance(position.gauge.address)
-  // const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
-  // const [popupStake, setPopupStake] = useState(false)
-
-  // const { push } = useRouter()
-
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
   const { claimableFee, depositValue, mutatePosition } = usePositionData(position, isStake)
@@ -34,24 +25,6 @@ function WeightedItem({ position, isStake }) {
       }),
     [onClaimFees, position, mutatePosition],
   )
-
-  // const weightsPrice = useMemo(() => {
-  //   let totalWeight = 0
-
-  //   const totalUsd = (depositValue?.tokens || []).reduce((sum, token) => sum + token.price * token.amount, 0)
-
-  //   const weights = (depositValue?.tokens || []).map((token, index) => {
-  //     const tokenUsd = token.price * token.amount
-  //     if (index === depositValue.tokens.length - 1) return 100 - totalWeight
-  //     const weight = (tokenUsd / totalUsd) * 100
-  //     if (index < depositValue.tokens.length - 1) {
-  //       totalWeight += weight
-  //     }
-  //     return weight
-  //   })
-
-  //   return weights
-  // }, [depositValue.tokens])
 
   const { addReward } = useFarmRewards()
   useEffect(() => {
@@ -86,7 +59,7 @@ function WeightedItem({ position, isStake }) {
           <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>Weighted</Paragraph>
         </div>
       </div>
-      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>{isStake ? 'Stake' : 'UnStake'}</div>
+      <div className='w-full min-w-[146px] text-center lg:w-[17%]'>{isStake ? 'Stake' : 'UnStake'}</div>
       <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{position.apr}</TextHeading>
@@ -131,15 +104,15 @@ function WeightedItem({ position, isStake }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         <EmphasisButton
-          className='w-1/2'
+          className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
           disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
           onClick={onClaim}
         >
           {t('Claim')}
         </EmphasisButton>
-        <EmphasisButton className='w-1/2'>{t('Manage')}</EmphasisButton>
+        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>{t('Manage')}</EmphasisButton>
       </div>
     </div>
   )

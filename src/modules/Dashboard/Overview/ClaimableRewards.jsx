@@ -120,7 +120,7 @@ function ClaimableRewards() {
   ])
 
   return (
-    <Box className='flex h-full flex-col justify-between gap-4 !p-4'>
+    <Box className='flex h-full flex-col justify-between gap-4 bg-cover bg-no-repeat !p-4 max-lg:bg-[url("/images/claim-reward-mobile-bg.png")]'>
       <NewTextHeading className='text-xl md:text-xl'>{t('Claimable Rewards')}</NewTextHeading>
       <div className='space-y-2'>
         <div className='flex items-center gap-2'>
@@ -176,8 +176,12 @@ function ClaimableRewards() {
       </NewTextHeading>
 
       <div className='flex gap-2 [&>button]:flex-1'>
-        <EmphasisButton onClick={() => router.push('/dashboard/rewards')}>{t('Details')}</EmphasisButton>
-        <EmphasisButton onClick={onClaimAllRewards}>{t('Claim')}</EmphasisButton>
+        <EmphasisButton className='h-8 text-xs md:h-11 md:text-base' onClick={() => router.push('/dashboard/rewards')}>
+          {t('Details')}
+        </EmphasisButton>
+        <EmphasisButton className='h-8 text-xs md:h-11 md:text-base' onClick={onClaimAllRewards}>
+          {t('Claim')}
+        </EmphasisButton>
       </div>
     </Box>
   )

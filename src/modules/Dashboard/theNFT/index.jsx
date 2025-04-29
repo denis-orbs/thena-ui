@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -25,7 +25,7 @@ const fetchNftInfo = async (url, nftIds) => {
 
 function InfoBlock({ title, value, isLoading }) {
   return (
-    <div className='flex flex-col gap-2 text-center'>
+    <div className='flex flex-col text-center'>
       <TextSubHeading className='text-sm font-normal'>{title}</TextSubHeading>
       {isLoading ? (
         <Skeleton className='h-9 w-[100px]' />
@@ -37,12 +37,10 @@ function InfoBlock({ title, value, isLoading }) {
 }
 
 function TheNFT() {
+  const t = useTranslations()
   const { push } = useRouter()
-  // const [isManageOpen, setIsManageOpen] = useState(false)
   const { apr, lastEarnings, floorPrice, totalSupply } = useTheNftInfo()
-
   const { onClaim, pending: pendingClaim } = useClaimTheNFT()
-
   const {
     stakedIds,
     walletIds,
@@ -54,21 +52,35 @@ function TheNFT() {
     userLoading,
     mutate,
   } = useTheNftAccountInfo()
+
   const { data: yourNfts, isLoading } = useSWR(['thenft image info', [...walletIds, ...stakedIds].length], url =>
     fetchNftInfo(url, [...walletIds, ...stakedIds]),
   )
 
-  const t = useTranslations()
+  const hasNfts = useMemo(() => yourNfts?.length > 0, [yourNfts])
+
+  const handleClaim = useCallback(
+    (original, feesClaimAble) => {
+      onClaim(
+        {
+          isOriginal: original,
+          royaltyClaimable: !claimable.isZero(),
+          feesClaimAble,
+        },
+        mutate,
+      )
+    },
+    [onClaim, mutate, claimable],
+  )
+
   return (
-    <div className='flex h-full flex-col gap-2 rounded-xl bg-neutral-900 py-4'>
+    <div className='flex h-full flex-col gap-4 rounded-xl bg-neutral-900 py-4'>
       <div className='flex items-center justify-between'>
         <div className='flex flex-col px-4'>
           <TextHeading className='font-archia text-xl font-semibold'>theNFT</TextHeading>
-          {(yourNfts || (yourNfts || []).length > 0) && (
-            <TextSubHeading className='text-sm'>{`${t('Last Epoch Earnings')}`}</TextSubHeading>
-          )}
+          {hasNfts && <TextSubHeading className='text-sm'>{`${t('Last Epoch Earnings')}`}</TextSubHeading>}
         </div>
-        {(yourNfts || (yourNfts || []).length > 0) && (
+        {hasNfts && (
           <TextSubHeading className='pr-4 font-archia text-4xl font-semibold text-neutral-500'>
             ${formatAmount(lastEarnings)}
           </TextSubHeading>
@@ -77,7 +89,7 @@ function TheNFT() {
       <div className='flex h-full flex-col justify-between gap-2'>
         {isLoading ? (
           <Skeleton className='h-[140px] w-full md:h-[180px]' />
-        ) : yourNfts?.length > 0 ? (
+        ) : hasNfts ? (
           <div className='relative flex h-[140px] w-full justify-center overflow-hidden bg-neutral-800 md:h-[180px]'>
             <div
               className={cn(
@@ -125,14 +137,8 @@ function TheNFT() {
         {/* Middle Info Section */}
         <div className='grid grid-cols-2 px-4'>
           <InfoBlock
-            title={yourNfts?.length > 0 ? t('Claimable Fees') : t('Floor Price')}
-            value={
-              userLoading
-                ? null
-                : yourNfts?.length > 0
-                  ? `$${formatAmount(pendingReward)}`
-                  : `$${formatAmount(floorPrice)}`
-            }
+            title={hasNfts ? t('Claimable Fees') : t('Floor Price')}
+            value={userLoading ? null : hasNfts ? `$${formatAmount(pendingReward)}` : `$${formatAmount(floorPrice)}`}
             isLoading={userLoading}
           />
           {isOriginal && !claimable.isZero() ? (
@@ -152,24 +158,16 @@ function TheNFT() {
 
         {/* Action Buttons Section */}
         <div className='grid grid-cols-2 gap-2 px-4'>
-          {yourNfts?.length > 0 ? (
+          {hasNfts ? (
             <>
-              <EmphasisButton onClick={() => push('/dashboard/thenft')}>{t('View')}</EmphasisButton>
+              <EmphasisButton className='text-sm max-md:h-8' onClick={() => push('/dashboard/thenft')}>
+                {t('View')}
+              </EmphasisButton>
               {(!isInvalidAmount(pendingAmount) || !claimable.isZero()) && (
                 <EmphasisButton
+                  className='text-sm max-md:h-8'
                   disabled={pendingClaim}
-                  onClick={
-                    () =>
-                      onClaim(
-                        {
-                          isOriginal,
-                          royaltyClaimable: !claimable.isZero(),
-                          feesClaimAble: !isInvalidAmount(pendingAmount),
-                        },
-                        mutate,
-                      )
-                    // eslint-disable-next-line react/jsx-curly-newline
-                  }
+                  onClick={() => handleClaim(isOriginal, !isInvalidAmount(pendingAmount))}
                 >
                   {t('Claim')}
                 </EmphasisButton>
@@ -178,37 +176,25 @@ function TheNFT() {
           ) : (
             <>
               <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
-                <EmphasisButton className='w-full'>
+                <EmphasisButton className='w-full text-sm max-md:h-8'>
                   {t('Learn more')}
-                  <ExternalIcon className='size-5 stroke-neutral-100' />
+                  <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                 </EmphasisButton>
               </Link>
 
-              {isOriginal ? (
-                !isInvalidAmount(claimable) && (
-                  <EmphasisButton
-                    disabled={pendingClaim}
-                    onClick={
-                      () =>
-                        onClaim(
-                          {
-                            isOriginal: true,
-                            royaltyClaimable: !claimable.isZero(),
-                            feesClaimAble: false,
-                          },
-                          mutate,
-                        )
-                      // eslint-disable-next-line react/jsx-curly-newline
-                    }
-                  >
-                    {t('Claim')}
-                  </EmphasisButton>
-                )
+              {isOriginal && !isInvalidAmount(claimable) ? (
+                <EmphasisButton
+                  disabled={pendingClaim}
+                  className='text-sm max-md:h-8'
+                  onClick={() => handleClaim(true, false)}
+                >
+                  {t('Claim')}
+                </EmphasisButton>
               ) : (
                 <Link className='w-full' href='https://element.market/collections/thenian' target='_blank'>
-                  <EmphasisButton className='w-full'>
+                  <EmphasisButton className='w-full text-sm max-md:h-8'>
                     {t('Buy one')}
-                    <ExternalIcon className='size-5 stroke-neutral-100' />
+                    <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                   </EmphasisButton>
                 </Link>
               )}

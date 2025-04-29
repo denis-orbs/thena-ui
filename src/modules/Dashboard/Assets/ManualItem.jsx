@@ -253,30 +253,37 @@ function ManualItem({ position }) {
           <TextHeading>{formatAmount(apr.toNumber())}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        <div className='flex w-1/3 items-center justify-center'>
+          <div className='flex flex-col'>
+            <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
+            <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+          </div>
         </div>
         <div className='flex w-1/3 flex-col'>
-          <div className='flex items-center gap-1'>
+          <div className='flex items-center gap-1 max-lg:justify-end'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
+            {feesInUsd.gt(0) && (
+              <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
+            )}
             <CustomTooltip id={`net-${tokenId}`}>
               {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>}
               {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>}
             </CustomTooltip>
           </div>
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
+      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {Number(liquidity) > 0 ? (
-          <OutlinedButton className='flex-1' onClick={() => setRemovePopup(true)}>
+          <OutlinedButton
+            className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+            onClick={() => setRemovePopup(true)}
+          >
             {t('Remove')}
           </OutlinedButton>
         ) : (
           <OutlinedButton
-            className='flex-1'
+            className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
             onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
             disabled={pending}
           >
@@ -286,7 +293,7 @@ function ManualItem({ position }) {
 
         {version === 3 && (
           <TextButton
-            className={cn('flex-1', { hidden: feesInUsd.isZero() })}
+            className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
             disabled={feesInUsd.isZero()}
             onClick={() => setClaimPopup(true)}
           >
@@ -295,14 +302,14 @@ function ManualItem({ position }) {
         )}
 
         {version === 3 && (
-          <EmphasisButton className='flex-1' onClick={handleAdd}>
+          <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
             {t('Add')}
           </EmphasisButton>
         )}
 
         {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${tokenId}`} className='flex-1'>
-            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+          <Link href={`/pools/migration?tokenId=${tokenId}`} className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>
+            <PrimaryButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
           </Link>
         )}
       </div>

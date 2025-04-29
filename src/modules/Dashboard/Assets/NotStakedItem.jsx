@@ -206,27 +206,32 @@ function NotStakedItem({ position }) {
           <TextHeading>{formatAmount(position.feeApr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        <div className='flex w-1/3 items-center justify-center'>
+          <div className='flex flex-col'>
+            <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
+            <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+          </div>
         </div>
         <div className='flex w-1/3 flex-col'>
           {isV1Pool && (
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1 max-lg:justify-end max-lg:text-end'>
               <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`not-stake-${position.address}`} />
+              <InfoIcon
+                className='h-4 w-4 stroke-neutral-400 max-lg:hidden'
+                data-tooltip-id={`not-stake-${position.address}`}
+              />
               <CustomTooltip id={`not-stake-${position.address}`}>
                 {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
                 {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}
               </CustomTooltip>
             </div>
           )}
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
+      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
         {!migrationOptions && (
-          <PrimaryButton className='w-full flex-1' onClick={() => setPopup(true)}>
+          <PrimaryButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
             {t('Stake')}
           </PrimaryButton>
         )}
@@ -234,34 +239,46 @@ function NotStakedItem({ position }) {
         {isV1Pool ? (
           <>
             <OutlinedButton
-              className='w-full flex-1'
+              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
               onClick={() => onClaimFees(position)}
               disabled={feesInUsd.isZero() || feesPending}
             >
               {t('Claim')}
             </OutlinedButton>
-            <EmphasisButton className='w-full flex-1' onClick={() => setManagePopup(true)}>
+            <EmphasisButton
+              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              onClick={() => setManagePopup(true)}
+            >
               {t('Manage')}
             </EmphasisButton>
           </>
         ) : (
           <>
-            <OutlinedButton className='w-full flex-1' onClick={() => setRemovePopup(true)}>
+            <OutlinedButton
+              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              onClick={() => setRemovePopup(true)}
+            >
               {t('Remove')}
             </OutlinedButton>
             {version === 3 ? (
               <EmphasisButton
-                className='w-full flex-1'
+                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
                 onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.address}&back=1`)}
               >
                 {t('Add')}
               </EmphasisButton>
             ) : migrationOptions && migrationOptions.length > 0 ? (
-              <Link href={`/pools/migration?address=${position.address}`} className='w-full flex-1'>
-                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              <Link
+                href={`/pools/migration?address=${position.address}`}
+                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              >
+                <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
-              <PrimaryButton className='w-full flex-1' onClick={() => setMigrateWarningPopup(true)}>
+              <PrimaryButton
+                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+                onClick={() => setMigrateWarningPopup(true)}
+              >
                 {t('Migrate')}
               </PrimaryButton>
             )}

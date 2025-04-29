@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
@@ -80,7 +79,7 @@ function UserAssets() {
   }, [windowSize.width])
 
   return (
-    <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
+    <div className=' space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent md:px-9 md:pb-11'>
       <AssetsOverview positionsValue={positionsValue} />
       <div className='flex justify-between lg:hidden'>
         <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
@@ -102,7 +101,7 @@ function UserAssets() {
       </motion.div>
       {/* <AssetsTable positions={filteredPositions} /> */}
       <CalculatorData positions={filteredPositions} onData={collectData} />
-    </Box>
+    </div>
   )
 }
 

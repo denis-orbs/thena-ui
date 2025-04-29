@@ -266,14 +266,16 @@ function FarmingItem({ position }) {
           <TextHeading>{formatAmount(apr.toNumber())}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        <div className='flex w-1/3 items-center justify-center'>
+          <div className='flex flex-col'>
+            <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
+            <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+          </div>
         </div>
         <div className='flex w-1/3 flex-col'>
-          <div className='flex items-center gap-1'>
+          <div className='flex items-center gap-1 max-lg:justify-end'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
+            <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
               <p className={cn(farmRewardData && farmRewardData[0] === 0n && 'hidden')}>
                 {`${formatAmount(fromWei(farmRewardData?.[0] ?? 0n, 18))} THE`}
@@ -283,12 +285,12 @@ function FarmingItem({ position }) {
               </p>
             </CustomTooltip>
           </div>
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
+      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
         <OutlinedButton
-          className={cn('block w-full flex-1', {
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
             hidden: Number(liquidity) <= 0,
           })}
           onClick={() => setRemovePopup(true)}
@@ -296,12 +298,15 @@ function FarmingItem({ position }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <TextButton className={cn('w-full flex-1', feesInUsd.isZero() && 'hidden')} onClick={() => setClaimPopup(true)}>
+        <TextButton
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', feesInUsd.isZero() && 'hidden')}
+          onClick={() => setClaimPopup(true)}
+        >
           {t('Claim')}
         </TextButton>
 
         <PrimaryButton
-          className={cn('w-full flex-1 text-nowrap', {
+          className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
             hidden:
               position?.isFarming ||
               !incentiveAddress ||
@@ -316,7 +321,7 @@ function FarmingItem({ position }) {
         </PrimaryButton>
 
         <OutlinedButton
-          className={cn('block w-full flex-1', {
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
             hidden: position?.isFarming || Number(liquidity) > 0,
           })}
           onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
@@ -325,7 +330,7 @@ function FarmingItem({ position }) {
           {t('Burn')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full flex-1' onClick={handleAdd}>
+        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
           {t('Add')}
         </EmphasisButton>
       </div>

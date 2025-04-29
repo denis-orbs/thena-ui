@@ -41,7 +41,7 @@ function VeTheDropdown({
     <div className={cn('relative', className)} ref={wrapperRef}>
       <Input
         classNames={{
-          input: cn('cursor-pointer caret-transparent', className),
+          input: cn('cursor-pointer caret-transparent', classNames?.dropdown),
           ...classNames,
         }}
         type='text'
