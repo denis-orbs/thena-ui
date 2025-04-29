@@ -39,7 +39,7 @@ function InfoBlock({ title, value, isLoading }) {
 function TheNFT() {
   const t = useTranslations()
   const { push } = useRouter()
-  const { apr, lastEarnings, floorPrice, totalSupply } = useTheNftInfo()
+  const { apr, lastEarnings, floorPrice } = useTheNftInfo()
   const { onClaim, pending: pendingClaim } = useClaimTheNFT()
   const {
     stakedIds,
@@ -120,7 +120,7 @@ function TheNFT() {
               </div>
             </div>
             <Paragraph className='mt-2 block text-sm font-normal text-neutral-500'>
-              {t('Original minters [totalSupply]', { totalSupply: formatAmount(totalSupply) })}
+              {t('TheNFT benefits earn')}
             </Paragraph>
           </div>
         )}
@@ -176,7 +176,7 @@ function TheNFT() {
           ) : (
             <>
               <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
-                <EmphasisButton className='w-full text-sm max-md:h-8'>
+                <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
                   {t('Learn more')}
                   <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                 </EmphasisButton>
@@ -185,7 +185,7 @@ function TheNFT() {
               {isOriginal && !isInvalidAmount(claimable) ? (
                 <EmphasisButton
                   disabled={pendingClaim}
-                  className='text-sm max-md:h-8'
+                  className='text-nowrap text-sm max-md:h-8'
                   onClick={() => handleClaim(true, false)}
                 >
                   {t('Claim')}

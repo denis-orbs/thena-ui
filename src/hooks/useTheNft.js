@@ -34,17 +34,15 @@ const getFloorPrice = async () => {
 }
 
 const fetchTotalInfo = async (url, theNftContract, nftStakingContract) => {
-  const [res0, res1, res2, res3] = await Promise.all([
+  const [res0, res1, res2] = await Promise.all([
     readCall(theNftContract, 'balanceOf', [Contracts.nftStaking[ChainId.BSC]]),
     readCall(nftStakingContract, 'rewardPerSecond'),
-    readCall(theNftContract, 'totalSupply'),
     getFloorPrice(),
   ])
   return {
     totalStaked: Number(res0),
     rewardPerSecond: fromWei(res1),
-    totalSupply: Number(res2),
-    floorPrice: res3?.usdFloorPrice ?? 5800,
+    floorPrice: res2?.usdFloorPrice ?? 5800,
   }
 }
 
@@ -81,7 +79,6 @@ export const useTheNftInfo = () => {
     apr: totalInfo?.apr ?? 0,
     lastEarnings: totalInfo?.lastEarnings ?? 0,
     floorPrice: totalInfo?.floorPrice ?? 0,
-    totalSupply: data?.totalSupply ?? 0,
     isLoading,
   }
 }
