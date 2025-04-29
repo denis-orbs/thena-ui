@@ -13,7 +13,7 @@ import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/com
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
-import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
+import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
@@ -32,7 +32,7 @@ function StakedItem({ position }) {
   const [popup, setPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
-  const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
+  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()

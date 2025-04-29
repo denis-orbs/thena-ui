@@ -19,7 +19,7 @@ import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useGuageStake = () => {
+export const useGaugeStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -82,7 +82,7 @@ export const useGuageStake = () => {
   return { onGaugeStake, pending }
 }
 
-export const useGuageUnstake = () => {
+export const useGaugeUnstake = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -170,7 +170,7 @@ export const useGaugeHarvest = () => {
   return { onGaugeHarvest, pending }
 }
 
-export const useGuageAllHarvset = () => {
+export const useGaugeAllHarvest = () => {
   const t = useTranslations()
   const { rewards } = useFarmRewards()
 

@@ -15,7 +15,7 @@ import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/co
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
-import { useGuageStake } from '@/hooks/useGauge'
+import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
@@ -33,7 +33,7 @@ export default function NotStaked({ pool }) {
   const [popup, setPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
-  const { onGaugeStake, pending: stakePending } = useGuageStake()
+  const { onGaugeStake, pending: stakePending } = useGaugeStake()
   const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
   const { stakeGamma, pending: stakeGammaPending } = useStakeGamma()
   const { onV1Stake, pending: stakeV1Pending } = useV1Stake()

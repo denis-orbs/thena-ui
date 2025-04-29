@@ -7,7 +7,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading, Paragraph } from '@/components/typography'
 import { rewardsContext, useGetVeRewardV2 } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
-import { useGuageAllHarvset } from '@/hooks/useGauge'
+import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import usePrices from '@/hooks/usePrices'
 import { useNftClaimAllReward, useTheNftAccountInfo } from '@/hooks/useTheNft'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
@@ -27,7 +27,7 @@ function ClaimableRewards() {
   const { claimableUSD, pendingReward: royaltyRewards } = useTheNftAccountInfo()
   const { rewards } = useFarmRewards()
 
-  const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
+  const { onGaugeAllHarvest, pending } = useGaugeAllHarvest()
   const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
   const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
   const { onTheNftClaim, pending: theNftPending } = useNftClaimAllReward()

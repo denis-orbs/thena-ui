@@ -24,7 +24,7 @@ import { useManuals } from '@/context/manualsContext'
 import { rewardsContext } from '@/context/rewardsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
-import { useGuageAllHarvset } from '@/hooks/useGauge'
+import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import useWallet from '@/hooks/useWallet'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
@@ -89,7 +89,7 @@ export default function HoldingsPage() {
   const { networkId } = useChainSettings()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))
-  const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
+  const { onGaugeAllHarvest, pending } = useGaugeAllHarvest()
   const t = useTranslations()
   const weightedPositionList = useWeightedPositionList()
 
