@@ -28,9 +28,9 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
 function Paginates({ currentPage, setCurrentPage, totalPages, itemPerPage, setItemPerPage }) {
   const t = useTranslations()
   return (
-    <div className='flex flex-row items-center justify-between'>
+    <div className='mt-4 flex flex-row items-center justify-between'>
       <Dropdown
-        className='w-full max-w-[200px]'
+        className='h-8 w-full max-w-[200px] text-sm'
         listClassNames='z-40'
         data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
         selected={itemPerPage}
@@ -40,7 +40,7 @@ function Paginates({ currentPage, setCurrentPage, totalPages, itemPerPage, setIt
         isLocale={false}
       />
       {totalPages > 1 && (
-        <div className='flex items-center justify-center gap-2 md:mb-1 md:mt-6 md:justify-end'>
+        <div className='flex items-center justify-center gap-2 md:justify-end'>
           <PaginateButton
             onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
             disabled={currentPage === 1}

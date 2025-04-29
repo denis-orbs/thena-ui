@@ -117,7 +117,7 @@ function Voting() {
           {t('Voting for [value]', { value: formatAmount(totalRewards) })}
         </TextHeading>
         <VeTheDropdown
-          className='z-40 w-[145px] px-1.5 py-1.5'
+          className='z-40 w-[155px] px-1.5 py-1.5'
           data={veTHEs
             .filter(ve => ve.voting_amount.gt(0))
             .map(item => ({
@@ -131,7 +131,7 @@ function Voting() {
           isApproved={isApproved}
           approvedId={approvedId}
           setApprovedId={setApprovedId}
-          classNames={{ trailingIcon: 'right-0.5 z-40', dropdown: 'pr-2 py-1.5 pl-1.5' }}
+          classNames={{ trailingIcon: 'right-0.5 z-40', dropdown: 'py-1.5' }}
         />
       </div>
 
