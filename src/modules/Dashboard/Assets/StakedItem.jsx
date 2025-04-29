@@ -211,25 +211,28 @@ function StakedItem({ position }) {
           ) : (
             <div className='flex items-center gap-1 max-lg:justify-end'>
               <TextHeading>${formatAmount(position.account.earnedUsd)}</TextHeading>
-              <InfoIcon
-                className='h-4 w-4 stroke-neutral-400 max-lg:hidden'
-                data-tooltip-id={`stake-${position.address}-${position.account.earnedUsd}`}
-              />
-
-              <CustomTooltip id={`stake-${position.address}-${position.account.earnedUsd}`}>
-                <div>
-                  {position.account.gaugeEarned && <p>{`${formatAmount(position.account.gaugeEarned)} THE`}</p>}
-                  {position.account.earned0 && (
-                    <p>{`${formatAmount(position.account.earned0)} ${position.token0.symbol}`}</p>
-                  )}
-                  {position.account.earned1 && (
-                    <p>{`${formatAmount(position.account.earned1)} ${position.token1.symbol}`}</p>
-                  )}
-                  {position.account.earned2 && (
-                    <p>{`${formatAmount(position.account.earned2)} ${position.reward.symbol}`}</p>
-                  )}
-                </div>
-              </CustomTooltip>
+              {position.account.earnedUsd.gt(0) && (
+                <>
+                  <InfoIcon
+                    className='h-4 w-4 stroke-neutral-400 max-lg:hidden'
+                    data-tooltip-id={`stake-${position.address}-${position.account.earnedUsd}`}
+                  />
+                  <CustomTooltip id={`stake-${position.address}-${position.account.earnedUsd}`}>
+                    <div>
+                      {position.account.gaugeEarned && <p>{`${formatAmount(position.account.gaugeEarned)} THE`}</p>}
+                      {position.account.earned0 && (
+                        <p>{`${formatAmount(position.account.earned0)} ${position.token0.symbol}`}</p>
+                      )}
+                      {position.account.earned1 && (
+                        <p>{`${formatAmount(position.account.earned1)} ${position.token1.symbol}`}</p>
+                      )}
+                      {position.account.earned2 && (
+                        <p>{`${formatAmount(position.account.earned2)} ${position.reward.symbol}`}</p>
+                      )}
+                    </div>
+                  </CustomTooltip>
+                </>
+              )}
             </div>
           )}
           <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>

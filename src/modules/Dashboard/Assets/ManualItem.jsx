@@ -201,7 +201,7 @@ function ManualItem({ position }) {
           <TextHeading>{formatAmount(position.apr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col items-center justify-center'>
+        <div className='flex w-1/3 flex-col max-lg:items-center max-lg:justify-center'>
           <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
           <TextSubHeading className=''>{t('Value')}</TextSubHeading>
         </div>

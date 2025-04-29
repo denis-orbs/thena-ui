@@ -29,7 +29,7 @@ function AssetsOverview({ positions }) {
 
   return (
     <div className='space-y-4'>
-      <NewTextHeading className='text-xl md:text-[40px]'>{t('Total Value Provided')}</NewTextHeading>
+      <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>{t('Total Value Provided')}</NewTextHeading>
       <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
         <div className='flex flex-col gap-8 max-md:text-center'>
           <NewParagraph className='space-x-4 text-3xl max-md:text-primary-300 md:text-xl'>

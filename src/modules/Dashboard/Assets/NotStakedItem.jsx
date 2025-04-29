@@ -206,7 +206,7 @@ function NotStakedItem({ position }) {
           <TextHeading>{formatAmount(position.feeApr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 items-center justify-center'>
+        <div className='flex w-1/3 items-center max-lg:justify-center'>
           <div className='flex flex-col'>
             <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
             <TextSubHeading className=''>{t('Value')}</TextSubHeading>

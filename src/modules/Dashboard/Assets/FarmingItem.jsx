@@ -194,22 +194,26 @@ function FarmingItem({ position }) {
           <TextHeading>{formatAmount(position.apr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
         </div>
-        <div className='flex w-1/3 flex-col items-center justify-center'>
+        <div className='flex w-1/3 flex-col max-lg:items-center max-lg:justify-center'>
           <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
           <TextSubHeading className=''>{t('Value')}</TextSubHeading>
         </div>
         <div className='flex w-1/3 flex-col'>
           <div className='flex items-center gap-1 max-lg:justify-end'>
             <TextHeading>${formatAmount(position.rewardUsd)}</TextHeading>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
-            <CustomTooltip id={`net-${tokenId}`}>
-              <p className={cn(position.farmRewardData && position.farmRewardData[0] === 0n && 'hidden')}>
-                {`${formatAmount(fromWei(position.farmRewardData?.[0] ?? 0n, 18))} THE`}
-              </p>
-              <p className={cn(position.farmRewardData && position.farmRewardData[1] === 0n && 'hidden')}>
-                {`${formatAmount(fromWei(position.farmRewardData?.[1] ?? 0n, 18))} WBNB`}
-              </p>
-            </CustomTooltip>
+            {position.rewardUsd > 0 && (
+              <>
+                <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
+                <CustomTooltip id={`net-${tokenId}`}>
+                  <p className={cn(position.farmRewardData && position.farmRewardData[0] === 0n && 'hidden')}>
+                    {`${formatAmount(fromWei(position.farmRewardData?.[0] ?? 0n, 18))} THE`}
+                  </p>
+                  <p className={cn(position.farmRewardData && position.farmRewardData[1] === 0n && 'hidden')}>
+                    {`${formatAmount(fromWei(position.farmRewardData?.[1] ?? 0n, 18))} WBNB`}
+                  </p>
+                </CustomTooltip>
+              </>
+            )}
           </div>
           <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
         </div>
