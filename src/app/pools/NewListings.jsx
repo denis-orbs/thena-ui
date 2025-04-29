@@ -83,6 +83,12 @@ function NewListings({
         if (titleSub === 'Narrow_Farming') {
           return ['Gamma Narrow', '']
         }
+        if (titleSub === 'Wide_Farming') {
+          return ['Gamma Wide', '']
+        }
+        if (titleSub === 'Correlated_Farming') {
+          return ['Gamma Correlated', '']
+        }
         return ['Gamma Narrow', titleSub.replace('_', ' ')]
       }
 
@@ -96,6 +102,10 @@ function NewListings({
         }
 
         return ['CL: Earn Fees', '']
+      }
+
+      if (titleSub === 'CL_Stable_Farming') {
+        return ['Gamma Stable', '']
       }
     }
 

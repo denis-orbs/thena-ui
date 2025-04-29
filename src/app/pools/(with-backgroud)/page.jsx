@@ -97,11 +97,16 @@ export default function PoolsPage() {
 
   const getDisplayedTitleAndSubTitle = useCallback(sub => {
     const title = sub?.title
-
     if (title) {
       if (GAMMA_TYPES.includes(title)) {
         if (title === 'Narrow_Farming') {
           return ['Gamma Narrow', '']
+        }
+        if (title === 'Wide_Farming') {
+          return ['Gamma Wide', '']
+        }
+        if (title === 'Correlated_Farming') {
+          return ['Gamma Correlated', '']
         }
         return ['Gamma Narrow', title.replace('_', ' ')]
       }
@@ -116,6 +121,10 @@ export default function PoolsPage() {
         }
 
         return ['CL: Earn Fees', '']
+      }
+
+      if (title === 'CL_Stable_Farming') {
+        return ['Gamma Stable', '']
       }
     }
 
