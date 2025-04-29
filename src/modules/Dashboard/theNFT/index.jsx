@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React from 'react'
@@ -20,6 +21,19 @@ const fetchNftInfo = async (url, nftIds) => {
     ...ele,
     id: nftIds[idx],
   }))
+}
+
+function InfoBlock({ title, value, isLoading }) {
+  return (
+    <div className='flex flex-col gap-2 text-center'>
+      <TextSubHeading className='text-sm font-normal'>{title}</TextSubHeading>
+      {isLoading ? (
+        <Skeleton className='h-9 w-[100px]' />
+      ) : (
+        value && <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>{value}</TextHeading>
+      )}
+    </div>
+  )
 }
 
 function TheNFT() {
@@ -61,28 +75,14 @@ function TheNFT() {
         )}
       </div>
       <div className='flex h-full flex-col justify-between gap-2'>
-        {!isLoading && (!yourNfts || (yourNfts || []).length <= 0) ? (
-          <div className='space-y-2 text-center'>
-            <div className="flex h-[140px] flex-col items-center justify-center gap-2 bg-[url('/images/theNFT-default.png')] bg-cover bg-center bg-no-repeat text-center md:h-[188px]">
-              <div className='flex flex-col gap-1.5'>
-                <TextHeading className='font-archia text-5xl font-semibold text-primary-600'>
-                  ${formatAmount(lastEarnings)}
-                </TextHeading>
-                <TextSubHeading className='text-sm text-neutral-50'>{t('Last Epoch Earnings')}</TextSubHeading>
-              </div>
-            </div>
-            <Paragraph className='text-center text-sm font-normal text-neutral-500'>
-              {t('Original minters [totalSupply]', { totalSupply: formatAmount(totalSupply) })}
-            </Paragraph>
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           <Skeleton className='h-[140px] w-full md:h-[180px]' />
-        ) : (
+        ) : yourNfts?.length > 0 ? (
           <div className='relative flex h-[140px] w-full justify-center overflow-hidden bg-neutral-800 md:h-[180px]'>
             <div
               className={cn(
                 'grid gap-2',
-                yourNfts.length === 1 && 'grids-cols-1',
+                yourNfts.length === 1 && 'grid-cols-1',
                 yourNfts.length === 2 && 'grid-cols-2',
                 yourNfts.length >= 3 && 'grid-cols-3',
               )}
@@ -97,76 +97,79 @@ function TheNFT() {
               ))}
             </div>
           </div>
+        ) : (
+          <div className='text-center'>
+            <div className="flex h-[140px] flex-col items-center justify-center gap-2 bg-[url('/images/theNFT-default.png')] bg-cover bg-center bg-no-repeat md:h-[188px]">
+              <div className='flex flex-col gap-1.5'>
+                <TextHeading className='font-archia text-5xl font-semibold text-primary-600'>
+                  ${formatAmount(lastEarnings)}
+                </TextHeading>
+                <TextSubHeading className='text-sm text-neutral-50'>{t('Last Epoch Earnings')}</TextSubHeading>
+              </div>
+            </div>
+            <Paragraph className='mt-2 block text-sm font-normal text-neutral-500'>
+              {t('Original minters [totalSupply]', { totalSupply: formatAmount(totalSupply) })}
+            </Paragraph>
+          </div>
         )}
+
+        {/* Staked Section */}
         {stakedIds.length > 0 && (
-          <div className='-mt-2 text-center'>
+          <div className='text-center'>
             <TextHeading className='text-xl text-neutral-500'>
               {`${t('Staked')} ${formatAmount(stakedIds.length)}`}
             </TextHeading>
           </div>
         )}
+
+        {/* Middle Info Section */}
         <div className='grid grid-cols-2 px-4'>
-          <div className='flex flex-col gap-2 text-center'>
-            <TextSubHeading className='text-sm font-normal'>
-              {t(yourNfts && yourNfts.length > 0 ? 'Claimable Fees' : 'Floor Price')}
-            </TextSubHeading>
-            {userLoading ? (
-              <Skeleton className='h-9 w-[100px]' />
-            ) : (
-              <>
-                {yourNfts && yourNfts.length > 0 ? (
-                  <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>
-                    ${formatAmount(pendingReward)}
-                  </TextHeading>
-                ) : (
-                  <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>
-                    ${formatAmount(floorPrice)}
-                  </TextHeading>
-                )}
-              </>
-            )}
-          </div>
+          <InfoBlock
+            title={yourNfts?.length > 0 ? t('Claimable Fees') : t('Floor Price')}
+            value={
+              userLoading
+                ? null
+                : yourNfts?.length > 0
+                  ? `$${formatAmount(pendingReward)}`
+                  : `$${formatAmount(floorPrice)}`
+            }
+            isLoading={userLoading}
+          />
           {isOriginal && !claimable.isZero() ? (
-            <div className='flex flex-col gap-2 text-center'>
-              <TextSubHeading className='text-sm font-normal'>{t('Claim Royalties')}</TextSubHeading>
-              {userLoading ? (
-                <Skeleton className='h-9 w-[100px]' />
-              ) : (
-                <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>
-                  {`$${formatAmount(claimableUSD)}`}
-                </TextHeading>
-              )}
-            </div>
+            <InfoBlock
+              title={t('Claim Royalties')}
+              value={userLoading ? null : `$${formatAmount(claimableUSD)}`}
+              isLoading={userLoading}
+            />
           ) : (
-            <div className='flex flex-col gap-2 text-center'>
-              <TextSubHeading className='text-sm font-normal'>{t('Floor Price APR')}</TextSubHeading>
-              {userLoading ? (
-                <Skeleton className='h-9 w-[100px]' />
-              ) : (
-                <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>
-                  {apr ? `${formatAmount(apr)}%` : null}
-                </TextHeading>
-              )}
-            </div>
+            <InfoBlock
+              title={t('Floor Price APR')}
+              value={userLoading ? null : apr ? `${formatAmount(apr)}%` : null}
+              isLoading={userLoading}
+            />
           )}
         </div>
-        <div className={cn('grid grid-cols-2 gap-2 px-4')}>
-          {yourNfts && yourNfts.length > 0 ? (
+
+        {/* Action Buttons Section */}
+        <div className='grid grid-cols-2 gap-2 px-4'>
+          {yourNfts?.length > 0 ? (
             <>
               <EmphasisButton onClick={() => push('/dashboard/thenft')}>{t('View')}</EmphasisButton>
               {(!isInvalidAmount(pendingAmount) || !claimable.isZero()) && (
                 <EmphasisButton
                   disabled={pendingClaim}
-                  onClick={() => {
-                    onClaim(
-                      {
-                        isOriginal,
-                        royaltyClaimable: !claimable.isZero(),
-                        feesClaimAble: !isInvalidAmount(pendingAmount),
-                      },
-                      mutate(),
-                    )
-                  }}
+                  onClick={
+                    () =>
+                      onClaim(
+                        {
+                          isOriginal,
+                          royaltyClaimable: !claimable.isZero(),
+                          feesClaimAble: !isInvalidAmount(pendingAmount),
+                        },
+                        mutate,
+                      )
+                    // eslint-disable-next-line react/jsx-curly-newline
+                  }
                 >
                   {t('Claim')}
                 </EmphasisButton>
@@ -174,16 +177,19 @@ function TheNFT() {
             </>
           ) : (
             <>
-              <EmphasisButton onClick={() => window.open('https://docs.thena.fi/thena/thenft-collection', '_blank')}>
-                {t('Learn more')}
-                <ExternalIcon className='size-5 stroke-neutral-100' />
-              </EmphasisButton>
+              <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
+                <EmphasisButton className='w-full'>
+                  {t('Learn more')}
+                  <ExternalIcon className='size-5 stroke-neutral-100' />
+                </EmphasisButton>
+              </Link>
+
               {isOriginal ? (
-                <>
-                  {!isInvalidAmount(claimable) && (
-                    <EmphasisButton
-                      disabled={pendingClaim}
-                      onClick={() => {
+                !isInvalidAmount(claimable) && (
+                  <EmphasisButton
+                    disabled={pendingClaim}
+                    onClick={
+                      () =>
                         onClaim(
                           {
                             isOriginal: true,
@@ -192,20 +198,19 @@ function TheNFT() {
                           },
                           mutate,
                         )
-                      }}
-                    >
-                      {t('Claim')}
-                    </EmphasisButton>
-                  )}
-                </>
+                      // eslint-disable-next-line react/jsx-curly-newline
+                    }
+                  >
+                    {t('Claim')}
+                  </EmphasisButton>
+                )
               ) : (
-                <EmphasisButton
-                  onClick={() => {
-                    window.open('https://element.market/collections/thenian', '_blank')
-                  }}
-                >
-                  {t('Buy one')} <ExternalIcon className='size-5 stroke-neutral-100' />
-                </EmphasisButton>
+                <Link className='w-full' href='https://element.market/collections/thenian' target='_blank'>
+                  <EmphasisButton className='w-full'>
+                    {t('Buy one')}
+                    <ExternalIcon className='size-5 stroke-neutral-100' />
+                  </EmphasisButton>
+                </Link>
               )}
             </>
           )}
