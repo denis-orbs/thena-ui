@@ -77,7 +77,7 @@ const STRATEGIES = {
   All: 'All',
   ICHI: 'ICHI',
   Gamma: 'Gamma',
-  DefiEdge: 'DefiEdge',
+  // DefiEdge: 'DefiEdge',
 }
 
 export default function PoolsPage() {
@@ -146,8 +146,8 @@ export default function PoolsPage() {
             if (filter !== PAIR_TYPES.STABLE) {
               return item.type === filter
             }
-            const checkSubStatble = (item.subpools || []).some(sub => sub.title === 'CL_Stable')
-            return checkSubStatble || item.type === filter
+            const checkSubStable = (item.subpools || []).some(sub => sub.title.includes('CL_Stable'))
+            return checkSubStable || item.type === filter
           })
 
     const res =
@@ -156,7 +156,10 @@ export default function PoolsPage() {
         : final.filter(
             item =>
               !!item.subpools.find(
-                ele => ele.title === strategy || (strategy === STRATEGIES.Gamma && GAMMA_TYPES.includes(ele.title)),
+                ele =>
+                  ele.title === strategy ||
+                  (strategy === STRATEGIES.Gamma && GAMMA_TYPES.includes(ele.title)) ||
+                  (strategy === STRATEGIES.ICHI && ICHI_TYPES.includes(ele.title)),
               ),
           )
     return !searchText
