@@ -2,12 +2,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
-import useSWR from 'swr'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
-import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -15,6 +13,7 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
+import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
@@ -164,13 +163,7 @@ function NotStakedItem({ position }) {
     ],
   )
 
-  const { data: preset } = useSWR(
-    strategy.address &&
-      (GAMMA_TYPES.includes(strategy.title) || strategy.title === 'DefiEdge' || ICHI_TYPES.includes(strategy.title)) &&
-      position && ['strategy/info', strategy.address],
-    () => fetchStrategyInfo(networkId, strategy),
-    { refreshInterval: 0 },
-  )
+  const [priceLower, priceUpper, currentPrice] = useAutomaticRange(position, strategy, networkId)
 
   return (
     <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
@@ -194,7 +187,7 @@ function NotStakedItem({ position }) {
       </div>
       <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
         {position.type === PAIR_TYPES.LSD ? (
-          <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
+          <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
         ) : (
           <div className='bg-full-range relative flex h-8 items-center justify-center overflow-hidden rounded-md px-2 text-base text-neutral-300 md:h-11'>
             {t('Full Range')}

@@ -3,16 +3,15 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWR from 'swr'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
-import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
+import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
@@ -145,19 +144,13 @@ function StakedItem({ position }) {
     ],
   )
 
+  const [priceLower, priceUpper, currentPrice] = useAutomaticRange(position, strategy, networkId)
+
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
     push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=1`)
   }, [dispatch, position.basePool, position.title, push, strategy])
-
-  const { data: preset } = useSWR(
-    strategy.address &&
-      (GAMMA_TYPES.includes(strategy.title) || strategy.title === 'DefiEdge' || ICHI_TYPES.includes(strategy.title)) &&
-      position && ['strategy/info', strategy.address],
-    () => fetchStrategyInfo(networkId, strategy),
-    { refreshInterval: 0 },
-  )
 
   return (
     <div className='flex flex-col items-center justify-between gap-4  py-4 lg:flex-row lg:py-2'>
@@ -181,7 +174,7 @@ function StakedItem({ position }) {
       </div>
       <div className='w-full min-w-[146px] text-center lg:w-[17%]'>
         {position.type === PAIR_TYPES.LSD ? (
-          <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
+          <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
         ) : (
           <div className='bg-full-range relative flex h-8 items-center justify-center overflow-hidden rounded-md px-2 text-base text-neutral-300 md:h-11'>
             {t('Full Range')}
