@@ -145,6 +145,7 @@ function VotingChart({ data = [], className }) {
 
   const options = {
     cutout: '50%',
+    rotation: -90,
     plugins: {
       tooltip: {
         filter: tooltipItem => tooltipItem.datasetIndex === 1,
@@ -213,7 +214,7 @@ function VotingChart({ data = [], className }) {
         {renderCenterContent()}
       </div>
 
-      <div className='relative z-10 -rotate-90'>
+      <div className='relative z-10'>
         <Doughnut data={chartData} options={options} ref={chartRef} />
       </div>
     </div>

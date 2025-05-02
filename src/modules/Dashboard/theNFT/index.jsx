@@ -7,7 +7,7 @@ import useSWR from 'swr'
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useClaimTheNFT } from '@/hooks/useClaimTheNFT'
 import { useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
@@ -74,10 +74,10 @@ function TheNFT() {
   )
 
   return (
-    <div className='flex h-full flex-col gap-4 rounded-xl bg-neutral-900 py-4'>
+    <div className='flex h-full flex-col gap-2 rounded-xl bg-neutral-900 py-4'>
       <div className='flex items-center justify-between'>
         <div className='flex flex-col px-4'>
-          <TextHeading className='font-archia text-xl font-semibold'>theNFT</TextHeading>
+          <NewTextHeading className='text-xl md:text-xl'>theNFT</NewTextHeading>
           {hasNfts && <TextSubHeading className='text-sm'>{`${t('Last Epoch Earnings')}`}</TextSubHeading>}
         </div>
         {hasNfts && (
@@ -86,6 +86,7 @@ function TheNFT() {
           </TextSubHeading>
         )}
       </div>
+
       <div className='flex h-full flex-col justify-between gap-2'>
         {isLoading ? (
           <Skeleton className='h-[140px] w-full md:h-[180px]' />
@@ -103,7 +104,7 @@ function TheNFT() {
                 <NextImage
                   key={`thenft-${nft.id}-${idx}`}
                   className='h-full w-full object-cover'
-                  src={nft.image}
+                  src={nft.image.replace('ipfs.io', 'w3s.link')}
                   alt={nft.name}
                 />
               ))}
@@ -134,72 +135,72 @@ function TheNFT() {
           </div>
         )}
 
-        {/* Middle Info Section */}
-        <div className='grid grid-cols-2 px-4'>
-          <InfoBlock
-            title={hasNfts ? t('Claimable Fees') : t('Floor Price')}
-            value={userLoading ? null : hasNfts ? `$${formatAmount(pendingReward)}` : `$${formatAmount(floorPrice)}`}
-            isLoading={userLoading}
-          />
-          {isOriginal && !claimable.isZero() ? (
+        <div className='flex flex-col gap-4'>
+          <div className='grid grid-cols-2 px-4'>
             <InfoBlock
-              title={t('Claim Royalties')}
-              value={userLoading ? null : `$${formatAmount(claimableUSD)}`}
+              title={hasNfts ? t('Claimable Fees') : t('Floor Price')}
+              value={userLoading ? null : hasNfts ? `$${formatAmount(pendingReward)}` : `$${formatAmount(floorPrice)}`}
               isLoading={userLoading}
             />
-          ) : (
-            <InfoBlock
-              title={t('Floor Price APR')}
-              value={userLoading ? null : apr ? `${formatAmount(apr)}%` : null}
-              isLoading={userLoading}
-            />
-          )}
-        </div>
+            {isOriginal && !claimable.isZero() ? (
+              <InfoBlock
+                title={t('Claim Royalties')}
+                value={userLoading ? null : `$${formatAmount(claimableUSD)}`}
+                isLoading={userLoading}
+              />
+            ) : (
+              <InfoBlock
+                title={t('Floor Price APR')}
+                value={userLoading ? null : apr ? `${formatAmount(apr)}%` : null}
+                isLoading={userLoading}
+              />
+            )}
+          </div>
 
-        {/* Action Buttons Section */}
-        <div className='grid grid-cols-2 gap-2 px-4'>
-          {hasNfts ? (
-            <>
-              <EmphasisButton className='text-sm max-md:h-8' onClick={() => push('/dashboard/thenft')}>
-                {t('View')}
-              </EmphasisButton>
-              {(!isInvalidAmount(pendingAmount) || !claimable.isZero()) && (
-                <EmphasisButton
-                  className='text-sm max-md:h-8'
-                  disabled={pendingClaim}
-                  onClick={() => handleClaim(isOriginal, !isInvalidAmount(pendingAmount))}
-                >
-                  {t('Claim')}
+          <div className='grid grid-cols-2 gap-2 px-4'>
+            {hasNfts ? (
+              <>
+                <EmphasisButton className='text-sm max-md:h-8' onClick={() => push('/dashboard/thenft')}>
+                  {t('View')}
                 </EmphasisButton>
-              )}
-            </>
-          ) : (
-            <>
-              <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
-                <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
-                  {t('Learn more')}
-                  <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
-                </EmphasisButton>
-              </Link>
-
-              {isOriginal && !isInvalidAmount(claimable) ? (
-                <EmphasisButton
-                  disabled={pendingClaim}
-                  className='text-nowrap text-sm max-md:h-8'
-                  onClick={() => handleClaim(true, false)}
-                >
-                  {t('Claim')}
-                </EmphasisButton>
-              ) : (
-                <Link className='w-full' href='https://element.market/collections/thenian' target='_blank'>
-                  <EmphasisButton className='w-full text-sm max-md:h-8'>
-                    {t('Buy one')}
+                {(!isInvalidAmount(pendingAmount) || !claimable.isZero()) && (
+                  <EmphasisButton
+                    className='text-sm max-md:h-8'
+                    disabled={pendingClaim}
+                    onClick={() => handleClaim(isOriginal, !isInvalidAmount(pendingAmount))}
+                  >
+                    {t('Claim')}
+                  </EmphasisButton>
+                )}
+              </>
+            ) : (
+              <>
+                <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
+                  <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
+                    {t('Learn more')}
                     <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                   </EmphasisButton>
                 </Link>
-              )}
-            </>
-          )}
+
+                {isOriginal && !isInvalidAmount(claimable) ? (
+                  <EmphasisButton
+                    disabled={pendingClaim}
+                    className='text-nowrap text-sm max-md:h-8'
+                    onClick={() => handleClaim(true, false)}
+                  >
+                    {t('Claim')}
+                  </EmphasisButton>
+                ) : (
+                  <Link className='w-full' href='https://element.market/collections/thenian' target='_blank'>
+                    <EmphasisButton className='w-full text-sm max-md:h-8'>
+                      {t('Buy one')}
+                      <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
+                    </EmphasisButton>
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
