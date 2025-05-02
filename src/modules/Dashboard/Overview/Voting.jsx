@@ -9,7 +9,7 @@ import { ChainId } from 'thena-sdk-core'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -112,54 +112,61 @@ function Voting() {
 
   return (
     <Box className='flex flex-col gap-2 !pb-4 !pt-9 md:!py-3'>
-      <div className='flex items-center justify-between gap-2'>
-        <TextHeading className='font-archia text-xl font-semibold'>
-          {t('Voting for [value]', { value: formatAmount(totalRewards) })}
-        </TextHeading>
+      <div className='flex justify-between gap-2'>
+        <div className='flex flex-col'>
+          <TextHeading className='font-archia text-xl font-semibold'>
+            {t('Voting for [value]', { value: formatAmount(totalRewards) })}
+          </TextHeading>
+          <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
+        </div>
+
         <VeTheDropdown
-          className='z-40 w-[155px] px-1.5 py-1.5'
+          className='z-40 w-[120px] pl-1.5'
           data={veTHEs
             .filter(ve => ve.voting_amount.gt(0))
             .map(item => ({
               ...item,
-              label: `veTHE #${item.id}`,
+              label: `ID #${item.id}`,
             }))}
-          selected={veTHE ? (windowSize.width < 768 ? `#${veTHE.id}` : `veTHE #${veTHE.id}`) : ''}
+          selected={veTHE ? (windowSize.width < 768 ? `#${veTHE.id}` : `ID #${veTHE.id}`) : ''}
           setSelected={ele => setVeTHEId(ele.id)}
           placeHolder={t('Select veTHE')}
           isLocale={false}
           isApproved={isApproved}
           approvedId={approvedId}
           setApprovedId={setApprovedId}
-          classNames={{ trailingIcon: 'right-0.5 z-40', dropdown: 'py-1.5' }}
+          classNames={{ trailingIcon: 'right-0.5 z-40', input: 'py-0 pl-1 text-neutral-400' }}
         />
       </div>
 
       <div className='fex flex-col gap-4'>
-        <Paragraph>{`${t('Epoch')} ${epoch} ${epochStart}-${epochEnd}`}</Paragraph>
         <div className='flex items-center justify-center'>
           <VotingChart className='h-[260px] w-[260px]' data={userPools} />
         </div>
       </div>
-      {seconds <= 120 ? (
-        <TextHeading className='font-archia text-xl font-semibold text-error-600'>
-          {t('Epoch End in [seconds]', { seconds })}
-        </TextHeading>
-      ) : (
-        <TextSubHeading className='font-archia text-xl font-semibold'>
-          {t('Epoch End in')}{' '}
-          <span className='text-primary-700'>
-            {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
-          </span>
-        </TextSubHeading>
-      )}
-      <div className='flex gap-3'>
-        <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
-          {t('Rewards')}
-        </EmphasisButton>
-        <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
-          {t('Vote')}
-        </EmphasisButton>
+
+      <div className='flex flex-col gap-4'>
+        {seconds <= 120 ? (
+          <NewTextHeading className='text-center text-xl text-error-600 md:text-xl'>
+            {t('Epoch [epoch] End in [seconds]', { epoch, seconds })}
+          </NewTextHeading>
+        ) : (
+          <NewTextHeading className='text-center text-xl text-neutral-500 md:text-xl'>
+            {t('Epoch [epoch] End in', { epoch })}{' '}
+            <span className='text-primary-700'>
+              {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
+            </span>
+          </NewTextHeading>
+        )}
+
+        <div className='flex gap-3'>
+          <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
+            {t('Rewards')}
+          </EmphasisButton>
+          <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
+            {t('Vote')}
+          </EmphasisButton>
+        </div>
       </div>
     </Box>
   )

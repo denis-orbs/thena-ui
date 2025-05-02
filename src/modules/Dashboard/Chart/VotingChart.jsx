@@ -213,7 +213,7 @@ function VotingChart({ data = [], className }) {
         {renderCenterContent()}
       </div>
 
-      <div className='relative z-10'>
+      <div className='relative z-10 -rotate-90'>
         <Doughnut data={chartData} options={options} ref={chartRef} />
       </div>
     </div>
