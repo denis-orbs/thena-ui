@@ -1,15 +1,21 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewParagraph, NewTextHeading } from '@/components/typography'
+import { ZERO_ADDRESS } from '@/constant'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import useWallet from '@/hooks/useWallet'
+import { formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
+import { getStrategy } from '@/state/pools/hooks'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
 function AssetsOverview({ positions }) {
   const t = useTranslations()
+  const { account } = useWallet()
+  const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
   const filterVersion = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
@@ -26,6 +32,79 @@ function AssetsOverview({ positions }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filterVersion, totalRewards],
   )
+
+  useEffect(() => {
+    positions.forEach(pos => {
+      if (pos.type === 'Manual') {
+        const isFarming = pos?.deployer !== ZERO_ADDRESS
+        if (isFarming) {
+          const amount = fromWei(pos.farmRewardData?.[0] ?? 0n)
+          if (amount.gt(0)) {
+            addReward({
+              amount,
+              type: 'manual',
+              args: [account, pos.key, pos.tokenId],
+              key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
+            })
+          }
+        } else {
+          addFees({
+            amount: pos.rewards,
+            type: 'manual',
+            args: [account, pos.key, pos.tokenId],
+            key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
+          })
+        }
+      } else if (pos.type === 'Weighted') {
+        const amount = pos.claimableFee?.total ?? ZERO_VALUE
+        if (pos.staked && amount.gt(0)) {
+          addReward({
+            amount,
+            type: 'weighted',
+            args: pos.gauge.address,
+            key: getKeyFromTokenAddress(
+              'weight',
+              pos.tokens.map(tk => tk.address),
+            ),
+          })
+        }
+      } else if (pos && pos.version === 3) {
+        const type = getStrategy(pos.title)
+        let args = null
+        let amount = ZERO_VALUE
+        let feeAmounts = [ZERO_VALUE, ZERO_VALUE]
+
+        if (type === 'classic' || type === 'stable') {
+          args = pos.gauge.address
+          amount = pos.account.gaugeEarned
+          feeAmounts = [pos.account.token0Claimable, pos.account.token1Claimable]
+        } else if (type === 'gamma' || type === 'ichi') {
+          args = pos.address
+          amount = pos.account.gaugeEarned
+        }
+
+        if (amount.gt(0)) {
+          addReward({
+            type,
+            args,
+            amount,
+            version: pos.version,
+            key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+          })
+        }
+
+        if (feeAmounts[0]?.gt(0) || feeAmounts[1]?.gt(0)) {
+          addFees({
+            type,
+            args,
+            amount: feeAmounts,
+            version: pos.version,
+            key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+          })
+        }
+      }
+    })
+  }, [account, addReward, addFees, positions])
 
   return (
     <div className='space-y-4'>

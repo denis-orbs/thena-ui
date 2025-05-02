@@ -13,13 +13,11 @@ import { useNftClaimAllReward, useTheNftAccountInfo } from '@/hooks/useTheNft'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
-import { usePools } from '@/state/pools/hooks'
 
 function ClaimableRewards() {
   const router = useRouter()
   const t = useTranslations()
   const prices = usePrices()
-  const pools = usePools()
   const { current: currentRewardsV3 } = useContext(rewardsContext)
   const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = currentRewardsV3
   const { veTHEs } = useVeTHEsContext()
@@ -32,7 +30,6 @@ function ClaimableRewards() {
   const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
   const { onTheNftClaim, pending: theNftPending } = useNftClaimAllReward()
 
-  const farmedPools = useMemo(() => pools.filter(item => item.account.gaugeEarned.gt(0)), [pools])
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
   const farmedRewards = useMemo(() => {
@@ -83,7 +80,7 @@ function ClaimableRewards() {
   const onClaimAllRewards = useCallback(async () => {
     // Harvest pool rewards
     if (!pending && farmedRewards > 0) {
-      await onGaugeAllHarvest(farmedPools)
+      await onGaugeAllHarvest()
     }
 
     // Harvest voting V2 rewards
@@ -109,7 +106,6 @@ function ClaimableRewards() {
     theNftRewards,
     onTheNftClaim,
     onGaugeAllHarvest,
-    farmedPools,
     handleClaimAllV2,
     currentRewardsV2,
     refetchVetheRewardV2,

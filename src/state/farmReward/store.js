@@ -8,6 +8,13 @@ export const useFarmRewards = create()(set => ({
     oldGauge: new Map(),
     newGauge: new Map(),
   },
+  fees: {
+    ichi: new Map(),
+    gamma: new Map(),
+    manual: new Map(),
+    oldGauge: new Map(),
+    newGauge: new Map(),
+  },
 
   /**
    * Add a reward to the farm rewards
@@ -29,6 +36,22 @@ export const useFarmRewards = create()(set => ({
         rewards: {
           ...state.rewards,
           [type]: state.rewards[type].set(key, position),
+        },
+      }
+    }),
+
+  addFees: position =>
+    set(state => {
+      let { type } = position
+      const { key } = position
+      if (type === 'classic' || type === 'stable' || type === 'weighted') type = 'newGauge'
+
+      delete position.type
+      delete position.key
+      return {
+        fees: {
+          ...state.fees,
+          [type]: state.fees[type].set(key, position),
         },
       }
     }),

@@ -7,7 +7,7 @@ import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
 const baseRadius = 60
 const baseStrokeWidth = 6
-const spacing = 4
+const spacing = 2
 
 function VotingPowerChart({ data }) {
   const [selectedVethe, setSelectedVethe] = useState(null)

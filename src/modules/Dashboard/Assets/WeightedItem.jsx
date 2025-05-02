@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
@@ -8,6 +8,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import usePrices from '@/hooks/usePrices'
 import {
   useClaimWeightedPoolFees,
   useGaugeBalance,
@@ -18,25 +19,29 @@ import {
 import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
 import ManageWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
-import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { InfoIcon } from '@/svgs'
 
 function WeightedItem({ position, isStake }) {
   const t = useTranslations()
-  const [isOpenRemove, setIsOpenRemove] = useState(false)
-  const [managePopup, setManagePopup] = useState(false)
-  const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
-  const { gaugeBalance } = useGaugeBalance(position.gauge.address)
-  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
-  const [popupStake, setPopupStake] = useState(false)
-
   const { push } = useRouter()
 
+  const [isOpenRemove, setIsOpenRemove] = useState(false)
+  const [managePopup, setManagePopup] = useState(false)
+  const [popupStake, setPopupStake] = useState(false)
+
+  const prices = usePrices()
+  const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
+  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
+  const { gaugeBalance } = useGaugeBalance(position.gauge.address)
+  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
 
   const { claimableFee, depositValue } = position
 
-  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
+  const claimableFeeUSD = useMemo(() => {
+    const amount = claimableFee?.total ?? ZERO_VALUE
+    return amount.times(prices.THE).toNumber()
+  }, [claimableFee, prices.THE])
 
   const onClaim = useCallback(
     async () =>
@@ -46,21 +51,6 @@ function WeightedItem({ position, isStake }) {
     [onClaimFees, position],
   )
 
-  const { addReward } = useFarmRewards()
-  useEffect(() => {
-    const amount = claimableFee?.total ?? ZERO_VALUE
-    if (!isStake || amount.eq(0)) return
-
-    addReward({
-      amount,
-      type: 'weighted',
-      args: position.gauge.address,
-      key: getKeyFromTokenAddress(
-        'weight',
-        position.tokens.map(tk => tk.address),
-      ),
-    })
-  }, [addReward, claimableFee?.total, isStake, position])
   return (
     <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
       <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
@@ -91,7 +81,7 @@ function WeightedItem({ position, isStake }) {
         </div>
         <div className='flex w-1/3 flex-col'>
           <div className='flex items-center gap-2'>
-            <span>${formatAmount(claimableFee?.total)}</span>
+            <span>${formatAmount(claimableFeeUSD)}</span>
             <InfoIcon
               className='h-4 w-4 stroke-neutral-400'
               data-tooltip-id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`}

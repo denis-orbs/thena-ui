@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
@@ -13,13 +13,12 @@ import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
-import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
-import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
@@ -35,32 +34,7 @@ function StakedItem({ position }) {
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
-  const { addReward } = useFarmRewards()
   const { push } = useRouter()
-
-  useEffect(() => {
-    if (!position || position.version === 2) return
-
-    const type = getStrategy(position.title)
-    let args = null
-    let amount = ZERO_VALUE
-    if (type === 'classic' || type === 'stable') {
-      args = position.gauge.address
-      amount = position.account.gaugeEarned
-    } else if (type === 'gamma' || type === 'ichi') {
-      args = position.address
-      amount = position.account.gaugeEarned
-    }
-
-    if (amount.isZero()) return
-    addReward({
-      type,
-      args,
-      amount,
-      version: position.version,
-      key: getKeyFromTokenAddress(type, [position.token0.address, position.token1.address]),
-    })
-  }, [addReward, position])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: position.token0.address,

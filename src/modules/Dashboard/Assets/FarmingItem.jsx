@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
@@ -15,13 +15,10 @@ import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
-import useWallet from '@/hooks/useWallet'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
-import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
-// import { useFarmRewards } from '@/state/farmReward/store'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
@@ -32,10 +29,8 @@ function FarmingItem({ position }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const { account } = useWallet()
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
-  const { addReward } = useFarmRewards()
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
@@ -52,7 +47,6 @@ function FarmingItem({ position }) {
     fusionState,
     fusion,
     poolAddress,
-    farmRewardData,
   } = position
 
   // CALL APIs & SMART CONTRACTS
@@ -95,17 +89,6 @@ function FarmingItem({ position }) {
       pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
     [poolAddress, pools],
   )
-  useEffect(() => {
-    const amount = fromWei(farmRewardData?.[0] ?? 0n)
-    if (amount.isZero()) return
-
-    addReward({
-      type: 'manual',
-      args: [account, poolKey, tokenId],
-      amount,
-      key: getKeyFromTokenAddress('manual', [asset0.address, asset1.address]),
-    })
-  }, [account, addReward, asset0.address, asset1.address, farmRewardData, poolKey, tokenId])
 
   const reversePrice = false
 
