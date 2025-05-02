@@ -1,67 +1,62 @@
-import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Skeleton from '@/components/skeleton'
-import { TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextSubHeading } from '@/components/typography'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
 
-const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
 function Lock() {
   const t = useTranslations()
   const { push } = useRouter()
-
   const { veTHEs, isLoading } = useVeTHEsContext()
-  const totalLock = veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), new BigNumber(0))
+
+  const totalLock = useMemo(() => veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), ZERO_VALUE), [veTHEs])
+
+  const totalVotingPower = useMemo(
+    () => veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.voting_amount), ZERO_VALUE),
+    [veTHEs],
+  )
 
   return (
-    <Box className='flex h-full flex-col gap-1.5 !py-4'>
-      <TextHeading className='font-archia text-xl font-semibold'>{t('Lock')}</TextHeading>
-      <div className='flex h-full flex-col justify-between gap-4'>
+    <Box className='flex h-full flex-col gap-2 !py-4'>
+      <div className='flex flex-col'>
+        <NewTextHeading className='text-xl !leading-6 md:text-xl'>{t('Lock')}</NewTextHeading>
         {isLoading ? (
-          <div className='flex flex-wrap gap-4'>
-            <div className='flex items-center gap-2'>
-              <div className='size-2 bg-primary-300' />
-              <Skeleton className='h-5 w-[88px]' />
-            </div>
-            <div className='flex items-center gap-2'>
-              <div className='size-2 bg-primary-700' />
-              <Skeleton className='h-5 w-[88px]' />
-            </div>
-          </div>
+          <Skeleton className='h-5 w-[88px]' />
         ) : (
-          <div className='flex flex-wrap gap-4'>
-            {veTHEs.slice(0, 5).map((ve, index) => (
-              <div className='flex items-center gap-2' key={ve.id}>
-                <div className='size-2' style={{ background: COLORS[index] }} />
-                <TextHeading>{`veTHE ${ve.id}`}</TextHeading>
-              </div>
-            ))}
-            {veTHEs.length > 5 && (
-              <div className='flex items-center gap-2'>
-                <div className='size-2' style={{ background: '#FCE6FB' }} />
-                <TextHeading>Others</TextHeading>
-              </div>
-            )}
-          </div>
+          <Paragraph className='text-neutral-500 lg:text-sm'>
+            {t('[value] veTHE in wallet', { value: veTHEs.length })}
+          </Paragraph>
         )}
+      </div>
+
+      <div className='flex h-full flex-col justify-between gap-2'>
         <div className='w-full gap-2'>
-          <div className='mx-auto flex h-fit w-full max-w-[300px]'>
+          <div className='mx-auto flex h-fit w-full max-w-[352px]'>
             {isLoading ? <Skeleton className='h-full w-full' /> : <VotingPowerChart data={veTHEs} />}
           </div>
           <div className='w-full text-center'>
             <TextSubHeading className='text-sm'>{`${t('Max Lock Power')} ${formatAmount(totalLock)}`}</TextSubHeading>
           </div>
         </div>
-        <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
-          {t('Manage')}
-        </EmphasisButton>
+
+        <div className='flex w-full flex-col gap-4'>
+          <div className='flex flex-col items-center justify-center'>
+            <Paragraph className='text-neutral-500 lg:text-sm'>{t('Total Available Voting Power')}</Paragraph>
+            <NewTextHeading className='text-primary-300 md:text-3xl'>
+              {formatAmount(totalVotingPower, true)}
+            </NewTextHeading>
+          </div>
+          <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+            {t('Manage')}
+          </EmphasisButton>
+        </div>
       </div>
     </Box>
   )
