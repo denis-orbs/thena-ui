@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useMemo } from 'react'
 
@@ -15,7 +14,6 @@ import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 
 function ClaimableRewards() {
-  const router = useRouter()
   const t = useTranslations()
   const prices = usePrices()
   const { current: currentRewardsV3 } = useContext(rewardsContext)
@@ -118,14 +116,14 @@ function ClaimableRewards() {
   return (
     <Box className='flex h-full flex-col justify-between gap-4 bg-cover bg-no-repeat !p-4 max-lg:bg-[url("/images/claim-reward-mobile-bg.png")]'>
       <NewTextHeading className='text-xl md:text-xl'>{t('Claimable Rewards')}</NewTextHeading>
-      <div className='space-y-2'>
-        <div className='flex items-center gap-2'>
+      <div className='flex h-full max-h-[124px] flex-col gap-2 md:max-h-[224px] md:gap-4 md:py-[18px]'>
+        <div className='flex flex-1 items-center gap-2'>
           <Paragraph
             style={{
               width: percentage.farmed ? `${percentage.farmed < 24 ? 24 : percentage.farmed}%` : 'fit-content',
             }}
             className={cn(
-              'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+              'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.farmed && 'bg-primary-400 text-primary-950',
             )}
           >
@@ -134,11 +132,11 @@ function ClaimableRewards() {
           <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(farmedRewards)}</Paragraph>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex flex-1 items-center gap-2'>
           <Paragraph
             style={{ width: percentage.voting ? `${percentage.voting < 15 ? 15 : percentage.voting}%` : 'fit-content' }}
             className={cn(
-              'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+              'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.voting && 'bg-primary-600 text-primary-950',
             )}
           >
@@ -147,13 +145,13 @@ function ClaimableRewards() {
           <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(votingRewards)}</Paragraph>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex flex-1 items-center gap-2'>
           <Paragraph
             style={{
               width: percentage.theNft ? `${percentage.theNft < 25 ? 25 : percentage.theNft}%` : 'fit-content',
             }}
             className={cn(
-              'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+              'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.theNft && 'bg-primary-800 text-primary-950',
             )}
           >
@@ -162,22 +160,23 @@ function ClaimableRewards() {
           <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(theNftRewards)}</Paragraph>
         </div>
       </div>
+
       {/* FIXME: show last 24 hours */}
       {/* <Paragraph className='text-neutral-500 max-md:text-center'>
         {t('last 24 Hours')} <span className='text-primary-600'>+ ${formatAmount(32.48)}</span>
       </Paragraph> */}
 
-      <NewTextHeading className='text-neutral-500 max-md:text-center md:text-3xl'>
-        {t('Total')} <span className='text-primary-300'>${formatAmount(totalRewards)}</span>
-      </NewTextHeading>
+      <div className='flex flex-col gap-4'>
+        <NewTextHeading className='flex gap-4 text-neutral-500 max-md:justify-center max-md:text-center md:py-2.5 md:text-3xl'>
+          <span>{t('Total')}</span>
+          <span className='text-primary-300'>${formatAmount(totalRewards)}</span>
+        </NewTextHeading>
 
-      <div className='flex gap-2 [&>button]:flex-1'>
-        <EmphasisButton className='h-8 text-xs md:h-11 md:text-base' onClick={() => router.push('/dashboard/rewards')}>
-          {t('Details')}
-        </EmphasisButton>
-        <EmphasisButton className='h-8 text-xs md:h-11 md:text-base' onClick={onClaimAllRewards}>
-          {t('Claim')}
-        </EmphasisButton>
+        <div className='flex gap-2 [&>button]:flex-1'>
+          <EmphasisButton className='h-8 text-xs md:h-11 md:text-base' onClick={onClaimAllRewards}>
+            {t('Claim')}
+          </EmphasisButton>
+        </div>
       </div>
     </Box>
   )
