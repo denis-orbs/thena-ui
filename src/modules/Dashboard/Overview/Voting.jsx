@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { isEmpty } from 'lodash'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -7,9 +8,9 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import Box from '@/components/box'
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
-import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -19,8 +20,10 @@ import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { formatAmount } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
+import { ExternalIcon } from '@/svgs'
 
 import VotingChart from '../Chart/VotingChart'
+import SectionDivider from '../SectionDivider'
 
 function Voting() {
   const { push } = useRouter()
@@ -34,17 +37,16 @@ function Voting() {
   const { veTHEs } = useVeTHEsContext()
 
   const debouncedId = useDebounce(approvedId)
+
   const { data: isApproved } = useSWR(
     debouncedId &&
       account &&
       (chainId === ChainId.BSC || chainId === CHAIN_ID.TEST_BSC) && ['vethe/approved', debouncedId, account],
     async () => {
       const veTHEContract = getVeTHEContract(chainId)
-      return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], chainId)
+      return readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], chainId)
     },
-    {
-      refreshInterval: 0,
-    },
+    { refreshInterval: 0 },
   )
 
   useEffect(() => {
@@ -52,6 +54,8 @@ function Voting() {
       setVeTHEId(approvedId)
     }
   }, [isApproved, approvedId])
+
+  const filteredVeTHEs = useMemo(() => veTHEs.filter(ve => ve.voting_amount.gt(0)), [veTHEs])
 
   const veTHE = useMemo(() => {
     const list = [...veTHEs]
@@ -109,70 +113,98 @@ function Voting() {
   )
 
   return (
-    <Box className='flex flex-col !p-4'>
-      {veTHEs.length > 0 ? (
-        <>
-          <div className='flex justify-between gap-2'>
-            <div className='flex flex-col'>
-              <TextHeading className='font-archia text-xl font-semibold'>
-                {t('Voting for [value]', { value: formatAmount(totalRewards) })}
-              </TextHeading>
-              <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
+    <>
+      <Box className='flex h-full flex-col justify-between !p-4'>
+        {veTHEs.length > 0 ? (
+          <>
+            <div className='flex justify-between gap-2'>
+              <div className='flex flex-col'>
+                <TextHeading className='font-archia text-xl font-semibold'>
+                  {t('Voting for [value]', { value: formatAmount(totalRewards) })}
+                </TextHeading>
+                <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
+              </div>
+
+              <VeTheDropdown
+                className='z-40 w-[120px] pl-1.5'
+                data={filteredVeTHEs.map(item => ({ ...item, label: `ID #${item.id}` }))}
+                selected={veTHE ? `ID #${veTHE.id}` : ''}
+                setSelected={ele => setVeTHEId(ele.id)}
+                placeHolder={t('Select veTHE')}
+                isLocale={false}
+                isApproved={isApproved}
+                approvedId={approvedId}
+                setApprovedId={setApprovedId}
+                classNames={{ trailingIcon: 'right-0.5 z-40', input: 'py-0 pl-1 text-neutral-400' }}
+              />
             </div>
 
-            <VeTheDropdown
-              className='z-40 w-[120px] pl-1.5'
-              data={veTHEs
-                .filter(ve => ve.voting_amount.gt(0))
-                .map(item => ({
-                  ...item,
-                  label: `ID #${item.id}`,
-                }))}
-              selected={veTHE ? `ID #${veTHE.id}` : ''}
-              setSelected={ele => setVeTHEId(ele.id)}
-              placeHolder={t('Select veTHE')}
-              isLocale={false}
-              isApproved={isApproved}
-              approvedId={approvedId}
-              setApprovedId={setApprovedId}
-              classNames={{ trailingIcon: 'right-0.5 z-40', input: 'py-0 pl-1 text-neutral-400' }}
-            />
-          </div>
-
-          <div className='fex flex-col gap-4'>
-            <div className='flex items-center justify-center'>
-              <VotingChart className='h-[260px] w-[260px]' data={userPools} />
+            <div className='fex flex-col gap-4'>
+              <div className='flex items-center justify-center'>
+                <VotingChart className='h-[260px] w-[260px]' data={userPools} />
+              </div>
             </div>
-          </div>
 
-          <div className='flex flex-col gap-4'>
-            {seconds <= 120 ? (
-              <NewTextHeading className='text-center text-xl text-error-600 md:text-xl'>
-                {t('Epoch [epoch] End in [seconds]', { epoch, seconds })}
+            <div className='flex flex-col gap-4'>
+              {seconds <= 120 ? (
+                <NewTextHeading className='text-center text-xl text-error-600 md:text-xl'>
+                  {t('Epoch [epoch] End in [seconds]', { epoch, seconds })}
+                </NewTextHeading>
+              ) : (
+                <div className='flex flex-col text-center'>
+                  <Paragraph className='text-neutral-500 lg:text-sm'>{t('Epoch [epoch] End in', { epoch })}</Paragraph>
+                  <NewTextHeading className='text-primary-300 md:text-3xl'>
+                    {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
+                  </NewTextHeading>
+                </div>
+              )}
+
+              <div className='flex gap-3'>
+                <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
+                  {t('Rewards')}
+                </EmphasisButton>
+                <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
+                  {t('Vote')}
+                </EmphasisButton>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className='flex h-[215px] flex-col justify-end gap-4 pb-11 text-center'>
+              <NewTextHeading className='text-gradient-primary-b text-5xl md:text-5xl'>
+                ${formatAmount(totalRewards)}
               </NewTextHeading>
-            ) : (
-              <div className='flex flex-col text-center'>
-                <Paragraph className='text-neutral-500 lg:text-sm'>{t('Epoch [epoch] End in', { epoch })}</Paragraph>
-                <NewTextHeading className='text-primary-300 md:text-3xl'>
-                  {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
+              <NewTextSubHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextSubHeading>
+            </div>
+            <div className='flex flex-col gap-4'>
+              <div className='flex flex-col gap-2.5 text-center'>
+                <Paragraph className='text-neutral-500'>{t('Empty Voting')}</Paragraph>
+                <NewTextHeading className='flex justify-center gap-1.5 text-xl md:text-xl'>
+                  <span className='text-primary-300'>{t('Next distribution in')}</span>
+                  <span className='text-primary-600'>
+                    {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
+                  </span>
                 </NewTextHeading>
               </div>
-            )}
-
-            <div className='flex gap-3'>
-              <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
-                {t('Rewards')}
-              </EmphasisButton>
-              <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
-                {t('Vote')}
-              </EmphasisButton>
+              <div className='flex flex-col gap-2'>
+                <Link className='w-full' href='https://docs.thena.fi/thena/the-tokenomics/vethe-guide' target='_blank'>
+                  <TextButton className='w-full'>
+                    <Paragraph>Learn about voting</Paragraph>
+                    <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
+                  </TextButton>
+                </Link>
+                <PrimaryButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+                  {t('Create your veTHE')}
+                </PrimaryButton>
+              </div>
             </div>
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
-    </Box>
+          </>
+        )}
+      </Box>
+
+      <SectionDivider />
+    </>
   )
 }
 

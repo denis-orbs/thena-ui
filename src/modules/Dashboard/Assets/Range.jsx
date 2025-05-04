@@ -42,11 +42,13 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
             <TextSubHeading className='text-[10px]'>
               {`${tickLowerPercent < 0 ? '-' : ''} ${formatAmount(
                 tickLowerPercent < 0 ? tickLowerPercent * -1 : tickLowerPercent,
+                true,
               )}%`}
             </TextSubHeading>
             <TextSubHeading className='text-[10px]'>
               {`${tickUpperPercent < 0 ? '-' : ''} ${formatAmount(
                 tickUpperPercent < 0 ? tickUpperPercent * -1 : tickUpperPercent,
+                true,
               )}%`}
             </TextSubHeading>
           </div>

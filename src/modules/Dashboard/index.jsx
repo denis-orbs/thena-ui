@@ -9,9 +9,11 @@ import { ZERO_VALUE } from '@/lib/utils'
 
 import UserAssets from './Assets'
 import HeaderRewards from './HeaderRewards'
-import Overview from './Overview'
+import ClaimableRewards from './Overview/ClaimableRewards'
+import Lock from './Overview/Lock'
+import Voting from './Overview/Voting'
 import DashboardProfile from './Profile'
-import SpecialDivider from './SpecialDivider'
+import SectionDivider from './SectionDivider'
 import TheNFT from './theNFT'
 
 function Dashboard() {
@@ -33,20 +35,16 @@ function Dashboard() {
       <HeaderRewards totalUsd={totalUsd} />
       <div className='flex max-w-[1464px] flex-col gap-4 md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px] 2xl:w-[1352px] 3xl:w-[1490px]'>
         <div className='flex flex-col rounded-xl max-md:bg-neutral-900 md:gap-2'>
-          {/* <NewTextSubHeading className='max-md:hidden'>{t('My Assets')}</NewTextSubHeading> */}
           <UserAssets />
         </div>
-        <SpecialDivider />
-        <Overview />
-        <SpecialDivider />
-        <div className='flex flex-col md:grid md:grid-cols-3 md:gap-4'>
-          <div className='col-span-1'>
-            <TheNFT />
-          </div>
-          <SpecialDivider className='max-md:mt-4' />
-          <div className='md col-span-2'>
-            <DashboardProfile />
-          </div>
+        <SectionDivider />
+
+        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+          <Voting />
+          <ClaimableRewards />
+          <Lock />
+          <TheNFT />
+          <DashboardProfile />
         </div>
       </div>
     </div>

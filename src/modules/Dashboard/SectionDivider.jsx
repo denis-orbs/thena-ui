@@ -1,7 +1,7 @@
 import Divider from '@/components/divider'
 import { cn } from '@/lib/utils'
 
-function SpecialDivider({ className }) {
+function SectionDivider({ className }) {
   return (
     <Divider
       className={cn(
@@ -12,4 +12,4 @@ function SpecialDivider({ className }) {
   )
 }
 
-export default SpecialDivider
+export default SectionDivider
