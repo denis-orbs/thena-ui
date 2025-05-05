@@ -56,9 +56,8 @@ function Voting() {
   }, [isApproved, approvedId])
 
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ve => ve.voting_amount.gt(0)), [veTHEs])
-
   const veTHE = useMemo(() => {
-    const list = [...veTHEs]
+    const list = [...filteredVeTHEs]
     let result = veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
     if (!result && !isEmpty(list)) {
       // veTHE with the most voting power and prioritize the "Not Voted" one
@@ -70,7 +69,7 @@ function Voting() {
       }
     }
     return result
-  }, [veTHEs, veTHEId])
+  }, [filteredVeTHEs, veTHEId])
 
   const userPools = useMemo(
     () =>
