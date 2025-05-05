@@ -2,13 +2,14 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
-import { NewParagraph, NewTextHeading } from '@/components/typography'
+import { NewParagraph, NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ZERO_ADDRESS } from '@/constant'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
-import { formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { getStrategy } from '@/state/pools/hooks'
+import { WarningTriangleIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
@@ -18,19 +19,20 @@ function AssetsOverview({ positions }) {
   const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
-  const filterVersion = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+  const positionsV2 = useMemo(() => positions.filter(pos => pos.version === 2), [positions])
+  const filteredPositions = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
 
   const { totalProvided, totalRewards, totalPools } = useMemo(() => {
-    const providedValue = filterVersion.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
-    const rewardsValue = filterVersion.reduce((sum, item) => sum + item.rewardUsd, 0)
-    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: filterVersion.length }
+    const providedValue = filteredPositions.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
+    const rewardsValue = filteredPositions.reduce((sum, item) => sum + item.rewardUsd, 0)
+    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: filteredPositions.length }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterVersion, filterVersion.length])
+  }, [filteredPositions, filteredPositions.length])
 
   const positionHaveRewards = useMemo(
-    () => filterVersion.filter(pos => pos.rewardUsd > 0),
+    () => filteredPositions.filter(pos => pos.rewardUsd > 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filterVersion, totalRewards],
+    [filteredPositions, totalRewards],
   )
 
   useEffect(() => {
@@ -107,32 +109,54 @@ function AssetsOverview({ positions }) {
   }, [account, addReward, addFees, positions])
 
   return (
-    <div className='space-y-4'>
-      <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>{t('Total Value Provided')}</NewTextHeading>
+    <div className='space-y-6'>
       <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
-        <div className='flex flex-col gap-8 max-md:text-center'>
+        <div className='flex flex-col gap-4'>
+          <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
+            {t('Total Value Provided')}
+          </NewTextHeading>
           <NewParagraph className='space-x-4 text-4xl max-md:text-primary-300 md:text-4xl'>
             <span>${formatAmount(totalProvided)}</span>
             <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </NewParagraph>
-          <NewTextHeading className='font-semibold max-md:hidden md:text-xl'>
+          <NewTextHeading className='font-semibold max-md:hidden md:text-3xl'>
             {t('Generated Fees and Rewards')}
           </NewTextHeading>
-          <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
-            ${formatAmount(totalRewards)}
-          </NewTextHeading>
-          <PrimaryButton
-            disabled={isInvalidAmount(totalRewards)}
-            className='w-fit max-md:hidden'
-            onClick={() => onClaimAllRewardPosition(positionHaveRewards)}
-          >
-            {t('Claim All Rewards')}
-          </PrimaryButton>
+          {!isInvalidAmount(totalRewards) && (
+            <>
+              <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
+                ${formatAmount(totalRewards)}
+              </NewTextHeading>
+              <PrimaryButton
+                disabled={isInvalidAmount(totalRewards)}
+                className='w-fit max-md:hidden'
+                onClick={() => onClaimAllRewardPosition(positionHaveRewards)}
+              >
+                {t('Claim All Rewards')}
+              </PrimaryButton>
+            </>
+          )}
         </div>
+
         <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart data={filterVersion} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
+          <LiquidityAPRChart data={filteredPositions} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
         </div>
       </div>
+
+      {positionsV2.length > 0 && (
+        <div className={cn('flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+          <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
+            <WarningTriangleIcon className='size-full' />
+          </div>
+          <div className='flex flex-col gap-2'>
+            <TextHeading className='text-xl font-medium text-error-100'>{t('Migrate your Positions')}</TextHeading>
+            <Paragraph className='flex flex-col text-base text-error-100'>
+              <span>{t('Migrate desc 1')}</span>
+              <span>{t('Migrate desc 2')}</span>
+            </Paragraph>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

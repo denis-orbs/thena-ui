@@ -1540,5 +1540,8 @@
   "Earned by veTHE Voters": "Earned by veTHE Voters",
   "Account not available desc": "Unleash your identity with a THENA ID! This unique name replaces your wallet address, transforming interactions across ARENA, ALPHA, and Spot DEX into a seamless, personalized adventure in the THENA ecosystem. Grab yours now and stand out!",
   "Account not available title": "THENA ID – Your Digital Identity",
-  "Mint your ID": "Mint your ID"
+  "Mint your ID": "Mint your ID",
+  "Migrate your Positions": "Migrate your Positions",
+  "Migrate desc 1": "You still have positions in pools that are no longer supported.",
+  "Migrate desc 2": "Please migrate your positions to V3 to unlock the full potential of THENA."
 }

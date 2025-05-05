@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
-import { NewTextHeading, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, TextSubHeading } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -166,9 +166,9 @@ function LiquidityAPRChart({ data = [], className }) {
           <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-5xl'>
             {formatAmount(pool.value, true)}%
           </NewTextHeading>
-          <TextHeading className='font-archia text-sm font-semibold text-primary-300 md:text-xl'>
+          <NewTextHeading className='text-sm text-primary-300 md:text-xl'>
             ${formatAmount(pool.fiatValueOfLiquidity, true)}
-          </TextHeading>
+          </NewTextHeading>
           <TextSubHeading className='text-xs font-medium text-neutral-300'>{pool.label}</TextSubHeading>
         </>
       )
