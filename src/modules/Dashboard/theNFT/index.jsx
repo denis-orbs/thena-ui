@@ -123,7 +123,7 @@ function TheNFT() {
                   <TextSubHeading className='text-sm text-neutral-50'>{t('Last Epoch Earnings')}</TextSubHeading>
                 </div>
               </div>
-              <Paragraph className='mt-2 block text-sm font-normal text-neutral-500'>
+              <Paragraph className='mt-2 block px-4 text-sm font-normal text-neutral-500'>
                 {t('TheNFT benefits earn')}
               </Paragraph>
             </div>

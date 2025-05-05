@@ -111,7 +111,7 @@ function AssetsOverview({ positions }) {
       <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>{t('Total Value Provided')}</NewTextHeading>
       <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
         <div className='flex flex-col gap-8 max-md:text-center'>
-          <NewParagraph className='space-x-4 text-3xl max-md:text-primary-300 md:text-xl'>
+          <NewParagraph className='space-x-4 text-4xl max-md:text-primary-300 md:text-4xl'>
             <span>${formatAmount(totalProvided)}</span>
             <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </NewParagraph>

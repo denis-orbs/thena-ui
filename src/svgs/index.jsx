@@ -81,6 +81,7 @@ import LogoWithTextIcon from '~/svgs/logo-with-text.svg'
 import MediumIcon from '~/svgs/medium.svg'
 import MergeIcon from '~/svgs/merge.svg'
 import MinusIcon from '~/svgs/minus.svg'
+import PenEditIcon from '~/svgs/pen-edit.svg'
 import PercentIcon from '~/svgs/percent.svg'
 import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
@@ -226,6 +227,7 @@ export {
   MediumIcon,
   MergeIcon,
   MinusIcon,
+  PenEditIcon,
   PercentIcon,
   PiggyIcon,
   PiggySecondIcon,
