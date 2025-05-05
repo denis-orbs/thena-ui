@@ -61,10 +61,10 @@ function Voting() {
     let result = veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
     if (!result && !isEmpty(list)) {
       // veTHE with the most voting power and prioritize the "Not Voted" one
-      result = [...(list || [])].sort((a, b) => b.voting_amount - a.voting_amount).find(ve => !ve.votedCurrentEpoch)
+      result = list.sort((a, b) => b.voting_amount - a.voting_amount).find(ve => !ve.votedCurrentEpoch)
       if (!result) {
         // veTHE with the most voting power
-        const sorted = [...(list || [])].sort((a, b) => b.voting_amount - a.voting_amount)
+        const sorted = list.sort((a, b) => b.voting_amount - a.voting_amount)
         result = sorted?.[0]
       }
     }

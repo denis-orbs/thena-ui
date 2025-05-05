@@ -67,7 +67,7 @@ function DashboardProfile() {
       className={cn(
         'rounded-xl max-md:mb-16 md:col-span-2',
         (!userInfo || !userInfo.usernameNfts?.length) &&
-          'bg-[url("/images/profile-bg.png")] bg-cover bg-center bg-no-repeat md:col-span-1',
+          'bg-[url("/images/profile-bg.png")] bg-cover bg-center bg-no-repeat p-4 md:col-span-1',
       )}
     >
       <Box
@@ -129,15 +129,18 @@ function DashboardProfile() {
                 </div>
 
                 <div className='relative flex h-full w-[73%] flex-col gap-4 py-4 pr-4 max-md:hidden'>
-                  <div className='flex items-center justify-between gap-4'>
-                    <NewTextHeading className='flex gap-2 text-xl uppercase !leading-6 md:text-xl'>
-                      <span className='text-neutral-500'>{t('Thena ID')}:</span>
-                      <span className='text-warn-600'>{userInfo?.username || formatAddress(account)}</span>
-                    </NewTextHeading>
-                    <Link href='/arena/profile/edit'>
+                  <div className='flex items-end justify-between gap-4'>
+                    {!userInfo?.username && (
+                      <NewTextHeading className='flex gap-2 text-xl uppercase !leading-6 md:text-xl'>
+                        <span className='text-neutral-500'>{t('Thena ID')}:</span>
+                        <span className='text-warn-600'>{userInfo.username}</span>
+                      </NewTextHeading>
+                    )}
+                    <Link href='/arena/profile/edit' className='ml-auto self-end'>
                       <EmphasisIconButton Icon={PenEditIcon} />
                     </Link>
                   </div>
+
                   <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
                     <NewTextHeading className='text-xl !leading-6 text-neutral-500 md:text-xl'>
                       {userInfo?.isVerified ? 'Verified' : 'Unverified'}
