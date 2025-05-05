@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -109,8 +109,8 @@ function DashboardProfile() {
                 <NewTextSubHeading className='text-xl md:text-xl'>{t('Account not available title')}</NewTextSubHeading>
                 {userInfo && (
                   <Paragraph className='text-neutral-500 lg:text-sm'>
-                    Joined {moment(userInfo.firstInteractAt).format('MMMM DD, YYYY')} at{' '}
-                    {moment(userInfo.firstInteractAt).format('hh:mm a')}
+                    Joined {dayjs(userInfo.firstInteractAt).format('MMM DD, YYYY')} at{' '}
+                    {dayjs(userInfo.firstInteractAt).format('hh:mm a')}
                   </Paragraph>
                 )}
               </div>

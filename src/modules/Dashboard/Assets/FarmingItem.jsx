@@ -9,11 +9,12 @@ import { zeroAddress } from 'viem'
 import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
@@ -29,11 +30,15 @@ function FarmingItem({ position }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const pools = usePools()
-  const { mutateManual } = useContext(ManualsContext)
+  const { isXlDown } = useMediaQuery()
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
+
+  const pools = usePools()
+  const { mutateManual } = useContext(ManualsContext)
+  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
+  const { onAlgebraBurn, pending } = useAlgebraBurn()
 
   const {
     asset0,
@@ -49,11 +54,8 @@ function FarmingItem({ position }) {
     poolAddress,
   } = position
 
-  // CALL APIs & SMART CONTRACTS
-  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
-  const { onAlgebraBurn, pending } = useAlgebraBurn()
-
   const { incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
+  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const tickAtLimit = useMemo(
     () => ({
@@ -62,7 +64,6 @@ function FarmingItem({ position }) {
     }),
     [tickLower, tickUpper],
   )
-  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {
@@ -90,9 +91,10 @@ function FarmingItem({ position }) {
     [poolAddress, pools],
   )
 
-  const reversePrice = false
-
-  const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+  const outOfRange = useMemo(
+    () => (_fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false),
+    [_fusion, tickLower, tickUpper],
+  )
 
   const handleAdd = useCallback(() => {
     const newStrategy = {
@@ -129,9 +131,9 @@ function FarmingItem({ position }) {
     push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=1`)
   }, [dispatch, poolInfo, push, version, tokenId])
 
-  return (
-    <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
-      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
+  const pairCell = useMemo(
+    () => (
+      <div className='flex w-full items-center gap-2'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -142,69 +144,113 @@ function FarmingItem({ position }) {
           height={32}
           tokens={[asset0, asset1]}
         />
-        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
+        <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
           </NewTextSubHeading>
-          <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
+          <NewParagraph className='text-lg text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
-          </Paragraph>
+          </NewParagraph>
         </div>
       </div>
-      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
+    ),
+    [asset0, asset1, tokenId, _fusion?.fee, t],
+  )
+
+  const rangeCell = useMemo(
+    () => (
+      <div className='w-full text-center'>
         {position.type === 'Manual' && (
           <Range
             position={position}
-            currentPrice={parseFloat(
-              reversePrice ? 1 / (_fusion?.token0Price.toSignificant(6) || 0) : _fusion?.token0Price.toSignificant(6),
-            )}
-            minPrice={parseFloat(
-              reversePrice
-                ? 1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                : formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-            )}
-            maxPrice={parseFloat(
-              reversePrice
-                ? 1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                : formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-            )}
+            currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+            minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+            maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             liquidity={liquidity}
           />
         )}
       </div>
-      <div className='flex w-full gap-4 lg:w-[39%]'>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-          <TextSubHeading className=''>{t('APR')}</TextSubHeading>
-        </div>
-        <div className='flex w-1/3 flex-col max-lg:items-center max-lg:justify-center'>
-          <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
-        </div>
-        <div className='flex w-1/3 flex-col'>
-          <div className='flex items-center gap-1 max-lg:justify-end'>
-            <TextHeading>${formatAmount(position.rewardUsd)}</TextHeading>
-            {position.rewardUsd > 0 && (
-              <>
-                <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
-                <CustomTooltip id={`net-${tokenId}`}>
-                  <p className={cn(position.farmRewardData && position.farmRewardData[0] === 0n && 'hidden')}>
-                    {`${formatAmount(fromWei(position.farmRewardData?.[0] ?? 0n, 18))} THE`}
-                  </p>
-                  <p className={cn(position.farmRewardData && position.farmRewardData[1] === 0n && 'hidden')}>
-                    {`${formatAmount(fromWei(position.farmRewardData?.[1] ?? 0n, 18))} WBNB`}
-                  </p>
-                </CustomTooltip>
-              </>
-            )}
-          </div>
-          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
-        </div>
+    ),
+    [_fusion?.token0Price, _position?.token0PriceLower, _position?.token0PriceUpper, liquidity, position, tickAtLimit],
+  )
+
+  const aprCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
+        <TextSubHeading className=''>{t('APR')}</TextSubHeading>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
+    ),
+    [position.apr, t],
+  )
+
+  const valueCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
+        <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
+        <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+      </div>
+    ),
+    [position.fiatValueOfLiquidity, t],
+  )
+
+  const rewardsCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <div className='flex items-center gap-1 max-xl:justify-end'>
+          <TextHeading>${formatAmount(position.rewardUsd)}</TextHeading>
+          {position.rewardUsd > 0 && (
+            <>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400 max-xl:hidden' data-tooltip-id={`net-${tokenId}`} />
+              <CustomTooltip id={`net-${tokenId}`}>
+                <p className={cn(position.farmRewardData && position.farmRewardData[0] === 0n && 'hidden')}>
+                  {`${formatAmount(fromWei(position.farmRewardData?.[0] ?? 0n, 18))} THE`}
+                </p>
+                <p className={cn(position.farmRewardData && position.farmRewardData[1] === 0n && 'hidden')}>
+                  {`${formatAmount(fromWei(position.farmRewardData?.[1] ?? 0n, 18))} WBNB`}
+                </p>
+              </CustomTooltip>
+            </>
+          )}
+        </div>
+        <TextSubHeading className='max-xl:text-end'>{t('Reward')}</TextSubHeading>
+      </div>
+    ),
+    [position.farmRewardData, position.rewardUsd, t, tokenId],
+  )
+
+  const hideButton = useMemo(
+    () => ({
+      remove: Number(liquidity) <= 0,
+      claim: position.feesInUsd.isZero(),
+      burn: position?.isFarming || Number(liquidity) > 0,
+      earn:
+        position?.isFarming ||
+        !incentiveAddress ||
+        incentiveAddress === zeroAddress ||
+        position?.deployer !== zeroAddress ||
+        Number(liquidity) <= 0,
+    }),
+    [incentiveAddress, liquidity, position?.deployer, position.feesInUsd, position?.isFarming],
+  )
+
+  const actionButtonCount = useMemo(() => {
+    let count = 5
+
+    if (hideButton.remove) count -= 1
+    if (hideButton.claim) count -= 1
+    if (hideButton.burn) count -= 1
+    if (hideButton.earn) count -= 1
+
+    return count
+  }, [hideButton.burn, hideButton.claim, hideButton.remove, hideButton.earn])
+
+  const actionCell = useMemo(
+    () => (
+      <div className={`grid grid-cols-${actionButtonCount} w-full gap-2`}>
         <OutlinedButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
-            hidden: Number(liquidity) <= 0,
+            hidden: hideButton.remove,
           })}
           onClick={() => setRemovePopup(true)}
         >
@@ -212,7 +258,7 @@ function FarmingItem({ position }) {
         </OutlinedButton>
 
         <TextButton
-          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', position.feesInUsd.isZero() && 'hidden')}
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
@@ -220,12 +266,7 @@ function FarmingItem({ position }) {
 
         <PrimaryButton
           className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
-            hidden:
-              position?.isFarming ||
-              !incentiveAddress ||
-              incentiveAddress === zeroAddress ||
-              position?.deployer !== zeroAddress ||
-              Number(liquidity) <= 0,
+            hidden: hideButton.earn,
           })}
           disabled={position?.isFarming || isEnterFarmLoading}
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
@@ -235,7 +276,7 @@ function FarmingItem({ position }) {
 
         <OutlinedButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
-            hidden: position?.isFarming || Number(liquidity) > 0,
+            hidden: hideButton.burn,
           })}
           onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
           disabled={pending}
@@ -247,6 +288,50 @@ function FarmingItem({ position }) {
           {t('Add')}
         </EmphasisButton>
       </div>
+    ),
+    [
+      actionButtonCount,
+      handleAdd,
+      hideButton.burn,
+      hideButton.claim,
+      hideButton.earn,
+      hideButton.remove,
+      isEnterFarmLoading,
+      mutateManual,
+      onAlgebraBurn,
+      onEnterFarming,
+      pending,
+      poolAddress,
+      position?.isFarming,
+      t,
+      tokenId,
+    ],
+  )
+
+  return (
+    <>
+      {!isXlDown ? (
+        <>
+          <td>{pairCell}</td>
+          <td>{rangeCell}</td>
+          <td>{aprCell}</td>
+          <td>{valueCell}</td>
+          <td>{rewardsCell}</td>
+          <td>{actionCell}</td>
+        </>
+      ) : (
+        <div className='flex flex-col gap-4 py-4'>
+          {pairCell}
+          {rangeCell}
+          <div className='flex w-full gap-2'>
+            {aprCell}
+            {valueCell}
+            {rewardsCell}
+          </div>
+          {actionCell}
+        </div>
+      )}
+
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
@@ -268,7 +353,7 @@ function FarmingItem({ position }) {
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />
-    </div>
+    </>
   )
 }
 

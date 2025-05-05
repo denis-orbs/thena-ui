@@ -11,6 +11,7 @@ import Input from '../input'
 
 function Dropdown({
   className,
+  classNames,
   listClassNames,
   data,
   selected,
@@ -70,7 +71,8 @@ function Dropdown({
     <div className={cn('relative', className)} ref={wrapperRef}>
       <Input
         classNames={{
-          input: cn('cursor-pointer caret-transparent', className),
+          ...classNames,
+          input: cn('cursor-pointer caret-transparent', className, classNames?.input),
         }}
         type='text'
         val={selected && isLocale ? t(selected) : selected}

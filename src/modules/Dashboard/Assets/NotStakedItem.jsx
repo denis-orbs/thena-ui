@@ -8,15 +8,16 @@ import { useSimulateContract } from 'wagmi'
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
-import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
@@ -28,21 +29,23 @@ import { InfoIcon } from '@/svgs'
 import Range from './Range'
 
 function NotStakedItem({ position }) {
-  const { networkId } = useChainSettings()
   const t = useTranslations()
   const { push } = useRouter()
+  const { isXlDown } = useMediaQuery()
 
   const [popup, setPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
+  const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
+
+  const { networkId } = useChainSettings()
   const { onGaugeStake, pending: stakePending } = useGaugeStake()
   const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
   const { stakeGamma, pending: stakeGammaPending } = useStakeGamma()
   const { onV1Stake, pending: stakeV1Pending } = useV1Stake()
   const { onClaimFees, pending: feesPending } = useClaimFees()
-  const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
-  const version = position?.account?.version ?? 2
+  const version = useMemo(() => position?.account?.version ?? 2, [position])
   const migrationLink = useMemo(() => `/pools/migration?address=${position.address}&staked=false`, [position.address])
 
   const handleStake = useCallback(
@@ -66,9 +69,10 @@ function NotStakedItem({ position }) {
             callback: () => setPopup(false),
           })
         }
-      } else {
-        onGaugeStake(position, amount, () => setPopup(false))
+        return
       }
+
+      onGaugeStake(position, amount, () => setPopup(false))
     },
     [version, position, stakeGamma, onV1Stake, stakeIchiPool, onGaugeStake],
   )
@@ -165,9 +169,9 @@ function NotStakedItem({ position }) {
 
   const [priceLower, priceUpper, currentPrice] = useAutomaticRange(position, strategy, networkId)
 
-  return (
-    <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
-      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
+  const pairCell = useMemo(
+    () => (
+      <div className='flex w-full items-center gap-2'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -178,14 +182,20 @@ function NotStakedItem({ position }) {
           height={32}
           tokens={[position.token0, position.token1]}
         />
-        <div className='flex flex-row justify-between max-lg:w-full max-md:items-center lg:flex-col'>
+        <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
-          <Paragraph className='text-xl max-lg:font-archia max-md:font-semibold lg:text-xs'>
+          <NewParagraph className='text-xl text-neutral-500 md:text-xl xl:text-xs xl:text-neutral-300'>
             {getDisplayedStrategy(position.title)}
-          </Paragraph>
+          </NewParagraph>
         </div>
       </div>
-      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
+    ),
+    [position.token0, position.token1, position.symbol, position.title],
+  )
+
+  const rangeCell = useMemo(
+    () => (
+      <div className='w-full text-center'>
         {position.type === PAIR_TYPES.LSD ? (
           <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
         ) : (
@@ -194,39 +204,66 @@ function NotStakedItem({ position }) {
           </div>
         )}
       </div>
-      <div className='flex w-full gap-4 lg:w-[39%]'>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>{formatAmount(position.feeApr)}%</TextHeading>
-          <TextSubHeading className=''>{t('APR')}</TextSubHeading>
-        </div>
-        <div className='flex w-1/3 items-center max-lg:justify-center'>
-          <div className='flex flex-col'>
-            <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
-            <TextSubHeading className=''>{t('Value')}</TextSubHeading>
-          </div>
-        </div>
-        <div className='flex w-1/3 flex-col'>
-          <div className='flex items-center gap-1 max-lg:justify-end max-lg:text-end'>
-            <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && (
-              <>
-                <InfoIcon
-                  className='h-4 w-4 stroke-neutral-400 max-lg:hidden'
-                  data-tooltip-id={`not-stake-${position.address}`}
-                />
-                <CustomTooltip id={`not-stake-${position.address}`}>
-                  {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
-                  {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}
-                </CustomTooltip>
-              </>
-            )}
-          </div>
-          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+    ),
+    [position.type, priceLower, priceUpper, currentPrice, t],
+  )
+
+  const aprCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
+        <TextSubHeading className=''>{t('APR')}</TextSubHeading>
+      </div>
+    ),
+    [position.apr, t],
+  )
+
+  const valueCell = useMemo(
+    () => (
+      <div className='flex items-center max-xl:flex-1 max-xl:justify-center'>
+        <div className='flex flex-col'>
+          <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
+          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full justify-center gap-2 lg:w-[24%] lg:max-w-[269px]'>
+    ),
+    [position.account.stakedUsd, position.account.totalUsd, t],
+  )
+
+  const rewardsCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <div className='flex items-center gap-1 max-xl:justify-end max-xl:text-end'>
+          <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
+          {feesInUsd.gt(0) && (
+            <>
+              <InfoIcon
+                className='h-4 w-4 stroke-neutral-400 max-xl:hidden'
+                data-tooltip-id={`not-stake-${position.address}`}
+              />
+              <CustomTooltip id={`not-stake-${position.address}`}>
+                {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
+                {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}
+              </CustomTooltip>
+            </>
+          )}
+        </div>
+        <TextSubHeading className='max-xl:text-end'>{t('Reward')}</TextSubHeading>
+      </div>
+    ),
+    [feesInUsd, position.address, position.token0.symbol, position.token1.symbol, reward0, reward1, t],
+  )
+
+  const actionCell = useMemo(
+    () => (
+      <div
+        className={cn('flex w-full justify-center gap-2', {
+          'grid-cols-2': !!migrationOptions,
+          'grid-cols-3': !migrationOptions,
+        })}
+      >
         {!migrationOptions && (
-          <PrimaryButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+          <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
             {t('Stake')}
           </PrimaryButton>
         )}
@@ -234,14 +271,14 @@ function NotStakedItem({ position }) {
         {isV1Pool ? (
           <>
             <OutlinedButton
-              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => onClaimFees(position)}
               disabled={feesInUsd.isZero() || feesPending}
             >
               {t('Claim')}
             </OutlinedButton>
             <EmphasisButton
-              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setManagePopup(true)}
             >
               {t('Manage')}
@@ -250,28 +287,26 @@ function NotStakedItem({ position }) {
         ) : (
           <>
             <OutlinedButton
-              className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setRemovePopup(true)}
             >
               {t('Remove')}
             </OutlinedButton>
+
             {version === 3 ? (
               <EmphasisButton
-                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+                className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
                 onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.address}&back=1`)}
               >
                 {t('Add')}
               </EmphasisButton>
-            ) : migrationOptions && migrationOptions.length > 0 ? (
-              <Link
-                href={`/pools/migration?address=${position.address}`}
-                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
-              >
+            ) : migrationOptions?.length > 0 ? (
+              <Link href={`/pools/migration?address=${position.address}`} className={cn('h-8 px-1 md:h-11')}>
                 <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
               <PrimaryButton
-                className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
+                className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
                 onClick={() => setMigrateWarningPopup(true)}
               >
                 {t('Migrate')}
@@ -280,6 +315,34 @@ function NotStakedItem({ position }) {
           </>
         )}
       </div>
+    ),
+    [feesInUsd, feesPending, isV1Pool, migrationOptions, onClaimFees, position, push, t, version],
+  )
+
+  return (
+    <>
+      {!isXlDown ? (
+        <>
+          <td>{pairCell}</td>
+          <td>{rangeCell}</td>
+          <td>{aprCell}</td>
+          <td>{valueCell}</td>
+          <td>{rewardsCell}</td>
+          <td>{actionCell}</td>
+        </>
+      ) : (
+        <div className='flex flex-col gap-4 py-4'>
+          {pairCell}
+          {rangeCell}
+          <div className='flex w-full gap-2'>
+            {aprCell}
+            {valueCell}
+            {rewardsCell}
+          </div>
+          {actionCell}
+        </div>
+      )}
+
       <MigrateWarningModal
         popup={migrateWarningPopup}
         setPopup={setMigrateWarningPopup}
@@ -302,7 +365,7 @@ function NotStakedItem({ position }) {
       />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={position} />
       <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} />
-    </div>
+    </>
   )
 }
 

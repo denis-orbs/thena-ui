@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -16,7 +16,6 @@ import { useManualPositions } from '@/hooks/position/useManualPosition'
 import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useWeightedPositions } from '@/hooks/position/useWeightedPosition'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
@@ -49,14 +48,13 @@ const updateWalletBalance = positions => {
 
 function UserAssets() {
   const t = useTranslations()
-  const windowSize = useWindowSize()
   const { push } = useRouter()
   const pools = usePools()
   const vaults = useVaults()
   const userManuals = useManuals()
   const assets = useAssets()
 
-  const [showTable, setShowTable] = useState(false)
+  const [showTable, setShowTable] = useState(true)
 
   const idleAssets = useMemo(
     () =>
@@ -96,12 +94,6 @@ function UserAssets() {
     [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
   )
 
-  useEffect(() => {
-    if (windowSize.width >= 834) {
-      setShowTable(true)
-    }
-  }, [windowSize.width])
-
   return (
     <div
       className={cn(
@@ -112,8 +104,8 @@ function UserAssets() {
       {allPositions.length > 0 ? (
         <div className='space-y-4 bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
           <AssetsOverview positions={allPositions} />
-          <div className='flex justify-between lg:hidden'>
-            <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
+          <div className='flex items-center justify-between xl:hidden'>
+            <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
             <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
               <Paragraph className='text-base font-medium text-neutral-500'>
                 {t(showTable ? 'Close' : 'Open')}

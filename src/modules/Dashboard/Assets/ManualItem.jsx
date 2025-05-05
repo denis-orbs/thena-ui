@@ -10,11 +10,12 @@ import { maxUint128 } from 'viem'
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
@@ -50,8 +51,11 @@ function ManualItem({ position }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const { mutateManual } = useContext(ManualsContext)
-  const pools = usePools()
+  const { isXlDown } = useMediaQuery()
+
+  const [claimPopup, setClaimPopup] = useState(false)
+  const [removePopup, setRemovePopup] = useState(false)
+
   const {
     asset0,
     asset1,
@@ -68,10 +72,13 @@ function ManualItem({ position }) {
     poolAddress,
   } = position
 
-  const [claimPopup, setClaimPopup] = useState(false)
-  const [removePopup, setRemovePopup] = useState(false)
-  const reversePrice = false
+  const pools = usePools()
+  const token0 = useToken(asset0.address)
+  const token1 = useToken(asset1.address)
+  const { mutateManual } = useContext(ManualsContext)
   const { pending, onAlgebraBurn } = useAlgebraBurn(position?.version ?? 3)
+  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
+  const [reward0, reward1] = rewards
 
   const tickAtLimit = useMemo(
     () => ({
@@ -80,8 +87,6 @@ function ManualItem({ position }) {
     }),
     [tickLower, tickUpper],
   )
-
-  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {
@@ -103,18 +108,16 @@ function ManualItem({ position }) {
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
-  const token0 = useToken(asset0.address)
-  const token1 = useToken(asset1.address)
-
   const poolInfo = useMemo(
     () =>
       pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_SwapFee'),
     [poolAddress, pools],
   )
 
-  const [reward0, reward1] = rewards
-
-  const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+  const outOfRange = useMemo(
+    () => (_fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false),
+    [_fusion, tickLower, tickUpper],
+  )
 
   const handleAdd = useCallback(() => {
     const newStrategy = {
@@ -151,9 +154,9 @@ function ManualItem({ position }) {
     push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=1`)
   }, [dispatch, poolInfo, push, version, tokenId])
 
-  return (
-    <div className='flex flex-col items-center justify-between gap-4  py-4 lg:flex-row lg:py-2'>
-      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
+  const pairCell = useMemo(
+    () => (
+      <div className='flex w-full items-center gap-2'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -164,64 +167,85 @@ function ManualItem({ position }) {
           height={32}
           tokens={[token0, token1]}
         />
-        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
+        <div className='flex flex-row justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
           </NewTextSubHeading>
-          <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
+          <NewParagraph className='text-lg text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
-          </Paragraph>
+          </NewParagraph>
         </div>
       </div>
-      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
-        {position.type === 'Manual' ? (
+    ),
+    [token0, token1, asset0, asset1, tokenId, _fusion?.fee, t],
+  )
+
+  const rangeCell = useMemo(
+    () => (
+      <div className='w-full text-center'>
+        {position.type === 'Manual' && (
           <Range
             position={position}
-            currentPrice={parseFloat(
-              reversePrice ? 1 / (_fusion?.token0Price.toSignificant(6) || 0) : _fusion?.token0Price.toSignificant(6),
-            )}
-            minPrice={parseFloat(
-              reversePrice
-                ? 1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                : formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-            )}
-            maxPrice={parseFloat(
-              reversePrice
-                ? 1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                : formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-            )}
+            currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+            minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+            maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             liquidity={liquidity}
           />
-        ) : (
-          <></>
         )}
       </div>
-      <div className='flex w-full gap-4 lg:w-[39%]'>
-        <div className='flex w-1/3 flex-col'>
-          <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-          <TextSubHeading className=''>{t('APR')}</TextSubHeading>
-        </div>
-        <div className='flex w-1/3 flex-col max-lg:items-center max-lg:justify-center'>
-          <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
-        </div>
-        <div className='flex w-1/3 flex-col'>
-          <div className='flex items-center gap-1 max-lg:justify-end'>
-            <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && (
-              <>
-                <InfoIcon className='h-4 w-4 stroke-neutral-400 max-lg:hidden' data-tooltip-id={`net-${tokenId}`} />
-                <CustomTooltip id={`net-${tokenId}`}>
-                  <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>
-                  <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>
-                </CustomTooltip>
-              </>
-            )}
-          </div>
-          <TextSubHeading className='max-lg:text-end'>{t('Reward')}</TextSubHeading>
-        </div>
+    ),
+    [_fusion?.token0Price, _position?.token0PriceLower, _position?.token0PriceUpper, liquidity, position, tickAtLimit],
+  )
+
+  const aprCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
+        <TextSubHeading>{t('APR')}</TextSubHeading>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full gap-2 lg:w-[24%] lg:max-w-[269px]'>
+    ),
+    [position.apr, t],
+  )
+
+  const valueCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
+        <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
+        <TextSubHeading>{t('Value')}</TextSubHeading>
+      </div>
+    ),
+    [position.fiatValueOfLiquidity, t],
+  )
+
+  const rewardsCell = useMemo(
+    () => (
+      <div className='flex flex-col max-xl:flex-1'>
+        <div className='flex items-center gap-1 max-xl:justify-end'>
+          <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
+          {feesInUsd.gt(0) && (
+            <>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400 max-xl:hidden' data-tooltip-id={`net-${tokenId}`} />
+              <CustomTooltip id={`net-${tokenId}`}>
+                <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>
+                <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>
+              </CustomTooltip>
+            </>
+          )}
+        </div>
+        <TextSubHeading className='max-xl:text-end'>{t('Reward')}</TextSubHeading>
+      </div>
+    ),
+    [asset0, asset1, fees, feesInUsd, t, tokenId],
+  )
+
+  const actionCell = useMemo(
+    () => (
+      <div
+        className={cn('grid w-full gap-2', {
+          'grid-cols-3': version === 3,
+          'grid-cols-2': version === 2 && Number(liquidity) > 0,
+        })}
+      >
         {Number(liquidity) > 0 ? (
           <OutlinedButton
             className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
@@ -240,27 +264,53 @@ function ManualItem({ position }) {
         )}
 
         {version === 3 && (
-          <PrimaryButton
-            className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
-            disabled={feesInUsd.isZero()}
-            onClick={() => setClaimPopup(true)}
-          >
-            {t('Claim')}
-          </PrimaryButton>
-        )}
-
-        {version === 3 && (
-          <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-            {t('Add')}
-          </EmphasisButton>
+          <>
+            <PrimaryButton
+              className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
+              disabled={feesInUsd.isZero()}
+              onClick={() => setClaimPopup(true)}
+            >
+              {t('Claim')}
+            </PrimaryButton>
+            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+              {t('Add')}
+            </EmphasisButton>
+          </>
         )}
 
         {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${tokenId}`} className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>
+          <Link href={`/pools/migration?tokenId=${tokenId}`} className='h-8 w-full flex-1 md:h-11'>
             <PrimaryButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
           </Link>
         )}
       </div>
+    ),
+    [feesInUsd, handleAdd, liquidity, mutateManual, onAlgebraBurn, pending, t, tokenId, version],
+  )
+
+  return (
+    <>
+      {!isXlDown ? (
+        <>
+          <td>{pairCell}</td>
+          <td>{rangeCell}</td>
+          <td>{aprCell}</td>
+          <td>{valueCell}</td>
+          <td>{rewardsCell}</td>
+          <td>{actionCell}</td>
+        </>
+      ) : (
+        <div className='flex flex-col gap-4 py-4'>
+          {pairCell}
+          {rangeCell}
+          <div className='flex w-full gap-2'>
+            {aprCell}
+            {valueCell}
+            {rewardsCell}
+          </div>
+          {actionCell}
+        </div>
+      )}
 
       <ClaimModal
         popup={claimPopup}
@@ -283,7 +333,7 @@ function ManualItem({ position }) {
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />
-    </div>
+    </>
   )
 }
 

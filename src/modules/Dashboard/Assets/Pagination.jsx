@@ -1,9 +1,8 @@
-import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Dropdown from '@/components/dropdown'
 import { cn } from '@/lib/utils'
-import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
+import { ArrowLeftIcon, ArrowRightIcon, PoolCoinsIcon } from '@/svgs'
 
 function PaginateButton({ children, onClick, disabled, active, className }) {
   return (
@@ -25,20 +24,21 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
   )
 }
 
-function Paginates({ currentPage, setCurrentPage, totalPages, itemPerPage, setItemPerPage }) {
-  const t = useTranslations()
+function Pagination({ currentPage, setCurrentPage, totalPages, itemPerPage, setItemPerPage }) {
   return (
-    <div className='mt-4 flex flex-row items-center justify-between'>
+    <div className='mb-1 flex flex-row items-center justify-between'>
       <Dropdown
-        className='h-8 w-full max-w-[200px] text-sm'
+        className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
+        classNames={{ trailingIcon: 'right-4', input: 'pr-12 text-right' }}
         listClassNames='z-40'
         data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
         selected={itemPerPage}
         setSelected={ele => setItemPerPage(ele.label)}
-        prefix={t('Pools per page')}
-        prefixClass='pl-[140px]'
+        prefix={<PoolCoinsIcon className='h-5 w-5 stroke-neutral-400' />}
+        prefixClass='pl-12'
         isLocale={false}
       />
+
       {totalPages > 1 && (
         <div className='flex items-center justify-center gap-2 md:justify-end'>
           <PaginateButton
@@ -142,4 +142,4 @@ function Paginates({ currentPage, setCurrentPage, totalPages, itemPerPage, setIt
   )
 }
 
-export default Paginates
+export default Pagination
