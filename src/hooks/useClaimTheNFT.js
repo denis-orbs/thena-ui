@@ -4,8 +4,8 @@ export const useClaimTheNFT = () => {
   const { onRoyaltyClaim, pending: royaltyPending } = useNftRoyaltyClaim()
   const { onHarvest, pending } = useNftFeesClaim()
 
-  const onClaim = async ({ isOriginal, royaltyClaimAble, feesClaimAble }, mutate = () => {}) => {
-    if (isOriginal && royaltyClaimAble) {
+  const onClaim = async ({ isOriginal, royaltyClaimable, feesClaimAble }, mutate = () => {}) => {
+    if (isOriginal && royaltyClaimable) {
       await onRoyaltyClaim(() => mutate())
     }
 
