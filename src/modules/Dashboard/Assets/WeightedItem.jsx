@@ -90,7 +90,7 @@ function WeightedItem({ position, isStake }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col'>
+      <div className='flex flex-col max-xl:flex-1'>
         <TextHeading>{position.apr}%</TextHeading>
         <TextSubHeading>{t('APR')}</TextSubHeading>
       </div>
@@ -100,7 +100,7 @@ function WeightedItem({ position, isStake }) {
 
   const valueCell = useMemo(
     () => (
-      <div className='flex flex-col'>
+      <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
         <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
         <TextSubHeading>{t('Value')}</TextSubHeading>
       </div>
@@ -110,8 +110,8 @@ function WeightedItem({ position, isStake }) {
 
   const rewardsCell = useMemo(
     () => (
-      <div className='flex flex-col'>
-        <div className='flex items-center gap-2'>
+      <div className='flex flex-col max-xl:flex-1'>
+        <div className='flex items-center gap-1 max-xl:justify-end'>
           <span>${formatAmount(claimableFee?.total)}</span>
           <InfoIcon
             className='h-4 w-4 stroke-neutral-400'
