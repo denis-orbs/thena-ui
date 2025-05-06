@@ -243,7 +243,7 @@ function ManualItem({ position }) {
       <div
         className={cn('grid w-full gap-2', {
           'grid-cols-3': version === 3,
-          'grid-cols-2': version === 2 && Number(liquidity) > 0,
+          'grid-cols-2': (version === 2 && Number(liquidity) > 0) || (version === 3 && feesInUsd.isZero()),
         })}
       >
         {Number(liquidity) > 0 ? (

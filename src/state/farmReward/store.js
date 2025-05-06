@@ -8,18 +8,21 @@ export const useFarmRewards = create()(set => ({
     oldGauge: new Map(),
     newGauge: new Map(),
   },
+
   fees: {
     ichi: new Map(),
     gamma: new Map(),
     manual: new Map(),
-    oldGauge: new Map(),
-    newGauge: new Map(),
+    classic: new Map(),
+    stable: new Map(),
+    weighted: new Map(),
   },
 
   /**
    * Add a reward to the farm rewards
    * @param {Object} position - The reward position to add
-   * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable
+   * @param {string} position.symbol - The pool symbol
+   * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable | weighted
    * @param {string} position.key - The reward key
    * @param {number} position.amount - The reward  amount
    * @param {string} position.args - The reward args used to call smart contract
@@ -42,10 +45,8 @@ export const useFarmRewards = create()(set => ({
 
   addFees: position =>
     set(state => {
-      let { type } = position
+      const { type } = position
       const { key } = position
-      if (type === 'classic' || type === 'stable' || type === 'weighted') type = 'newGauge'
-
       delete position.type
       delete position.key
       return {

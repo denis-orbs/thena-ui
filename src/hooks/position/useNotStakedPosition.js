@@ -22,20 +22,21 @@ const getFeesOfPools = async (pools, chainId) => {
     try {
       const fees = await simulateCall({ abi: pairAbi, address: pool.address }, 'claimFees', [], chainId)
 
-      const _reward0 = isV1Pool ? fromWei(fees?.result?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
-      const _reward1 = isV1Pool ? fromWei(fees?.result?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
+      const _reward0 = isV1Pool ? fromWei(fees?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
+      const _reward1 = isV1Pool ? fromWei(fees?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
       const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
       const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
 
-      fees.feesInUsd = fees0.plus(fees1)
-      fees.reward0 = _reward0
-      fees.reward1 = _reward1
+      poolFees.feesInUsd = fees0.plus(fees1)
+      poolFees.reward0 = _reward0
+      poolFees.reward1 = _reward1
     } catch (error) {
       console.error(`Simulate failed for weighted position ${pool.address}:`, error)
     }
 
     feesOfPools.push(poolFees)
   }
+
   return feesOfPools
 }
 

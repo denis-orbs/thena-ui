@@ -22,23 +22,16 @@ function AssetsOverview({ positions }) {
   const positionsV2 = useMemo(() => positions.filter(pos => pos.version === 2), [positions])
   const filteredPositions = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
 
-  const { totalProvided, totalRewards, totalPools } = useMemo(() => {
+  const [totalProvided, totalRewards, totalPools] = useMemo(() => {
     const providedValue = filteredPositions.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
-    const rewardsValue = filteredPositions.reduce((sum, item) => sum + item.rewardUsd, 0)
-    return { totalProvided: providedValue, totalRewards: rewardsValue, totalPools: filteredPositions.length }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredPositions, filteredPositions.length])
-
-  const positionHaveRewards = useMemo(
-    () => filteredPositions.filter(pos => pos.rewardUsd > 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filteredPositions, totalRewards],
-  )
+    const rewardUsd = filteredPositions.reduce((sum, item) => sum + item.rewardUsd, 0)
+    return [providedValue, rewardUsd, filteredPositions.length]
+  }, [filteredPositions])
 
   useEffect(() => {
     positions.forEach(pos => {
       if (pos.type === 'Manual') {
-        const isFarming = pos?.deployer !== ZERO_ADDRESS
+        const isFarming = pos?.deployer === ZERO_ADDRESS
         if (isFarming) {
           const amount = fromWei(pos.farmRewardData?.[0] ?? 0n)
           if (amount.gt(0)) {
@@ -49,12 +42,14 @@ function AssetsOverview({ positions }) {
               key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
             })
           }
-        } else {
+        } else if (pos.fees?.[0] > 0n || pos.fees?.[1] > 0n) {
+          const [reward0, reward1] = pos.rewards
           addFees({
-            amount: pos.rewards,
+            amount: [reward0.amount, reward1.amount],
+            symbol: pos.symbol,
             type: 'manual',
-            args: [account, pos.key, pos.tokenId],
-            key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
+            args: [account, pos.tokenId, pos.version],
+            key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
           })
         }
       } else if (pos.type === 'Weighted') {
@@ -70,7 +65,7 @@ function AssetsOverview({ positions }) {
             ),
           })
         }
-      } else if (pos && pos.version === 3) {
+      } else if (pos.version === 3) {
         const type = getStrategy(pos.title)
         let args = null
         let amount = ZERO_VALUE
@@ -79,7 +74,7 @@ function AssetsOverview({ positions }) {
         if (type === 'classic' || type === 'stable') {
           args = pos.gauge.address
           amount = pos.account.gaugeEarned
-          feeAmounts = [pos.account.token0Claimable, pos.account.token1Claimable]
+          feeAmounts = [pos.reward0, pos.reward1]
         } else if (type === 'gamma' || type === 'ichi') {
           args = pos.address
           amount = pos.account.gaugeEarned
@@ -89,6 +84,7 @@ function AssetsOverview({ positions }) {
           addReward({
             type,
             args,
+            symbol: pos.symbol,
             amount,
             version: pos.version,
             key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
@@ -98,7 +94,8 @@ function AssetsOverview({ positions }) {
         if (feeAmounts[0]?.gt(0) || feeAmounts[1]?.gt(0)) {
           addFees({
             type,
-            args,
+            args: pos.address,
+            symbol: pos.symbol,
             amount: feeAmounts,
             version: pos.version,
             key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
@@ -122,20 +119,16 @@ function AssetsOverview({ positions }) {
           <NewTextHeading className='font-semibold max-md:hidden md:text-3xl'>
             {t('Generated Fees and Rewards')}
           </NewTextHeading>
-          {!isInvalidAmount(totalRewards) && (
-            <>
-              <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
-                ${formatAmount(totalRewards)}
-              </NewTextHeading>
-              <PrimaryButton
-                disabled={isInvalidAmount(totalRewards)}
-                className='w-fit max-md:hidden'
-                onClick={() => onClaimAllRewardPosition(positionHaveRewards)}
-              >
-                {t('Claim All Rewards')}
-              </PrimaryButton>
-            </>
-          )}
+          <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
+            ${formatAmount(totalRewards)}
+          </NewTextHeading>
+          <PrimaryButton
+            disabled={isInvalidAmount(totalRewards)}
+            className='w-fit max-md:hidden'
+            onClick={() => onClaimAllRewardPosition()}
+          >
+            {t('Claim All Rewards')}
+          </PrimaryButton>
         </div>
 
         <div className='flex h-full items-center justify-center'>

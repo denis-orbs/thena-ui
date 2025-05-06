@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
@@ -9,7 +9,6 @@ import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import usePrices from '@/hooks/usePrices'
 import {
   useClaimWeightedPoolFees,
   useGaugeBalance,
@@ -17,7 +16,7 @@ import {
   useGaugeStakeWeighted,
   useGaugeUnstakeWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
 import ManageWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
 import { InfoIcon } from '@/svgs'
@@ -31,7 +30,6 @@ function WeightedItem({ position, isStake }) {
   const [managePopup, setManagePopup] = useState(false)
   const [popupStake, setPopupStake] = useState(false)
 
-  const prices = usePrices()
   const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
   const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
@@ -40,19 +38,30 @@ function WeightedItem({ position, isStake }) {
 
   const { claimableFee, depositValue } = position
 
-  const claimableFeeUSD = useMemo(() => {
-    const amount = claimableFee?.total ?? ZERO_VALUE
-    return amount.times(prices.THE).toNumber()
-  }, [claimableFee, prices.THE])
-
   const onClaim = useCallback(
-    async () =>
-      await onClaimFees(position, () => {
+    () =>
+      onClaimFees(position, () => {
         // mutatePosition()
       }),
     [onClaimFees, position],
   )
 
+  // Render reward token list once to avoid repetition
+  const renderRewardTokens = useMemo(() => {
+    const tokenList = claimableFee?.tokenList || []
+    const hasInvalidAmounts = tokenList.every(item => isInvalidAmount(item?.fee))
+
+    return tokenList.map((reward, index) => {
+      const displayName = reward?.name === 'Wrapped BNB' ? 'WBNB' : reward?.symbol || 'UNKNOWN'
+
+      if (hasInvalidAmounts || !isInvalidAmount(reward?.fee)) {
+        return <p key={`${reward.address}-${index}`}>{`${formatAmount(reward?.fee)} ${displayName}`}</p>
+      }
+      return null
+    })
+  }, [claimableFee?.tokenList])
+
+  // Cell components memoized for performance
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -83,7 +92,7 @@ function WeightedItem({ position, isStake }) {
     () => (
       <div className='flex flex-col'>
         <TextHeading>{position.apr}%</TextHeading>
-        <TextSubHeading className=''>{t('APR')}</TextSubHeading>
+        <TextSubHeading>{t('APR')}</TextSubHeading>
       </div>
     ),
     [position.apr, t],
@@ -93,7 +102,7 @@ function WeightedItem({ position, isStake }) {
     () => (
       <div className='flex flex-col'>
         <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
-        <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        <TextSubHeading>{t('Value')}</TextSubHeading>
       </div>
     ),
     [depositValue.depositUsd, t],
@@ -103,40 +112,19 @@ function WeightedItem({ position, isStake }) {
     () => (
       <div className='flex flex-col'>
         <div className='flex items-center gap-2'>
-          <span>${formatAmount(claimableFeeUSD)}</span>
+          <span>${formatAmount(claimableFee?.total)}</span>
           <InfoIcon
             className='h-4 w-4 stroke-neutral-400'
             data-tooltip-id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`}
           />
           <CustomTooltip id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`}>
-            {(claimableFee?.tokenList || []).every(item => isInvalidAmount(item?.fee)) ? (
-              <>
-                {(claimableFee?.tokenList || []).map((reward, index) => (
-                  <p key={`${reward.address}-${index}`}>
-                    {`${formatAmount(reward?.fee)} ${
-                      reward?.name === 'Wrapped BNB' ? 'WBNB' : reward?.symbol || 'UNKNOWN'
-                    }`}
-                  </p>
-                ))}
-              </>
-            ) : (
-              <>
-                {(claimableFee?.tokenList || []).map((reward, index) => (
-                  <p key={`${reward.address}-${index}`}>
-                    {!isInvalidAmount(reward?.fee) &&
-                      `${formatAmount(reward?.fee)} ${
-                        reward?.name === 'Wrapped BNB' ? 'WBNB' : reward?.symbol || 'UNKNOWN'
-                      }`}
-                  </p>
-                ))}
-              </>
-            )}
+            {renderRewardTokens}
           </CustomTooltip>
         </div>
-        <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+        <TextSubHeading>{t('Reward')}</TextSubHeading>
       </div>
     ),
-    [claimableFeeUSD, position?.address, isStake, claimableFee?.tokenList, t],
+    [claimableFee?.total, position?.address, isStake, t, renderRewardTokens],
   )
 
   const actionCell = useMemo(
