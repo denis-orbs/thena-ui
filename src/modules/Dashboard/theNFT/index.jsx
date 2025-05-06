@@ -7,7 +7,7 @@ import useSWR from 'swr'
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
-import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useClaimTheNFT } from '@/hooks/useClaimTheNFT'
 import { useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
@@ -120,7 +120,9 @@ function TheNFT() {
                   <TextHeading className='text-gradient-primary-b font-archia text-5xl font-semibold'>
                     ${formatAmount(lastEarnings)}
                   </TextHeading>
-                  <TextSubHeading className='text-sm text-neutral-50'>{t('Last Epoch Earnings')}</TextSubHeading>
+                  <NewTextSubHeading className='!text-xl !leading-6 text-neutral-50'>
+                    {t('Last Epoch Earnings')}
+                  </NewTextSubHeading>
                 </div>
               </div>
               <Paragraph className='mt-2 block px-4 !text-sm font-normal text-neutral-500'>
