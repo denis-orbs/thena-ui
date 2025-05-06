@@ -84,7 +84,6 @@ function VotingPowerChart({ data }) {
             fill='none'
           />
           <path
-            id='currentColor'
             className='group-hover:opacity-85'
             d={`M ${start.x} ${start.y} A ${radius} ${radius} 0 ${0} 1 ${end.x} ${end.y}`}
             stroke={color}
@@ -114,7 +113,7 @@ function VotingPowerChart({ data }) {
       <Divider className='my-1 h-[2px] bg-neutral-700' />
 
       {selectedVethe && (
-        <div className={cn('absolute bottom-2 left-0 right-0 text-center')}>
+        <div style={{ pointerEvents: 'none' }} className={cn('absolute bottom-2 left-0 right-0 text-center')}>
           <div className='flex items-center justify-center gap-2'>
             <div className='size-2 rounded-sm' style={{ background: selectedVethe.color }} />
             <Paragraph className='font-medium text-neutral-50 lg:text-sm'>ID #{selectedVethe.id}</Paragraph>
