@@ -120,51 +120,57 @@ function ClaimableRewards() {
       <>
         <Box className='flex h-full flex-col justify-between gap-4 bg-cover bg-no-repeat !p-4 max-lg:bg-[url("/images/claim-reward-mobile-bg.png")]'>
           <NewTextHeading className='text-xl md:text-xl'>{t('Claimable Rewards')}</NewTextHeading>
-          <div className='flex h-full max-h-[124px] flex-col gap-2 md:max-h-[224px] md:gap-4 md:py-[18px]'>
-            <div className='flex flex-1 items-center gap-2'>
-              <Paragraph
-                style={{
-                  width: percentage.farmed ? `${percentage.farmed < 24 ? 24 : percentage.farmed}%` : 'fit-content',
-                }}
-                className={cn(
-                  'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
-                  percentage.farmed && 'bg-primary-400 text-primary-950',
-                )}
-              >
-                {t('Farmed')}
-              </Paragraph>
-              <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(farmedRewards)}</Paragraph>
-            </div>
+          <div className='flex h-[124px] flex-col justify-center gap-2 md:h-[224px] md:gap-4 md:py-[18px]'>
+            {farmedRewards > 0 && (
+              <div className='flex max-h-[52px] flex-1 items-center gap-2'>
+                <Paragraph
+                  style={{
+                    width: percentage.farmed ? `${percentage.farmed < 24 ? 24 : percentage.farmed}%` : 'fit-content',
+                  }}
+                  className={cn(
+                    'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+                    percentage.farmed && 'bg-primary-400 text-primary-950',
+                  )}
+                >
+                  {t('Farmed')}
+                </Paragraph>
+                <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(farmedRewards)}</Paragraph>
+              </div>
+            )}
 
-            <div className='flex flex-1 items-center gap-2'>
-              <Paragraph
-                style={{
-                  width: percentage.voting ? `${percentage.voting < 15 ? 15 : percentage.voting}%` : 'fit-content',
-                }}
-                className={cn(
-                  'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
-                  percentage.voting && 'bg-primary-600 text-primary-950',
-                )}
-              >
-                {t('Voting')}
-              </Paragraph>
-              <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(votingRewards)}</Paragraph>
-            </div>
+            {votingRewards > 0 && (
+              <div className='flex max-h-[52px] flex-1 items-center gap-2'>
+                <Paragraph
+                  style={{
+                    width: percentage.voting ? `${percentage.voting < 15 ? 15 : percentage.voting}%` : 'fit-content',
+                  }}
+                  className={cn(
+                    'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+                    percentage.voting && 'bg-primary-600 text-primary-950',
+                  )}
+                >
+                  {t('Voting')}
+                </Paragraph>
+                <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(votingRewards)}</Paragraph>
+              </div>
+            )}
 
-            <div className='flex flex-1 items-center gap-2'>
-              <Paragraph
-                style={{
-                  width: percentage.theNft ? `${percentage.theNft < 25 ? 25 : percentage.theNft}%` : 'fit-content',
-                }}
-                className={cn(
-                  'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
-                  percentage.theNft && 'bg-primary-800 text-primary-950',
-                )}
-              >
-                {t('TheNFT')}
-              </Paragraph>
-              <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(theNftRewards)}</Paragraph>
-            </div>
+            {theNftRewards > 0 && (
+              <div className='flex max-h-[52px] flex-1 items-center gap-2'>
+                <Paragraph
+                  style={{
+                    width: percentage.theNft ? `${percentage.theNft < 25 ? 25 : percentage.theNft}%` : 'fit-content',
+                  }}
+                  className={cn(
+                    'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+                    percentage.theNft && 'bg-primary-800 text-primary-950',
+                  )}
+                >
+                  {t('TheNFT')}
+                </Paragraph>
+                <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(theNftRewards)}</Paragraph>
+              </div>
+            )}
           </div>
 
           {/* FIXME: show last 24 hours */}
@@ -173,7 +179,7 @@ function ClaimableRewards() {
           </Paragraph> */}
 
           <div className='flex flex-col gap-4'>
-            <NewTextHeading className='flex gap-4 text-neutral-500 max-md:justify-center max-md:text-center md:py-2.5 md:text-3xl'>
+            <NewTextHeading className='flex gap-4 text-neutral-500 max-md:justify-center max-md:text-center md:text-3xl'>
               <span>{t('Total')}</span>
               <span className='text-primary-300'>${formatAmount(totalRewards)}</span>
             </NewTextHeading>
