@@ -111,6 +111,12 @@ function Voting() {
     [v3PoolsWithGauge],
   )
 
+  const timeDisplay = useMemo(
+    () =>
+      seconds <= 2 * 24 * 60 * 60 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`,
+    [days, hours, mins, seconds],
+  )
+
   return (
     <>
       <Box className='flex h-full flex-col justify-between !p-4'>
@@ -152,9 +158,7 @@ function Voting() {
               ) : (
                 <div className='flex flex-col text-center'>
                   <Paragraph className='text-neutral-500 lg:text-sm'>{t('Epoch [epoch] End in', { epoch })}</Paragraph>
-                  <NewTextHeading className='text-primary-300 md:text-3xl'>
-                    {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
-                  </NewTextHeading>
+                  <NewTextHeading className='text-primary-300 md:text-3xl'>{timeDisplay}</NewTextHeading>
                 </div>
               )}
 
