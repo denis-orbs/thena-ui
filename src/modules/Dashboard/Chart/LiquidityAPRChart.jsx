@@ -192,16 +192,16 @@ function LiquidityAPRChart({ data = [], className }) {
     if (hoveredIndex !== null && data.length > 0) {
       const aprValue = aprData[hoveredIndex]
       const liquidityValue = liquidityData[hoveredIndex]
-      const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue.label : aprValue.label
+      const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue?.label : aprValue?.label
 
       return (
         <>
           <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
           <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>
-            {aprValue.label === 'None' ? '0' : formatAmount(aprValue.value, true)}%
+            {aprValue?.label === 'None' ? '0' : formatAmount(aprValue?.value, true)}%
           </NewTextHeading>
           <NewTextHeading className='text-sm text-primary-300 md:text-xl'>
-            ${liquidityValue.label === 'None' ? '0' : formatAmount(liquidityValue.value, true)}
+            ${liquidityValue?.label === 'None' ? '0' : formatAmount(liquidityValue?.value, true)}
           </NewTextHeading>
           <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
         </>
