@@ -23,6 +23,7 @@ function SelectionItem({ className, item, isFull, isSmall, isTranslation = true 
       )}
       onClick={item.onClickHandler}
     >
+      {item.icon}
       {typeof item.label === 'number' ? `${item.label}%` : isTranslation ? t(item.label) : item.label}
     </button>
   )

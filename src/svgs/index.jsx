@@ -106,6 +106,7 @@ import PowerCircleIcon from '~/svgs/power-icon.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
+import ReflectIcon from '~/svgs/reflect.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
 import ResetIcon from '~/svgs/reset.svg'
@@ -152,6 +153,7 @@ import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import WalletFoldIcon from '~/svgs/wallet-fold.svg'
+import Wallet3Icon from '~/svgs/wallet3.svg'
 import WarningTriangleYellowIcon from '~/svgs/warn-triangle-yellow.svg'
 import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
 import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
@@ -269,6 +271,7 @@ export {
   PublicIcon,
   RandomDice,
   RedditIcon,
+  ReflectIcon,
   RefreshIcon,
   RegisterIcon,
   ResetIcon,
@@ -313,6 +316,7 @@ export {
   User,
   UserIcon,
   Verified,
+  Wallet3Icon,
   WalletFoldIcon,
   WalletIcon,
   WarningTriangleIcon,

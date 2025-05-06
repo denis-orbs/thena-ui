@@ -57,7 +57,7 @@ const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
   // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
-  { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
+  { img: '/images/bridge.png', label: 'Bridge', url: '/bridge' },
 ]
 
 const langs = [
@@ -195,16 +195,9 @@ function ChainSelect({ className, t }) {
       >
         {chains.map((item, idx) => {
           const element = getElement(item, idx)
-          if (item.label === 'Bridge') {
-            return (
-              <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
-                {element}
-              </div>
-            )
-          }
           if (item.url) {
             return (
-              <Link href={item.url} target='_blank' key={`chain-${idx}`}>
+              <Link href={item.url} key={`chain-${idx}`}>
                 {element}
               </Link>
             )
