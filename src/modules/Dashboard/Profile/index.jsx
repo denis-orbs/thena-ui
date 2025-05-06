@@ -164,29 +164,8 @@ function DashboardProfile() {
                         <span className='ml-4'>{userInfo?.rank}</span>
                       </TextHeading>
                     </div>
-                    {userInfo?.xProfileUrl && (
-                      <div className='flex h-11 w-full items-center gap-2'>
-                        <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
-                          {t('Socials')}:{' '}
-                        </TextHeading>
-                        <Link
-                          href={`https://x.com/${userInfo?.xProfileUrl}`}
-                          rel='nofollow noopener size-8'
-                          target='_blank'
-                        >
-                          <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
-                            <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
-                          </div>
-                        </Link>
-                      </div>
-                    )}
                   </div>
-                  <div
-                    className={cn(
-                      'absolute bottom-4 flex flex-wrap items-center space-y-1.5 overflow-hidden',
-                      'max-h-[138px]',
-                    )}
-                  >
+                  <div className={cn('flex flex-wrap items-center space-y-1.5 overflow-hidden', 'max-h-[138px]')}>
                     {sortedData.map(item => (
                       <AchievementBasicIcon
                         item={item}
@@ -196,6 +175,23 @@ function DashboardProfile() {
                       />
                     ))}
                   </div>
+
+                  {userInfo?.xProfileUrl && (
+                    <div className='absolute bottom-4 flex h-11 w-full items-center gap-2'>
+                      <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
+                        {t('Socials')}:{' '}
+                      </TextHeading>
+                      <Link
+                        href={`https://x.com/${userInfo?.xProfileUrl}`}
+                        rel='nofollow noopener size-8'
+                        target='_blank'
+                      >
+                        <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
+                          <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
+                        </div>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
