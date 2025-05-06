@@ -22,6 +22,7 @@ function LiquidityAPRChart({ data = [], className }) {
   const originalColors = useRef([])
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
 
   const avgApr = useMemo(() => {
     const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
@@ -70,14 +71,42 @@ function LiquidityAPRChart({ data = [], className }) {
         ...(key === 'apr' ? { fiatValueOfLiquidity: othersFiatValueOfLiquidity, symbol: 'Others' } : {}),
       })
     }
-
+    const isAllValueZero = formatted.every(item => item.value === 0)
+    if (!formatted || formatted.length === 0 || data.length === 0 || isAllValueZero) {
+      if (key === 'apr') {
+        return data.length === 0
+          ? [
+              {
+                label: 'None',
+                value: 100,
+                fiatValueOfLiquidity: 100,
+                symbol: 'None',
+              },
+            ]
+          : data.map(item => ({
+              label: 'None',
+              symbol: item.symbol,
+              value: 100,
+              fiatValueOfLiquidity: item.fiatValueOfLiquidity,
+            }))
+      }
+      return [
+        {
+          label: 'None',
+          value: 100,
+          fiatValueOfLiquidity: 100,
+        },
+      ]
+    }
     return formatted
   }
 
   const aprData = formatData('apr', data)
   const liquidityData = formatData('depositLiquidity', aprData)
 
-  const colorData = aprData.map((d, i) => (d.label === 'Others' ? OTHER_COLOR : COLORS[i % COLORS.length]))
+  const colorData = aprData.map((d, i) =>
+    d.label === 'Others' ? OTHER_COLOR : d.label === 'None' ? '#281B2E' : COLORS[i % COLORS.length],
+  )
 
   const chartData = {
     datasets: [
@@ -85,17 +114,23 @@ function LiquidityAPRChart({ data = [], className }) {
         label: 'depositLiquidity',
         data: liquidityData.map(d => d.value),
         backgroundColor: liquidityData.map((_, i) =>
-          liquidityData[i].label === 'Others' ? OTHER_COLOR : COLORS[i % COLORS.length],
+          liquidityData[i].label === 'Others'
+            ? OTHER_COLOR
+            : liquidityData[i].label === 'None'
+              ? '#281B2E'
+              : COLORS[i % COLORS.length],
         ),
         borderWidth: 0,
-        radius: '82%',
+        radius: '78%',
         cutout: '65%',
         spacing: liquidityData.length === 1 ? 0 : 1,
       },
       {
         label: 'APR',
         data: aprData.map(d => d.value),
-        backgroundColor: aprData.map((d, i) => (d.label === 'Others' ? OTHER_COLOR : COLORS[i % COLORS.length])),
+        backgroundColor: aprData.map((d, i) =>
+          d.label === 'Others' ? OTHER_COLOR : d.label === 'None' ? '#281B2E' : COLORS[i % COLORS.length],
+        ),
         borderWidth: 0,
         spacing: aprData.length === 1 ? 0 : 1,
         radius: '100%',
@@ -123,17 +158,25 @@ function LiquidityAPRChart({ data = [], className }) {
 
       const chart = chartRef.current
       if (elements.length > 0) {
-        const { index } = elements[0]
+        const { index, datasetIndex } = elements[0]
+        const pool = datasetIndex === 0 ? liquidityData[index] : aprData[index]
+        if (pool.label === 'None') {
+          setHoveredIndex(null)
+          setHoveredDataSetIndex(null)
+          return
+        }
         setHoveredIndex(index)
+        setHoveredDataSetIndex(datasetIndex)
 
         chart.data.datasets.forEach(dataset => {
-          const newColors = originalColors.current.map((color, idx) => (idx === hoveredIndex ? color : NOT_HOVER_COLOR))
+          const newColors = originalColors.current.map((color, idx) => (idx === index ? color : NOT_HOVER_COLOR))
           dataset.backgroundColor = newColors
         })
 
         chart.update('none')
       } else if (hoveredIndex !== null) {
         setHoveredIndex(null)
+        setHoveredDataSetIndex(null)
 
         chart.data.datasets.forEach((dataset, datasetIndex) => {
           dataset.backgroundColor = originalColors.current[datasetIndex]
@@ -145,42 +188,45 @@ function LiquidityAPRChart({ data = [], className }) {
     events: ['mousemove', 'mouseout'],
   }
 
-  useEffect(() => {
-    const isMobile = window.innerWidth <= 834
-
-    if (isMobile && hoveredIndex !== null) {
-      const timeout = setTimeout(() => {
-        setHoveredIndex(null)
-      }, 2000)
-
-      return () => clearTimeout(timeout)
-    }
-  }, [hoveredIndex])
-
   const renderCenterContent = useMemo(() => {
-    if (hoveredIndex !== null) {
-      const pool = aprData[hoveredIndex]
+    if (hoveredIndex !== null && data.length > 0) {
+      const aprValue = aprData[hoveredIndex]
+      const liquidityValue = liquidityData[hoveredIndex]
+      const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue.label : aprValue.label
+
       return (
         <>
           <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
-          <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-5xl'>
-            {formatAmount(pool.value, true)}%
+          <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>
+            {aprValue.label === 'None' ? '0' : formatAmount(aprValue.value, true)}%
           </NewTextHeading>
           <NewTextHeading className='text-sm text-primary-300 md:text-xl'>
-            ${formatAmount(pool.fiatValueOfLiquidity, true)}
+            ${liquidityValue.label === 'None' ? '0' : formatAmount(liquidityValue.value, true)}
           </NewTextHeading>
-          <TextSubHeading className='text-xs font-medium text-neutral-300'>{pool.label}</TextSubHeading>
+          <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
         </>
       )
     }
 
     return (
       <>
-        <div className='text-xl font-semibold text-primary-600 md:text-4xl'>{formatAmount(avgApr, true)}%</div>
-        <div className='text-xl font-semibold uppercase text-primary-300 max-md:hidden'>Average APR</div>
+        {data.length > 0 ? (
+          <>
+            <div className='text-xl font-semibold text-primary-600 md:text-4xl'>{formatAmount(avgApr, true)}%</div>
+            <div className='text-xl font-semibold uppercase text-primary-300 max-md:hidden'>Average APR</div>
+          </>
+        ) : (
+          <>
+            <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>
+              {t('APR')}
+            </div>
+            <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>0%</NewTextHeading>
+            <NewTextHeading className='text-sm text-primary-300 md:text-xl'>$0</NewTextHeading>
+          </>
+        )}
       </>
     )
-  }, [hoveredIndex, aprData, avgApr, t])
+  }, [hoveredIndex, aprData, avgApr, t, data.length, hoveredDataSetIndex, liquidityData])
 
   return (
     <div className={cn('relative h-[200px] w-[200px]', className)}>
