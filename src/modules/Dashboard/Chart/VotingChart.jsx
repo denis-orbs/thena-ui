@@ -84,7 +84,7 @@ function VotingChart({ data = [], className }) {
             tokens={d.type === PAIR_TYPES.WEIGHTED ? d.tokens : [d.token0, d.token1]}
           />
         ),
-        weightPercent: d.votes.weightPercent,
+        weightPercent: d.votes.weightPercent.toNumber(),
       }
     })
 
