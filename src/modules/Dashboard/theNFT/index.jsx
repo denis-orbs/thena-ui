@@ -94,7 +94,7 @@ function TheNFT() {
           {isLoading ? (
             <Skeleton className='h-[140px] w-full md:h-[180px]' />
           ) : hasNfts ? (
-            <div className='relative flex h-[140px] w-full justify-center overflow-hidden bg-neutral-800 md:h-[180px]'>
+            <div className='relative flex w-full justify-center overflow-hidden bg-neutral-800 md:h-[224px]'>
               <div
                 className={cn(
                   'grid gap-2',
@@ -123,21 +123,11 @@ function TheNFT() {
                   <TextSubHeading className='text-sm text-neutral-50'>{t('Last Epoch Earnings')}</TextSubHeading>
                 </div>
               </div>
-              <Paragraph className='mt-2 block px-4 text-sm font-normal text-neutral-500'>
+              <Paragraph className='mt-2 block px-4 !text-sm font-normal text-neutral-500'>
                 {t('TheNFT benefits earn')}
               </Paragraph>
             </div>
           )}
-
-          {/* Staked Section */}
-          {stakedIds.length > 0 && (
-            <div className='text-center'>
-              <TextHeading className='text-xl text-neutral-500'>
-                {`${t('Staked')} ${formatAmount(stakedIds.length)}`}
-              </TextHeading>
-            </div>
-          )}
-
           <div className='flex flex-col gap-4'>
             <div className='grid grid-cols-2 px-4'>
               <InfoBlock

@@ -10,7 +10,6 @@ import useSWR from 'swr'
 import { fetchAchievements } from '@/app/arena/profile/UserCompletedAchievements'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
@@ -20,7 +19,6 @@ import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAddress, formatAmount, sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
-import { PenEditIcon } from '@/svgs'
 
 import SectionDivider from '../SectionDivider'
 
@@ -111,16 +109,22 @@ function DashboardProfile() {
         ) : (
           <>
             <div className='hidden h-full flex-col justify-between md:flex'>
-              <div className='flex h-full gap-4'>
+              <div className='flex h-full'>
                 <div
-                  className='relative h-full min-h-[432px] w-[27%] rounded-bl-xl rounded-tl-xl bg-cover bg-center bg-no-repeat'
+                  className='relative min-h-[432px] rounded-bl-xl rounded-tl-xl bg-cover bg-center bg-no-repeat md:!w-[211px]'
                   style={{
                     backgroundImage: `url('${
                       userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || '/images/profile-bg.png'
                     }')`,
                   }}
                 >
-                  <NewTextHeading className='absolute top-0 w-full p-4 text-3xl md:text-3xl'>
+                  <NewTextHeading
+                    className={cn(
+                      'absolute top-0 w-full rounded-tl-xl p-4 text-3xl md:text-3xl',
+                      userInfo?.avatar &&
+                        'bg-[linear-gradient(180deg,_rgba(0,0,0,0.61)_50%,_rgba(102,102,102,0)_93.04%)]',
+                    )}
+                  >
                     {t('My Profile')}
                   </NewTextHeading>
                   <Link href='/arena/profile'>
@@ -128,54 +132,65 @@ function DashboardProfile() {
                   </Link>
                 </div>
 
-                <div className='relative flex h-full w-[73%] flex-col gap-4 py-4 pr-4 max-md:hidden'>
-                  <div className='flex items-end justify-between gap-4'>
-                    {!userInfo?.username && (
-                      <NewTextHeading className='flex gap-2 text-xl uppercase !leading-6 md:text-xl'>
-                        <span className='text-neutral-500'>{t('Thena ID')}:</span>
-                        <span className='text-warn-600'>{userInfo.username}</span>
-                      </NewTextHeading>
-                    )}
-                    <Link href='/arena/profile/edit' className='ml-auto self-end'>
-                      <EmphasisIconButton Icon={PenEditIcon} />
-                    </Link>
-                  </div>
-
-                  <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
-                    <NewTextHeading className='text-xl !leading-6 text-neutral-500 md:text-xl'>
-                      {userInfo?.isVerified ? 'Verified' : 'Unverified'}
+                <div className='relative flex h-full flex-1 flex-col gap-4 p-4 max-md:hidden'>
+                  {userInfo?.username && (
+                    <NewTextHeading className='flex gap-2 text-xl uppercase !leading-6 md:text-xl'>
+                      <span className='text-neutral-500'>{t('Thena ID')}:</span>
+                      <span className='text-warn-600'>{userInfo.username}</span>
                     </NewTextHeading>
-                    <span className='text-neutral-500'>{formatAddress(account)}</span>
-                  </TextHeading>
-                  <div className='flex h-10 flex-wrap items-center gap-4'>
-                    <TextHeading className='font-archia text-xl font-semibold'>
-                      <span className='text-neutral-500'>{t(followersCount !== 1 ? 'Followers' : 'Follower')}</span>
-                      <span className='ml-2'>{followersCount}</span>
+                  )}
+                  <div className='flex flex-col gap-2'>
+                    <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
+                      <NewTextHeading className='text-xl text-neutral-500 md:text-xl'>
+                        {userInfo?.isVerified ? 'Verified' : 'Unverified'}
+                      </NewTextHeading>
+                      <span className='text-neutral-500'>{formatAddress(account)}</span>
                     </TextHeading>
-                    <TextHeading className='font-archia text-xl font-semibold'>
-                      <span className='text-neutral-500'>{t('Following')}</span>
-                      <span className='ml-2'>{followingCount}</span>
-                    </TextHeading>
-                  </div>
-                  <div className='flex min-h-10 flex-wrap items-center gap-8'>
-                    <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                      <span className='text-neutral-500'>{t('veTHE Power')}</span>
-                      <span className='ml-4'>{formatAmount(veTHEPower)}</span>
-                    </TextHeading>
-                    <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                      <span className='text-neutral-500'>{t('Thena ID´s')}</span>
-                      <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
-                    </TextHeading>
-                    <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                      <span className='text-neutral-500'>{t('Rank')}</span>
-                      <span className='ml-4'>{userInfo?.rank}</span>
-                    </TextHeading>
+                    <div className='flex h-10 flex-wrap items-center gap-4'>
+                      <TextHeading className='font-archia text-xl font-semibold'>
+                        <span className='text-neutral-500'>{t(followersCount !== 1 ? 'Followers' : 'Follower')}</span>
+                        <span className='ml-2'>{followersCount}</span>
+                      </TextHeading>
+                      <TextHeading className='font-archia text-xl font-semibold'>
+                        <span className='text-neutral-500'>{t('Following')}</span>
+                        <span className='ml-2'>{followingCount}</span>
+                      </TextHeading>
+                    </div>
+                    <div className='flex min-h-10 flex-wrap items-center gap-8'>
+                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                        <span className='text-neutral-500'>{t('veTHE Power')}</span>
+                        <span className='ml-4'>{formatAmount(veTHEPower)}</span>
+                      </TextHeading>
+                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                        <span className='text-neutral-500'>{t('Thena ID´s')}</span>
+                        <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
+                      </TextHeading>
+                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                        <span className='text-neutral-500'>{t('Rank')}</span>
+                        <span className='ml-4'>{userInfo?.rank}</span>
+                      </TextHeading>
+                    </div>
+                    {userInfo?.xProfileUrl && (
+                      <div className='flex h-11 w-full items-center gap-2'>
+                        <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
+                          {t('Socials')}:{' '}
+                        </TextHeading>
+                        <Link
+                          href={`https://x.com/${userInfo?.xProfileUrl}`}
+                          rel='nofollow noopener size-8'
+                          target='_blank'
+                        >
+                          <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
+                            <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
+                          </div>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                   <div
                     className={cn(
-                      'flex flex-wrap items-center overflow-hidden',
-                      'h-[130px]', // 65px height * 2 rows + approx spacing
-                      sortedData.length > 0 && 'mt-2',
+                      'absolute bottom-4 flex flex-wrap items-center space-y-1.5 overflow-hidden',
+                      'max-h-[138px]',
                     )}
                   >
                     {sortedData.map(item => (
@@ -187,22 +202,6 @@ function DashboardProfile() {
                       />
                     ))}
                   </div>
-                  {userInfo?.xProfileUrl && (
-                    <div className='flex h-11 w-full items-center gap-2'>
-                      <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
-                        {t('Socials')}:{' '}
-                      </TextHeading>
-                      <Link
-                        href={`https://x.com/${userInfo?.xProfileUrl}`}
-                        rel='nofollow noopener size-8'
-                        target='_blank'
-                      >
-                        <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
-                          <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
-                        </div>
-                      </Link>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
