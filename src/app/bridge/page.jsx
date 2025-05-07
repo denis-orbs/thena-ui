@@ -24,6 +24,7 @@ export default function BridgePage() {
   const [tab, setTab] = useState('bridge')
   const [amount, setAmount] = useState('')
   const [destination, setDestination] = useState()
+  const [showAlert] = useState(false)
   const t = useTranslations()
   const [error, setError] = useState('')
   const debounceDestination = useDebounce(destination, 500)
@@ -56,7 +57,7 @@ export default function BridgePage() {
   )
 
   useEffect(() => {
-    if (!isAddress(debounceDestination)) {
+    if (debounceDestination && !isAddress(debounceDestination)) {
       // Add validate address
       setError('The address format is not a valid EVM address.')
     } else {
@@ -73,7 +74,7 @@ export default function BridgePage() {
             <div className='flex flex-col gap-2'>
               <Paragraph className='text-neutral-300'>{t('from')}</Paragraph>
               <div className='flex w-full items-center gap-4 rounded-lg bg-neutral-700 p-2'>
-                <CircleImage src='/images/opbnb.png' className='size-9' alt='opBNB' />
+                <CircleImage src='/images/opBNB.png' className='size-9' alt='opBNB' />
                 <div>
                   <TextHeading className='text-sm'>{t('opBNB - Chain')}</TextHeading>
                 </div>
@@ -83,7 +84,7 @@ export default function BridgePage() {
             <div className='flex flex-col gap-2'>
               <Paragraph className='text-neutral-300'>{t('to')}</Paragraph>
               <div className='flex w-full items-center gap-4 rounded-lg bg-neutral-700 p-2'>
-                <CircleImage src='/images/bsc.png' className='size-9' alt='BNB' />
+                <CircleImage src='/images/bnb.png' className='size-9' alt='BNB' />
                 <div>
                   <TextHeading className='text-sm'>{t('BNB - Chain')}</TextHeading>
                 </div>
@@ -139,6 +140,42 @@ export default function BridgePage() {
             />
             {error && <Paragraph className='text-error-500 text-base font-normal'>{error}</Paragraph>}
           </div>
+          {showAlert && (
+            <div className='mt-2 mb-6 flex flex-row items-center gap-4 rounded-2xl bg-neutral-900 p-6'>
+              {/* Chain icons and label */}
+              <div className='flex flex-col justify-center'>
+                <div className='flex items-center gap-2 rounded-lg bg-neutral-600 p-2 text-sm font-semibold text-neutral-100'>
+                  <div className='flex flex-row items-center gap-1'>
+                    <CircleImage src='/images/opBNB.png' className='size-8' alt='opBNB' />
+                    <CircleImage src='/images/bnb.png' className='-ml-2 size-8' alt='BNB' />
+                  </div>
+                  <Paragraph className='font-normal text-neutral-200'>{t('opBNB to BNB')}</Paragraph>
+                </div>
+                <Paragraph className='mt-2 !text-xs text-neutral-50'>
+                  {t('Available Amount on [chain]', {
+                    chain: 'BNB',
+                  })}
+                </Paragraph>
+                <Paragraph className='!text-xs text-neutral-500'>{formatAmount(theAssetBNB?.balance)} THE</Paragraph>
+              </div>
+              {/* Bridge Route Info */}
+              <div className='ml-8 flex flex-col gap-2'>
+                <TextSubHeading className='w-fit text-xl font-medium text-neutral-50'>
+                  {t('Bridge Route')}
+                </TextSubHeading>
+                <ol className='list-decimal pl-5 text-sm text-neutral-50'>
+                  <li>{t('Expected Time')} 5 min</li>
+                  <li>
+                    {t('Bridge [amount1] THE for [amount2] THE via [bridge]', {
+                      amount1: '5000',
+                      amount2: '5000',
+                      bridge: 'ODOS',
+                    })}
+                  </li>
+                </ol>
+              </div>
+            </div>
+          )}
           {account ? (
             <PrimaryButton
               onClick={() => {

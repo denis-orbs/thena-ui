@@ -5,10 +5,10 @@ import { useAccount, useReadContract } from 'wagmi'
 import { ERC20Abi } from '@/constant/abi'
 import { fetchAssets } from '@/lib/api'
 import { fromWei } from '@/lib/utils'
-import { liquidityHub } from '@/modules/LiquidityHub'
+import { useSettings } from '@/state/settings/hooks'
 
 export const useAsset = (networkId, address) => {
-  const { liquidityHubEnabled } = liquidityHub.useLiquidtyHubSettings()
+  const { liquidityHubEnabled } = useSettings()
   const { address: account } = useAccount()
   const { data: assets = [] } = useSWRImmutable(
     ['assets/total', networkId],

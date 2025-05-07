@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useWallet } from '@/hooks/useWallet'
+import useWallet from '@/hooks/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useBridge = () => {
