@@ -75,6 +75,8 @@ export default function ChartPriceRangeInput({
   const t = useTranslations()
   const zoomRef = useRef(null)
 
+  const [currentHover, setCurrentHover] = useState(null)
+
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
   const [boundaryPrices, setBoundaryPrices] = useState()
 
@@ -129,14 +131,14 @@ export default function ChartPriceRangeInput({
   const [midPrice, setMidPrice] = useState()
 
   useEffect(() => {
-    if (pairPrices.length > 0) {
+    if (pairPrices.length > 0 && midPrice === undefined) {
       setMidPrice(
         !isCreate ? pairPrices[pairPrices.length - 1]?.value : price ?? pairPrices[pairPrices.length - 1]?.value,
       )
     }
-  }, [isCreate, pairPrices, price])
+  }, [isCreate, midPrice, pairPrices, price])
 
-  const scrollIncrement = (dataMax - dataMin) / 10
+  const scrollIncrement = useMemo(() => (dataMax - dataMin) / 10, [dataMax, dataMin])
 
   const [range, setRange] = useState(2)
   // Sets the min/max prices of the price axis manually, which is used to center the current price and zoom in/out.
@@ -334,35 +336,40 @@ export default function ChartPriceRangeInput({
   useEffect(() => {
     if (!enableScroll) return
     const container = zoomRef.current
-    if (container) {
-      let lastCall = 0
-      const throttleDelayMs = 50
+    if (!container) return
 
-      // WheelEvent
-      const listener = event => {
-        event.preventDefault()
-        event.stopPropagation()
+    let lastCall = 0
+    const throttleDelayMs = 50
 
-        const now = Date.now()
-        if (now - lastCall >= throttleDelayMs) {
-          lastCall = now
-
-          if (event.deltaY < 0) {
-            setMidPrice(prevMidPrice => (prevMidPrice ? prevMidPrice + scrollIncrement : undefined))
-          } else if (event.deltaY > 0 && minVisiblePrice > 0) {
-            setMidPrice(prevMidPrice => (prevMidPrice ? prevMidPrice - scrollIncrement : undefined))
-          }
-        }
-      }
-
-      container.addEventListener('wheel', listener)
-
-      return () => {
-        container.removeEventListener('wheel', listener)
+    const handleScroll = direction => {
+      if (direction === 'up') {
+        setMidPrice(prev => (prev ? prev + scrollIncrement : undefined))
+      } else if (direction === 'down' && minVisiblePrice > 0) {
+        setMidPrice(prev => (prev ? prev - scrollIncrement : undefined))
       }
     }
-    return undefined
-  }, [enableScroll, midPrice, minVisiblePrice, scrollIncrement])
+
+    const wheelListener = event => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const now = Date.now()
+      if (now - lastCall >= throttleDelayMs) {
+        lastCall = now
+        if (event.deltaY < 0) {
+          handleScroll('up')
+        } else if (event.deltaY > 0) {
+          handleScroll('down')
+        }
+      }
+    }
+
+    container.addEventListener('wheel', wheelListener)
+
+    return () => {
+      container.removeEventListener('wheel', wheelListener)
+    }
+  }, [enableScroll, minVisiblePrice, scrollIncrement])
 
   const isUninitialized = !currencyA || !currencyB
 
@@ -461,6 +468,8 @@ export default function ChartPriceRangeInput({
                                 ((chartSize?.chartContainerHeight || 300) * 0.2 + 28) ?? 300 - (300 * 0.2 + 28), // margin and time scale
                             contentWidth: chartSize?.chartContainerWidth,
                             axisLabelPaneWidth: desktopSizes.rightAxisWidth,
+                            padding:
+                              ((chartSize?.chartContainerHeight || 300) * 0.2 + 28 ?? 300 - (300 * 0.2 + 28)) / 2,
                           }}
                           styles={{
                             area: {
@@ -479,7 +488,13 @@ export default function ChartPriceRangeInput({
                           onBrushDomainChange={onBrushDomainChangeEnded}
                           handleShow={handleShow && brushDomain && chartPriceFinishedRender}
                           setIsOutOfView={setIsOutOfView}
+                          isOutOfView={isOutOfView}
                           isFullRange={isFullRange}
+                          setCurrentHover={setCurrentHover}
+                          currentHover={currentHover}
+                          // setIsFlipped={setIsFlipped}
+                          // container={zoomRef.current}
+                          // triggerScroll={triggerScroll}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />

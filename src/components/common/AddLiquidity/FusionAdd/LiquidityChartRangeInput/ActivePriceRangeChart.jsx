@@ -1,5 +1,5 @@
 import { max as getMax, scaleLinear } from 'd3'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
@@ -13,7 +13,7 @@ export default function ActivePriceRangeChart({
   id = 'activeChartRangeInput',
   data: { series, current, min, max },
   styles,
-  dimensions: { width, height, contentWidth, axisLabelPaneWidth },
+  dimensions: { width, height, padding, contentWidth, axisLabelPaneWidth },
   interactive = true,
   brushDomain,
   brushLabels,
@@ -22,6 +22,9 @@ export default function ActivePriceRangeChart({
   disableBrush = false,
   setIsOutOfView,
   isFullRange = false,
+  currentHover,
+  container,
+  setCurrentHover = () => {},
 }) {
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
@@ -46,6 +49,8 @@ export default function ActivePriceRangeChart({
       onBrushDomainChange([lowerBound, upperBound], undefined)
     }
   }, [brushDomain, onBrushDomainChange, yScale])
+
+  const [liveLocalBrushExtent, setLiveLocalBrushExtent] = useState(brushDomain)
 
   return (
     <>
@@ -93,7 +98,7 @@ export default function ActivePriceRangeChart({
                 value={current}
                 yScale={yScale}
                 width={contentWidth + 12}
-                containerWidth={width - axisLabelPaneWidth}
+                containerWidth={width}
                 lineStyle='dashed'
               />
             )}
@@ -103,8 +108,11 @@ export default function ActivePriceRangeChart({
             yScale={yScale}
             offset={width - axisLabelPaneWidth}
             current={current}
-            min={brushDomain?.[0]}
-            max={brushDomain?.[1]}
+            min={liveLocalBrushExtent?.[0]}
+            max={liveLocalBrushExtent?.[1]}
+            currentHover={currentHover}
+            padding={padding}
+            height={height}
           />
           {handleShow && (
             <Brush2
@@ -114,13 +122,18 @@ export default function ActivePriceRangeChart({
               brushLabelValue={brushLabels}
               brushExtent={brushDomain ?? yScale.domain()}
               hideHandles={!brushDomain}
-              width={width - axisLabelPaneWidth}
+              width={width - axisLabelPaneWidth - 20}
               height={height}
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
               southHandleColor={styles.brush.handle.south}
               setIsOutOfView={setIsOutOfView}
               isFullRange={isFullRange}
+              setCurrentHover={setCurrentHover}
+              currentHover={currentHover}
+              setLiveLocalBrushExtent={setLiveLocalBrushExtent}
+              padding={padding}
+              container={container}
             />
           )}
         </g>
