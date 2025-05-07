@@ -6,9 +6,9 @@ import { ArrowLeftIcon } from '@/svgs'
 
 import { TextButton } from '../buttons/Button'
 
-function LayoutWithBackButton({ children, className }) {
+function LayoutWithBackButton({ children, className, backUrl }) {
   const t = useTranslations()
-  const { back } = useRouter()
+  const { back, push } = useRouter()
 
   return (
     <div className='mt-[64px] lg:mt-[92px]'>
@@ -16,7 +16,13 @@ function LayoutWithBackButton({ children, className }) {
         <TextButton
           className='ml-4 w-fit outline-0 max-lg:pl-0 lg:ml-10'
           LeadingIcon={ArrowLeftIcon}
-          onClick={() => back()}
+          onClick={() => {
+            if (backUrl) {
+              push(backUrl)
+            } else {
+              back()
+            }
+          }}
         >
           {t('Back')}
         </TextButton>
