@@ -44,13 +44,13 @@ const sortOptions = [
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[15%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'lg:w-[18%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
@@ -399,7 +399,7 @@ export default function PoolsPage() {
         apr: (
           <div>
             <div className='flex items-center gap-1'>
-              <Paragraph>{pool.apr}</Paragraph>
+              <Paragraph className='break-all'>{pool.apr}</Paragraph>
               {pool.subpools.length > 0 && (
                 <InfoIcon className='h-4 w-4 min-w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
               )}

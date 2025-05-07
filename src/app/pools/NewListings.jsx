@@ -296,7 +296,7 @@ function NewListings({
       ),
       apr: (
         <div className='flex items-center gap-1'>
-          <Paragraph className='text-sm font-medium md:text-base'>{pool.apr}</Paragraph>
+          <Paragraph className='break-all text-sm font-medium md:text-base'>{pool.apr}</Paragraph>
           {pool.subpools.length > 0 && (
             <InfoIcon
               className='size-4 min-w-4 stroke-neutral-400 max-md:hidden'
