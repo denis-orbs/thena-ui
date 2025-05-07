@@ -153,6 +153,7 @@ function LiquidityAPRChart({ data = [], className }) {
         display: false,
       },
     },
+    responsive: true,
     onHover: (_, elements) => {
       if (!chartRef.current) return
 
@@ -195,7 +196,7 @@ function LiquidityAPRChart({ data = [], className }) {
       const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue?.label : aprValue?.label
 
       return (
-        <>
+        <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center text-center md:top-[78px] md:justify-start md:gap-2'>
           <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
           <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>
             {aprValue?.label === 'None' ? '0' : formatAmount(aprValue?.value, true)}%
@@ -204,35 +205,29 @@ function LiquidityAPRChart({ data = [], className }) {
             ${liquidityValue?.label === 'None' ? '0' : formatAmount(liquidityValue?.value, true)}
           </NewTextHeading>
           <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
-        </>
+        </div>
       )
     }
 
-    return (
-      <>
-        {data.length > 0 ? (
-          <>
-            <div className='text-xl font-semibold text-primary-600 md:text-4xl'>{formatAmount(avgApr, true)}%</div>
-            <div className='text-xl font-semibold uppercase text-primary-300 max-md:hidden'>Average APR</div>
-          </>
-        ) : (
-          <>
-            <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>
-              {t('APR')}
-            </div>
-            <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>0%</NewTextHeading>
-            <NewTextHeading className='text-sm text-primary-300 md:text-xl'>$0</NewTextHeading>
-          </>
-        )}
-      </>
+    return data.length > 0 ? (
+      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center md:top-[110px] md:justify-start'>
+        <NewTextHeading className='text-xl font-semibold !leading-[48px] text-primary-600 md:text-4xl'>
+          {formatAmount(avgApr, true)}%
+        </NewTextHeading>
+        <div className='text-xl font-semibold uppercase !leading-6 text-primary-300 max-md:hidden'>Average APR</div>
+      </div>
+    ) : (
+      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center'>
+        <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
+        <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>0%</NewTextHeading>
+        <NewTextHeading className='text-sm text-primary-300 md:text-xl'>$0</NewTextHeading>
+      </div>
     )
   }, [hoveredIndex, aprData, avgApr, t, data.length, hoveredDataSetIndex, liquidityData])
 
   return (
     <div className={cn('relative h-[200px] w-[200px]', className)}>
-      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-1 text-center md:gap-2'>
-        {renderCenterContent}
-      </div>
+      {renderCenterContent}
 
       <div className='relative z-10'>
         <Doughnut data={chartData} options={options} ref={chartRef} />
