@@ -138,7 +138,7 @@ function Voting() {
                 data={filteredVeTHEs.map(item => ({ ...item, label: `ID #${item.id}` }))}
                 selected={veTHE ? `ID #${veTHE.id}` : ''}
                 setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder={t('Select veTHE')}
+                placeHolder={t('Select ID')}
                 isLocale={false}
                 isApproved={isApproved}
                 approvedId={approvedId}

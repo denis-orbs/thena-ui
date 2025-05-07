@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewParagraph, NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
-import { ZERO_ADDRESS } from '@/constant'
+import { PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
@@ -19,91 +19,149 @@ function AssetsOverview({ positions }) {
   const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
-  const positionsV2 = useMemo(() => positions.filter(pos => pos.version === 2), [positions])
   const filteredPositions = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+
+  const [v1FeesPositions, migratePositions] = useMemo(() => {
+    const v1FeesPos = []
+    const migratePos = []
+    positions.forEach(pos => {
+      const isV1Pool = [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pos.type)
+      const isOldVersion = pos.version === 2
+      if (isOldVersion && isV1Pool && !pos.staked) {
+        v1FeesPos.push(pos)
+      } else if (isOldVersion && ((isV1Pool && pos.staked) || Number(pos.liquidity) > 0)) {
+        migratePos.push(pos)
+      }
+    })
+    return [v1FeesPos, migratePos]
+  }, [positions])
 
   const [totalProvided, totalRewards, totalPools] = useMemo(() => {
     const providedValue = filteredPositions.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
     const rewardUsd = filteredPositions.reduce((sum, item) => sum + item.rewardUsd, 0)
-    return [providedValue, rewardUsd, filteredPositions.length]
-  }, [filteredPositions])
+    const v1FeesUsd = v1FeesPositions.reduce((sum, item) => sum + Number(item.rewardUsd), 0)
+    return [providedValue, rewardUsd + v1FeesUsd, filteredPositions.length]
+  }, [filteredPositions, v1FeesPositions])
 
+  const processManualPosition = useCallback(
+    pos => {
+      const isFarming = pos?.deployer === ZERO_ADDRESS
+      if (isFarming) {
+        const amount = fromWei(pos.farmRewardData?.[0] ?? 0n)
+        if (amount.gt(0)) {
+          addReward({
+            amount,
+            type: 'manual',
+            args: [account, pos.key, pos.tokenId],
+            key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
+          })
+        }
+      } else if (pos.fees?.[0] > 0n || pos.fees?.[1] > 0n) {
+        const [reward0, reward1] = pos.rewards
+        addFees({
+          amount: [reward0.amount, reward1.amount],
+          symbol: pos.symbol,
+          type: 'manual',
+          args: [account, pos.tokenId, pos.version],
+          key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
+        })
+      }
+    },
+    [account, addReward, addFees],
+  )
+
+  const processWeightedPosition = useCallback(
+    pos => {
+      const amount = pos.claimableFee?.total ?? ZERO_VALUE
+      if (pos.staked && amount.gt(0)) {
+        addReward({
+          amount,
+          type: 'weighted',
+          args: pos.gauge.address,
+          key: getKeyFromTokenAddress(
+            'weight',
+            pos.tokens.map(tk => tk.address),
+          ),
+        })
+      }
+    },
+    [addReward],
+  )
+
+  const processV1Position = useCallback(
+    pos => {
+      const feeAmounts = [pos.reward0, pos.reward1]
+      const type = getStrategy(pos.title)
+
+      if (feeAmounts[0]?.gt(0) || feeAmounts[1]?.gt(0)) {
+        addFees({
+          type,
+          args: pos.address,
+          symbol: pos.symbol,
+          amount: feeAmounts,
+          version: pos.version,
+          key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+        })
+      }
+    },
+    [addFees],
+  )
+
+  const processV3Position = useCallback(
+    pos => {
+      const type = getStrategy(pos.title)
+      let args = null
+      let amount = ZERO_VALUE
+      let feeAmounts = [ZERO_VALUE, ZERO_VALUE]
+
+      if (type === 'classic' || type === 'stable') {
+        args = pos.gauge.address
+        amount = pos.account.gaugeEarned
+        feeAmounts = [pos.reward0, pos.reward1]
+      } else if (type === 'gamma' || type === 'ichi') {
+        args = pos.address
+        amount = pos.account.gaugeEarned
+      }
+
+      if (amount.gt(0)) {
+        addReward({
+          type,
+          args,
+          symbol: pos.symbol,
+          amount,
+          version: pos.version,
+          key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+        })
+      }
+
+      if (feeAmounts[0]?.gt(0) || feeAmounts[1]?.gt(0)) {
+        addFees({
+          type,
+          args: pos.address,
+          symbol: pos.symbol,
+          amount: feeAmounts,
+          version: pos.version,
+          key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+        })
+      }
+    },
+    [addReward, addFees],
+  )
+
+  // Process all positions
   useEffect(() => {
     positions.forEach(pos => {
       if (pos.type === 'Manual') {
-        const isFarming = pos?.deployer === ZERO_ADDRESS
-        if (isFarming) {
-          const amount = fromWei(pos.farmRewardData?.[0] ?? 0n)
-          if (amount.gt(0)) {
-            addReward({
-              amount,
-              type: 'manual',
-              args: [account, pos.key, pos.tokenId],
-              key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
-            })
-          }
-        } else if (pos.fees?.[0] > 0n || pos.fees?.[1] > 0n) {
-          const [reward0, reward1] = pos.rewards
-          addFees({
-            amount: [reward0.amount, reward1.amount],
-            symbol: pos.symbol,
-            type: 'manual',
-            args: [account, pos.tokenId, pos.version],
-            key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
-          })
-        }
+        processManualPosition(pos)
       } else if (pos.type === 'Weighted') {
-        const amount = pos.claimableFee?.total ?? ZERO_VALUE
-        if (pos.staked && amount.gt(0)) {
-          addReward({
-            amount,
-            type: 'weighted',
-            args: pos.gauge.address,
-            key: getKeyFromTokenAddress(
-              'weight',
-              pos.tokens.map(tk => tk.address),
-            ),
-          })
-        }
+        processWeightedPosition(pos)
+      } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pos.title) && pos.version === 2) {
+        processV1Position(pos)
       } else if (pos.version === 3) {
-        const type = getStrategy(pos.title)
-        let args = null
-        let amount = ZERO_VALUE
-        let feeAmounts = [ZERO_VALUE, ZERO_VALUE]
-
-        if (type === 'classic' || type === 'stable') {
-          args = pos.gauge.address
-          amount = pos.account.gaugeEarned
-          feeAmounts = [pos.reward0, pos.reward1]
-        } else if (type === 'gamma' || type === 'ichi') {
-          args = pos.address
-          amount = pos.account.gaugeEarned
-        }
-
-        if (amount.gt(0)) {
-          addReward({
-            type,
-            args,
-            symbol: pos.symbol,
-            amount,
-            version: pos.version,
-            key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
-          })
-        }
-
-        if (feeAmounts[0]?.gt(0) || feeAmounts[1]?.gt(0)) {
-          addFees({
-            type,
-            args: pos.address,
-            symbol: pos.symbol,
-            amount: feeAmounts,
-            version: pos.version,
-            key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
-          })
-        }
+        processV3Position(pos)
       }
     })
-  }, [account, addReward, addFees, positions])
+  }, [positions, processManualPosition, processWeightedPosition, processV1Position, processV3Position])
 
   return (
     <div className='space-y-6'>
@@ -136,7 +194,7 @@ function AssetsOverview({ positions }) {
         </div>
       </div>
 
-      {positionsV2.length > 0 && (
+      {migratePositions.length > 0 && (
         <div className={cn('flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
             <WarningTriangleIcon className='size-full' />

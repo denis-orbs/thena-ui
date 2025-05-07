@@ -125,7 +125,9 @@ function ClaimableRewards() {
               <div className='flex max-h-[52px] flex-1 items-center gap-2'>
                 <Paragraph
                   style={{
-                    width: percentage.farmed ? `${percentage.farmed < 24 ? 24 : percentage.farmed}%` : 'fit-content',
+                    width: percentage.farmed
+                      ? `${percentage.farmed < 24 ? 24 : percentage.farmed > 82 ? 82 : percentage.farmed}%`
+                      : 'fit-content',
                   }}
                   className={cn(
                     'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
@@ -142,10 +144,12 @@ function ClaimableRewards() {
               <div className='flex max-h-[52px] flex-1 items-center gap-2'>
                 <Paragraph
                   style={{
-                    width: percentage.voting ? `${percentage.voting < 15 ? 15 : percentage.voting}%` : 'fit-content',
+                    width: percentage.voting
+                      ? `${percentage.voting < 15 ? 15 : percentage.voting > 82 ? 82 : percentage.voting}%`
+                      : 'fit-content',
                   }}
                   className={cn(
-                    'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
+                    'flex h-full max-w-[85%] items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
                     percentage.voting && 'bg-primary-600 text-primary-950',
                   )}
                 >
@@ -159,7 +163,9 @@ function ClaimableRewards() {
               <div className='flex max-h-[52px] flex-1 items-center gap-2'>
                 <Paragraph
                   style={{
-                    width: percentage.theNft ? `${percentage.theNft < 25 ? 25 : percentage.theNft}%` : 'fit-content',
+                    width: percentage.theNft
+                      ? `${percentage.theNft < 25 ? 25 : percentage.theNft > 82 ? 82 : percentage.theNft}%`
+                      : 'fit-content',
                   }}
                   className={cn(
                     'flex h-full items-center rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
