@@ -87,7 +87,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const currentPrice = useMemo(() => {
     if (position) return position.currentPrice
     if (!mintInfo.price) return
-    const price = mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
+    const price = mintInfo.invertPrice ? mintInfo?.price?.invert()?.toSignificant(5) : mintInfo?.price?.toSignificant(5)
     if (price) return parseFloat(price)
   }, [mintInfo.invertPrice, mintInfo.price, position])
 
