@@ -12,7 +12,6 @@ import InputTokenMemo from '@/app/pools/(add-liquidity)/add-liquidity/InputToken
 import { PairBasicInfo } from '@/app/pools/(add-liquidity)/add-liquidity/PairBasicInfo'
 import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
@@ -220,138 +219,136 @@ function AddLiquidityWeighted({ pool }) {
   const isLaptop = windowSize.width > 1024
 
   return (
-    <LayoutWithBackButton>
-      <div className='flex flex-col gap-4'>
-        <div className='space-y-2'>
-          <div className='flex flex-row gap-4 lg:gap-8'>
-            <GroupIconTokens
-              height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
-              width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
-              tokens={pool?.tokens || []}
-              classNames={{
-                images: 'size-6 lg:size-10 2xl:size-[64px]',
-              }}
-            />
-            <NewTextHeading style={{ lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}px` }}>
-              {pool?.symbol}
-            </NewTextHeading>
-          </div>
-          <div className='flex flex-col'>
-            <div className='flex flex-row items-center justify-between'>
-              <NewTextSubHeading>{t('Weighted')}</NewTextSubHeading>
-              <EmphasisButton
-                className={cn(
-                  'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11 2xl:hidden',
-                  showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
-                )}
-                onClick={() => setShowLiquidityInfo(prev => !prev)}
-              >
-                <InfoNeutralIcon className='size-4 md:size-5' />
-              </EmphasisButton>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: -10, height: 0 }}
-              animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className='overflow-hidden'
-            >
-              <div className='mt-4 block w-full bg-neutral-900 2xl:hidden'>
-                <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
-              </div>
-            </motion.div>
-          </div>
+    <div className='flex flex-col gap-4'>
+      <div className='space-y-2'>
+        <div className='flex flex-row gap-4 lg:gap-8'>
+          <GroupIconTokens
+            height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
+            width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
+            tokens={pool?.tokens || []}
+            classNames={{
+              images: 'size-6 lg:size-10 2xl:size-[64px]',
+            }}
+          />
+          <NewTextHeading style={{ lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}px` }}>
+            {pool?.symbol}
+          </NewTextHeading>
         </div>
-        <div className='grid gap-4 2xl:grid-cols-add-liquidity-layout'>
-          <div className='w-full space-y-4 2xl:flex-[6] 2xl:space-y-8'>
-            <div className='space-y-2 md:space-y-4'>
-              <PairBasicInfo pair={pool} isMobile />
-              <div className='block 2xl:hidden'>
-                <PoolAttributesSection pair={pool} />
-              </div>
-            </div>
-
-            <div className='space-y-2 md:space-y-4'>
-              <MenuTab className='grid h-8 w-full grid-cols-2 md:h-11' menuData={toggleDepositType} />
-              <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
-              {depositType === DEPOSIT_TYPE.ALL && (
-                <div
-                  className={cn(
-                    'grid grid-cols-1 gap-4 lg:grid-cols-2 3xl:grid-cols-3',
-                    (tokensData || []).length <= 2 && '3xl:grid-cols-2',
-                  )}
-                >
-                  {(tokensData || []).map((token, idx) => (
-                    <InputTokenMemo
-                      key={token?.address}
-                      token={token}
-                      autoFocus={idx === 0}
-                      amount={token.amount}
-                      onAmountChange={value => handleAmountChange(value, token)}
-                      alowDouble
-                      weight={token.weight}
-                    />
-                  ))}
-                </div>
+        <div className='flex flex-col'>
+          <div className='flex flex-row items-center justify-between'>
+            <NewTextSubHeading>{t('Weighted')}</NewTextSubHeading>
+            <EmphasisButton
+              className={cn(
+                'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11 2xl:hidden',
+                showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
               )}
-              {depositType === DEPOSIT_TYPE.SINGLE && (
-                <div>
-                  <TokenAmountInput
-                    type='number'
-                    amount={amountDeposit}
-                    setAsset={setTokenDeposit}
-                    asset={tokenDeposit}
-                    maxBalance={isDouble ? balance : null}
-                    autoFocus
-                    onAmountChange={setAmountDeposit}
-                    assetsSelect={tokensData}
-                    showPercent={false}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className='flex flex-col gap-2'>
-              <EmphasisButton className='hidden w-full max-2xl:block' onClick={() => router.push('/pools')}>
-                {t('Cancel')}
-              </EmphasisButton>
-              {pool?.gauge?.address === zeroAddress ? (
-                <PrimaryButton
-                  className='w-full'
-                  onClick={() => {
-                    if (isDisable) {
-                      warnToast('Invalid Amount')
-                      return false
-                    }
-                    onAddLiquidity(false)
-                  }}
-                >
-                  {t('Deposit')}
-                </PrimaryButton>
-              ) : (
-                <PrimaryButton
-                  className='w-full'
-                  disabled={pool?.gauge?.address === zeroAddress}
-                  onClick={() => {
-                    if (isDisable) {
-                      warnToast('Invalid Amount')
-                      return false
-                    }
-                    onAddLiquidity(true)
-                  }}
-                >
-                  {t('Deposit & Stake')}
-                </PrimaryButton>
-              )}
-            </div>
+              onClick={() => setShowLiquidityInfo(prev => !prev)}
+            >
+              <InfoNeutralIcon className='size-4 md:size-5' />
+            </EmphasisButton>
           </div>
-          <div className='hidden w-full space-y-2 2xl:block 2xl:flex-[4]'>
-            <PoolAttributesSection pair={pool} />
-            <LiquidityPoolInfo pool={pool} colors={colors} />
-          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='overflow-hidden'
+          >
+            <div className='mt-4 block w-full bg-neutral-900 2xl:hidden'>
+              <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
+            </div>
+          </motion.div>
         </div>
       </div>
-    </LayoutWithBackButton>
+      <div className='grid gap-4 2xl:grid-cols-add-liquidity-layout'>
+        <div className='w-full space-y-4 2xl:flex-[6] 2xl:space-y-8'>
+          <div className='space-y-2 md:space-y-4'>
+            <PairBasicInfo pair={pool} isMobile />
+            <div className='block 2xl:hidden'>
+              <PoolAttributesSection pair={pool} />
+            </div>
+          </div>
+
+          <div className='space-y-2 md:space-y-4'>
+            <MenuTab className='grid h-8 w-full grid-cols-2 md:h-11' menuData={toggleDepositType} />
+            <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
+            {depositType === DEPOSIT_TYPE.ALL && (
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-4 lg:grid-cols-2 3xl:grid-cols-3',
+                  (tokensData || []).length <= 2 && '3xl:grid-cols-2',
+                )}
+              >
+                {(tokensData || []).map((token, idx) => (
+                  <InputTokenMemo
+                    key={token?.address}
+                    token={token}
+                    autoFocus={idx === 0}
+                    amount={token.amount}
+                    onAmountChange={value => handleAmountChange(value, token)}
+                    alowDouble
+                    weight={token.weight}
+                  />
+                ))}
+              </div>
+            )}
+            {depositType === DEPOSIT_TYPE.SINGLE && (
+              <div>
+                <TokenAmountInput
+                  type='number'
+                  amount={amountDeposit}
+                  setAsset={setTokenDeposit}
+                  asset={tokenDeposit}
+                  maxBalance={isDouble ? balance : null}
+                  autoFocus
+                  onAmountChange={setAmountDeposit}
+                  assetsSelect={tokensData}
+                  showPercent={false}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <EmphasisButton className='hidden w-full max-2xl:block' onClick={() => router.push('/pools')}>
+              {t('Cancel')}
+            </EmphasisButton>
+            {pool?.gauge?.address === zeroAddress ? (
+              <PrimaryButton
+                className='w-full'
+                onClick={() => {
+                  if (isDisable) {
+                    warnToast('Invalid Amount')
+                    return false
+                  }
+                  onAddLiquidity(false)
+                }}
+              >
+                {t('Deposit')}
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton
+                className='w-full'
+                disabled={pool?.gauge?.address === zeroAddress}
+                onClick={() => {
+                  if (isDisable) {
+                    warnToast('Invalid Amount')
+                    return false
+                  }
+                  onAddLiquidity(true)
+                }}
+              >
+                {t('Deposit & Stake')}
+              </PrimaryButton>
+            )}
+          </div>
+        </div>
+        <div className='hidden w-full space-y-2 2xl:block 2xl:flex-[4]'>
+          <PoolAttributesSection pair={pool} />
+          <LiquidityPoolInfo pool={pool} colors={colors} />
+        </div>
+      </div>
+    </div>
   )
 }
 

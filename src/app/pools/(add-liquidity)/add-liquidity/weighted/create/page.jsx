@@ -9,7 +9,9 @@ import { useSelector } from 'react-redux'
 import Loading from '@/app/loading'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { NewTextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useBackURL } from '@/hooks/useBackURL'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
@@ -81,6 +83,7 @@ function PoolWithStep({
 export default function CreateWeightedPoolPage() {
   const t = useTranslations()
   const { push } = useRouter()
+  const backUrl = useBackURL(PAIR_TYPES.WEIGHTED)
 
   const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
 
@@ -136,7 +139,7 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl={backUrl}>
       <div className='flex flex-col gap-4 md:gap-8'>
         <div className='flex items-center gap-8'>
           <ScalesIcon className='hidden size-14 lg:block' />
