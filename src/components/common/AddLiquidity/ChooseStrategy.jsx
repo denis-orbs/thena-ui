@@ -136,13 +136,14 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const handleChooseStrategy = useCallback(
     sub => {
       if (!sub) return setStrategy(null)
+      console.log(sub)
 
       const _isAutomatic = !MANUAL_TYPES.includes(sub.title)
       setIsAutomatic(_isAutomatic)
 
       setStrategy({
         title: sub.title,
-        tvl: sub.tvl?.toNumber() ?? 0,
+        tvl: sub.gauge?.tvl?.toNumber() ?? 0,
         apr: sub.gauge?.apr?.toNumber() ?? 0,
         account: {
           totalLp: sub.account?.totalLp?.toNumber(),
@@ -165,8 +166,9 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
         isFarming: sub.title.includes('Farming'),
         isAutomatic: _isAutomatic,
         isDefault: sub.isDefault ?? true,
-        version: 3,
         fee: sub.fee,
+        version: sub.version,
+        gauge: sub.gauge,
       })
     },
     [setStrategy],
@@ -206,11 +208,11 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title)}</TextHeading>
+              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(sub.tvl)}</Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
                 </div>
               </div>
             </div>

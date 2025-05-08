@@ -11,6 +11,7 @@ import CustomTooltip from '@/components/tooltip'
 import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
+import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
@@ -114,6 +115,10 @@ function NotStakedItem({ position }) {
     position.token1.decimals,
     position.token1.price,
   ])
+  const isSingleSided = useMemo(
+    () => ICHI_VAULTS[networkId].some(v => v.address === position.address),
+    [position.address, networkId],
+  )
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: position.token0.address,
@@ -258,11 +263,11 @@ function NotStakedItem({ position }) {
     () => (
       <div
         className={cn('flex w-full justify-center gap-2', {
-          'grid-cols-2': !!migrationOptions,
-          'grid-cols-3': !migrationOptions,
+          'grid-cols-2': !!migrationOptions && !isSingleSided,
+          'grid-cols-3': !migrationOptions && isSingleSided,
         })}
       >
-        {!migrationOptions && (
+        {(!migrationOptions || isSingleSided) && (
           <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
             {t('Stake')}
           </PrimaryButton>
@@ -293,10 +298,10 @@ function NotStakedItem({ position }) {
               {t('Remove')}
             </OutlinedButton>
 
-            {version === 3 ? (
+            {version === 3 || isSingleSided ? (
               <EmphasisButton
                 className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.address}&back=1`)}
+                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=1`)}
               >
                 {t('Add')}
               </EmphasisButton>
@@ -316,7 +321,7 @@ function NotStakedItem({ position }) {
         )}
       </div>
     ),
-    [feesInUsd, feesPending, isV1Pool, migrationOptions, onClaimFees, position, push, t, version],
+    [feesInUsd, feesPending, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, push, t, version],
   )
 
   return (

@@ -1,5 +1,6 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -90,7 +91,6 @@ export default function PoolsPage() {
   const { push } = useRouter()
   const { pairs } = usePairs()
   const vaults = useVaults()
-  const vaultsV3 = useMemo(() => vaults.filter(v => v.version === 3), [vaults])
   const { networkId } = useChainSettings()
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -112,7 +112,7 @@ export default function PoolsPage() {
       }
 
       if (ICHI_TYPES.includes(title)) {
-        return [`ICHI ${sub.allowed.symbol}`, '']
+        return [`${sub.version === 2 ? 'ICHI Single Sided' : 'ICHI'} ${sub.allowed.symbol}`, '']
       }
 
       if (MANUAL_TYPES.includes(title)) {
@@ -159,6 +159,27 @@ export default function PoolsPage() {
             return checkSubStable || item.type === filter
           })
 
+    final = final.map(pool => {
+      const singleSideVault = vaults.find(v => v.algebra === pool.address)
+      return {
+        ...pool,
+        tvlUSD: singleSideVault
+          ? BigNumber(singleSideVault.gauge?.tvl || 0)
+              .plus(BigNumber(pool.tvlUSD))
+              .toNumber()
+          : pool.tvlUSD,
+        reserve0: singleSideVault
+          ? BigNumber(singleSideVault.token0?.reserve || 0)
+              .plus(BigNumber(pool.reserve0))
+              .toNumber()
+          : pool.reserve0,
+        reserve1: singleSideVault
+          ? BigNumber(singleSideVault.token1?.reserve || 0)
+              .plus(BigNumber(pool.reserve1))
+              .toNumber()
+          : pool.reserve1,
+      }
+    })
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
         ? final
@@ -183,7 +204,7 @@ export default function PoolsPage() {
               withComma.toLowerCase().includes(searchText.toLowerCase())
             )
           })
-  }, [isInactive, filter, strategy, searchText, pairs])
+  }, [isInactive, filter, strategy, searchText, pairs, vaults])
 
   const newListingsPool = useMemo(() => filteredPools.filter(item => item.isNewListing), [filteredPools])
 
@@ -408,17 +429,15 @@ export default function PoolsPage() {
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-sm'>APR</TextHeading>
                 <div className='flex flex-col gap-1'>
-                  {pool.subpools
-                    .filter(item => item.version === 3)
-                    .map((sub, idx) => (
-                      <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
-                        <div className='flex items-center gap-1'>
-                          <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
-                          <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
-                        </div>
-                        <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
+                  {pool.subpools.map((sub, idx) => (
+                    <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
+                      <div className='flex items-center gap-1'>
+                        <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
+                        <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
                       </div>
-                    ))}
+                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CustomTooltip>
@@ -509,17 +528,19 @@ export default function PoolsPage() {
 
   return (
     <div>
-      {vaultsV3.length > 0 && (
+      {vaults.length > 0 && networkId === ChainId.BSC && (
         <>
           <div className='flex items-center justify-between'>
-            <h2>{networkId === ChainId.BSC ? t('THE Single Sided Vaults') : t('Single Sided Vaults')} </h2>
+            <h2>{t('THE Single Sided Vaults')} </h2>
           </div>
           <div className='mt-4 flex items-center gap-8 overflow-auto pb-4'>
-            {vaultsV3.map(trending => (
+            {vaults.map(trending => (
               <Box
                 className='flex w-full cursor-pointer flex-col gap-4'
                 key={trending.address}
-                onClick={() => push(`/pools/${trending.algebra}`)}
+                onClick={() => {
+                  push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}`)
+                }}
               >
                 <div className='flex items-start justify-between gap-4'>
                   <div className='flex items-center gap-3'>
