@@ -1,12 +1,12 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
-import { NeutralBadge } from '@/components/badges/Badge'
-import Selection from '@/components/selection'
-import { formatAmount } from '@/lib/utils'
+import { Paragraph } from '@/components/typography'
+import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { ChevronSelectorVerticalIcon, InfinityIcon } from '@/svgs'
 
 const PresetProfits = {
   VERY_LOW: 'VERY_LOW',
@@ -45,7 +45,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.SAFE,
-        title: 'Safe',
+        title: 'Broad',
+        percent: '20%',
         min: 0.8,
         max: 1.2,
         risk: PresetProfits.LOW,
@@ -53,7 +54,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.NORMAL,
-        title: 'Common',
+        title: 'Moderate',
+        percent: '10%',
         min: 0.9,
         max: 1.1,
         risk: PresetProfits.MEDIUM,
@@ -61,7 +63,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.RISK,
-        title: 'Expert',
+        title: 'Tight',
+        percent: '5%',
         min: 0.95,
         max: 1.05,
         risk: PresetProfits.HIGH,
@@ -74,9 +77,21 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     () =>
       ranges.map(range => ({
         label: (
-          <div className='flex flex-row items-center justify-center gap-2 md:gap-3 2xl:gap-4'>
-            {t(range.title)}{' '}
-            <NeutralBadge className='whitespace-nowrap md:text-xs'>{formatAmount(APRs?.[range.type])} %</NeutralBadge>
+          <div className='flex flex-col items-center justify-center gap-1'>
+            <Paragraph className='font-medium text-neutral-50 lg:text-sm'>
+              APR: {formatAmount(APRs?.[range.type])}%
+            </Paragraph>
+            <div className='flex items-center gap-4'>
+              <Paragraph className='text-xs lg:text-xs'>{t(range.title)}</Paragraph>
+              {range.percent ? (
+                <div className='flex items-center gap-1'>
+                  <ChevronSelectorVerticalIcon className='size-4' />
+                  <Paragraph className='text-xs lg:text-xs'>{range.percent}</Paragraph>
+                </div>
+              ) : (
+                <InfinityIcon className='size-4' />
+              )}
+            </div>
           </div>
         ),
         active: activePreset === range.type,
@@ -89,11 +104,24 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   )
 
   return (
-    <Selection
-      className='grid grid-cols-2 items-stretch gap-x-0.5 gap-y-2 md:grid-cols-4 md:items-center md:gap-0.5 [&>button]:py-2 [&>button]:text-sm'
-      data={rangeSelections}
-      isFull
-      isTranslation={false}
-    />
+    <div
+      className={cn(
+        'grid grid-cols-2 bg-neutral-900 md:grid-cols-4',
+        'items-stretch gap-1 rounded-xl p-0.5 md:items-center',
+      )}
+    >
+      {rangeSelections.map((range, index) => (
+        <div
+          key={index}
+          onClick={range.onClickHandler}
+          className={cn(
+            'cursor-pointer rounded-xl bg-neutral-800 p-2 hover:bg-neutral-700',
+            range.active && 'bg-neutral-700',
+          )}
+        >
+          {range.label}
+        </div>
+      ))}
+    </div>
   )
 }

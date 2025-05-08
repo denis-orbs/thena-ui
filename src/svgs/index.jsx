@@ -28,6 +28,7 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import ChevronSelectorVerticalIcon from '~/svgs/chevron-selector-vertical.svg'
 import ChevronUpIcon from '~/svgs/chevron-up.svg'
 import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
 import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
@@ -61,6 +62,7 @@ import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import GiftIcon from '~/svgs/gift.svg'
 import GiftArenaIcon from '~/svgs/gift-arena.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
+import InfinityIcon from '~/svgs/infinity.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import Info2Icon from '~/svgs/info-circle-2.svg'
 import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
@@ -174,6 +176,7 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ChevronSelectorVerticalIcon,
   ChevronUpIcon,
   ClassicPoolIcon,
   Clock,
@@ -206,6 +209,7 @@ export {
   GiftArenaIcon,
   GiftIcon,
   HamburgerIcon,
+  InfinityIcon,
   Info2Icon,
   InfoCirCleDisableIcon,
   InfoCircleGradient,
