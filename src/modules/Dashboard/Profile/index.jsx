@@ -101,7 +101,10 @@ function DashboardProfile() {
                 {t('Account not available desc')}
               </Paragraph>
 
-              <PrimaryButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+              <PrimaryButton
+                className='w-full max-md:h-8 max-md:text-xs'
+                onClick={() => push('/dashboard/arena/thena-id/mint')}
+              >
                 GET THENA ID
               </PrimaryButton>
             </div>
