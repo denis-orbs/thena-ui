@@ -29,6 +29,7 @@ function TokenModal({
   otherAsset,
   setOtherAsset,
   onAssetSelect = () => {},
+  hiddenAssets = [],
 }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
@@ -59,8 +60,8 @@ function TokenModal({
       result.push(customToken)
     }
 
-    return result
-  }, [baseAssets, customToken, localTokens, search])
+    return result.filter(asset => !hiddenAssets.includes(asset.address))
+  }, [baseAssets, customToken, localTokens, search, hiddenAssets])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [

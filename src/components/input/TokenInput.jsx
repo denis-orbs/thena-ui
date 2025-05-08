@@ -17,12 +17,14 @@ function TokenInput({
   setAmount,
   autoFocus = false,
   disabled = false,
+  className = '',
+  hiddenAssets = [],
 }) {
   const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
 
   return (
-    <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+    <div className={`flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 ${className}`}>
       <div className='flex items-center justify-between gap-2'>
         <input
           type='number'
@@ -53,6 +55,7 @@ function TokenInput({
         setSelectedAsset={setAsset}
         otherAsset={otherAsset}
         setOtherAsset={setOtherAsset}
+        hiddenAssets={hiddenAssets}
       />
     </div>
   )
