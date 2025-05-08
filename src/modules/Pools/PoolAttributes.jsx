@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
@@ -6,6 +7,7 @@ import { useReadContract } from 'wagmi'
 
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, PAIR_TYPES, SCAN_URLS } from '@/constant'
 import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
+import { newPoolAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
@@ -39,6 +41,21 @@ export function PoolAttributesCL({ strategy, pool }) {
       staleTime: Infinity,
     },
   })
+  const { data: feeStrategyInfo } = useReadContract({
+    address: strategy?.address,
+    abi: newPoolAbi,
+    functionName: 'globalState',
+    query: {
+      enabled: Boolean(strategy?.address) && strategy?.title === 'CL_SwapFee',
+    },
+  })
+
+  const [treasuryFeePercent, userEarnFeePercent] = useMemo(() => {
+    if (!feeStrategyInfo) return [0, 0]
+    const communityFee = BigNumber(feeStrategyInfo?.[4] || 0n).div(1000)
+    const userEarnFee = BigNumber(1).minus(communityFee)
+    return [communityFee.times(100).toNumber(), userEarnFee.times(100).toNumber()]
+  }, [feeStrategyInfo])
 
   const createdAt = useMemo(() => {
     const date = new Date(strategy.createdAt ?? pool?.createdAt)
@@ -86,7 +103,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         {/* Pool Name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
-          <div className='col-span-4 text-neutral-50'>{`Conc. Liquidity ${pool.symbol ?? strategy?.symbol}`}</div>
+          <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
         </div>
 
         {/* Pool Symbol */}
@@ -224,6 +241,20 @@ export function PoolAttributesCL({ strategy, pool }) {
             </Link>
           </div>
         </div>
+
+        {strategy?.title === 'CL_SwapFee' && (
+          <>
+            <div className='grid grid-cols-7'>
+              <div className='col-span-3 text-neutral-50'>{t('User Earnings')}:</div>
+              <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: userEarnFeePercent })}</div>
+            </div>
+
+            <div className='grid grid-cols-7'>
+              <div className='col-span-3 text-neutral-50'>{t('Treasury Earnings')}:</div>
+              <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: treasuryFeePercent })}</div>
+            </div>
+          </>
+        )}
 
         {/* Pool Access Control Roles */}
         <div className='grid grid-cols-7'>

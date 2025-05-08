@@ -1238,7 +1238,7 @@
   "Pool Attributes": "Pool Attributes",
   "Symbol": "Symbol",
   "Type": "Type",
-  "Swap fees": "Swap fees",
+  "Swap fees": "Swap Fee",
   "Pool Owner": "Pool Owner",
   "Attribute immutability": "Attribute immutability",
   "LP token price": "LP token price",
@@ -1301,7 +1301,7 @@
   "Type attribute CL pool": "Concentrated Liquidity - Algebra Integral v1.2",
   "Strategy Type": "Strategy Type",
   "Pool Plugin": "Pool Plugin",
-  "Creation date": "Creation date",
+  "Creation date": "Creation Date",
   "Hot Pools": "Hot Pools",
   "Pool Deployer": "Pool Deployer",
   "Success": "Success",
@@ -1544,5 +1544,8 @@
   "Mint your ID": "Mint your ID",
   "Migrate your Positions": "Migrate your Positions",
   "Migrate desc 1": "You still have positions in pools that are no longer supported.",
-  "Migrate desc 2": "Please migrate your positions to V3 to unlock the full potential of THENA."
+  "Migrate desc 2": "Please migrate your positions to V3 to unlock the full potential of THENA.",
+  "User Earnings": "User Earnings",
+  "Treasury Earnings": "Treasury Earnings",
+  "[fee] % (of fees)": "{fee} % (of fees)"
 }
