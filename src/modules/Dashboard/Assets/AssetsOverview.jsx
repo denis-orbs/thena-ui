@@ -29,7 +29,10 @@ function AssetsOverview({ positions }) {
       const isOldVersion = pos.version === 2
       if (isOldVersion && isV1Pool && !pos.staked) {
         v1FeesPos.push(pos)
-      } else if (isOldVersion && ((isV1Pool && pos.staked) || Number(pos.liquidity) > 0)) {
+      } else if (
+        isOldVersion &&
+        ((isV1Pool && pos.staked) || Number(pos.fiatValueOfLiquidity) > 0 || Number(pos.liquidity) > 0)
+      ) {
         migratePos.push(pos)
       }
     })

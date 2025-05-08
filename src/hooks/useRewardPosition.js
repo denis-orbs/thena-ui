@@ -56,7 +56,7 @@ export const useRewardPosition = () => {
     if (gamma.size > 0) {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -66,7 +66,7 @@ export const useRewardPosition = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -96,7 +96,7 @@ export const useRewardPosition = () => {
     if (manualFees.size > 0) {
       manualFees.forEach(_pair => {
         transactions[`manual-fees-${_pair.args}`] = {
-          desc: `${t('Claim Fees')} ${_pair.symbol} Manual pools #${_pair.args[1]}`,
+          desc: `${t('Claim Fees')} ${_pair.symbol} Manual pool #${_pair.args[1]}`,
           status: TXN_STATUS.START,
           hash: null,
         }

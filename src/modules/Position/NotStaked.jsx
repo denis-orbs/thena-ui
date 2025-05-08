@@ -205,7 +205,7 @@ export default function NotStaked({ pool }) {
               >
                 {t('Add')}
               </EmphasisButton>
-            ) : migrationOptions && migrationOptions.length > 0 ? (
+            ) : migrationOptions?.length > 0 ? (
               <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
                 <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
               </Link>
