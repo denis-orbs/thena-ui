@@ -31,9 +31,9 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
     const tickValues = yScale.ticks(4)
     return axisRight(yScale).tickValues(tickValues).tickFormat(tickFormat)
   }, [yScale])
-  const minY = min !== undefined ? yScale(min) : null
-  const maxY = max !== undefined ? yScale(max) : null
-  const currentY = current !== undefined ? yScale(current) : null
+  const minY = min !== undefined ? yScale(min) : undefined
+  const maxY = max !== undefined ? yScale(max) : undefined
+  const currentY = current !== undefined ? yScale(current) : undefined
   const currentLabel =
     current !== undefined ? `${current <= 1e-3 ? current.toExponential(0) : formatAmount(current, true, 5, false)}` : ''
   const labelWidth = 55
@@ -75,7 +75,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
             orient='auto'
             markerUnits='strokeWidth'
           >
-            {currentHover !== 'south' && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
+            {currentHover !== 'south' && !isNaN(minY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
           </marker>
           <marker
             id='arrow-max'
@@ -86,7 +86,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
             orient='auto'
             markerUnits='strokeWidth'
           >
-            {currentHover !== 'north' && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
+            {currentHover !== 'north' && !isNaN(maxY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
           </marker>
         </defs>
         {!isNaN(minY) && renderHoverLines(minY, 'south', 'arrow-min')}

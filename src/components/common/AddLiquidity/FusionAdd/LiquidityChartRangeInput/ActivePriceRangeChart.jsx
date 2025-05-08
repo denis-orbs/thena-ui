@@ -30,16 +30,14 @@ export default function ActivePriceRangeChart({
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
     const scales = {
-      yScale: scaleLinear()
-        .domain([min, max])
-        .range([height - (!brushDomain ? 48 : 0), 0]),
+      yScale: scaleLinear().domain([min, max]).range([height, 0]),
       xScale: scaleLinear()
         .domain([0, getMax(activeEntries, xAccessor)])
         .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
     }
 
     return scales
-  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth, brushDomain])
+  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
 
   useEffect(() => {
     if (!brushDomain) {

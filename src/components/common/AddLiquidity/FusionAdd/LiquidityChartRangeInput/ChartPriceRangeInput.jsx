@@ -67,6 +67,7 @@ export default function ChartPriceRangeInput({
   outOfRange = false,
   invalidRange = false,
   fullRangeWarningShown = false,
+  setLastPrice = () => {},
   classNames,
   isCreate = false,
 }) {
@@ -373,6 +374,12 @@ export default function ChartPriceRangeInput({
 
   const isUninitialized = !currencyA || !currencyB
 
+  useEffect(() => {
+    if (pairPrices && pairPrices.length > 0) {
+      setLastPrice(pairPrices[pairPrices.length - 1]?.value)
+    }
+  }, [pairPrices, setLastPrice])
+
   return (
     <div className='flex flex-col'>
       {showPeriod && <Tabs data={periods} className={cn('max-md:hidden', classNames?.periods)} />}
@@ -444,20 +451,18 @@ export default function ChartPriceRangeInput({
                       )}
                     </div>
                     <div className='absolute inset-0 z-10'>
-                      {!brushDomain ? (
+                      {/* {!brushDomain ? (
                         <TextHeading className='mx-auto block text-center text-sm lg:text-base'>
                           {t('Your Range will appear here')}
                         </TextHeading>
                       ) : (
                         <></>
-                      )}
+                      )} */}
                       {chartSize && sortedFormattedData.length > 0 ? (
                         <ActivePriceRangeChart
                           data={{
                             series: sortedFormattedData,
-                            current: !isCreate
-                              ? pairPrices[pairPrices.length - 1]?.value
-                              : price ?? pairPrices[pairPrices.length - 1]?.value,
+                            current: price ?? pairPrices[pairPrices.length - 1]?.value,
                             min: boundaryPrices?.[0],
                             max: boundaryPrices?.[1],
                           }}
