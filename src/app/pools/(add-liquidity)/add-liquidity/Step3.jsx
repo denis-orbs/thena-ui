@@ -26,7 +26,7 @@ export default function Step3({ setStep }) {
 
   const handleBack = useCallback(() => {
     if (Number(backParams) === 1) {
-      router.back()
+      router.push('/dashboard')
       return
     }
 
