@@ -28,7 +28,7 @@ function LayoutWithBackButton({ children, className, backUrl }) {
         </TextButton>
       </div>
 
-      <section className={cn('layout-addliquidity', className)}>{children}</section>
+      <section className={cn('layout-add-liquidity', className)}>{children}</section>
     </div>
   )
 }

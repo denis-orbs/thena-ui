@@ -86,8 +86,8 @@
     @apply mx-4 mt-[64px] max-w-[1464px] pb-[150px] pt-6 lg:mx-[40px] lg:mt-[92px] lg:pb-20 lg:pt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1464px];
   }
 
-  .layout-addliquidity {
-    @apply mx-6 mb-12 mt-8 max-w-[1464px] md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px] 2xl:mt-16 2xl:w-[1352px] 3xl:w-[1490px];
+  .layout-add-liquidity {
+    @apply mx-6 mb-12 mt-8 max-w-[1464px] md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px] 2xl:mt-6 2xl:w-[1352px] 3xl:w-[1490px];
   }
 
   .layout-top {

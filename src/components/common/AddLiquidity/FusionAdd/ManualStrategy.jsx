@@ -6,7 +6,6 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
@@ -31,7 +30,7 @@ import WarningStartingPrice from '../components/WarningStartingPrice'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFees, handleChooseStrategy, position }) {
+function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFees }) {
   const t = useTranslations()
   // const { isViewDown } = useMediaQuery('down', 640)
   // const { isViewUp } = useMediaQuery('up', 460)
@@ -59,8 +58,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
-  const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
-  const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
 
   const dispatch = useDispatch()
@@ -123,11 +120,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   //   return `${_price}`
   // }, [position, mintInfo.price, mintInfo.invertPrice])
 
-  const isEarnFees = useMemo(
-    () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
-    [position, strategy?.title],
-  )
-
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
     dispatch(setInitialTokenPrice({ typedValue: '' }))
@@ -136,15 +128,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     onRightRangeInput('')
     onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
   }, [dispatch, onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType])
-
-  const handleChangeManualType = useCallback(() => {
-    if (strategy) {
-      const _strategy = pair?.subpools.find(item =>
-        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
-      )
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
-    }
-  }, [defaultSwapFees, handleChooseStrategy, pair?.subpools, strategy])
 
   useEffect(() => {
     resetState()
@@ -211,15 +194,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
               </div>
             </div>
           </div>
-        )}
-
-        {hasSwapFee && hasFarming && !position && (
-          <Toggle
-            checked={!strategy?.isFarming}
-            onChange={handleChangeManualType}
-            label='Earn Fees'
-            className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
-          />
         )}
 
         {position && position.outOfRange ? (

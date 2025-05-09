@@ -132,7 +132,7 @@ function KyberZapperPane({
   ])
 
   return (
-    <div className='!mt-4 flex flex-col md:gap-4 lg:gap-8'>
+    <div className='!mt-4 flex flex-col md:gap-4'>
       <div className='space-y-2 md:space-y-4'>
         <WarningZapper />
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />

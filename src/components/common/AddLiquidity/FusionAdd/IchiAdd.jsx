@@ -102,11 +102,11 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
 
   return (
     <>
-      <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
+      <div className={cn('inline-flex w-full flex-col gap-4', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
         <div className='flex justify-end'>
-          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown className='mb-0' slippage={slippage} updateSlippage={setSlippage} />
         </div>
 
         <div className='flex flex-col gap-4'>
@@ -120,7 +120,7 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
         </div>
       </div>
 
-      <div className={cn('mt-8 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
+      <div className={cn('mt-4 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
         <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

@@ -56,6 +56,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
+  const [isAutomatic, setIsAutomatic] = useState(false)
 
   useEffect(() => {
     setBaseCurrency(firstCurrency)
@@ -93,9 +94,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   return (
     <>
-      <div className='flex flex-row items-center gap-4 md:gap-8'>
-        <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
-        <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
+      <div className='flex flex-col'>
+        <div className='flex flex-row items-center gap-4 md:gap-8'>
+          <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
+          <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
+        </div>
+        <NewTextSubHeading>{isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}</NewTextSubHeading>
       </div>
 
       <section className='mt-4 grid w-full grid-cols-1 gap-4 md:!mt-8 2xl:grid-cols-3'>
@@ -106,6 +110,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
             mintInfo={mintInfo}
             pair={pair}
             position={position}
+            isAutomatic={isAutomatic}
+            setIsAutomatic={setIsAutomatic}
           />
 
           {strategy?.isAutomatic && is2XlDown && (

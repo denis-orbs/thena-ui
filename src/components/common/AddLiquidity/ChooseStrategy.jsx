@@ -13,6 +13,7 @@ import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
+import Toggle from '@/components/toggle'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -87,7 +88,15 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo, position }) {
+export default function ChooseStrategy({
+  firstAsset,
+  secondAsset,
+  pair,
+  mintInfo,
+  position,
+  isAutomatic,
+  setIsAutomatic,
+}) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
@@ -96,8 +105,6 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const { strategy } = useV3MintState()
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
-
-  const [isAutomatic, setIsAutomatic] = useState(strategy?.isAutomatic ?? false)
 
   const poolAddress = searchParams.get('poolAddress')
 
@@ -110,6 +117,11 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
     { refreshInterval: 0 },
+  )
+
+  const isEarnFees = useMemo(
+    () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
+    [position, strategy?.title],
   )
 
   useEffect(() => {
@@ -170,7 +182,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
         gauge: sub.gauge,
       })
     },
-    [setStrategy],
+    [setIsAutomatic, setStrategy],
   )
 
   useEffect(() => {
@@ -188,6 +200,10 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     }
   }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])
 
+  useEffect(() => {
+    setIsAutomatic(strategy?.isAutomatic ?? false)
+  }, [setIsAutomatic, strategy?.isAutomatic])
+
   const toggleStrategyType = useCallback(
     enable => {
       const _strategy = sortedSubPools.find(item => {
@@ -197,7 +213,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
       handleChooseStrategy(_strategy ?? defaultSwapFees)
       setIsAutomatic(enable)
     },
-    [handleChooseStrategy, sortedSubPools],
+    [handleChooseStrategy, setIsAutomatic, sortedSubPools],
   )
 
   const strategyAutoData = useMemo(() => {
@@ -252,13 +268,18 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-4 2xl:space-y-8'>
+      <div className='flex-[6] space-y-4'>
         <div className='space-y-2 md:space-y-4'>
           <StrategyTitle
             strategyCount={strategyAutoData.length}
             isAutomatic={isAutomatic}
             toggleStrategyType={toggleStrategyType}
             position={position}
+            pair={pair}
+            handleChooseStrategy={handleChooseStrategy}
+            firstAsset={firstAsset}
+            secondAsset={secondAsset}
+            strategy={strategy}
           />
           {pair && (
             <div className={cn('!mt-2 hidden max-2xl:block md:!mt-4')}>
@@ -275,9 +296,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
             secondAsset={secondAsset ?? pair?.token1}
             strategy={strategy}
             position={position}
-            pair={pair}
-            handleChooseStrategy={handleChooseStrategy}
-            defaultSwapFees={defaultSwapFees}
+            isEarnFees={isEarnFees}
           />
         )}
       </div>
@@ -285,9 +304,20 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   )
 }
 
-function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, position }) {
+function StrategyTitle({
+  isAutomatic,
+  strategyCount,
+  toggleStrategyType,
+  position,
+  pair,
+  handleChooseStrategy,
+  firstAsset,
+  secondAsset,
+  strategy,
+}) {
   const [show, setShow] = useState(false)
   const t = useTranslations()
+
   const strategyType = useMemo(
     () => [
       {
@@ -308,14 +338,34 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
     [isAutomatic, toggleStrategyType, t],
   )
 
-  if (position) {
-    return <NewTextSubHeading>{t('Concentrated Liquidity')}</NewTextSubHeading>
-  }
+  const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
+  const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
+  const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
+
+  const handleChangeManualType = useCallback(() => {
+    if (strategy) {
+      const _strategy = pair?.subpools.find(item =>
+        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+      )
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
+    }
+  }, [handleChooseStrategy, pair?.subpools, strategy])
+
+  if (position) return
 
   return (
     <article>
-      <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between lg:py-1'>
-        <NewTextSubHeading>{isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}</NewTextSubHeading>
+      <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between'>
+        <div>
+          {hasSwapFee && hasFarming && !position && !isAutomatic && (
+            <Toggle
+              checked={!strategy?.isFarming}
+              onChange={handleChangeManualType}
+              label='Earn Fees'
+              className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
+            />
+          )}
+        </div>
 
         <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection

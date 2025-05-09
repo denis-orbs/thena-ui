@@ -43,7 +43,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
     const renderTitle = (Icon, text) => (
       <>
         {pair ? (
-          <div className='flex flex-col gap-4 md:gap-8'>
+          <div className='flex flex-col'>
             <div className='flex flex-row items-center gap-2 2xl:gap-8'>
               <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
@@ -98,14 +98,14 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         {/* Left side */}
         <div className='order-2 flex flex-col gap-4 2xl:order-1'>
           {pair ? (
-            <div className='mt-4 flex flex-col gap-2 md:gap-4 2xl:gap-8'>
+            <div className='mt-4 flex flex-col gap-2 md:gap-4 2xl:mt-8 2xl:gap-8'>
               <PairBasicInfo pair={pair} />
               <div className='hidden max-2xl:block'>
                 <PoolAttributesSection pair={pair} />
               </div>
             </div>
           ) : (
-            <div className='mt-8 flex flex-col gap-4 2xl:mt-12'>
+            <div className='mt-4 flex flex-col gap-4 2xl:mt-8'>
               <div className='flex flex-row items-center gap-2 py-2.5 lg:gap-4 2xl:gap-8'>
                 <NewIconGroup
                   classNames={{
@@ -142,7 +142,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         {/* Right side */}
         {pool && (
           <div className='order-1 flex flex-col gap-0 2xl:order-2 2xl:gap-2'>
-            <div className='mt-4 hidden 2xl:block'>
+            <div className='mt-8 hidden 2xl:block'>
               <PoolAttributesSection pair={pair} />
             </div>
 

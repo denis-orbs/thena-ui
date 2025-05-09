@@ -219,7 +219,7 @@ function AddLiquidityWeighted({ pool }) {
   const isLaptop = windowSize.width > 1024
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col gap-4 2xl:gap-8'>
       <div className='space-y-2'>
         <div className='flex flex-row gap-4 lg:gap-8'>
           <GroupIconTokens
