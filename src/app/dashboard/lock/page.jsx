@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Info } from '@/components/alert'
 import { EmphasisButton, PrimaryButton, SecondaryButton, TertiaryButton } from '@/components/buttons/Button'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Highlight from '@/components/highlight'
 import Spinner from '@/components/spinner'
 import Table from '@/components/table'
@@ -209,103 +210,105 @@ export default function LockPage() {
   }, [])
 
   return (
-    <div className='flex flex-col gap-4'>
-      <h2>{t('Lock')}</h2>
-      <div>
-        <Paragraph>{t('Lock description')}</Paragraph>{' '}
-        <span onClick={handleScroll} className='cursor-pointer text-primary-600'>
-          {t('How it Works')}
-        </span>
-      </div>
-      {account ? (
-        <div className='flex flex-col'>
-          <article className={cn('my-4 flex flex-col gap-4 lg:flex-row', veTHEs.length > 0 && 'hidden lg:flex')}>
-            <Info className='flex-col justify-between sm:flex-row lg:p-8'>
-              <div className='flex items-center gap-4'>
-                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-                <p>{t('Lock THE Desciption')}</p>
-              </div>
-              <TertiaryButton
-                className='max-sm:w-full sm:min-w-fit'
-                onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
-              >
-                {t('Learn More')}
-              </TertiaryButton>
-            </Info>
+    <LayoutWithBackButton backUrl='/dashboard'>
+      <div className='flex flex-col gap-4'>
+        <h2>{t('Lock')}</h2>
+        <div>
+          <Paragraph>{t('Lock description')}</Paragraph>{' '}
+          <span onClick={handleScroll} className='cursor-pointer text-primary-600'>
+            {t('How it Works')}
+          </span>
+        </div>
+        {account ? (
+          <div className='flex flex-col'>
+            <article className={cn('my-4 flex flex-col gap-4 lg:flex-row', veTHEs.length > 0 && 'hidden lg:flex')}>
+              <Info className='flex-col justify-between sm:flex-row lg:p-8'>
+                <div className='flex items-center gap-4'>
+                  <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                  <p>{t('Lock THE Desciption')}</p>
+                </div>
+                <TertiaryButton
+                  className='max-sm:w-full sm:min-w-fit'
+                  onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
+                >
+                  {t('Learn More')}
+                </TertiaryButton>
+              </Info>
 
-            <Info className={cn('flex-col justify-between sm:flex-row lg:p-8', !isNearlyExpired && 'hidden')}>
-              <div className='flex items-center gap-4'>
-                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-                <p>{t('Warning THE claim rebase fee')}</p>
+              <Info className={cn('flex-col justify-between sm:flex-row lg:p-8', !isNearlyExpired && 'hidden')}>
+                <div className='flex items-center gap-4'>
+                  <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                  <p>{t('Warning THE claim rebase fee')}</p>
+                </div>
+                <PrimaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => push('/dashboard/rewards')}>
+                  {t('Rewards')}
+                </PrimaryButton>
+              </Info>
+            </article>
+            <AutomationsWarning />
+            <div className='mb-4 mt-10 flex items-center justify-between'>
+              <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
+              {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}
+            </div>
+            {isLoading ? (
+              <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
+                <Spinner />
               </div>
-              <PrimaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => push('/dashboard/rewards')}>
-                {t('Rewards')}
-              </PrimaryButton>
-            </Info>
-          </article>
-          <AutomationsWarning />
-          <div className='mb-4 mt-10 flex items-center justify-between'>
-            <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
-            {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}
+            ) : veTHEs.length > 0 ? (
+              <Table
+                sortOptions={sortOptions}
+                data={finalVeTHEs}
+                sort={sort}
+                setSort={setSort}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            ) : (
+              <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
+                <Highlight>
+                  <InfoCircleWhite className='h-4 w-4' />
+                </Highlight>
+                <div className='flex flex-col items-center gap-3'>
+                  <h2>{t('No veTHE found')}</h2>
+                  <Paragraph className='mt-3 text-center'>{t('You have no voting power')}</Paragraph>
+                </div>
+                <PrimaryButton onClick={openModal}>{t('Get veTHE')}</PrimaryButton>
+              </div>
+            )}
           </div>
-          {isLoading ? (
-            <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
-              <Spinner />
-            </div>
-          ) : veTHEs.length > 0 ? (
-            <Table
-              sortOptions={sortOptions}
-              data={finalVeTHEs}
-              sort={sort}
-              setSort={setSort}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
+        ) : (
+          <NotConnected />
+        )}
+        <div ref={scrollRef}>
+          <p className='mb-10 text-3xl font-semibold'>{t('How it Works')}?</p>
+          <div className='flex flex-col justify-between md:flex-row'>
+            <HowItWorksItem
+              icon={LockIcon}
+              title={t('Create Lock Position')}
+              description={t('Create Lock Position Description')}
             />
-          ) : (
-            <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
-              <Highlight>
-                <InfoCircleWhite className='h-4 w-4' />
-              </Highlight>
-              <div className='flex flex-col items-center gap-3'>
-                <h2>{t('No veTHE found')}</h2>
-                <Paragraph className='mt-3 text-center'>{t('You have no voting power')}</Paragraph>
-              </div>
-              <PrimaryButton onClick={openModal}>{t('Get veTHE')}</PrimaryButton>
-            </div>
-          )}
+            <HowItWorksItem
+              icon={RefreshIcon}
+              title={t('Automate Your Lock')}
+              description={t('Automate Your Lock Description')}
+            />
+            <HowItWorksItem icon={GiftIcon} title={t('Earn Rewards')} description={t('Earn Rewards Description')} />
+          </div>
         </div>
-      ) : (
-        <NotConnected />
-      )}
-      <div ref={scrollRef}>
-        <p className='mb-10 text-3xl font-semibold'>{t('How it Works')}?</p>
-        <div className='flex flex-col justify-between md:flex-row'>
-          <HowItWorksItem
-            icon={LockIcon}
-            title={t('Create Lock Position')}
-            description={t('Create Lock Position Description')}
-          />
-          <HowItWorksItem
-            icon={RefreshIcon}
-            title={t('Automate Your Lock')}
-            description={t('Automate Your Lock Description')}
-          />
-          <HowItWorksItem icon={GiftIcon} title={t('Earn Rewards')} description={t('Earn Rewards Description')} />
-        </div>
+        <CreateLockModal
+          popup={isCreateOpen}
+          setPopup={setIsCreateOpen}
+          theAsset={theAsset}
+          updateVeTHEs={updateVeTHEs}
+        />
+        <ManageModal
+          veTHE={selected}
+          popup={isManageOpen}
+          setPopup={setIsManageOpen}
+          theAsset={theAsset}
+          updateVeTHEs={updateVeTHEs}
+        />
       </div>
-      <CreateLockModal
-        popup={isCreateOpen}
-        setPopup={setIsCreateOpen}
-        theAsset={theAsset}
-        updateVeTHEs={updateVeTHEs}
-      />
-      <ManageModal
-        veTHE={selected}
-        popup={isManageOpen}
-        setPopup={setIsManageOpen}
-        theAsset={theAsset}
-        updateVeTHEs={updateVeTHEs}
-      />
-    </div>
+    </LayoutWithBackButton>
   )
 }
