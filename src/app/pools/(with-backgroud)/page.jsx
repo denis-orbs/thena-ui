@@ -503,7 +503,7 @@ export default function PoolsPage() {
                 dispatch(updateStrategy({ strategy: null }))
                 push(
                   pool.type === PAIR_TYPES.WEIGHTED
-                    ? `/pools/add-liquidity/weighted/${pool.address}&back=1`
+                    ? `/pools/add-liquidity/weighted/${pool.address}?back=1`
                     : `/pools/add-liquidity?step=3&poolAddress=${pool.address}&back=1`,
                 )
               }}

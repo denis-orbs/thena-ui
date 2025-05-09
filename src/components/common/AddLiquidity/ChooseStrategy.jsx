@@ -269,24 +269,25 @@ export default function ChooseStrategy({
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
       <div className='flex-[6] space-y-4'>
-        <div className='space-y-2 md:space-y-4'>
-          <StrategyTitle
-            strategyCount={strategyAutoData.length}
-            isAutomatic={isAutomatic}
-            toggleStrategyType={toggleStrategyType}
-            position={position}
-            pair={pair}
-            handleChooseStrategy={handleChooseStrategy}
-            firstAsset={firstAsset}
-            secondAsset={secondAsset}
-            strategy={strategy}
-          />
-          {pair && (
-            <div className={cn('!mt-2 hidden max-2xl:block md:!mt-4')}>
-              <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-            </div>
-          )}
-        </div>
+        {!position && (
+          <div className='space-y-2 md:space-y-4'>
+            <StrategyTitle
+              strategyCount={strategyAutoData.length}
+              isAutomatic={isAutomatic}
+              toggleStrategyType={toggleStrategyType}
+              pair={pair}
+              handleChooseStrategy={handleChooseStrategy}
+              firstAsset={firstAsset}
+              secondAsset={secondAsset}
+              strategy={strategy}
+            />
+            {pair && (
+              <div className={cn('!mt-2 hidden max-2xl:block md:!mt-4')}>
+                <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+              </div>
+            )}
+          </div>
+        )}
 
         {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
@@ -308,7 +309,6 @@ function StrategyTitle({
   isAutomatic,
   strategyCount,
   toggleStrategyType,
-  position,
   pair,
   handleChooseStrategy,
   firstAsset,
@@ -351,13 +351,11 @@ function StrategyTitle({
     }
   }, [handleChooseStrategy, pair?.subpools, strategy])
 
-  if (position) return
-
   return (
     <article>
       <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between'>
         <div>
-          {hasSwapFee && hasFarming && !position && !isAutomatic && (
+          {hasSwapFee && hasFarming && !isAutomatic && (
             <Toggle
               checked={!strategy?.isFarming}
               onChange={handleChangeManualType}

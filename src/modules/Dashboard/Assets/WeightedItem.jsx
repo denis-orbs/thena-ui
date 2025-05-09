@@ -146,7 +146,7 @@ function WeightedItem({ position, isStake }) {
 
             <EmphasisButton
               className='flex-1 px-1'
-              onClick={() => push(`/pools/add-liquidity/weighted/${position.address}`)}
+              onClick={() => push(`/pools/add-liquidity/weighted/${position.address}?back=0`)}
             >
               {t('Add')}
             </EmphasisButton>
