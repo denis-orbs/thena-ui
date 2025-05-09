@@ -151,7 +151,7 @@ function DashboardProfile() {
                     </TextHeading>
                     <div className='flex h-10 flex-wrap items-center gap-4'>
                       <TextHeading className='font-archia text-xl font-semibold'>
-                        <span className='text-neutral-500'>{t(followersCount !== 1 ? 'Followers' : 'Follower')}</span>
+                        <span className='text-neutral-500'>{t('Follower')}</span>
                         <span className='ml-2'>{followersCount}</span>
                       </TextHeading>
                       <TextHeading className='font-archia text-xl font-semibold'>
@@ -165,7 +165,7 @@ function DashboardProfile() {
                         <span className='ml-4'>{formatAmount(veTHEPower)}</span>
                       </TextHeading>
                       <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                        <span className='text-neutral-500'>{t('Thena ID´s')}</span>
+                        <span className='text-neutral-500'>{t('Thena ID(s)')}</span>
                         <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
                       </TextHeading>
                       <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>

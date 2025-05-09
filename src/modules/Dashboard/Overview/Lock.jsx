@@ -49,7 +49,7 @@ function Lock() {
 
           <div className='flex w-full flex-col gap-4'>
             <div className='flex flex-col items-center justify-center'>
-              <Paragraph className='text-neutral-500 lg:text-sm'>{t('Total Available Voting Power')}</Paragraph>
+              <Paragraph className='text-neutral-500 lg:text-sm'>{t('Total Voting Power')}</Paragraph>
               <NewTextHeading className='text-primary-300 md:text-3xl'>
                 {formatAmount(totalVotingPower, true)}
               </NewTextHeading>
