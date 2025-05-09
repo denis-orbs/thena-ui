@@ -23,9 +23,9 @@ function LiquidityAPRChart({ data = [], className }) {
   const originalColors = useRef([])
 
   const [currentHoverTableRow, setCurrentHoverTableRow] = useState(null)
-
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
+  const [isHoverFromChart, setIsHoverFromChart] = useState(false)
 
   const avgApr = useMemo(() => {
     const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
@@ -158,8 +158,14 @@ function LiquidityAPRChart({ data = [], className }) {
       },
     },
     responsive: true,
-    onHover: (_, elements) => {
+    onHover: (event, elements) => {
       if (!chartRef.current) return
+      setIsHoverFromChart(true)
+      if (elements.length > 0) {
+        event.native.target.style.cursor = 'pointer'
+      } else {
+        event.native.target.style.cursor = 'default'
+      }
 
       const chart = chartRef.current
       if (elements.length > 0) {
@@ -197,6 +203,7 @@ function LiquidityAPRChart({ data = [], className }) {
     const handleMouseMove = e => {
       const target = e.target.closest('.position-item')
       if (target) {
+        setIsHoverFromChart(false)
         const positionId = target.getAttribute('data-position-id')
         setCurrentHoverTableRow(positionId)
         console.log('Hovered positionId:', positionId)
@@ -213,7 +220,7 @@ function LiquidityAPRChart({ data = [], className }) {
   }, [])
 
   useEffect(() => {
-    if (!chartRef.current) return
+    if (!chartRef.current || isHoverFromChart) return
 
     const chart = chartRef.current
 
@@ -250,7 +257,7 @@ function LiquidityAPRChart({ data = [], className }) {
       })
     }
     chart.update('none')
-  }, [aprData, currentHoverTableRow, liquidityData])
+  }, [aprData, currentHoverTableRow, liquidityData, isHoverFromChart])
 
   const renderCenterContent = useMemo(() => {
     if (hoveredIndex !== null && data.length > 0) {
