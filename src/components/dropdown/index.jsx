@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/lib/utils'
@@ -26,6 +26,14 @@ function Dropdown({
   const wrapperRef = useRef(null)
   const dropdownRef = useRef(null)
   const t = useTranslations()
+
+  const handleOpen = useCallback(
+    e => {
+      e.preventDefault()
+      setOpen(!open)
+    },
+    [open],
+  )
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -76,22 +84,23 @@ function Dropdown({
         }}
         type='text'
         val={selected && isLocale ? t(selected) : selected}
-        onMouseDown={e => {
-          e.preventDefault()
-          setOpen(!open)
-        }}
+        onMouseDown={handleOpen}
         placeholder={placeHolder}
         TrailingIcon={
           <ChevronDownIcon
-            className={cn('transform transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-            onMouseDown={e => {
-              e.preventDefault()
-              setOpen(!open)
-            }}
+            className={cn(
+              'transform cursor-pointer transition-all duration-150 ease-out',
+              open ? 'rotate-180' : 'rotate-0',
+            )}
+            onMouseDown={handleOpen}
           />
         }
         isLocale={isLocale}
-        prefix={prefix}
+        prefix={
+          <div className='cursor-pointer' onMouseDown={handleOpen}>
+            {prefix}
+          </div>
+        }
         prefixClass={prefixClass}
         readOnly
       />
