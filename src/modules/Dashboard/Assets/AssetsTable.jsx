@@ -153,7 +153,7 @@ function AssetsTable({ positions = [] }) {
   const chainIdRef = useRef(chainId)
   const { isXlDown } = useMediaQuery()
 
-  const [itemPerPage, setItemPerPage] = useState(ITEMS_PER_PAGE)
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchText, setSearchText] = useState('')
   const [sort, setSort] = useState(columns[2])
@@ -199,16 +199,16 @@ function AssetsTable({ positions = [] }) {
     return sorted
   }, [positions, searchText, sort.isDesc, sort.value])
 
-  const totalPages = useMemo(() => Math.ceil(filteredPools.length / itemPerPage), [filteredPools.length, itemPerPage])
+  const totalPages = useMemo(() => Math.ceil(filteredPools.length / itemsPerPage), [filteredPools.length, itemsPerPage])
 
   const paginatedPositions = useMemo(() => {
-    const start = (currentPage - 1) * itemPerPage
-    return filteredPools.slice(start, start + itemPerPage)
-  }, [currentPage, itemPerPage, filteredPools])
+    const start = (currentPage - 1) * itemsPerPage
+    return filteredPools.slice(start, start + itemsPerPage)
+  }, [currentPage, itemsPerPage, filteredPools])
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [itemPerPage, account, chainId])
+  }, [itemsPerPage, account, chainId])
 
   useEffect(() => {
     if (account && accountRef.current !== account) {
@@ -243,8 +243,8 @@ function AssetsTable({ positions = [] }) {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
-        itemPerPage={itemPerPage}
-        setItemPerPage={setItemPerPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
       />
     </div>
   )

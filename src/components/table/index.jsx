@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { cn } from '@/lib/utils'
-import { ArrowDownIcon, ArrowLeftIcon, XIcon } from '@/svgs'
+import { ArrowDownIcon, ArrowLeftIcon, PoolCoinsIcon, XIcon } from '@/svgs'
 
 import { TertiaryButton } from '../buttons/Button'
 import { TextIconButton } from '../buttons/IconButton'
@@ -466,15 +466,17 @@ function Table({
         )}
       </div>
       {((!loading && pageCount > 1 && !hidePagination) || showNumberOfPage) && (
-        <div className='flex flex-col justify-end gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5'>
+        <div className='flex flex-col justify-between gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5'>
           {showNumberOfPage && (
             <Dropdown
-              className='w-full md:max-w-[200px]'
+              className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
+              classNames={{ trailingIcon: 'right-4', input: 'pr-12 text-right' }}
+              listClassNames='z-40'
               data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
               selected={pageSize}
               setSelected={ele => setNumberOfPage(ele.label)}
-              prefix={t('Pools per page')}
-              prefixClass='pl-[140px]'
+              prefix={<PoolCoinsIcon className='h-5 w-5 stroke-neutral-400' />}
+              prefixClass='pl-12'
               isLocale={false}
             />
           )}

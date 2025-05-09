@@ -35,6 +35,8 @@ import { BarChartIcon, InfoIcon } from '@/svgs'
 
 import NewListings from '../NewListings'
 
+const ITEMS_PER_PAGE = 10
+
 const sortOptions = [
   {
     label: 'Pairing',
@@ -88,6 +90,8 @@ export default function PoolsPage() {
   const [filter, setFilter] = useState(PAIR_TYPES.All)
   const [strategy, setStrategy] = useState(STRATEGIES.All)
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
+
   const { push } = useRouter()
   const { pairs } = usePairs()
   const vaults = useVaults()
@@ -701,6 +705,9 @@ export default function PoolsPage() {
         <Table
           sortOptions={sortOptions}
           data={finalPools}
+          showNumberOfPage
+          setNumberOfPage={setItemsPerPage}
+          pageSize={itemsPerPage}
           sort={sort}
           setSort={setSort}
           currentPage={currentPage}

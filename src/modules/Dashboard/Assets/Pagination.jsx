@@ -24,7 +24,7 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
   )
 }
 
-function Pagination({ currentPage, setCurrentPage, totalPages, itemPerPage, setItemPerPage }) {
+function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, setItemsPerPage }) {
   return (
     <div className='mb-1 flex flex-row items-center justify-between'>
       <Dropdown
@@ -32,8 +32,8 @@ function Pagination({ currentPage, setCurrentPage, totalPages, itemPerPage, setI
         classNames={{ trailingIcon: 'right-4', input: 'pr-12 text-right' }}
         listClassNames='z-40'
         data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
-        selected={itemPerPage}
-        setSelected={ele => setItemPerPage(ele.label)}
+        selected={itemsPerPage}
+        setSelected={ele => setItemsPerPage(ele.label)}
         prefix={<PoolCoinsIcon className='h-5 w-5 stroke-neutral-400' />}
         prefixClass='pl-12'
         isLocale={false}
