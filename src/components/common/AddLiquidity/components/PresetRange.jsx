@@ -46,7 +46,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       {
         type: Presets.SAFE,
         title: 'Broad',
-        percent: '20%',
+        percent: '±20%',
         min: 0.8,
         max: 1.2,
         risk: PresetProfits.LOW,
@@ -55,7 +55,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       {
         type: Presets.NORMAL,
         title: 'Moderate',
-        percent: '10%',
+        percent: '±10%',
         min: 0.9,
         max: 1.1,
         risk: PresetProfits.MEDIUM,
@@ -64,7 +64,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       {
         type: Presets.RISK,
         title: 'Tight',
-        percent: '5%',
+        percent: '±5%',
         min: 0.95,
         max: 1.05,
         risk: PresetProfits.HIGH,
