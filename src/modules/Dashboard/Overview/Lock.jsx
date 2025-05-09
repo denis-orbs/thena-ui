@@ -38,8 +38,8 @@ function Lock() {
         </div>
 
         <div className='flex h-full flex-col justify-between gap-2'>
-          <div className='h-full w-full gap-2 md:max-h-[224px]'>
-            <div className='mx-auto flex h-fit w-full max-w-[352px]'>
+          <div className='h-full w-full gap-2'>
+            <div className='mx-auto flex h-fit w-full'>
               {isLoading ? <Skeleton className='h-full w-full' /> : <VotingPowerChart data={veTHEs} />}
             </div>
             <div className='w-full text-center'>
