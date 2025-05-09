@@ -190,12 +190,7 @@ function DashboardProfile() {
                       </div>
                     )}
                   </div>
-                  <div
-                    className={cn(
-                      'absolute bottom-4 flex flex-wrap items-center space-y-1.5 overflow-hidden',
-                      'max-h-[138px]',
-                    )}
-                  >
+                  <div className={cn('absolute bottom-4 flex flex-wrap items-center overflow-hidden', 'max-h-[138px]')}>
                     {sortedData.map(item => (
                       <AchievementBasicIcon
                         item={item}
