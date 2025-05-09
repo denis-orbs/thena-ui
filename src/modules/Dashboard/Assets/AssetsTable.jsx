@@ -131,7 +131,7 @@ function TableBody({ positions, isXlDown }) {
         <tr
           key={`table-row-${index}`}
           id={`table-row-${index}`}
-          className='h-[60px] first:mt-6 hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
+          className={cn('h-[60px] rounded-md hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2')}
         >
           {renderPosition(position)}
         </tr>

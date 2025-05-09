@@ -5,10 +5,10 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
@@ -189,9 +189,9 @@ function NotStakedItem({ position }) {
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
-          <NewParagraph className='text-xl text-neutral-500 md:text-xl xl:text-xs xl:text-neutral-300'>
+          <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             {getDisplayedStrategy(position.title)}
-          </NewParagraph>
+          </Paragraph>
         </div>
       </div>
     ),
@@ -204,7 +204,12 @@ function NotStakedItem({ position }) {
         {position.type === PAIR_TYPES.LSD ? (
           <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
         ) : (
-          <div className='bg-full-range relative flex h-8 items-center justify-center overflow-hidden rounded-md px-2 text-base text-neutral-300 md:h-11'>
+          <div
+            className={cn(
+              'relative flex h-8 items-center justify-center overflow-hidden md:h-11',
+              'bg-full-range rounded-md border border-neutral-600 px-2 text-base text-neutral-300',
+            )}
+          >
             {t('Full Range')}
           </div>
         )}
@@ -217,7 +222,7 @@ function NotStakedItem({ position }) {
     () => (
       <div className='flex flex-col max-xl:flex-1'>
         <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading className=''>{t('APR')}</TextSubHeading>
+        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
       </div>
     ),
     [position.apr, t],
@@ -228,7 +233,7 @@ function NotStakedItem({ position }) {
       <div className='flex items-center max-xl:flex-1 max-xl:justify-center'>
         <div className='flex flex-col'>
           <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
-          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+          <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
         </div>
       </div>
     ),
@@ -253,7 +258,7 @@ function NotStakedItem({ position }) {
             </>
           )}
         </div>
-        <TextSubHeading className='max-xl:text-end'>{t('Reward')}</TextSubHeading>
+        <TextSubHeading className='font-medium max-xl:text-end xl:text-base'>{t('Reward')}</TextSubHeading>
       </div>
     ),
     [feesInUsd, position.address, position.token0.symbol, position.token1.symbol, reward0, reward1, t],
@@ -275,13 +280,13 @@ function NotStakedItem({ position }) {
 
         {isV1Pool ? (
           <>
-            <OutlinedButton
+            <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => onClaimFees(position)}
               disabled={feesInUsd.isZero() || feesPending}
             >
               {t('Claim')}
-            </OutlinedButton>
+            </EmphasisButton>
             <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setManagePopup(true)}
@@ -291,12 +296,12 @@ function NotStakedItem({ position }) {
           </>
         ) : (
           <>
-            <OutlinedButton
+            <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setRemovePopup(true)}
             >
               {t('Remove')}
-            </OutlinedButton>
+            </EmphasisButton>
 
             {version === 3 || isSingleSided ? (
               <EmphasisButton
@@ -328,12 +333,12 @@ function NotStakedItem({ position }) {
     <>
       {!isXlDown ? (
         <>
-          <td>{pairCell}</td>
+          <td className='rounded-l-md !pl-4'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td>{actionCell}</td>
+          <td className='rounded-r-md !pr-4'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

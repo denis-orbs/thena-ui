@@ -7,10 +7,10 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { maxUint128 } from 'viem'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
@@ -171,9 +171,9 @@ function ManualItem({ position }) {
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
           </NewTextSubHeading>
-          <NewParagraph className='text-lg text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
+          <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
-          </NewParagraph>
+          </Paragraph>
         </div>
       </div>
     ),
@@ -201,7 +201,7 @@ function ManualItem({ position }) {
     () => (
       <div className='flex flex-col max-xl:flex-1'>
         <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading>{t('APR')}</TextSubHeading>
+        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
       </div>
     ),
     [position.apr, t],
@@ -211,7 +211,7 @@ function ManualItem({ position }) {
     () => (
       <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
         <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
-        <TextSubHeading>{t('Value')}</TextSubHeading>
+        <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
       </div>
     ),
     [position.fiatValueOfLiquidity, t],
@@ -232,7 +232,7 @@ function ManualItem({ position }) {
             </>
           )}
         </div>
-        <TextSubHeading className='max-xl:text-end'>{t('Reward')}</TextSubHeading>
+        <TextSubHeading className='font-medium max-xl:text-end xl:text-base'>{t('Reward')}</TextSubHeading>
       </div>
     ),
     [asset0, asset1, fees, feesInUsd, t, tokenId],
@@ -247,20 +247,20 @@ function ManualItem({ position }) {
         })}
       >
         {Number(liquidity) > 0 ? (
-          <OutlinedButton
+          <EmphasisButton
             className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
             onClick={() => setRemovePopup(true)}
           >
             {t('Remove')}
-          </OutlinedButton>
+          </EmphasisButton>
         ) : (
-          <OutlinedButton
+          <EmphasisButton
             className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
             onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
             disabled={pending}
           >
             {t('Burn')}
-          </OutlinedButton>
+          </EmphasisButton>
         )}
 
         {version === 3 && (
@@ -292,12 +292,12 @@ function ManualItem({ position }) {
     <>
       {!isXlDown ? (
         <>
-          <td>{pairCell}</td>
+          <td className='rounded-l-md !pl-4'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td>{actionCell}</td>
+          <td className='rounded-r-md !pr-4'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

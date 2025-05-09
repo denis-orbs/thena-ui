@@ -4,10 +4,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
-import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import {
   useClaimWeightedPoolFees,
@@ -77,9 +77,9 @@ function WeightedItem({ position, isStake }) {
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
-          <NewParagraph className='text-xl text-neutral-500 md:text-xl xl:text-xs xl:text-neutral-300'>
+          <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             Weighted
-          </NewParagraph>
+          </Paragraph>
         </div>
       </div>
     ),
@@ -92,7 +92,7 @@ function WeightedItem({ position, isStake }) {
     () => (
       <div className='flex flex-col max-xl:flex-1'>
         <TextHeading>{position.apr}%</TextHeading>
-        <TextSubHeading>{t('APR')}</TextSubHeading>
+        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
       </div>
     ),
     [position.apr, t],
@@ -102,7 +102,7 @@ function WeightedItem({ position, isStake }) {
     () => (
       <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
         <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
-        <TextSubHeading>{t('Value')}</TextSubHeading>
+        <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
       </div>
     ),
     [depositValue.depositUsd, t],
@@ -121,7 +121,7 @@ function WeightedItem({ position, isStake }) {
             {renderRewardTokens}
           </CustomTooltip>
         </div>
-        <TextSubHeading>{t('Reward')}</TextSubHeading>
+        <TextSubHeading className='font-medium max-xl:text-end xl:text-base'>{t('Reward')}</TextSubHeading>
       </div>
     ),
     [claimableFee?.total, position?.address, isStake, t, renderRewardTokens],
@@ -132,17 +132,17 @@ function WeightedItem({ position, isStake }) {
       <div className='grid w-full grid-cols-3 justify-center gap-2'>
         {isStake ? (
           <>
-            <TextButton disabled={unstakePending} className='flex-1 px-1' onClick={() => setPopupStake(true)}>
+            <EmphasisButton disabled={unstakePending} className='flex-1 px-1' onClick={() => setPopupStake(true)}>
               {t('Unstake')}
-            </TextButton>
+            </EmphasisButton>
 
-            <OutlinedButton
+            <PrimaryButton
               className='flex-1 px-1'
               disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
               onClick={() => onGaugeHarvest(position)}
             >
               {t('Harvest')}
-            </OutlinedButton>
+            </PrimaryButton>
 
             <EmphasisButton
               className='flex-1 px-1'
@@ -153,14 +153,14 @@ function WeightedItem({ position, isStake }) {
           </>
         ) : (
           <>
-            <TextButton
+            <PrimaryButton
               disabled={stakePending || position.gauge.address === zeroAddress}
               className='h-11 flex-1 px-1'
               onClick={() => setPopupStake(true)}
               data-tooltip-id={`stake-position-${position.address}`}
             >
               {t('Stake')}
-            </TextButton>
+            </PrimaryButton>
 
             {position.gauge.address === zeroAddress && (
               <CustomTooltip id={`stake-position-${position.address}`} className='max-w-[500px]'>
@@ -168,13 +168,13 @@ function WeightedItem({ position, isStake }) {
               </CustomTooltip>
             )}
 
-            <OutlinedButton
+            <EmphasisButton
               disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
               onClick={onClaim}
               className='h-11 flex-1 px-1'
             >
               {t('Claim')}
-            </OutlinedButton>
+            </EmphasisButton>
 
             <EmphasisButton className='h-11 flex-1 px-1' onClick={() => setManagePopup(true)}>
               {t('Manage')}
@@ -202,12 +202,12 @@ function WeightedItem({ position, isStake }) {
     <>
       {!isXlDown ? (
         <>
-          <td>{pairCell}</td>
+          <td className='rounded-l-md !pl-4'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td>{actionCell}</td>
+          <td className='rounded-r-md !pr-4'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

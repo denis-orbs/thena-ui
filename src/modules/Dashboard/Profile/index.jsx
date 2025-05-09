@@ -114,7 +114,7 @@ function DashboardProfile() {
             <div className='hidden h-full flex-col justify-between md:flex'>
               <div className='flex h-full'>
                 <div
-                  className='relative min-h-[432px] rounded-bl-xl rounded-tl-xl bg-cover bg-center bg-no-repeat md:!w-[211px]'
+                  className='flex min-h-[432px] flex-col justify-between rounded-l-xl bg-cover bg-center bg-no-repeat pb-4 md:!w-[211px]'
                   style={{
                     backgroundImage: `url('${
                       userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || '/images/profile-bg.png'
@@ -123,15 +123,14 @@ function DashboardProfile() {
                 >
                   <NewTextHeading
                     className={cn(
-                      'absolute top-0 w-full rounded-tl-xl p-4 text-3xl md:text-3xl',
-                      userInfo?.avatar &&
-                        'bg-[linear-gradient(180deg,_rgba(0,0,0,0.61)_50%,_rgba(102,102,102,0)_93.04%)]',
+                      'w-full rounded-tl-xl p-4 text-3xl md:text-3xl',
+                      userInfo?.avatar && 'bg-gradient-to-b from-black/60 to-[#666666]/0',
                     )}
                   >
                     {t('My Profile')}
                   </NewTextHeading>
-                  <Link href='/arena/profile'>
-                    <EmphasisButton className='absolute bottom-4 w-full'>{t('Manage')}</EmphasisButton>
+                  <Link href='/arena/profile' className='mx-2'>
+                    <EmphasisButton className='w-full'>{t('Manage')}</EmphasisButton>
                   </Link>
                 </div>
 
