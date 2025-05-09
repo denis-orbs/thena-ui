@@ -9,6 +9,7 @@ import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewParagraph, NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
@@ -49,6 +50,10 @@ function StakedItem({ position }) {
   })
   const isSwapFee = useMemo(() => position?.title.includes('SwapFee'), [position])
   const migrationLink = useMemo(() => `/pools/migration?address=${position.address}&staked=true`, [position.address])
+  const isSingleSided = useMemo(
+    () => ICHI_VAULTS[networkId].some(v => v.address === position.address),
+    [position.address, networkId],
+  )
 
   const version = useMemo(() => position?.account?.version ?? 2, [position])
   const depositValueUSD = useMemo(
@@ -68,12 +73,12 @@ function StakedItem({ position }) {
   const handleHarvest = useCallback(() => {
     if (GAMMA_TYPES.includes(position.title)) {
       onGammaClaim(position)
-    } else if (ICHI_TYPES.includes(position.title)) {
+    } else if (ICHI_TYPES.includes(position.title) && !isSingleSided) {
       onIchiClaim(position)
     } else {
       onGaugeHarvest(position)
     }
-  }, [onGammaClaim, onGaugeHarvest, onIchiClaim, position])
+  }, [onGammaClaim, onGaugeHarvest, onIchiClaim, position, isSingleSided])
 
   const strategy = useMemo(
     () => ({
@@ -233,16 +238,54 @@ function StakedItem({ position }) {
     [isSwapFee, t, position],
   )
 
-  const actionCell = useMemo(
-    () => (
-      <div
-        className={cn('grid w-full justify-center gap-2', {
-          'grid-cols-2': version === 2 || isSwapFee,
-          'grid-cols-3': version === 3 && !isSwapFee,
-        })}
-      >
-        {version === 2 ? (
-          // Version 2 actions
+  const actionCell = useMemo(() => {
+    let actions = (
+      <>
+        {position.type === PAIR_TYPES.LSD ? (
+          <OutlinedButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setRemovePopup(true)}>
+            {t('Remove')}
+          </OutlinedButton>
+        ) : (
+          <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+            {t('Unstake')}
+          </EmphasisButton>
+        )}
+
+        <PrimaryButton
+          className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
+          onClick={handleHarvest}
+          disabled={claimPending || position.account.earnedUsd.isZero()}
+        >
+          {t('Harvest')}
+        </PrimaryButton>
+
+        <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
+          {t('Add')}
+        </EmphasisButton>
+      </>
+    )
+    if (version === 2) {
+      if (isSingleSided) {
+        actions = (
+          <>
+            <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+              {t('Unstake')}
+            </EmphasisButton>
+            <PrimaryButton
+              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
+              onClick={handleHarvest}
+              disabled={claimPending || position.account.earnedUsd.isZero()}
+            >
+              {t('Harvest')}
+            </PrimaryButton>
+
+            <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
+              {t('Add')}
+            </EmphasisButton>
+          </>
+        )
+      } else {
+        actions = (
           <>
             <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
               {t('Unstake')}
@@ -261,50 +304,32 @@ function StakedItem({ position }) {
               </PrimaryButton>
             )}
           </>
-        ) : (
-          // Version 3 actions
-          <>
-            {position.type === PAIR_TYPES.LSD ? (
-              <OutlinedButton
-                className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base'
-                onClick={() => setRemovePopup(true)}
-              >
-                {t('Remove')}
-              </OutlinedButton>
-            ) : (
-              <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-                {t('Unstake')}
-              </EmphasisButton>
-            )}
-
-            <PrimaryButton
-              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
-              onClick={handleHarvest}
-              disabled={claimPending || position.account.earnedUsd.isZero()}
-            >
-              {t('Harvest')}
-            </PrimaryButton>
-
-            <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
-              {t('Add')}
-            </EmphasisButton>
-          </>
-        )}
+        )
+      }
+    }
+    return (
+      <div
+        className={cn('grid w-full justify-center gap-2', {
+          'grid-cols-2': (version === 2 || isSwapFee) && !isSingleSided,
+          'grid-cols-3': (version === 3 && !isSwapFee) || isSingleSided,
+        })}
+      >
+        {actions}
       </div>
-    ),
-    [
-      claimPending,
-      handleAdd,
-      handleHarvest,
-      isSwapFee,
-      migrationLink,
-      migrationOptions,
-      position.account.earnedUsd,
-      position.type,
-      t,
-      version,
-    ],
-  )
+    )
+  }, [
+    claimPending,
+    handleAdd,
+    handleHarvest,
+    isSingleSided,
+    isSwapFee,
+    migrationLink,
+    migrationOptions?.length,
+    position.account.earnedUsd,
+    position.type,
+    t,
+    version,
+  ])
 
   return (
     <>

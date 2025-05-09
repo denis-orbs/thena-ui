@@ -93,7 +93,7 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
   const onAddLiquidityAndStake = useCallback(() => {
     if (errorMsg) {
       warnToast(errorMsg)
-    } else if (strategy?.account?.version === 2) {
+    } else if (strategy?.version === 2) {
       addIchiPoolV2({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)
     } else {
       addIchiPoolV3({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)

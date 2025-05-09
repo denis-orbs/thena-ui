@@ -291,7 +291,7 @@ export const getLiquidityRangeType = strategyTitle => {
   return FusionRangeType.ICHI_RANGE
 }
 
-export const getDisplayedStrategy = strategy => {
+export const getDisplayedStrategy = (strategy, version = 3) => {
   const str = strategy.replace(/_(Farming|SwapFee)$/, '').replace('_', ' ')
 
   if (GAMMA_TYPES.includes(strategy)) {
@@ -299,7 +299,7 @@ export const getDisplayedStrategy = strategy => {
   }
 
   if (ICHI_TYPES.includes(strategy)) {
-    return 'ICHI'
+    return version === 2 ? 'ICHI Single Sided' : 'ICHI'
   }
 
   if (MANUAL_TYPES.includes(strategy)) {
