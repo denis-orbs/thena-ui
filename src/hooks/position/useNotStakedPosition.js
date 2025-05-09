@@ -31,7 +31,7 @@ const getFeesOfPools = async (pools, chainId) => {
       poolFees.reward0 = _reward0
       poolFees.reward1 = _reward1
     } catch (error) {
-      console.error(`Simulate failed for weighted position ${pool.address}:`, error)
+      // console.error(`Simulate failed for weighted position ${pool.address}:`, error)
     }
 
     feesOfPools.push(poolFees)

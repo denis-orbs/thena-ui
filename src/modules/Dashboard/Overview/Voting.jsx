@@ -10,7 +10,7 @@ import { ChainId } from 'thena-sdk-core'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -181,7 +181,7 @@ function Voting() {
               <NewTextHeading className='text-gradient-primary-b text-5xl md:text-5xl'>
                 ${formatAmount(totalRewards)}
               </NewTextHeading>
-              <NewTextSubHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextSubHeading>
+              <NewTextHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextHeading>
             </div>
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2.5 text-center'>
@@ -200,9 +200,15 @@ function Voting() {
                     <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                   </TextButton>
                 </Link>
-                <PrimaryButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
-                  {t('Create your veTHE')}
-                </PrimaryButton>
+
+                <div className='flex gap-2'>
+                  <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
+                    {t('Vote')}
+                  </EmphasisButton>
+                  <PrimaryButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+                    {t('Create your veTHE')}
+                  </PrimaryButton>
+                </div>
               </div>
             </div>
           </>

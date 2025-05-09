@@ -115,7 +115,7 @@ export function VaultsContextProvider({ children }) {
       return {
         address: vault.address,
         symbol: vault.symbol,
-        title: 'ICHI',
+        title: 'ICHI Single Sided',
         type: PAIR_TYPES.LSD,
         totalSupply: vault.totalSupply,
         lpPrice,

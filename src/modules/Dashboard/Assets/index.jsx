@@ -23,6 +23,7 @@ import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
+import SectionDivider from '../SectionDivider'
 
 const updateWalletBalance = positions => {
   const groupedPositions = positions.reduce((map, position) => {
@@ -95,48 +96,53 @@ function UserAssets() {
   )
 
   return (
-    <div
-      className={cn(
-        'rounded-xl',
-        allPositions.length === 0 && 'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
-      )}
-    >
-      {allPositions.length > 0 ? (
-        <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
-          <AssetsOverview positions={allPositions} />
-          <div className='flex items-center justify-between xl:hidden'>
-            <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
-            <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
-              <Paragraph className='text-base font-medium text-neutral-500'>
-                {t(showTable ? 'Close' : 'Open')}
-              </Paragraph>
-              <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
-            </div>
-          </div>
+    <>
+      <div className='flex flex-col rounded-xl max-md:bg-neutral-900 md:gap-2'>
+        <div
+          className={cn(
+            'rounded-xl',
+            allPositions.length === 0 && 'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
+          )}
+        >
+          {allPositions.length > 0 ? (
+            <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
+              <AssetsOverview positions={allPositions} />
+              <div className='flex items-center justify-between xl:hidden'>
+                <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
+                <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
+                  <Paragraph className='text-base font-medium text-neutral-500'>
+                    {t(showTable ? 'Close' : 'Open')}
+                  </Paragraph>
+                  <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
+                </div>
+              </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='overflow-hidden'
-          >
-            <AssetsTable positions={allPositions} />
-          </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className='overflow-hidden'
+              >
+                <AssetsTable positions={allPositions} />
+              </motion.div>
+            </div>
+          ) : (
+            <div className='flex h-[278px] flex-col justify-between gap-0 p-8 md:justify-end md:gap-[42px]'>
+              <div className='flex flex-col'>
+                <NewTextHeading>
+                  YOU HAVE <span className='text-primary-600'>${formatAmount(idleAssets)}</span> IN IDLE ASSETS.
+                </NewTextHeading>
+                <NewTextHeading>PUT THEM TO WORK NOW!</NewTextHeading>
+              </div>
+              <PrimaryButton className='w-fit' onClick={() => push('/pools/add-liquidity')}>
+                Provide Liquidity
+              </PrimaryButton>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className='flex h-[278px] flex-col justify-between gap-0 p-8 md:justify-end md:gap-[42px]'>
-          <div className='flex flex-col'>
-            <NewTextHeading>
-              YOU HAVE <span className='text-primary-600'>${formatAmount(idleAssets)}</span> IN IDLE ASSETS.
-            </NewTextHeading>
-            <NewTextHeading>PUT THEM TO WORK NOW!</NewTextHeading>
-          </div>
-          <PrimaryButton className='w-fit' onClick={() => push('/pools/add-liquidity')}>
-            Provide Liquidity
-          </PrimaryButton>
-        </div>
-      )}
-    </div>
+      </div>
+      <SectionDivider />
+    </>
   )
 }
 

@@ -12,7 +12,7 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
@@ -86,7 +86,7 @@ function DashboardProfile() {
               </div>
 
               <div className='flex flex-col gap-2'>
-                <NewTextSubHeading className='text-xl md:text-xl'>{t('Account not available title')}</NewTextSubHeading>
+                <NewTextHeading className='text-xl md:text-xl'>{t('Account not available title')}</NewTextHeading>
                 {userInfo && (
                   <Paragraph className='text-neutral-500 lg:text-sm'>
                     Joined {dayjs(userInfo.firstInteractAt).format('MMM DD, YYYY')} at{' '}
