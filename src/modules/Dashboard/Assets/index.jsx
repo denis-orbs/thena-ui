@@ -91,7 +91,13 @@ function UserAssets() {
   )
 
   const allPositions = useMemo(
-    () => [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions],
+    () =>
+      [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions].map(
+        (item, index) => ({
+          ...item,
+          positionId: `pos-${item.address}-${item.tokenId}-${index}`,
+        }),
+      ),
     [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
   )
 

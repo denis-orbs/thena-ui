@@ -18,11 +18,14 @@ const NOT_HOVER_COLOR = '#580055'
 
 function LiquidityAPRChart({ data = [], className }) {
   const t = useTranslations()
+
   const chartRef = useRef(null)
   const originalColors = useRef([])
 
+  const [currentHoverTableRow, setCurrentHoverTableRow] = useState(null)
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
+  const [isHoverFromChart, setIsHoverFromChart] = useState(false)
 
   const avgApr = useMemo(() => {
     const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
@@ -37,6 +40,7 @@ function LiquidityAPRChart({ data = [], className }) {
       return {
         label: d.symbol,
         value,
+        positionId: d.positionId,
         ...(key === 'apr' ? { fiatValueOfLiquidity: Number(d.fiatValueOfLiquidity), symbol: d.symbol } : {}),
       }
     })
@@ -154,8 +158,14 @@ function LiquidityAPRChart({ data = [], className }) {
       },
     },
     responsive: true,
-    onHover: (_, elements) => {
+    onHover: (event, elements) => {
       if (!chartRef.current) return
+      setIsHoverFromChart(true)
+      if (elements.length > 0) {
+        event.native.target.style.cursor = 'pointer'
+      } else {
+        event.native.target.style.cursor = 'default'
+      }
 
       const chart = chartRef.current
       if (elements.length > 0) {
@@ -188,6 +198,66 @@ function LiquidityAPRChart({ data = [], className }) {
     },
     events: ['mousemove', 'mouseout'],
   }
+
+  useEffect(() => {
+    const handleMouseMove = e => {
+      const target = e.target.closest('.position-item')
+      if (target) {
+        setIsHoverFromChart(false)
+        const positionId = target.getAttribute('data-position-id')
+        setCurrentHoverTableRow(positionId)
+        console.log('Hovered positionId:', positionId)
+      } else {
+        setCurrentHoverTableRow(null)
+      }
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!chartRef.current || isHoverFromChart) return
+
+    const chart = chartRef.current
+
+    let index = liquidityData.findIndex(item => item.positionId === currentHoverTableRow)
+    let datasetIndex = 0
+
+    if (index === -1) {
+      index = aprData.findIndex(item => item.positionId === currentHoverTableRow)
+      datasetIndex = 1
+    }
+
+    if (index === -1) {
+      index = aprData.findIndex(item => item.label === 'Others')
+    }
+
+    // chart.setActiveElements([{ datasetIndex, index }])
+    // chart.update()
+
+    const pool = datasetIndex === 0 ? liquidityData[index] : aprData[index]
+    if (currentHoverTableRow === null) {
+      setHoveredIndex(null)
+      setHoveredDataSetIndex(null)
+      return
+    }
+    if (!pool || pool?.label === 'None') {
+      setHoveredIndex(null)
+      setHoveredDataSetIndex(null)
+    } else {
+      setHoveredIndex(index)
+      setHoveredDataSetIndex(datasetIndex)
+      chart.data.datasets.forEach(dataset => {
+        const newColors = originalColors.current.map((color, idx) => (idx === index ? color : NOT_HOVER_COLOR))
+        dataset.backgroundColor = newColors
+      })
+    }
+    chart.update('none')
+  }, [aprData, currentHoverTableRow, liquidityData, isHoverFromChart])
 
   const renderCenterContent = useMemo(() => {
     if (hoveredIndex !== null && data.length > 0) {
