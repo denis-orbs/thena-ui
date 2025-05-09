@@ -131,7 +131,8 @@ function TableBody({ positions, isXlDown }) {
         <tr
           key={`table-row-${index}`}
           id={`table-row-${index}`}
-          className='h-[60px] first:mt-6 hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
+          className='position-item h-[60px] first:mt-6 hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
+          data-position-id={position.positionId}
         >
           {renderPosition(position)}
         </tr>
@@ -140,7 +141,12 @@ function TableBody({ positions, isXlDown }) {
     </tbody>
   ) : (
     positions.map((position, index) => (
-      <div key={`table-row-${index}`} id={`table-row-${index}`} className='hover:bg-neutral-800'>
+      <div
+        key={`table-row-${index}`}
+        id={`table-row-${index}`}
+        className='position-item hover:bg-neutral-800'
+        data-position-id={position.positionId}
+      >
         {renderPosition(position)}
       </div>
     ))
