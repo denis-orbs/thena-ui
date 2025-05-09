@@ -6,6 +6,7 @@ import useSWR from 'swr'
 
 import { Info } from '@/components/alert'
 import { TertiaryButton } from '@/components/buttons/Button'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
@@ -115,74 +116,76 @@ export default function RewardsPage() {
   }, [activeTab, totalUsdV2])
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex flex-col justify-between gap-4 lg:flex-row'>
-        <div className='flex flex-col gap-2'>
-          <h2>{t('Rewards')}</h2>
-          <Paragraph>{t('Rewards Description')}</Paragraph>
-        </div>
-
-        {account && (
-          <Info className='flex w-auto justify-between lg:w-[550px] lg:p-8'>
-            <div className='flex items-center gap-4'>
-              <CoinsStackedIcon className='h-4 w-4 min-w-4 stroke-primary-600 lg:h-8 lg:w-8 lg:min-w-8' />
-              <p className='text-base leading-tight lg:text-xl'>
-                {t('Total Rewards:')} ${formatAmount(activeTab === RewardsTab.V2_REWARDS ? totalUsdV2 : totalUsd)}
-              </p>
-            </div>
-
-            {activeTab !== RewardsTab.HISTORY && (
-              <TertiaryButton
-                className='min-w-fit'
-                onClick={() => {
-                  if (activeTab === RewardsTab.V2_REWARDS) {
-                    handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
-                  } else {
-                    handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
-                  }
-                }}
-                disabled={allPendingV3 || allPendingV2 || totalUsd.isZero()}
-              >
-                {t('Claim All')}
-              </TertiaryButton>
-            )}
-          </Info>
-        )}
-      </div>
-
-      {account ? (
-        <>
-          <div className='flex flex-col justify-between gap-4 lg:flex-row'>
-            <Selection className='h-11 w-fit' data={typeSelections} />
-            {activeTab === RewardsTab.HISTORY && (
-              <VeTheDropdown
-                className='w-full md:w-[200px]'
-                data={[{ id: 'All' }, ...veTHEs].map(item => ({
-                  ...item,
-                  label: item.id === 'All' ? 'All' : `veTHE #${item.id}`,
-                }))}
-                selected={veTHE ? `veTHE #${veTHE.id}` : ''}
-                setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder={t('Select veTHE')}
-                isLocale={false}
-                isApproved={isApproved}
-                approvedId={approvedId}
-                setApprovedId={setApprovedId}
-              />
-            )}
+    <LayoutWithBackButton backUrl='/dashboard'>
+      <div className='flex flex-col gap-4'>
+        <div className='flex flex-col justify-between gap-4 lg:flex-row'>
+          <div className='flex flex-col gap-2'>
+            <h2>{t('Rewards')}</h2>
+            <Paragraph>{t('Rewards Description')}</Paragraph>
           </div>
 
-          {activeTab === RewardsTab.HISTORY && <VotingHistory veTHEId={veTHEId} />}
-          {activeTab === RewardsTab.CURRENT && (
-            <CurrentRewards rewards={currentRewards} currentMutate={refreshVetheRewardV3} version={3} />
+          {account && (
+            <Info className='flex w-auto justify-between lg:w-[550px] lg:p-8'>
+              <div className='flex items-center gap-4'>
+                <CoinsStackedIcon className='h-4 w-4 min-w-4 stroke-primary-600 lg:h-8 lg:w-8 lg:min-w-8' />
+                <p className='text-base leading-tight lg:text-xl'>
+                  {t('Total Rewards:')} ${formatAmount(activeTab === RewardsTab.V2_REWARDS ? totalUsdV2 : totalUsd)}
+                </p>
+              </div>
+
+              {activeTab !== RewardsTab.HISTORY && (
+                <TertiaryButton
+                  className='min-w-fit'
+                  onClick={() => {
+                    if (activeTab === RewardsTab.V2_REWARDS) {
+                      handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
+                    } else {
+                      handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
+                    }
+                  }}
+                  disabled={allPendingV3 || allPendingV2 || totalUsd.isZero()}
+                >
+                  {t('Claim All')}
+                </TertiaryButton>
+              )}
+            </Info>
           )}
-          {activeTab === RewardsTab.V2_REWARDS && (
-            <CurrentRewards rewards={currentRewardsV2} currentMutate={refetchVetheRewardV2} version={2} />
-          )}
-        </>
-      ) : (
-        <NotConnected />
-      )}
-    </div>
+        </div>
+
+        {account ? (
+          <>
+            <div className='flex flex-col justify-between gap-4 lg:flex-row'>
+              <Selection className='h-11 w-fit' data={typeSelections} />
+              {activeTab === RewardsTab.HISTORY && (
+                <VeTheDropdown
+                  className='w-full md:w-[200px]'
+                  data={[{ id: 'All' }, ...veTHEs].map(item => ({
+                    ...item,
+                    label: item.id === 'All' ? 'All' : `veTHE #${item.id}`,
+                  }))}
+                  selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+                  setSelected={ele => setVeTHEId(ele.id)}
+                  placeHolder={t('Select veTHE')}
+                  isLocale={false}
+                  isApproved={isApproved}
+                  approvedId={approvedId}
+                  setApprovedId={setApprovedId}
+                />
+              )}
+            </div>
+
+            {activeTab === RewardsTab.HISTORY && <VotingHistory veTHEId={veTHEId} />}
+            {activeTab === RewardsTab.CURRENT && (
+              <CurrentRewards rewards={currentRewards} currentMutate={refreshVetheRewardV3} version={3} />
+            )}
+            {activeTab === RewardsTab.V2_REWARDS && (
+              <CurrentRewards rewards={currentRewardsV2} currentMutate={refetchVetheRewardV2} version={2} />
+            )}
+          </>
+        ) : (
+          <NotConnected />
+        )}
+      </div>
+    </LayoutWithBackButton>
   )
 }

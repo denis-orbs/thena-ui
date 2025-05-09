@@ -8,6 +8,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Dropdown from '@/components/dropdown'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import IconGroup from '@/components/icongroup'
@@ -413,162 +414,167 @@ export default function VotePage() {
   }, [isVoted, searchText])
 
   return (
-    <div className='flex flex-col gap-4'>
-      <h2>{t('Vote')}</h2>
-      <div className='flex flex-col gap-10'>
-        <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
-          <Box className='flex w-full flex-col gap-2'>
-            <div className='flex items-center gap-1'>
-              <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
-            </div>
-            <Paragraph className='text-sm'>{t('Expected Rewards')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <div className='flex items-center gap-1'>
-              <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
-              <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
-            </div>
-            <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
-            <Paragraph className='text-sm'>{t('Emissions vote')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
-            <Paragraph className='text-sm'>{t('Average Voting APR')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>
-              {days}d {hours}h {mins}m
-            </TextHeading>
-            <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
-          </Box>
-        </div>
-
-        <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Cast`} />
-
-        <div className='flex flex-col gap-4'>
-          <div className='flex justify-between gap-4 max-lg:flex-col'>
-            <div className='flex w-full items-center justify-between lg:w-fit'>
-              <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
-              <div className='flex gap-6'>
-                <Toggle
-                  className='lg:hidden'
-                  checked={isVoted}
-                  onChange={() => setIsVoted(!isVoted)}
-                  toggleId='voted'
-                  label='Voted Only'
-                />
+    <LayoutWithBackButton backUrl='/dashboard'>
+      <div className='flex flex-col gap-4'>
+        <h2>{t('Vote')}</h2>
+        <div className='flex flex-col gap-10'>
+          <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
+            <Box className='flex w-full flex-col gap-2'>
+              <div className='flex items-center gap-1'>
+                <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
               </div>
-            </div>
-            <div className='flex w-full justify-between gap-4 max-lg:flex-col-reverse lg:w-auto lg:gap-2'>
-              <div className='flex flex-col gap-4 md:flex-row'>
-                <Toggle
-                  className='hidden lg:flex'
-                  checked={isVoted}
-                  onChange={() => setIsVoted(!isVoted)}
-                  toggleId='active'
-                  label='Voted Only'
-                />
-                <div className='flex items-center justify-between gap-2 lg:hidden'>
-                  <Paragraph>Sort By</Paragraph>
-                  <Dropdown
-                    className='min-w-[200px]'
-                    data={sortOptions.slice(0, sortOptions.length - 1)}
-                    selected={sort ? `${sort.label}` : ''}
-                    setSelected={ele => setSort(ele)}
+              <Paragraph className='text-sm'>{t('Expected Rewards')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <div className='flex items-center gap-1'>
+                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
+              </div>
+              <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
+              <Paragraph className='text-sm'>{t('Emissions vote')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
+              <Paragraph className='text-sm'>{t('Average Voting APR')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>
+                {days}d {hours}h {mins}m
+              </TextHeading>
+              <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
+            </Box>
+          </div>
+
+          <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Cast`} />
+
+          <div className='flex flex-col gap-4'>
+            <div className='flex justify-between gap-4 max-lg:flex-col'>
+              <div className='flex w-full items-center justify-between lg:w-fit'>
+                <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
+                <div className='flex gap-6'>
+                  <Toggle
+                    className='lg:hidden'
+                    checked={isVoted}
+                    onChange={() => setIsVoted(!isVoted)}
+                    toggleId='voted'
+                    label='Voted Only'
                   />
                 </div>
-                <VeTheDropdown
-                  className='w-full md:w-[200px]'
-                  data={veTHEs
-                    .filter(ve => ve.voting_amount.gt(0))
-                    .map(item => ({
-                      ...item,
-                      label: `veTHE #${item.id}`,
-                    }))}
-                  selected={veTHE ? `veTHE #${veTHE.id}` : ''}
-                  setSelected={ele => setVeTHEId(ele.id)}
-                  placeHolder={t('Select veTHE')}
-                  isLocale={false}
-                  isApproved={isApproved}
-                  approvedId={approvedId}
-                  setApprovedId={setApprovedId}
-                />
-                <SearchInput className='flex-1' val={searchText} setVal={setSearchText} />
+              </div>
+              <div className='flex w-full justify-between gap-4 max-lg:flex-col-reverse lg:w-auto lg:gap-2'>
+                <div className='flex flex-col gap-4 md:flex-row'>
+                  <Toggle
+                    className='hidden lg:flex'
+                    checked={isVoted}
+                    onChange={() => setIsVoted(!isVoted)}
+                    toggleId='active'
+                    label='Voted Only'
+                  />
+                  <div className='flex items-center justify-between gap-2 lg:hidden'>
+                    <Paragraph>Sort By</Paragraph>
+                    <Dropdown
+                      className='min-w-[200px]'
+                      data={sortOptions.slice(0, sortOptions.length - 1)}
+                      selected={sort ? `${sort.label}` : ''}
+                      setSelected={ele => setSort(ele)}
+                    />
+                  </div>
+                  <VeTheDropdown
+                    className='w-full md:w-[200px]'
+                    data={veTHEs
+                      .filter(ve => ve.voting_amount.gt(0))
+                      .map(item => ({
+                        ...item,
+                        label: `veTHE #${item.id}`,
+                      }))}
+                    selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+                    setSelected={ele => setVeTHEId(ele.id)}
+                    placeHolder={t('Select veTHE')}
+                    isLocale={false}
+                    isApproved={isApproved}
+                    approvedId={approvedId}
+                    setApprovedId={setApprovedId}
+                  />
+                  <SearchInput className='flex-1' val={searchText} setVal={setSearchText} />
+                </div>
               </div>
             </div>
+            <Table
+              sortOptions={sortOptions}
+              data={finalPools}
+              sort={sort}
+              setSort={setSort}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              showNumberOfPage
+              pageSize={itemsPerPage}
+              setNumberOfPage={item => {
+                setItemsPerPage(item)
+                setCurrentPage(1)
+              }}
+            />
           </div>
-          <Table
-            sortOptions={sortOptions}
-            data={finalPools}
-            sort={sort}
-            setSort={setSort}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            showNumberOfPage
-            pageSize={itemsPerPage}
-            setNumberOfPage={item => {
-              setItemsPerPage(item)
-              setCurrentPage(1)
-            }}
-          />
+          {account && (
+            <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
+              <div className='flex items-center justify-center'>
+                <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
+                <span
+                  className={cn(
+                    'font-medium',
+                    veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600',
+                  )}
+                >
+                  {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
+                </span>
+              </div>
+              <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
+                <PrimaryButton
+                  className='px-2.5 py-2'
+                  disabled={votePending}
+                  onClick={() => {
+                    if (errorMsg) {
+                      warnToast(errorMsg)
+                      return
+                    }
+                    onVote(veTHE.id, percent, () => {
+                      updateVeTHEs()
+                    })
+                  }}
+                >
+                  {t('Cast Votes')}
+                </PrimaryButton>
+                <div className='flex gap-2'>
+                  <TextButton
+                    className='w-full px-2.5 py-2'
+                    onClick={() => {
+                      onReset(veTHE.id, () => {
+                        updateVeTHEs()
+                      })
+                    }}
+                    disabled={!veTHE || !veTHE.voted || resetPending}
+                  >
+                    {t('Reset')}
+                  </TextButton>
+                  <TextButton
+                    className='w-full px-2.5 py-2'
+                    onClick={() => {
+                      onPoke(veTHE.id, () => {
+                        updateVeTHEs()
+                      })
+                    }}
+                    disabled={!veTHE || !veTHE.voted || pokePending}
+                  >
+                    {t('Revote')}
+                  </TextButton>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        {account && (
-          <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
-            <div className='flex items-center justify-center'>
-              <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
-              <span
-                className={cn('font-medium', veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600')}
-              >
-                {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
-              </span>
-            </div>
-            <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
-              <PrimaryButton
-                className='px-2.5 py-2'
-                disabled={votePending}
-                onClick={() => {
-                  if (errorMsg) {
-                    warnToast(errorMsg)
-                    return
-                  }
-                  onVote(veTHE.id, percent, () => {
-                    updateVeTHEs()
-                  })
-                }}
-              >
-                {t('Cast Votes')}
-              </PrimaryButton>
-              <div className='flex gap-2'>
-                <TextButton
-                  className='w-full px-2.5 py-2'
-                  onClick={() => {
-                    onReset(veTHE.id, () => {
-                      updateVeTHEs()
-                    })
-                  }}
-                  disabled={!veTHE || !veTHE.voted || resetPending}
-                >
-                  {t('Reset')}
-                </TextButton>
-                <TextButton
-                  className='w-full px-2.5 py-2'
-                  onClick={() => {
-                    onPoke(veTHE.id, () => {
-                      updateVeTHEs()
-                    })
-                  }}
-                  disabled={!veTHE || !veTHE.voted || pokePending}
-                >
-                  {t('Revote')}
-                </TextButton>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </LayoutWithBackButton>
   )
 }
