@@ -43,6 +43,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
 
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
+  const [lastPrice, setLastPrice] = useState(null)
   const [baseCurrency, quoteCurrency] = useMemo(
     () =>
       position
@@ -150,6 +151,11 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (!startPriceTypedValue && lastPrice) {
+      onStartPriceInput(`${lastPrice}`)
+    }
+  }, [lastPrice, onStartPriceInput, startPriceTypedValue])
   return (
     <>
       <div className='space-y-4'>
@@ -307,6 +313,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 isfullRange={activePreset === Presets.FULL}
                 fullRangeWarningShown={fullRangeWarningShown}
                 isCreate={mintInfo.noLiquidity}
+                setLastPrice={setLastPrice}
               />
             </div>
             {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>

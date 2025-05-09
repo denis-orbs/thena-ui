@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
 
-import { brushHandlePathV2, OffScreenHandleV2 } from './svg'
+import { brushHandlePathV2 } from './svg'
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 36
@@ -42,50 +42,42 @@ export const Brush2 = ({
   southHandleColor,
   setIsOutOfView,
   isFullRange,
+  padding,
+  container,
+  setLiveLocalBrushExtent = () => {},
+  setCurrentHover = () => {},
 }) => {
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
 
-  // only used to drag the handles on brush for performance
   const [localBrushExtent, setLocalBrushExtent] = useState(brushExtent)
-
   const previousBrushExtent = usePrevious(brushExtent)
 
-  // keep local and external brush extent in sync
-  // i.e. snap to ticks on brush end
   const [brushInProgress, setBrushInProgress] = useState(false)
+
   useEffect(() => {
-    if (brushInProgress) {
-      return
-    }
+    if (brushInProgress) return
     setLocalBrushExtent(brushExtent)
   }, [brushExtent, brushInProgress])
 
-  // // keep local and external brush extent in sync
-  // // i.e. snap to ticks on brush end
-  // useEffect(() => {
-  //   setLocalBrushExtent(brushExtent)
-  // }, [brushExtent])
+  useEffect(() => {
+    setLiveLocalBrushExtent(localBrushExtent)
+  }, [localBrushExtent, setLiveLocalBrushExtent])
 
   useEffect(() => {
-    if (!brushRef.current || brushInProgress) {
-      return
-    }
+    if (!brushRef.current || brushInProgress) return
 
     const normalizedExtent = normalizeExtent(brushExtent)
     const scaledExtent = toYScale(normalizedExtent, yScale)
 
     brushBehavior.current = brushY()
       .extent([
-        // x0, y0 (top left)
         [0, BRUSH_EXTENT_MARGIN_PX],
-        // x1, y1 (bottom right)
         [width, height - BRUSH_EXTENT_MARGIN_PX],
       ])
       .handleSize(50)
       .filter(() => interactive)
       .filter(event => {
-        // Allow interactions only if the event target is part of the brush selection or handles
         const { target } = event
         return target.classList.contains('selection') || target.classList.contains('handle')
       })
@@ -97,20 +89,15 @@ export const Brush2 = ({
           setLocalBrushExtent(null)
           return
         }
-
-        // Update only the local extent during dragging
         const priceExtent = normalizeExtent(toPriceExtent(selection, yScale))
         setLocalBrushExtent(priceExtent)
       })
       .on('end', event => {
         const { selection, mode } = event
-
         if (!selection) {
           setLocalBrushExtent(null)
           return
         }
-
-        // Finalize state update on end
         const priceExtent = normalizeExtent(toPriceExtent(selection, yScale))
         if (!compare(normalizedExtent, priceExtent, yScale)) {
           setBrushExtent(priceExtent, mode)
@@ -119,8 +106,8 @@ export const Brush2 = ({
         setBrushInProgress(false)
         select(brushRef.current).selectAll('.handle').style('cursor', 'pointer')
       })
-    select(brushRef.current).selectAll('.handle').attr('cursor', 'pointer')
 
+    select(brushRef.current).selectAll('.handle').attr('cursor', 'pointer')
     brushBehavior.current(select(brushRef.current))
 
     if (
@@ -133,22 +120,43 @@ export const Brush2 = ({
     }
 
     select(brushRef.current).selectAll('.overlay').attr('cursor', 'default')
-    // brush linear gradient
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
       .attr('fill-opacity', '1')
       .attr('fill', `url(#${id}-gradient-selection)`)
       .attr('cursor', 'grab')
-  }, [brushExtent, id, height, interactive, previousBrushExtent, yScale, width, setBrushExtent, brushInProgress])
+
+    const brushSelection = select(brushRef.current)
+    const handleNorth = brushSelection.selectAll('.handle--n')
+    const handleSouth = brushSelection.selectAll('.handle--s')
+
+    handleNorth.on('mouseenter', () => setCurrentHover('north')).on('mouseleave', () => setCurrentHover(null))
+    handleSouth.on('mouseenter', () => setCurrentHover('south')).on('mouseleave', () => setCurrentHover(null))
+
+    return () => {
+      handleNorth.on('mouseenter', null).on('mouseleave', null)
+      handleSouth.on('mouseenter', null).on('mouseleave', null)
+    }
+  }, [
+    brushExtent,
+    id,
+    height,
+    interactive,
+    previousBrushExtent,
+    yScale,
+    width,
+    setBrushExtent,
+    brushInProgress,
+    setCurrentHover,
+    container,
+  ])
 
   // respond to yScale changes only
   useEffect(() => {
     if (!brushRef.current || !brushBehavior.current) return
-
     const extent = toYScale(brushExtent, yScale)
     if (isNaN(extent[0]) || isNaN(extent[1])) return
-
     brushBehavior.current.move(select(brushRef.current), normalizeExtent(toYScale(brushExtent, yScale)))
   }, [brushExtent, yScale])
 
@@ -174,7 +182,7 @@ export const Brush2 = ({
     select(brushRef.current)
       .selectAll('.handle--s')
       .attr('transform', `translate(0, ${flipSouthHandle ? -10 : 10})`)
-  }, [flipNorthHandle, flipSouthHandle, setIsOutOfView])
+  }, [flipNorthHandle, flipSouthHandle])
 
   useEffect(() => {
     if (showNorthArrow || showSouthArrow) {
@@ -187,6 +195,13 @@ export const Brush2 = ({
   return useMemo(
     () => (
       <>
+        <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
+        {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
+
+        <rect x='0' y={height} width='100%' height={padding - 10} fill='#0D090F' />
+        {(showSouthArrow || isFullRange) && (
+          <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
+        )}
         <defs>
           <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
             <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
@@ -302,28 +317,55 @@ export const Brush2 = ({
             ) : null}
 
             {(showNorthArrow || isFullRange) && (
-              <g transform='translate(18, 16) scale(1,-1)'>
-                <OffScreenHandleV2 color={northHandleColor} />
+              <g transform='translate(18, -7) scale(1,-1)'>
+                <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M11 1.5L6 6.5L1 1.5'
+                    stroke='#F199EE'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
                 <text
-                  x={14}
+                  x={30}
                   y={-3}
                   fill={northHandleColor}
-                  fontSize={10}
+                  fontSize={20}
+                  fontWeight={600}
                   alignmentBaseline='middle'
+                  fontFamily='Archia'
                   transform='scale(1,-1)'
+                  color='#F199EE'
                 >
-                  Range out of view
+                  range out of view
                 </text>
               </g>
             )}
             {(showSouthArrow || isFullRange) && (
-              <g transform={`translate(18, ${height - 16}) `}>
-                <OffScreenHandleV2 color={northHandleColor} />
-                {(!showNorthArrow || isFullRange) && (
-                  <text x={14} y={5} fill={northHandleColor} fontSize={10} alignmentBaseline='middle'>
-                    Range out of view
-                  </text>
-                )}
+              <g transform={`translate(18, ${height + 7}) `}>
+                <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M11 1.5L6 6.5L1 1.5'
+                    stroke='#F199EE'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+
+                <text
+                  x={30}
+                  y={5}
+                  fill={northHandleColor}
+                  fontSize={20}
+                  fontWeight={600}
+                  alignmentBaseline='middle'
+                  fontFamily='Archia'
+                  color='#F199EE'
+                >
+                  range out of view
+                </text>
               </g>
             )}
           </>
@@ -335,6 +377,7 @@ export const Brush2 = ({
       width,
       height,
       normalizedBrushExtent,
+      padding,
       northHandleInView,
       isFullRange,
       yScale,
