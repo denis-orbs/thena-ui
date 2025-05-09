@@ -136,7 +136,6 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const handleChooseStrategy = useCallback(
     sub => {
       if (!sub) return setStrategy(null)
-      console.log(sub)
 
       const _isAutomatic = !MANUAL_TYPES.includes(sub.title)
       setIsAutomatic(_isAutomatic)

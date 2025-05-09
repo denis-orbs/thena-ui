@@ -161,6 +161,15 @@ export default function PoolsPage() {
 
     final = final.map(pool => {
       const singleSideVault = vaults.find(v => v.algebra === pool.address)
+      let { apr } = pool
+      if (singleSideVault) {
+        const aprs = pool.subpools.map(sub => sub.gauge.apr).filter(item => !item.isZero())
+        const aprMin = BigNumber.min(...aprs)
+        const aprMax = BigNumber.max(...aprs)
+        apr = aprMin.isEqualTo(aprMax)
+          ? `${formatAmount(aprMin)}%`
+          : `${formatAmount(aprMin)}% ~ ${formatAmount(aprMax)}%`
+      }
       return {
         ...pool,
         tvlUSD: singleSideVault
@@ -178,6 +187,7 @@ export default function PoolsPage() {
               .plus(BigNumber(pool.reserve1))
               .toNumber()
           : pool.reserve1,
+        apr,
       }
     })
     const res =
