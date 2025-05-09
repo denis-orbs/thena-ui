@@ -135,67 +135,65 @@ function DashboardProfile() {
                   </Link>
                 </div>
 
-                <div className='relative flex h-full flex-1 flex-col gap-4 p-4 max-md:hidden'>
-                  {userInfo?.username && (
-                    <NewTextHeading className='flex gap-2 text-xl uppercase !leading-6 md:text-xl'>
-                      <span className='text-neutral-500'>{t('Thena ID')}:</span>
-                      <span className='text-warn-600'>{userInfo.username}</span>
-                    </NewTextHeading>
-                  )}
-                  <div className='flex flex-col gap-2'>
-                    <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
-                      <NewTextHeading className='text-xl text-neutral-500 md:text-xl'>
-                        {userInfo?.isVerified ? 'Verified' : 'Unverified'}
+                <div className='flex h-full flex-1 flex-col justify-between gap-4 p-4 max-md:hidden'>
+                  <div className='flex flex-col gap-4'>
+                    {userInfo?.username && (
+                      <NewTextHeading className='flex gap-2 py-2.5 text-xl uppercase !leading-6 md:text-xl'>
+                        <span className='text-neutral-500'>{t('Thena ID')}:</span>
+                        <span className='text-warn-600'>{userInfo.username}</span>
                       </NewTextHeading>
-                      <span className='text-neutral-500'>{formatAddress(account)}</span>
-                    </TextHeading>
-                    <div className='flex h-10 flex-wrap items-center gap-4'>
-                      <TextHeading className='font-archia text-xl font-semibold'>
-                        <span className='text-neutral-500'>{t('Follower')}</span>
-                        <span className='ml-2'>{followersCount}</span>
+                    )}
+                    <div className='flex flex-col gap-2'>
+                      <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
+                        <NewTextHeading className='text-xl text-neutral-500 md:text-xl'>
+                          {userInfo?.isVerified ? 'Verified' : 'Unverified'}
+                        </NewTextHeading>
+                        <span className='text-neutral-500'>{formatAddress(account)}</span>
                       </TextHeading>
-                      <TextHeading className='font-archia text-xl font-semibold'>
-                        <span className='text-neutral-500'>{t('Following')}</span>
-                        <span className='ml-2'>{followingCount}</span>
-                      </TextHeading>
-                    </div>
-                    <div className='flex min-h-10 flex-wrap items-center gap-8'>
-                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                        <span className='text-neutral-500'>{t('veTHE Power')}</span>
-                        <span className='ml-4'>{formatAmount(veTHEPower)}</span>
-                      </TextHeading>
-                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                        <span className='text-neutral-500'>{t('Thena ID(s)')}</span>
-                        <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
-                      </TextHeading>
-                      <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
-                        <span className='text-neutral-500'>{t('Rank')}</span>
-                        <span className='ml-4'>{userInfo?.rank}</span>
-                      </TextHeading>
-                    </div>
-                    {userInfo?.xProfileUrl && (
-                      <div className='flex h-11 w-full items-center gap-2'>
-                        <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
-                          {t('Socials')}:{' '}
+                      <div className='flex h-10 flex-wrap items-center gap-4'>
+                        <TextHeading className='font-archia text-xl font-semibold'>
+                          <span className='text-neutral-500'>{t('Follower')}</span>
+                          <span className='ml-2'>{followersCount}</span>
                         </TextHeading>
-                        <Link
-                          href={`https://x.com/${userInfo?.xProfileUrl}`}
-                          rel='nofollow noopener size-8'
-                          target='_blank'
-                        >
-                          <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
-                            <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
-                          </div>
-                        </Link>
+                        <TextHeading className='font-archia text-xl font-semibold'>
+                          <span className='text-neutral-500'>{t('Following')}</span>
+                          <span className='ml-2'>{followingCount}</span>
+                        </TextHeading>
                       </div>
-                    )}
+                      <div className='flex min-h-10 flex-wrap items-center gap-8'>
+                        <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                          <span className='text-neutral-500'>{t('veTHE Power')}</span>
+                          <span className='ml-4'>{formatAmount(veTHEPower)}</span>
+                        </TextHeading>
+                        <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                          <span className='text-neutral-500'>{t('Thena ID(s)')}</span>
+                          <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
+                        </TextHeading>
+                        <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
+                          <span className='text-neutral-500'>{t('Rank')}</span>
+                          <span className='ml-4'>{userInfo?.rank}</span>
+                        </TextHeading>
+                      </div>
+                      {userInfo?.xProfileUrl && (
+                        <div className='flex h-11 w-full items-center gap-2'>
+                          <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
+                            {t('Socials')}:{' '}
+                          </TextHeading>
+                          <Link
+                            href={`https://x.com/${userInfo?.xProfileUrl}`}
+                            rel='nofollow noopener size-8'
+                            target='_blank'
+                          >
+                            <div className='flex size-8 items-center justify-center rounded-md bg-neutral-700'>
+                              <NextImage alt='svg' className='size-4' src='/images/footer/x.svg' />
+                            </div>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={cn(
-                      'absolute bottom-4 flex flex-wrap items-center space-y-1.5 overflow-hidden',
-                      'max-h-[138px]',
-                    )}
-                  >
+
+                  <div className={cn('flex flex-wrap items-center gap-2 overflow-hidden', 'max-h-[138px]')}>
                     {sortedData.map(item => (
                       <AchievementBasicIcon
                         item={item}
