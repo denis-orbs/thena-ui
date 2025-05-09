@@ -54,8 +54,8 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xCf2071cc2F8f53f611E528F7558CFcaB5e64541a',
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
-      algebraAddress: '0xf70609e3263fcb7d955fa0d6898320c140e3dc0e',
-      basePool: '0xf70609e3263fcb7d955fa0d6898320c140e3dc0e',
+      algebraAddress: '0x6b8a95892af0a5c3b76bf06695a108fc994d7b8c',
+      basePool: '0x6b8a95892af0a5c3b76bf06695a108fc994d7b8c',
       version: 2,
     },
     // BTCB/THE (BTCB)

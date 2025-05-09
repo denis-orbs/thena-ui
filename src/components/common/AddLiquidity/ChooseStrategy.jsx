@@ -143,7 +143,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
       setStrategy({
         title: sub.title,
-        tvl: sub.gauge?.tvl?.toNumber() ?? 0,
+        tvl: sub.tvl ? sub.tvl.toNumber() : sub.gauge?.tvl?.toNumber() ?? 0,
         apr: sub.gauge?.apr?.toNumber() ?? 0,
         account: {
           totalLp: sub.account?.totalLp?.toNumber(),
@@ -212,7 +212,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(sub.tvl ?? sub.gauge.tvl)}</Paragraph>
                 </div>
               </div>
             </div>
