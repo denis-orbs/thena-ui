@@ -492,7 +492,7 @@ export default function PoolsPage() {
               data-tooltip-id='analytics-tooltip'
             />
             <EmphasisButton
-              className='w-full p-2 text-sm lg:w-fit'
+              className='w-full p-2 text-xs lg:w-fit'
               onClick={e => {
                 e.stopPropagation()
                 e.preventDefault()

@@ -362,8 +362,9 @@ function NewListings({
           />
           <EmphasisButton
             className={cn(
-              'h-8 w-full p-2 text-xs lg:h-9 lg:w-fit lg:text-sm',
+              '!h-8 w-full p-2 text-xs lg:w-fit lg:text-sm',
               size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
+              size !== 'small' && 'lg:!h-9',
             )}
             onClick={e => {
               e.stopPropagation()
