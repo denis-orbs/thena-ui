@@ -128,7 +128,7 @@ function FarmingItem({ position }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=0`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=2`)
   }, [dispatch, poolInfo, push, version, tokenId])
 
   const pairCell = useMemo(

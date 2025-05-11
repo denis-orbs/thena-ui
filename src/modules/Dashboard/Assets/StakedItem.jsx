@@ -130,7 +130,7 @@ function StakedItem({ position }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=0`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
   }, [dispatch, position.basePool, position.title, push, strategy])
 
   const pairCell = useMemo(

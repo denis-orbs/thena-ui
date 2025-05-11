@@ -553,7 +553,7 @@ export default function PoolsPage() {
                 className='flex w-full cursor-pointer flex-col gap-4'
                 key={trending.address}
                 onClick={() => {
-                  push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}`)
+                  push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
                 }}
               >
                 <div className='flex items-start justify-between gap-4'>

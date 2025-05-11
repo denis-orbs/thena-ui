@@ -306,7 +306,7 @@ function NotStakedItem({ position }) {
             {version === 3 || isSingleSided ? (
               <EmphasisButton
                 className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=0`)}
+                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)}
               >
                 {t('Add')}
               </EmphasisButton>

@@ -22,7 +22,7 @@ export const useBackURL = type => {
   const poolAddress = params.get('poolAddress')
 
   const backUrl = useMemo(() => {
-    if (back === 0) return '/dashboard'
+    if (back === 2) return '/dashboard'
 
     if (type === PAIR_TYPES.WEIGHTED) {
       if (address) {
