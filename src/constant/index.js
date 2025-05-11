@@ -323,16 +323,17 @@ export const GAMMA_TYPES = [
   'Narrow',
   'Wide',
   'Correlated',
+  'CL_Stable',
   'Narrow_Farming',
-  'Wide_Farming',
-  'Correlated_Farming',
   'Narrow_SwapFee',
+  'Wide_Farming',
   'Wide_SwapFee',
   'Correlated_SwapFee',
-  'CL_Stable',
+  'Correlated_Farming',
+  'CL_Stable_Farming',
 ]
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
-export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI']
+export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI', 'ICHI Single Sided']
 export const NARROW_TYPES = ['Narrow_Farming', 'Narrow_SwapFee']
 export const ICHI_SwapFee = 'ICHI_SwapFee'
 
