@@ -4,7 +4,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
+import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import { TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
@@ -150,35 +152,56 @@ function KyberZapperPane({
 
           <div
             className={cn(
-              'rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
+              'flex gap-3 rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
               !data && 'hidden',
             )}
           >
-            <p className='mb-1 text-xl font-medium'>Zapper Route</p>
-            <ol className='list-inside list-decimal text-sm'>
-              {swaps?.map((a, index) => {
-                const tokenIn = tokens[a.tokenIn.address.toLowerCase()]
-                const tokenOut = tokens[a.tokenOut.address.toLowerCase()]
+            <article className='flex flex-col gap-2'>
+              <div className='flex items-center justify-center gap-1 rounded-md bg-[#29292980] p-[6px]'>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={asset0.logoURI}
+                  logo2={asset1.logoURI}
+                />
+                <p className='hidden text-sm text-neutral-200 md:block'>
+                  {asset0.symbol}/{asset1.symbol}
+                </p>
+              </div>
+              <p className='space-x-2'>
+                <span>{formatAmount(fromWei(liquidityAdded))}</span>
+                <TextSubHeading className='text-sm'>LP</TextSubHeading>
+              </p>
+            </article>
+            <article>
+              <p className='mb-1 text-xl font-medium'>Zapper Route</p>
+              <ol className='list-inside list-decimal text-sm'>
+                {swaps?.map((a, index) => {
+                  const tokenIn = tokens[a.tokenIn.address.toLowerCase()]
+                  const tokenOut = tokens[a.tokenOut.address.toLowerCase()]
 
-                return (
-                  <li key={index}>
-                    Swap {formatAmount(fromWei(a.tokenIn.amount, tokenIn?.decimals))} {tokenIn?.symbol} to{' '}
-                    {formatAmount(fromWei(a.tokenOut.amount, tokenOut?.decimals))} {tokenOut?.symbol}
-                  </li>
-                )
-              })}
+                  return (
+                    <li key={index}>
+                      Swap {formatAmount(fromWei(a.tokenIn.amount, tokenIn?.decimals))} {tokenIn?.symbol} to{' '}
+                      {formatAmount(fromWei(a.tokenOut.amount, tokenOut?.decimals))} {tokenOut?.symbol}
+                    </li>
+                  )
+                })}
 
-              <li>
-                Build LP using{' '}
-                {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token0?.amount, _token0?.decimals))}{' '}
-                {_token0?.symbol} and{' '}
-                {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token1?.amount, _token1?.decimals))}{' '}
-                {_token1?.symbol} on THENA
-              </li>
-              <li>
-                Deposit estimated {formatAmount(fromWei(liquidityAdded))} {asset0.symbol}/{asset1.symbol} LP
-              </li>
-            </ol>
+                <li>
+                  Build LP using{' '}
+                  {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token0?.amount, _token0?.decimals))}{' '}
+                  {_token0?.symbol} and{' '}
+                  {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token1?.amount, _token1?.decimals))}{' '}
+                  {_token1?.symbol} on THENA
+                </li>
+                <li>
+                  Deposit estimated {formatAmount(fromWei(liquidityAdded))} {asset0.symbol}/{asset1.symbol} LP
+                </li>
+              </ol>
+            </article>
           </div>
         </div>
       </div>
