@@ -144,6 +144,62 @@ export const useExtendLock = () => {
   return { onExtend, pending }
 }
 
+export const useExtendMultipleLock = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const onExtend = useCallback(
+    async (veThes, callback) => {
+      try {
+        const key = uuidv4()
+
+        const transactions = {}
+        if (veThes.length > 0) {
+          veThes.forEach(veThe => {
+            transactions[veThe.id] = {
+              desc: `${t('Extend Lock Duration')} ID #${veThe.id}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            }
+          })
+        }
+
+        startTxn({ key, title: 'Extend Lock Duration', transactions })
+
+        const veTHEContract = getVeTHEContract(chainId)
+
+        setPending(true)
+
+        for (let i = 0; i < veThes.length; i++) {
+          const veThe = veThes[i]
+          const unlockTime = dayjs(veThe.unlockTime).diff(dayjs(), 'second') + 100
+          const params = [veThe.id, unlockTime]
+          if (!(await writeTxn(key, veThe.id, veTHEContract, 'increase_unlock_time', params))) {
+            setPending(false)
+            return
+          }
+        }
+
+        endTxn({
+          key,
+          final: 'Extend Successful',
+        })
+        setPending(false)
+        callback()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [startTxn, endTxn, writeTxn, chainId, t],
+  )
+
+  return { onExtend, pending }
+}
+
 export const useIncreaseLock = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()

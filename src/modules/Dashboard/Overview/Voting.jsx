@@ -165,7 +165,7 @@ function Voting() {
                 </div>
               )}
 
-              <div className='flex gap-3'>
+              <div className='flex gap-4'>
                 <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
                   {t('Rewards')}
                 </EmphasisButton>

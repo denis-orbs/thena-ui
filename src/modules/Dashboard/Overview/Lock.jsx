@@ -7,14 +7,21 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextSubHeading } from '@/components/typography'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { useExtendMultipleLock } from '@/hooks/useVeThe'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
+
+const week = 86400 * 7 * 1000
+const maxTimeStamp = 86400 * 730 * 1000
+const maxTimes = Math.floor((new Date().getTime() + maxTimeStamp) / week) * week
+const maxDate = new Date(maxTimes)
 
 function Lock() {
   const t = useTranslations()
   const { push } = useRouter()
   const { veTHEs, isLoading } = useVeTHEsContext()
+  const { onExtend, pending: extendPending } = useExtendMultipleLock()
 
   const totalLock = useMemo(() => veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), ZERO_VALUE), [veTHEs])
 
@@ -22,6 +29,20 @@ function Lock() {
     () => veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.voting_amount), ZERO_VALUE),
     [veTHEs],
   )
+
+  const veTHEsToLock = useMemo(() => {
+    const results = []
+    veTHEs.forEach(veTHE => {
+      if (veTHE.expire > 0) {
+        const period = veTHE.lockedEnd * 1000 + maxTimeStamp
+        const unlockTime = new Date(Math.min(Math.floor(period / week) * week, maxDate))
+        if (unlockTime.getTime() / 1000 !== veTHE.lockedEnd) {
+          results.push({ id: veTHE.id, unlockTime })
+        }
+      }
+    })
+    return results
+  }, [veTHEs])
 
   return (
     veTHEs.length > 0 && (
@@ -54,9 +75,19 @@ function Lock() {
                 {formatAmount(totalVotingPower, true)}
               </NewTextHeading>
             </div>
-            <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
-              {t('Manage')}
-            </EmphasisButton>
+
+            <div className='flex gap-4'>
+              <EmphasisButton
+                disabled={extendPending || !veTHEsToLock.length}
+                className='w-full max-md:h-8 max-md:text-xs'
+                onClick={() => onExtend(veTHEsToLock)}
+              >
+                {t('Max Lock')}
+              </EmphasisButton>
+              <EmphasisButton className='w-full max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+                {t('Manage')}
+              </EmphasisButton>
+            </div>
           </div>
         </div>
       </Box>

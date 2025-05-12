@@ -206,7 +206,6 @@ function LiquidityAPRChart({ data = [], className }) {
         setIsHoverFromChart(false)
         const positionId = target.getAttribute('data-position-id')
         setCurrentHoverTableRow(positionId)
-        console.log('Hovered positionId:', positionId)
       } else {
         setCurrentHoverTableRow(null)
       }
