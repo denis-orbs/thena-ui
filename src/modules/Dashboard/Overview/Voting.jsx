@@ -165,7 +165,7 @@ function Voting() {
                 </div>
               )}
 
-              <div className='flex gap-4'>
+              <div className='flex gap-2'>
                 <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
                   {t('Rewards')}
                 </EmphasisButton>
@@ -205,7 +205,10 @@ function Voting() {
                   <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/vote')}>
                     {t('Vote')}
                   </EmphasisButton>
-                  <PrimaryButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/lock')}>
+                  <PrimaryButton
+                    className='w-1/2 px-3 max-md:h-8 max-md:text-xs'
+                    onClick={() => push('/dashboard/lock')}
+                  >
                     {t('Create your veTHE')}
                   </PrimaryButton>
                 </div>

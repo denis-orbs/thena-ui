@@ -76,7 +76,7 @@ function Lock() {
               </NewTextHeading>
             </div>
 
-            <div className='flex gap-4'>
+            <div className='flex gap-2'>
               <EmphasisButton
                 disabled={extendPending || !veTHEsToLock.length}
                 className='w-full max-md:h-8 max-md:text-xs'
