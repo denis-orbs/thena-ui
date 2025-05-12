@@ -81,11 +81,11 @@ function PairStrategy({ pair }) {
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title)}</TextHeading>
+              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm text-neutral-400'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='!text-sm'>${formatAmount(sub.tvl)}</Paragraph>
+                  <Paragraph className='!text-sm'>${formatAmount(sub.tvl ?? sub.gauge.tvl)}</Paragraph>
                 </div>
               </div>
             </div>
