@@ -190,6 +190,8 @@ export const useManualPositions = manualPositions => {
       return {
         ...farmPos,
         apr: apr.toNumber(),
+        amount0: Number(amount0),
+        amount1: Number(amount1),
         fees,
         feesInUsd,
         fiatValueOfLiquidity: tvl.toNumber(),

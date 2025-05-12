@@ -221,6 +221,8 @@ export const useFarmPositions = farmPositions => {
 
       return {
         ...farmPos,
+        amount0: Number(amount0),
+        amount1: Number(amount1),
         key: poolKeys[index],
         apr: apr.toNumber(),
         feesInUsd,

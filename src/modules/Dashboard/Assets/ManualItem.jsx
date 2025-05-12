@@ -20,7 +20,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { cn, formatAmount, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, fromWei, getLiquidityRangeType, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
@@ -154,6 +154,23 @@ function ManualItem({ position }) {
     push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=2`)
   }, [dispatch, poolInfo, push, version, tokenId])
 
+  const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
+
+  const renderTokenValue = useMemo(() => {
+    const token0Value = position?.amount0
+    const token1Value = position?.amount1
+
+    const hasInvalidAmounts = isInvalidAmount(token0Value) && isInvalidAmount(token1Value)
+    if (hasInvalidAmounts) return null
+
+    return (
+      <>
+        {!isInvalidAmount(token0Value) && <p>{`${formatAmount(token0Value)} ${getDisplayName(position.asset0)}`}</p>}
+        {!isInvalidAmount(token1Value) && <p>{`${formatAmount(token1Value)} ${getDisplayName(position.asset1)}`}</p>}
+      </>
+    )
+  }, [getDisplayName, position?.amount0, position?.amount1, position.asset0, position.asset1])
+
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -210,11 +227,19 @@ function ManualItem({ position }) {
   const valueCell = useMemo(
     () => (
       <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
-        <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
+        <div className='flex items-center gap-1'>
+          <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
+          {renderTokenValue && (
+            <>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+              <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
+            </>
+          )}
+        </div>
         <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
       </div>
     ),
-    [position.fiatValueOfLiquidity, t],
+    [position.fiatValueOfLiquidity, position.positionId, renderTokenValue, t],
   )
 
   const rewardsCell = useMemo(

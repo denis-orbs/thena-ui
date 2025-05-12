@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -18,7 +19,7 @@ import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
-import { cn, formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, fromWei, getDisplayedStrategy, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
@@ -174,6 +175,31 @@ function NotStakedItem({ position }) {
 
   const [priceLower, priceUpper, currentPrice] = useAutomaticRange(position, strategy, networkId)
 
+  const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
+
+  const renderTokenValue = useMemo(() => {
+    const token0Value = BigNumber(position.account.total0).minus(position.account.staked0)
+    const token1Value = BigNumber(position.account.total1).minus(position.account.staked1)
+
+    const hasInvalidAmounts = isInvalidAmount(token0Value) && isInvalidAmount(token1Value)
+    if (hasInvalidAmounts) return null
+
+    return (
+      <>
+        {!isInvalidAmount(token0Value) && <p>{`${formatAmount(token0Value)} ${getDisplayName(position.token0)}`}</p>}
+        {!isInvalidAmount(token1Value) && <p>{`${formatAmount(token1Value)} ${getDisplayName(position.token1)}`}</p>}
+      </>
+    )
+  }, [
+    getDisplayName,
+    position.account.staked0,
+    position.account.staked1,
+    position.account.total0,
+    position.account.total1,
+    position.token0,
+    position.token1,
+  ])
+
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -232,12 +258,21 @@ function NotStakedItem({ position }) {
     () => (
       <div className='flex items-center max-xl:flex-1 max-xl:justify-center'>
         <div className='flex flex-col'>
-          <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
+          <div className='flex items-center gap-1'>
+            <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
+            {renderTokenValue && (
+              <>
+                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+                <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
+              </>
+            )}
+          </div>
+
           <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
         </div>
       </div>
     ),
-    [position.account.stakedUsd, position.account.totalUsd, t],
+    [position.account.stakedUsd, position.account.totalUsd, position.positionId, renderTokenValue, t],
   )
 
   const rewardsCell = useMemo(
