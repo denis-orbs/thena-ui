@@ -182,13 +182,6 @@ export function Chart({
               <AxisBottom xScale={xScale} innerHeight={innerHeight} />
             </g>
 
-            <rect
-              className='size-full cursor-grab fill-transparent active:cursor-grabbing'
-              width={innerWidth}
-              height={height}
-              ref={zoomRef}
-            />
-
             {handleShow && (
               <Brush
                 id={id}
@@ -204,6 +197,13 @@ export function Chart({
                 isFullRange={isFullRange}
               />
             )}
+
+            <rect
+              className='size-full cursor-grab fill-transparent active:cursor-grabbing'
+              width={innerWidth}
+              height={height}
+              ref={zoomRef}
+            />
           </g>
         </svg>
       </div>

@@ -262,7 +262,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
 
       {strategy && (
         <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
-          <div className='!mb-9 md:!mb-11'>
+          <div>
             <div className='mt-0 flex flex-col'>
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}

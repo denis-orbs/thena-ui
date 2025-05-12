@@ -55,7 +55,7 @@ function ChartPrice({
         visible: true,
         borderVisible: false,
         secondsVisible: false,
-        rightOffset: isMobile ? 10 : 0,
+        rightOffset: 0,
         tickMarkFormatter: unixTime =>
           timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
       },
