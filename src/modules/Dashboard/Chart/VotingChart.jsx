@@ -104,10 +104,10 @@ function VotingChart({ data = [], className }) {
   const pools = formatData()
   const timeData = [
     {
-      value: untilNextEpoch <= 120 ? 120 - untilNextEpoch : sinceLastEpoch,
+      value: untilNextEpoch,
     },
     {
-      value: untilNextEpoch,
+      value: untilNextEpoch <= 120 ? 120 - untilNextEpoch : sinceLastEpoch,
     },
   ]
 
@@ -115,7 +115,7 @@ function VotingChart({ data = [], className }) {
   const poolColors = pools.map((pool, i) => (pool.label === 'Not voted' ? '#281B2E' : COLORS[i % COLORS.length]))
 
   // Generate background colors for time
-  const timeColors = timeData.map((_, i) => (i === 0 ? (untilNextEpoch <= 120 ? '#F51C00' : '#281B2E') : '#580055'))
+  const timeColors = timeData.map((_, i) => (i === 0 ? '#580055' : untilNextEpoch <= 120 ? '#F51C00' : '#281B2E'))
 
   const chartData = {
     datasets: [
