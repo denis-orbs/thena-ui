@@ -101,9 +101,10 @@ export const getBlocksFromTimestamps = async (timestamps, sortDirection, skipCou
 }
 
 const FARMING_LIST_QUERY = gql`
-  query ($poolIds: [String!]) {
+  query ($poolIds: [String!], $skip: Int) {
     eternalFarmings(
       first: 1000
+      skip: $skip
       where: { pool_in: $poolIds, isDeactivated: false }
       orderBy: nonce
       orderDirection: desc
@@ -123,16 +124,26 @@ export const getFusionFarmingData = async ({ chainId, poolIds }) => {
   if (!poolIds?.length) return []
 
   try {
-    const { eternalFarmings = [] } = await fusionFarmingClient[chainId].request(FARMING_LIST_QUERY, {
-      poolIds,
-    })
-
     const uniquePools = new Map()
+    let i = 0
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { eternalFarmings = [] } = await fusionFarmingClient[chainId].request(FARMING_LIST_QUERY, {
+        poolIds,
+        skip: i * 1000,
+      })
 
-    for (const item of eternalFarmings) {
-      if (!uniquePools.has(item.pool)) {
-        uniquePools.set(item.pool, item)
+      for (const item of eternalFarmings) {
+        if (!uniquePools.has(item.pool)) {
+          uniquePools.set(item.pool, item)
+        }
       }
+
+      if (eternalFarmings.length < 1000) {
+        break
+      }
+
+      i++
     }
 
     return Array.from(uniquePools.values())

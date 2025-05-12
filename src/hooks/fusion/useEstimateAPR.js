@@ -48,7 +48,12 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
     const { eternalFarmings = [] } = await fusionFarmingClient[chainId].request(
       gql`
         query ($pool: String!) {
-          eternalFarmings(where: { pool: $pool }) {
+          eternalFarmings(
+            first: 1000
+            where: { pool: $pool, isDeactivated: false }
+            orderBy: nonce
+            orderDirection: desc
+          ) {
             id
             virtualPool
             pool
@@ -59,9 +64,7 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
           }
         }
       `,
-      {
-        pool,
-      },
+      { pool },
     )
 
     return eternalFarmings?.at(0) ?? {}

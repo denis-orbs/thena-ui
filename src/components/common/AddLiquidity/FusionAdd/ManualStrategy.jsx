@@ -139,6 +139,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
       onStartPriceInput(`${lastPrice}`)
     }
   }, [lastPrice, onStartPriceInput, startPriceTypedValue])
+
   return (
     <>
       <div className='space-y-4'>
