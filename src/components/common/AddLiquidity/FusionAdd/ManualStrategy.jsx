@@ -262,9 +262,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
 
       {strategy && (
         <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
-          <div className='flex items-center justify-between'>
-            <NewTextSubHeading>{t('Your Range against the Price')}</NewTextSubHeading>
-          </div>
           <div className='!mb-9 md:!mb-11'>
             <div className='mt-0 flex flex-col'>
               <ChartPriceRangeInput
@@ -280,9 +277,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
                 interactive={!position}
                 showPeriod
                 handleShow
-                classNames={{
-                  periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
-                }}
                 outOfRange={mintInfo.outOfRange}
                 invalidRange={mintInfo.invalidRange}
                 isfullRange={activePreset === Presets.FULL}

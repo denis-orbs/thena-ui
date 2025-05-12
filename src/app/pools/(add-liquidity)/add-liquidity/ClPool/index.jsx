@@ -143,7 +143,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
-          <div className='hidden h-full flex-[4] flex-col gap-2 2xl:flex'>
+          <div className='hidden h-full flex-[4] flex-col gap-2 md:gap-4 2xl:flex'>
             {pair ? (
               <div className={cn('mt-0')}>
                 <PoolAttributesSection strategy={strategy} pair={pair} />
@@ -158,37 +158,32 @@ function AddLiquidityClPool({ pool, handleBack }) {
             <PoolDescriptionSection pairType={strategy?.title} />
 
             {strategy?.isAutomatic && (
-              <div className='space-y-4 px-8'>
-                <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Range')}</NewTextSubHeading>
-                <AutomaticLiquidityChart
-                  currencyA={currencyA ?? undefined}
-                  currencyB={currencyB ?? undefined}
-                  onLeftRangeInput={onLeftRangeInput}
-                  onRightRangeInput={onRightRangeInput}
-                  strategy={strategy}
-                  position={position}
-                  pair={pair}
-                  handleShow={!!strategy}
-                />
-              </div>
+              <AutomaticLiquidityChart
+                currencyA={currencyA ?? undefined}
+                currencyB={currencyB ?? undefined}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                strategy={strategy}
+                position={position}
+                pair={pair}
+                handleShow={!!strategy}
+              />
             )}
 
             {!strategy?.isAutomatic && (
-              <div className={cn('space-y-4 px-4')}>
-                <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Distribution')}</NewTextSubHeading>
-                <LiquidityChartRangeInput
-                  currencyA={baseCurrency ?? undefined}
-                  currencyB={quoteCurrency ?? undefined}
-                  feeAmount={mintInfo.dynamicFee}
-                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                  price={currentPrice ? parseFloat(currentPrice) : undefined}
-                  priceLower={position?.priceLower ?? priceLower}
-                  priceUpper={position?.priceUpper ?? priceUpper}
-                  onLeftRangeInput={onLeftRangeInput}
-                  onRightRangeInput={onRightRangeInput}
-                  interactive={false}
-                />
-              </div>
+              <LiquidityChartRangeInput
+                label='Liquidity Distribution'
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                feeAmount={mintInfo.dynamicFee}
+                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                price={currentPrice ? parseFloat(currentPrice) : undefined}
+                priceLower={position?.priceLower ?? priceLower}
+                priceUpper={position?.priceUpper ?? priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                interactive={false}
+              />
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { NewTextSubHeading, Paragraph } from '@/components/typography'
+import { NewTextHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 
 const descriptionSections = {
@@ -29,8 +29,8 @@ export default function PoolDescriptionSection({ pairType }) {
 
   return (
     <div className='hidden h-max flex-col gap-2 rounded-md bg-neutral-900 p-4 lg:flex'>
-      <NewTextSubHeading className='hidden !text-xl md:block'>{t(text)}</NewTextSubHeading>
-      <Paragraph className='text-sm text-neutral-300 md:text-base'>{t(description)}</Paragraph>
+      <NewTextHeading className='hidden text-xl md:block md:text-xl'>{t(text)}</NewTextHeading>
+      <Paragraph className='text-sm text-neutral-400 md:text-base'>{t(description)}</Paragraph>
     </div>
   )
 }

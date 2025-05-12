@@ -3,12 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useSelector } from 'react-redux'
 
 import { Warning } from '@/components/alert'
-import { OutlineIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
-import { TextHeading } from '@/components/typography'
+import { NewTextHeading, TextHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
@@ -68,7 +67,6 @@ export default function ChartPriceRangeInput({
   invalidRange = false,
   fullRangeWarningShown = false,
   setLastPrice = () => {},
-  classNames,
   isCreate = false,
 }) {
   const activePreset = useActivePreset()
@@ -382,8 +380,6 @@ export default function ChartPriceRangeInput({
 
   return (
     <div className='flex flex-col'>
-      {showPeriod && <Tabs data={periods} className={cn('max-md:hidden', classNames?.periods)} />}
-
       <div className='flex flex-col gap-2 md:gap-4'>
         {isFullRange && fullRangeWarningShown && <Warning className='text-sm'>{t('Full range position')}</Warning>}
         {outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
@@ -397,27 +393,30 @@ export default function ChartPriceRangeInput({
             <TextHeading>Liquidity data not available.</TextHeading>
           ) : (
             <div className='flex h-full max-h-[300px] w-full flex-col' ref={containerRef}>
-              <div className='flex justify-end justify-items-end max-md:mb-4 max-md:justify-between'>
-                {showPeriod && <Tabs data={periods} className={cn('md:hidden')} />}
-                <div className='flex gap-1'>
-                  <OutlineIconButton
-                    className='!size-6'
-                    classNames='!size-4'
-                    Icon={ZoomInIcon}
-                    onClick={() => {
-                      setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
-                    }}
-                    disabled={false}
-                  />
-                  <OutlineIconButton
-                    className='!size-6'
-                    classNames='!size-4'
-                    Icon={ZoomOutIcon}
-                    onClick={() => {
-                      setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
-                    }}
-                    disabled={false}
-                  />
+              <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
+                <NewTextHeading className='text-base md:text-xl'>{t('Your Range against the Price')}</NewTextHeading>
+                <div className='flex items-center gap-4 max-md:justify-between'>
+                  {showPeriod && <Tabs data={periods} />}
+                  <div className='flex gap-1'>
+                    <EmphasisIconButton
+                      className='lg:size-8'
+                      classNames='lg:size-4 stroke-neutral-400'
+                      Icon={ZoomInIcon}
+                      onClick={() => {
+                        setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+                      }}
+                      disabled={false}
+                    />
+                    <EmphasisIconButton
+                      className='lg:size-8'
+                      classNames='lg:size-4 stroke-neutral-400'
+                      Icon={ZoomOutIcon}
+                      onClick={() => {
+                        setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+                      }}
+                      disabled={false}
+                    />
+                  </div>
                 </div>
               </div>
               <div className='flex h-full w-full flex-col gap-8'>

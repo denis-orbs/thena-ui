@@ -8,8 +8,8 @@ import { TextHeading } from '@/components/typography'
 import { Bound } from '@/state/fusion/actions'
 
 const ZOOM_LEVEL = {
-  initialMin: 0.8,
-  initialMax: 1.2,
+  initialMin: 0.95,
+  initialMax: 1.05,
   min: 0.00001,
   max: 20,
 }
@@ -41,6 +41,7 @@ export default function LiquidityChartRangeInput({
   interactive,
   handleShow = true,
   showZoom = true,
+  label,
 }) {
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
 
@@ -122,19 +123,13 @@ export default function LiquidityChartRangeInput({
       ) : (
         <div className='relative w-full'>
           <Chart
+            label={label}
             data={{ series: formattedData, current: price }}
             dimensions={{ width: 440, height: 280 }}
             margins={{ top: showZoom ? 10 : 0, right: 2, bottom: showZoom ? 20 : 30, left: 0 }}
             styles={{
-              area: {
-                selection: '#C672D8',
-              },
-              brush: {
-                handle: {
-                  west: '#84007F',
-                  east: '#E333DD',
-                },
-              },
+              area: { selection: '#C672D8' },
+              brush: { handle: { west: '#84007F', east: '#E333DD' } },
             }}
             interactive={interactive}
             brushLabels={brushLabelValue}

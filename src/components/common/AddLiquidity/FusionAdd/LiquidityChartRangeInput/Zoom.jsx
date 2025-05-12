@@ -1,7 +1,7 @@
 import { select, zoom } from 'd3'
 import React, { useEffect, useMemo, useRef } from 'react'
 
-import { OutlineIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }) {
@@ -36,11 +36,17 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
   }, [zoomInitial, zoomLevels])
 
   return (
-    <div className='right-0 flex justify-end gap-1 md:-top-5'>
-      <OutlineIconButton className='!size-6' classNames='!size-4' Icon={ZoomInIcon} onClick={zoomIn} disabled={false} />
-      <OutlineIconButton
-        className='!size-6'
-        classNames='!size-4'
+    <div className='flex justify-end gap-2 md:-top-5'>
+      <EmphasisIconButton
+        className='lg:size-8'
+        classNames='lg:size-4 stroke-neutral-400'
+        Icon={ZoomInIcon}
+        onClick={zoomIn}
+        disabled={false}
+      />
+      <EmphasisIconButton
+        className='lg:size-8'
+        classNames='lg:size-4 stroke-neutral-400'
         Icon={ZoomOutIcon}
         onClick={zoomOut}
         disabled={false}

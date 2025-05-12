@@ -1,7 +1,9 @@
 import { max, scaleLinear } from 'd3'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { NewTextHeading } from '@/components/typography'
 import { Bound } from '@/state/fusion/actions'
 import { Presets } from '@/state/fusion/reducer'
 
@@ -16,6 +18,7 @@ const yAccessor = d => d.activeLiquidity
 
 export function Chart({
   id = 'liquidityChartRangeInput',
+  label,
   data: { series, current },
   ticksAtLimit,
   styles,
@@ -29,6 +32,8 @@ export function Chart({
   handleShow,
   showZoom = true,
 }) {
+  const t = useTranslations()
+
   const zoomRef = useRef(null)
 
   const [zoom, setZoom] = useState(null)
@@ -102,24 +107,28 @@ export function Chart({
   }, [brushDomain, brushXScale, onBrushDomainChange, xScale])
 
   return (
-    <>
-      {showZoom && (
-        <Zoom
-          svg={zoomRef.current}
-          xScale={xScale}
-          setZoom={setZoom}
-          width={innerWidth}
-          height={
-            // allow zooming inside the x-axis
-            height
-          }
-          resetBrush={() => {
-            onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
-          }}
-          showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
-          zoomLevels={zoomLevels}
-        />
-      )}
+    <div className='space-y-4'>
+      <div className='flex items-center justify-between gap-4 md:gap-8'>
+        {label && <NewTextHeading className='text-base md:text-xl'>{t(label)}</NewTextHeading>}
+
+        {showZoom && (
+          <Zoom
+            svg={zoomRef.current}
+            xScale={xScale}
+            setZoom={setZoom}
+            width={innerWidth}
+            height={
+              // allow zooming inside the x-axis
+              height
+            }
+            resetBrush={() => {
+              onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+            }}
+            showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
+            zoomLevels={zoomLevels}
+          />
+        )}
+      </div>
 
       <div className='h-[280px] content-center justify-center'>
         <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
@@ -198,6 +207,6 @@ export function Chart({
           </g>
         </svg>
       </div>
-    </>
+    </div>
   )
 }

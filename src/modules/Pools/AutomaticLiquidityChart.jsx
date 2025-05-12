@@ -30,6 +30,7 @@ export default function AutomaticLiquidityChart({ currencyA, currencyB, position
 
   return (
     <LiquidityChartRangeInput
+      label='Liquidity Range'
       currencyA={currencyA ?? undefined}
       currencyB={currencyB ?? undefined}
       feeAmount={mintInfo.dynamicFee}
