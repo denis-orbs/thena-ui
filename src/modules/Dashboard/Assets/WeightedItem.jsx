@@ -61,6 +61,19 @@ function WeightedItem({ position, isStake }) {
     })
   }, [claimableFee?.tokenList])
 
+  const renderTokenValue = useMemo(() => {
+    const tokenList = depositValue?.tokens || []
+    const hasInvalidAmounts = tokenList.every(item => isInvalidAmount(item?.amount))
+
+    return tokenList.map((token, index) => {
+      const displayName = token?.name === 'Wrapped BNB' ? 'WBNB' : token?.symbol || 'UNKNOWN'
+      if (hasInvalidAmounts || !isInvalidAmount(token?.amount)) {
+        return <p key={`${token.address}-${index}`}>{`${formatAmount(token?.amount)} ${displayName}`}</p>
+      }
+      return null
+    })
+  }, [depositValue?.tokens])
+
   // Cell components memoized for performance
   const pairCell = useMemo(
     () => (
@@ -101,11 +114,21 @@ function WeightedItem({ position, isStake }) {
   const valueCell = useMemo(
     () => (
       <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
-        <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
+        <div className='flex items-center gap-1 max-xl:justify-end'>
+          <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
+          <InfoIcon
+            className='h-4 w-4 stroke-neutral-400'
+            data-tooltip-id={`value-${position?.address}-${isStake ? 'stake' : 'unstake'}`}
+          />
+          <CustomTooltip id={`value-${position?.address}-${isStake ? 'stake' : 'unstake'}`}>
+            {renderTokenValue}
+          </CustomTooltip>
+        </div>
+
         <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
       </div>
     ),
-    [depositValue.depositUsd, t],
+    [depositValue.depositUsd, isStake, position?.address, renderTokenValue, t],
   )
 
   const rewardsCell = useMemo(

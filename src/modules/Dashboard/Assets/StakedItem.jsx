@@ -15,7 +15,7 @@ import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
@@ -133,6 +133,23 @@ function StakedItem({ position }) {
     push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
   }, [dispatch, position.basePool, position.title, push, strategy])
 
+  const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
+
+  const renderTokenValue = useMemo(() => {
+    const token0Value = position?.account?.staked0?.toNumber()
+    const token1Value = position?.account?.staked1?.toNumber()
+
+    const hasInvalidAmounts = isInvalidAmount(token0Value) && isInvalidAmount(token1Value)
+    if (hasInvalidAmounts) return null
+
+    return (
+      <>
+        {!isInvalidAmount(token0Value) && <p>{`${formatAmount(token0Value)} ${getDisplayName(position.token0)}`}</p>}
+        {!isInvalidAmount(token1Value) && <p>{`${formatAmount(token1Value)} ${getDisplayName(position.token1)}`}</p>}
+      </>
+    )
+  }, [getDisplayName, position?.account?.staked0, position?.account?.staked1, position.token0, position.token1])
+
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -191,12 +208,20 @@ function StakedItem({ position }) {
     () => (
       <div className='flex items-center max-xl:flex-1 max-xl:justify-center'>
         <div className='flex flex-col'>
-          <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
+          <div className='flex items-center gap-1'>
+            <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
+            {renderTokenValue && (
+              <>
+                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+                <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
+              </>
+            )}
+          </div>
           <TextSubHeading className='font-medium xl:text-base'>{t('Value')}</TextSubHeading>
         </div>
       </div>
     ),
-    [depositValueUSD, t],
+    [depositValueUSD, position.positionId, renderTokenValue, t],
   )
 
   const rewardsCell = useMemo(
