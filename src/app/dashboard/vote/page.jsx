@@ -25,6 +25,7 @@ import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
@@ -94,6 +95,7 @@ export default function VotePage() {
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
   const v3PoolsWithGauge = useV3PoolsWithGauge()
   const prices = usePrices()
+  const { isLgDown } = useMediaQuery()
 
   const { voteEmssions } = useVoteEmissions()
   const { days, hours, mins, epoch } = useEpochTimer()
@@ -503,6 +505,7 @@ export default function VotePage() {
               </div>
             </div>
             <Table
+              tableBasic={!isLgDown}
               sortOptions={sortOptions}
               data={finalPools}
               sort={sort}

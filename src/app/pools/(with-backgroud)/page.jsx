@@ -27,6 +27,7 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateStrategy } from '@/state/fusion/actions'
@@ -98,6 +99,7 @@ export default function PoolsPage() {
   const { networkId } = useChainSettings()
   const t = useTranslations()
   const dispatch = useDispatch()
+  const { isLgDown } = useMediaQuery()
 
   const getDisplayedTitleAndSubTitle = useCallback(sub => {
     const title = sub?.title
@@ -703,6 +705,7 @@ export default function PoolsPage() {
           />
         )}
         <Table
+          tableBasic={!isLgDown}
           sortOptions={sortOptions}
           data={finalPools}
           showNumberOfPage
