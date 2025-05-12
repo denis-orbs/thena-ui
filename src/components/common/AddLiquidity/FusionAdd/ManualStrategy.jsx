@@ -279,7 +279,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
                 handleShow
                 outOfRange={mintInfo.outOfRange}
                 invalidRange={mintInfo.invalidRange}
-                isfullRange={activePreset === Presets.FULL}
                 fullRangeWarningShown={fullRangeWarningShown}
                 isCreate={mintInfo.noLiquidity}
                 setLastPrice={setLastPrice}

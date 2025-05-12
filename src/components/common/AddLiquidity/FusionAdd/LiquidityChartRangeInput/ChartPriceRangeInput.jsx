@@ -70,33 +70,33 @@ export default function ChartPriceRangeInput({
   isCreate = false,
 }) {
   const activePreset = useActivePreset()
-  const isFullRange = activePreset === Presets.FULL
   const t = useTranslations()
   const zoomRef = useRef(null)
-
-  const [currentHover, setCurrentHover] = useState(null)
-
-  const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
-  const [boundaryPrices, setBoundaryPrices] = useState()
-
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
+  const windowSize = useWindowSize()
 
-  const [firstCurrency, secondCurrency] = useMemo(
+  const [zoomFactor, setZoomFactor] = useState(1)
+  const [boundaryPrices, setBoundaryPrices] = useState()
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
+  const [currentHover, setCurrentHover] = useState(null)
+  const [chartPriceFinishedRender, setChartPriceFinishedRender] = useState(false)
+  const [range, setRange] = useState(2)
+  const [midPrice, setMidPrice] = useState(null)
+  const [isOutOfView, setIsOutOfView] = useState(false)
+
+  const isFullRange = useMemo(() => activePreset === Presets.FULL, [activePreset])
+
+  const isUninitialized = useMemo(() => !currencyA || !currencyB, [currencyA, currencyB])
+
+  const isSorted = useMemo(
+    () => currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped),
+    [currencyA, currencyB],
+  )
+
+  const [baseCurrency, quoteCurrency] = useMemo(
     () => (isReverse ? [currencyB, currencyA] : [currencyA, currencyB]),
     [isReverse, currencyB, currencyA],
   )
-
-  const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
-  const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
-
-  const [chartPriceFinishedRender, setChartPriceFinishedRender] = useState(false)
-
-  useEffect(() => {
-    setBaseCurrency(firstCurrency)
-    setQuoteCurrency(secondCurrency)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReverse])
 
   const {
     data: pairPrices = [],
@@ -109,8 +109,6 @@ export default function ChartPriceRangeInput({
     currentSwapPrice: { [isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address]: price },
   })
 
-  const [zoomFactor, setZoomFactor] = useState(1)
-
   const brushDomain = useMemo(() => {
     const leftPrice = isSorted ? priceLower : priceUpper?.invert()
     const rightPrice = isSorted ? priceUpper : priceLower?.invert()
@@ -121,25 +119,14 @@ export default function ChartPriceRangeInput({
   }, [isSorted, priceLower, priceUpper])
 
   const { dataMin, dataMax } = useMemo(() => {
-    const minValue = pairPrices.reduce((min, curr) => (curr.value < min.value ? curr : min), pairPrices[0])
-    const maxValue = pairPrices.reduce((max, curr) => (curr.value > max.value ? curr : max), pairPrices[0])
-
+    const sortedPairPrices = [...pairPrices].sort((a, b) => a.value - b.value)
+    const minValue = sortedPairPrices[0]
+    const maxValue = sortedPairPrices[sortedPairPrices.length - 1]
     return { dataMin: minValue?.value, dataMax: maxValue?.value }
   }, [pairPrices])
 
-  const [midPrice, setMidPrice] = useState()
-
-  useEffect(() => {
-    if (pairPrices.length > 0 && midPrice === undefined) {
-      setMidPrice(
-        !isCreate ? pairPrices[pairPrices.length - 1]?.value : price ?? pairPrices[pairPrices.length - 1]?.value,
-      )
-    }
-  }, [isCreate, midPrice, pairPrices, price])
-
   const scrollIncrement = useMemo(() => (dataMax - dataMin) / 10, [dataMax, dataMin])
 
-  const [range, setRange] = useState(2)
   // Sets the min/max prices of the price axis manually, which is used to center the current price and zoom in/out.
   const { minVisiblePrice, maxVisiblePrice } = useMemo(() => {
     if (!midPrice) {
@@ -162,31 +149,6 @@ export default function ChartPriceRangeInput({
       maxVisiblePrice: midPrice + newRange / 2,
     }
   }, [dataMax, dataMin, isCreate, midPrice, pairPrices, price, range, zoomFactor])
-
-  const [isOutOfView, setIsOutOfView] = useState(false)
-
-  useEffect(() => {
-    if (
-      isOutOfView &&
-      zoomFactor === 1 &&
-      !isFullRange &&
-      // Full Range
-      Number(priceLower.toSignificant(6)) > 2.9543e-39 &&
-      Number(priceUpper.toSignificant(6)) < 3.3849e38
-    ) {
-      const interval = setInterval(() => {
-        setRange(prev => {
-          const newRange = prev * 1.2
-          return newRange
-        })
-      }, 50)
-
-      return () => clearInterval(interval)
-    }
-    if (isFullRange) {
-      setRange(2)
-    }
-  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper])
 
   const periods = useMemo(
     () => [
@@ -309,23 +271,51 @@ export default function ChartPriceRangeInput({
     [isSorted, price, ticksAtLimit],
   )
 
-  const [chartSize, setChartSize] = useState()
-
-  const windowSize = useWindowSize()
+  const chartSize = useMemo(
+    () => ({
+      chartContainerWidth: containerRef?.current?.offsetWidth || 300,
+      chartContainerHeight: containerRef?.current?.offsetHeight || 300,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [containerRef?.current, windowSize],
+  )
 
   useEffect(() => {
-    if (containerRef?.current) {
-      setChartSize({
-        chartContainerWidth: containerRef?.current?.offsetWidth,
-        chartContainerHeight: containerRef?.current?.offsetHeight,
-      })
+    if (
+      isOutOfView &&
+      zoomFactor === 1 &&
+      !isFullRange &&
+      // Full Range
+      Number(priceLower.toSignificant(6)) > 2.9543e-39 &&
+      Number(priceUpper.toSignificant(6)) < 3.3849e38
+    ) {
+      const interval = setInterval(() => {
+        setRange(prev => {
+          const newRange = prev * 1.2
+          return newRange
+        })
+      }, 50)
+
+      return () => clearInterval(interval)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef?.current, windowSize, setZoomFactor])
+    if (isFullRange) {
+      setRange(2)
+    }
+  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper])
+
+  useEffect(() => {
+    const pairPricesLength = pairPrices.length
+    if (pairPricesLength > 0) {
+      setMidPrice(
+        !isCreate ? pairPrices[pairPricesLength - 1]?.value : price ?? pairPrices[pairPricesLength - 1]?.value,
+      )
+    }
+  }, [isCreate, pairPrices, price])
 
   useEffect(() => {
     setZoomFactor(prevZoomFactor => (prevZoomFactor < 1 ? 1 : prevZoomFactor / 1.2))
   }, [windowSize.width])
+
   useEffect(() => {
     if (chartPriceFinishedRender) {
       setBoundaryPrices([minVisiblePrice, maxVisiblePrice])
@@ -369,8 +359,6 @@ export default function ChartPriceRangeInput({
       container.removeEventListener('wheel', wheelListener)
     }
   }, [enableScroll, minVisiblePrice, scrollIncrement])
-
-  const isUninitialized = !currencyA || !currencyB
 
   useEffect(() => {
     if (pairPrices && pairPrices.length > 0) {
@@ -424,14 +412,14 @@ export default function ChartPriceRangeInput({
                   <div
                     className='relative h-full w-full'
                     style={{
-                      width: chartSize?.chartContainerWidth,
-                      height: chartSize?.chartContainerHeight || 300,
+                      width: chartSize.chartContainerWidth,
+                      height: chartSize.chartContainerHeight,
                     }}
                   >
                     <div
                       className='absolute inset-0 z-0 h-full'
                       style={{
-                        width: (chartSize?.chartContainerWidth || 0) - desktopSizes.rightAxisWidth - 10,
+                        width: chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - 10,
                       }}
                     >
                       {pairPrices.length > 0 && !isLoading && (
@@ -447,13 +435,6 @@ export default function ChartPriceRangeInput({
                       )}
                     </div>
                     <div className='absolute inset-0 z-10'>
-                      {/* {!brushDomain ? (
-                        <TextHeading className='mx-auto block text-center text-sm lg:text-base'>
-                          {t('Your Range will appear here')}
-                        </TextHeading>
-                      ) : (
-                        <></>
-                      )} */}
                       {chartSize && sortedFormattedData.length > 0 ? (
                         <ActivePriceRangeChart
                           data={{
@@ -463,25 +444,15 @@ export default function ChartPriceRangeInput({
                             max: boundaryPrices?.[1],
                           }}
                           dimensions={{
-                            width: chartSize?.chartContainerWidth,
-                            height:
-                              (chartSize?.chartContainerHeight || 300) -
-                                ((chartSize?.chartContainerHeight || 300) * 0.2 + 28) ?? 300 - (300 * 0.2 + 28), // margin and time scale
-                            contentWidth: chartSize?.chartContainerWidth,
+                            width: chartSize.chartContainerWidth,
+                            height: chartSize.chartContainerHeight - (chartSize.chartContainerHeight * 0.2 + 28), // margin and time scale
+                            contentWidth: chartSize.chartContainerWidth,
                             axisLabelPaneWidth: desktopSizes.rightAxisWidth,
-                            padding:
-                              ((chartSize?.chartContainerHeight || 300) * 0.2 + 28 ?? 300 - (300 * 0.2 + 28)) / 2,
+                            padding: (chartSize.chartContainerHeight * 0.2 + 28) / 2,
                           }}
                           styles={{
-                            area: {
-                              selection: '#BD60BA80',
-                            },
-                            brush: {
-                              handle: {
-                                south: '#F199EE',
-                                north: '#F199EE',
-                              },
-                            },
+                            area: { selection: '#BD60BA80' },
+                            brush: { handle: { south: '#F199EE', north: '#F199EE' } },
                           }}
                           interactive
                           brushLabels={brushLabelValue}
