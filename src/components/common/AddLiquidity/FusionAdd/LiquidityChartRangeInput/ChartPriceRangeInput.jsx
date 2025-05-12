@@ -380,10 +380,36 @@ export default function ChartPriceRangeInput({
 
   return (
     <div className='flex flex-col'>
-      <div className='flex flex-col gap-2 md:gap-4'>
-        {isFullRange && fullRangeWarningShown && <Warning className='text-sm'>{t('Full range position')}</Warning>}
-        {outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
-        {invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
+      <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
+        <NewTextHeading className='text-base md:text-xl'>{t('Your Range against the Price')}</NewTextHeading>
+        <div className='flex items-center gap-4 max-md:justify-between'>
+          {showPeriod && <Tabs data={periods} />}
+          <div className='flex gap-1'>
+            <EmphasisIconButton
+              className='lg:size-8'
+              classNames='lg:size-4 stroke-neutral-400'
+              Icon={ZoomInIcon}
+              onClick={() => {
+                setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+              }}
+              disabled={false}
+            />
+            <EmphasisIconButton
+              className='lg:size-8'
+              classNames='lg:size-4 stroke-neutral-400'
+              Icon={ZoomOutIcon}
+              onClick={() => {
+                setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+              }}
+              disabled={false}
+            />
+          </div>
+        </div>
+      </div>
+      {isFullRange && fullRangeWarningShown && <Warning className='mt-4 text-sm'>{t('Full range position')}</Warning>}
+      {outOfRange && <Warning className='mt-4 text-sm'>{t('Out range warning')}</Warning>}
+      {invalidRange && <Warning className='mt-4 text-sm'>{t('Invalid range warning')}</Warning>}
+      <div className='flex max-h-[300px] flex-col gap-2 md:gap-4'>
         <div className='relative flex h-[300px] w-full items-center justify-center'>
           {isUninitialized ? (
             <TextHeading>Your position will appear here.</TextHeading>
@@ -393,32 +419,6 @@ export default function ChartPriceRangeInput({
             <TextHeading>Liquidity data not available.</TextHeading>
           ) : (
             <div className='flex h-full max-h-[300px] w-full flex-col' ref={containerRef}>
-              <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-                <NewTextHeading className='text-base md:text-xl'>{t('Your Range against the Price')}</NewTextHeading>
-                <div className='flex items-center gap-4 max-md:justify-between'>
-                  {showPeriod && <Tabs data={periods} />}
-                  <div className='flex gap-1'>
-                    <EmphasisIconButton
-                      className='lg:size-8'
-                      classNames='lg:size-4 stroke-neutral-400'
-                      Icon={ZoomInIcon}
-                      onClick={() => {
-                        setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
-                      }}
-                      disabled={false}
-                    />
-                    <EmphasisIconButton
-                      className='lg:size-8'
-                      classNames='lg:size-4 stroke-neutral-400'
-                      Icon={ZoomOutIcon}
-                      onClick={() => {
-                        setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
-                      }}
-                      disabled={false}
-                    />
-                  </div>
-                </div>
-              </div>
               <div className='flex h-full w-full flex-col gap-8'>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
@@ -429,12 +429,9 @@ export default function ChartPriceRangeInput({
                     }}
                   >
                     <div
-                      className='absolute inset-0 z-0 mx-auto h-full'
+                      className='absolute inset-0 z-0 h-full'
                       style={{
-                        width:
-                          (chartSize?.chartContainerWidth || 0) -
-                          desktopSizes.rightAxisWidth -
-                          (chartSize?.chartContainerWidth <= 450 ? 5 : (chartSize?.chartContainerWidth || 0) * 0.2),
+                        width: (chartSize?.chartContainerWidth || 0) - desktopSizes.rightAxisWidth - 10,
                       }}
                     >
                       {pairPrices.length > 0 && !isLoading && (
