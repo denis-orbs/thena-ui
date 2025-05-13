@@ -1549,5 +1549,10 @@
   "[fee] % (of fees)": "{fee}% (of fees)",
   "Broad": "Broad",
   "Moderate": "Moderate",
-  "Tight": "Tight"
+  "Tight": "Tight",
+  "veThe": "veThe",
+  "veThe Subheading": "Lock / Merge / Split / Transfer",
+  "theNFT Description": "Stake / Unstake / Transfer / Buy",
+  "Vote Subheading": "Vote on Pools with your veTHE",
+  "Rewards Subheading": "Claim your voting incentives and rebase"
 }
