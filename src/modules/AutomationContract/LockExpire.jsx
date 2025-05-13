@@ -27,9 +27,7 @@ function LockExpire({ veTHEData }) {
         className='flex cursor-pointer items-center gap-1'
       >
         <Paragraph>{t('Automated')}</Paragraph>
-        <div className='item-center flex cursor-pointer gap-1'>
-          <LinkExternalIcon className='inline-block h-4 w-4' />
-        </div>
+        <LinkExternalIcon className='inline-block size-4 stroke-neutral-300' />
       </div>
     )
   }

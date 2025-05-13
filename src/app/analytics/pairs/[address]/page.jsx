@@ -16,7 +16,7 @@ import { usePairs } from '@/context/pairsContext'
 import { goScan } from '@/lib/utils'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon } from '@/svgs'
+import { LinkExternalIcon } from '@/svgs'
 
 import PairStrategy from './PairStrategy'
 import TransactionTable from './PairTransaction'
@@ -68,8 +68,8 @@ export default function PairDetailPage({ params }) {
               )}
               <div className='flex items-end gap-4 py-2.5'>
                 <NewTextHeading>{pair.symbol}</NewTextHeading>
-                <ExternalIcon
-                  className='hover:color-white mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
+                <LinkExternalIcon
+                  className='mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
                   onClick={() => goScan(networkId, pair.address)}
                   data-tooltip-id='contract-tooltip'
                 />
