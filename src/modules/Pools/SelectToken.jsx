@@ -299,6 +299,7 @@ function SelectToken({
               className={cn(
                 'scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400',
                 'grid max-h-[400px] gap-3 overflow-y-auto pr-2 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3',
+                Number(displayedAssets?.length) === 2 && '2xl:grid-cols-2',
               )}
             >
               {displayedAssets?.map((item, index) => (

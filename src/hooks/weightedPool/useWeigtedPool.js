@@ -449,7 +449,7 @@ export const useWeightedPool = () => {
       if (!isApprovedFee) {
         const isSuccess = await writeTxn(key, approveFeeuuid, tokenContract, 'approve', [
           Contracts.weightedPoolRouter[chainId],
-          toWei(amountDeposit, token?.decimals),
+          toWei(amountDeposit, token?.decimals).toString(),
         ])
         if (!isSuccess) {
           setPending(false)
@@ -460,9 +460,9 @@ export const useWeightedPool = () => {
       const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
       const tokensToLowerCase = tokens.map(item => item.toLowerCase())
       const idx = tokensToLowerCase?.indexOf(token?.address?.toLowerCase())
-      const amountIn = Math.floor(toWei(amountDeposit, token.decimals))
+      const amountIn = Math.floor(toWei(amountDeposit, token.decimals)).toString()
       const minAmountOut = Math.floor(
-        toWei(minBPTAmountOut)
+        toWei(minBPTAmountOut || 0)
           .times((100 - slippage) / 100)
           .toNumber(),
       )
@@ -618,7 +618,7 @@ export const useWeightedPool = () => {
           const tokenContract = getERC20Contract(tokenItem.address, chainId)
           const isSuccess = await writeTxn(key, tokenItem.id, tokenContract, 'approve', [
             Contracts.weightedPoolRouter[chainId],
-            toWei(tokenItem.amount, tokenItem.decimals),
+            toWei(tokenItem.amount, tokenItem.decimals).toString(),
           ])
 
           if (!isSuccess) {
@@ -642,9 +642,9 @@ export const useWeightedPool = () => {
       })
 
       const assetsAddress = tokensData.map(asset => asset.address)
-      const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amount, asset.decimals))
+      const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amount, asset.decimals).toString())
       const minAmountOut = Math.floor(
-        toWei(minBPTAmountOut)
+        toWei(minBPTAmountOut || 0)
           .times((100 - slippage) / 100)
           .toNumber(),
       )
