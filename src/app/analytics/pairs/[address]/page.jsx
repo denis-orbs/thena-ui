@@ -13,7 +13,10 @@ import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
+import { goScan } from '@/lib/utils'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
+import { useChainSettings } from '@/state/settings/hooks'
+import { ExternalIcon } from '@/svgs'
 
 import PairStrategy from './PairStrategy'
 import TransactionTable from './PairTransaction'
@@ -24,6 +27,7 @@ export default function PairDetailPage({ params }) {
   const { address } = params
   const { pairs, isLoading } = usePairs()
   const t = useTranslations()
+  const { networkId } = useChainSettings()
 
   const pair = useMemo(
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
@@ -62,8 +66,14 @@ export default function PairDetailPage({ params }) {
                   logo2={pair.token1.logoURI ?? UNKNOWN_LOGO}
                 />
               )}
-
-              <NewTextHeading>{pair.symbol}</NewTextHeading>
+              <div className='flex items-end gap-4 py-2.5'>
+                <NewTextHeading>{pair.symbol}</NewTextHeading>
+                <ExternalIcon
+                  className='hover:color-white mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
+                  onClick={() => goScan(networkId, pair.address)}
+                  data-tooltip-id='contract-tooltip'
+                />
+              </div>
             </div>
           </div>
 
