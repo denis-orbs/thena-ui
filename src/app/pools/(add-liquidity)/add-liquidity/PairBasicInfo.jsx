@@ -19,7 +19,7 @@ export function PairBasicInfo({ pair }) {
 
   const vaults = useVaults()
   const computedPair = useMemo(() => {
-    const singleSideVault = vaults.find(v => v.algebra === pair.address)
+    const singleSideVault = vaults.find(v => v.algebra === pair?.address)
     if (singleSideVault) {
       const aprs = pair.subpools.map(sub => sub.gauge.apr).filter(item => !item.isZero())
       const aprMin = BigNumber.min(...aprs)
