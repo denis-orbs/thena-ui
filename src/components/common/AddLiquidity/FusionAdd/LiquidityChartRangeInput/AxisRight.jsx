@@ -5,6 +5,10 @@ import './style.css'
 
 import { formatAmount } from '@/lib/utils'
 
+const labelWidth = 55
+const labelHeight = 28
+const paddingY = 6
+
 function Axis({ axisGenerator }) {
   const axisRef = axis => {
     // eslint-disable-next-line no-unused-expressions
@@ -18,27 +22,34 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height }) {
-  const tickFormat = d => {
+  const tickFormat = useCallback(d => {
     const str = d.toString()
     let decimal = 1
     if (str.includes('.')) {
       decimal = Number(`0.${str.split('.')[1]}`)
     }
     return `${decimal <= 1e-3 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
-  }
+  }, [])
 
   const axisGenerator = useMemo(() => {
-    const tickValues = yScale.ticks(4)
+    const tickValues = yScale.ticks(4).filter(tick => tick >= 0)
     return axisRight(yScale).tickValues(tickValues).tickFormat(tickFormat)
-  }, [yScale])
-  const minY = min !== undefined ? yScale(min) : undefined
-  const maxY = max !== undefined ? yScale(max) : undefined
-  const currentY = current !== undefined ? yScale(current) : undefined
-  const currentLabel =
-    current !== undefined ? `${current <= 1e-3 ? current.toExponential(0) : formatAmount(current, true, 5, false)}` : ''
-  const labelWidth = 55
-  const labelHeight = 28
-  const paddingY = 6
+  }, [tickFormat, yScale])
+
+  const [minY, maxY, currentY] = useMemo(() => {
+    const minValue = min !== undefined && min > 0 ? yScale(min) : undefined
+    const maxValue = max !== undefined && max > 0 ? yScale(max) : undefined
+    const currentValue = current !== undefined && current > 0 ? yScale(current) : undefined
+    return [minValue, maxValue, currentValue]
+  }, [current, max, min, yScale])
+
+  const currentLabel = useMemo(
+    () =>
+      current !== undefined
+        ? `${current <= 1e-3 ? current.toExponential(0) : formatAmount(current, true, 5, false)}`
+        : '',
+    [current],
+  )
 
   const renderHoverLines = useCallback(
     (y, direction, markerId) => {
