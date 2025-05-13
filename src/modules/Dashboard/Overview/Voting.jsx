@@ -110,6 +110,7 @@ function Voting() {
     () => (v3PoolsWithGauge || []).reduce((sum, pool) => sum.plus(pool.gauge.bribeUsd), new BigNumber(0)),
     [v3PoolsWithGauge],
   )
+
   const timeDisplay = useMemo(
     () =>
       seconds <= 2 * 24 * 60 * 60

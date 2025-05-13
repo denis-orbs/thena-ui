@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
@@ -8,6 +8,7 @@ import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextSubHeading } from '@/components/typography'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useExtendMultipleLock } from '@/hooks/useVeThe'
+import { warnToast } from '@/lib/notify'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
@@ -23,6 +24,8 @@ function Lock() {
   const { veTHEs, isLoading } = useVeTHEsContext()
   const { onExtend, pending: extendPending } = useExtendMultipleLock()
 
+  const [totalExtendVotingPower, setTotalExtendVotingPower] = useState(null)
+
   const totalLock = useMemo(() => veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), ZERO_VALUE), [veTHEs])
 
   const totalVotingPower = useMemo(
@@ -37,12 +40,30 @@ function Lock() {
         const period = veTHE.lockedEnd * 1000 + maxTimeStamp
         const unlockTime = new Date(Math.min(Math.floor(period / week) * week, maxDate))
         if (unlockTime.getTime() / 1000 !== veTHE.lockedEnd) {
-          results.push({ id: veTHE.id, unlockTime })
+          results.push({ id: veTHE.id, unlockTime, amount: veTHE.amount })
         }
       }
     })
-    return results
+    return results.sort((a, b) => Number(a.id) - Number(b.id))
   }, [veTHEs])
+
+  const extendVotingPower = useMemo(
+    () =>
+      veTHEsToLock.reduce(
+        (sum, veTHE) =>
+          sum.plus(veTHE.amount.times(veTHE.unlockTime.getTime() - new Date().getTime()).div(maxTimeStamp)),
+        ZERO_VALUE,
+      ),
+    [veTHEsToLock],
+  )
+
+  const handleExtendLock = useCallback(() => {
+    if (veTHEsToLock.length === 0) {
+      warnToast('Can only increase lock duration')
+      return
+    }
+    onExtend(veTHEsToLock)
+  }, [onExtend, veTHEsToLock])
 
   return (
     veTHEs.length > 0 && (
@@ -61,7 +82,11 @@ function Lock() {
         <div className='flex h-full flex-col justify-between gap-2'>
           <div className='h-full w-full gap-2'>
             <div className='mx-auto flex h-fit w-full'>
-              {isLoading ? <Skeleton className='h-full w-full' /> : <VotingPowerChart data={veTHEs} />}
+              {isLoading ? (
+                <Skeleton className='h-full w-full' />
+              ) : (
+                <VotingPowerChart data={veTHEs} extendVotingPower={totalExtendVotingPower} />
+              )}
             </div>
             <div className='w-full text-center'>
               <TextSubHeading className='text-sm'>{`${t('Max Lock Power')} ${formatAmount(totalLock)}`}</TextSubHeading>
@@ -78,9 +103,11 @@ function Lock() {
 
             <div className='flex gap-2'>
               <EmphasisButton
-                disabled={extendPending || !veTHEsToLock.length}
+                disabled={extendPending}
                 className='w-full max-md:h-8 max-md:text-xs'
-                onClick={() => onExtend(veTHEsToLock)}
+                onClick={handleExtendLock}
+                onMouseOver={() => setTotalExtendVotingPower(extendVotingPower)}
+                onMouseLeave={() => setTotalExtendVotingPower(null)}
               >
                 {t('Max Lock')}
               </EmphasisButton>

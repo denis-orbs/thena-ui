@@ -1,7 +1,8 @@
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Divider from '@/components/divider'
-import { Paragraph } from '@/components/typography'
+import { NewTextHeading, Paragraph } from '@/components/typography'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 
 const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
@@ -9,7 +10,8 @@ const baseRadius = 60
 const baseStrokeWidth = 6
 const spacing = 2
 
-function VotingPowerChart({ data }) {
+function VotingPowerChart({ data, extendVotingPower }) {
+  const t = useTranslations()
   const [selectedVethe, setSelectedVethe] = useState(null)
 
   const chartData = useMemo(() => {
@@ -112,8 +114,17 @@ function VotingPowerChart({ data }) {
 
       <Divider className='my-1 h-[2px] bg-neutral-700' />
 
-      {selectedVethe && (
-        <div style={{ pointerEvents: 'none' }} className={cn('absolute bottom-2 left-0 right-0 text-center')}>
+      {extendVotingPower && (
+        <div className={cn('pointer-events-none absolute bottom-2 left-0 right-0 flex flex-col text-center')}>
+          <NewTextHeading className='text-base text-success-700 md:text-lg lg:text-xl'>
+            +{formatAmount(extendVotingPower)}
+          </NewTextHeading>
+          <Paragraph className='text-neutral-300 lg:text-sm'>{t('Voting Power')}</Paragraph>
+        </div>
+      )}
+
+      {selectedVethe && !extendVotingPower && (
+        <div className={cn('pointer-events-none absolute bottom-2 left-0 right-0 text-center')}>
           <div className='flex items-center justify-center gap-2'>
             <div className='size-2 rounded-sm' style={{ background: selectedVethe.color }} />
             <Paragraph className='font-medium text-neutral-50 lg:text-sm'>ID #{selectedVethe.id}</Paragraph>

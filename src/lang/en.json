@@ -1550,5 +1550,6 @@
   "[fee] % (of fees)": "{fee}% (of fees)",
   "Broad": "Broad",
   "Moderate": "Moderate",
-  "Tight": "Tight"
+  "Tight": "Tight",
+  "Voting Power": "Voting Power"
 }
