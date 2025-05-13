@@ -1,10 +1,9 @@
 import { isEmpty } from 'lodash'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
@@ -20,7 +19,6 @@ const SETTINGS_TYPE = {
 
 function EditAutomationContract({ data }) {
   const t = useTranslations()
-  const router = useRouter()
   const [dataEdit, setDataEdit] = useState({ ...data })
 
   const { onEditAutomation, pending: pendingEdit } = useEditAutomation()
@@ -158,10 +156,6 @@ function EditAutomationContract({ data }) {
     setError()
   }, [dataEdit?.votes?.isAutoVote, dataEdit?.votes?.pairs, t])
 
-  const handleBack = useCallback(() => {
-    router.back()
-  }, [router])
-
   const handleSave = useCallback(() => {
     if (!isDisabled) {
       onEditAutomation(dataEdit)
@@ -211,12 +205,9 @@ function EditAutomationContract({ data }) {
             <div className='w-full space-y-11'>
               <SelectVotingPairsAndWeights data={dataEdit} handleVotingPairs={handleVotingPairs} />
               {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
-              <div className='flex flex-row gap-3'>
-                <EmphasisButton onClick={handleBack}>{t('Back')}</EmphasisButton>
-                <PrimaryButton disabled={pendingEdit} className='w-full lg:w-fit' onClick={handleSave}>
-                  {t('Save Changes')}
-                </PrimaryButton>
-              </div>
+              <PrimaryButton disabled={pendingEdit} className='w-full lg:w-fit' onClick={handleSave}>
+                {t('Save Changes')}
+              </PrimaryButton>
             </div>
           </div>
         </div>

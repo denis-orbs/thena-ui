@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import CreateVeTHEAutomation from '@/modules/CreateVeTHEAutomation'
 import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
@@ -57,9 +58,11 @@ function CreateAutomationPage({ params }) {
     }
   }, [dispatch, id, isLoading, veTHE])
   return (
-    <div className='container mx-auto'>
-      <CreateVeTHEAutomation />
-    </div>
+    <LayoutWithBackButton backUrl='/dashboard/lock'>
+      <div className='container mx-auto'>
+        <CreateVeTHEAutomation />
+      </div>
+    </LayoutWithBackButton>
   )
 }
 

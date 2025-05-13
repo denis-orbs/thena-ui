@@ -12,7 +12,7 @@ function LayoutWithBackButton({ children, className, backUrl }) {
 
   return (
     <div className='mt-[64px] lg:mt-[92px]'>
-      <div className='hidden md:block'>
+      <div className='hidden lg:block'>
         <TextButton
           className='ml-4 w-fit outline-0 max-lg:pl-0 lg:ml-10'
           LeadingIcon={ArrowLeftIcon}
