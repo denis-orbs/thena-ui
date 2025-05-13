@@ -60,24 +60,24 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     <div className='space-y-4 lg:space-y-8'>
       <NewTextSubHeading>{t('Overview')}</NewTextSubHeading>
 
-      <Box className='space-y-4 !p-4 max-md:rounded-none md:space-y-8'>
+      <Box className='w-full space-y-4 !p-4 max-xl:rounded-none xl:space-y-8'>
         <div className='flex gap-4'>
-          <div className='flex w-full flex-col gap-4 max-md:w-full md:max-w-[264px] md:flex-row'>
-            <div className='flex flex-row items-center gap-4 md:flex-col md:gap-2'>
+          <div className='flex w-full flex-col gap-4 max-xl:w-full xl:max-w-[264px] xl:flex-row'>
+            <div className='flex flex-row items-center gap-4 xl:flex-col xl:gap-2'>
               <GroupIconTokens
                 height={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
                 width={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
                 tokens={tokens}
               />
-              <Paragraph className='hidden w-fit text-xs font-medium md:block lg:text-sm xl:text-base'>
+              <Paragraph className='hidden w-fit text-xs font-medium lg:text-sm xl:block xl:text-base'>
                 {t('Weighted Pool')}
               </Paragraph>
-              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden'>{poolName}</TextHeading>
+              <TextHeading className='flex-wrap font-archia text-xl font-semibold xl:hidden'>{poolName}</TextHeading>
             </div>
 
-            <div className='flex flex-row items-center max-md:w-full max-md:justify-between md:flex-col md:gap-2 md:pl-4'>
+            <div className='flex flex-row items-center max-xl:w-full max-xl:justify-between xl:flex-col xl:gap-2 xl:pl-4'>
               <div>
-                <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
+                <TextHeading className='font-archia text-xl font-semibold lg:text-3xl xl:text-2xl'>
                   $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
                 </TextHeading>
               </div>
@@ -88,15 +88,15 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
             </div>
           </div>
 
-          <div className='hidden md:block'>
-            <NewTextSubHeading className='font-archia text-3xl font-semibold md:text-[40px] md:leading-[48px]'>
+          <div className='hidden xl:block'>
+            <NewTextSubHeading className='font-archia text-3xl font-semibold xl:text-[40px] xl:leading-[48px]'>
               {poolName}
             </NewTextSubHeading>
           </div>
         </div>
 
-        <div className='flex flex-col gap-4 md:flex-row'>
-          <div className='w-full md:max-w-[264px]'>
+        <div className='flex flex-col gap-4 xl:flex-row'>
+          <div className='w-full xl:max-w-[264px]'>
             <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
           </div>
           <div className='w-full'>
