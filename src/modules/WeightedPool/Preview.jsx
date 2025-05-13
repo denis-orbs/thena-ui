@@ -9,7 +9,7 @@ import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typograp
 import { useTokenColor } from '@/hooks/useTokenColor'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, toWei } from '@/lib/utils'
+import { formatAmount, toWei, wrappedAddress } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
 
 import PieChart from './PieChart'
@@ -34,14 +34,15 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
   const { onCreateWeightedPool, pending } = useWeightedPool()
 
   const onCreate = useCallback(() => {
-    const allocatesPercent = tokensAndWeights.map(token => token.weight)
-    const amountsWei = tokensAndWeights.map(token => toWei(Number(token.amount)))
+    const sortedTokens = tokens.sort((a, b) => wrappedAddress(a).localeCompare(wrappedAddress(b)))
+    const allocatesPercent = sortedTokens.map(token => token.weight)
+    const amountsWei = sortedTokens.map(token => toWei(Number(token.amount)))
     const symbol = tokens.map(token => token.symbol).join('/')
-    onCreateWeightedPool(poolName, symbol, tokens, allocatesPercent, amountsWei, fees, result => {
+    onCreateWeightedPool(poolName, symbol, sortedTokens, allocatesPercent, amountsWei, fees, result => {
       setPoolAddress(result)
       setShowModalSuccess(true)
     })
-  }, [fees, onCreateWeightedPool, poolName, tokens, tokensAndWeights])
+  }, [fees, onCreateWeightedPool, poolName, tokens])
 
   useEffect(() => {
     renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
