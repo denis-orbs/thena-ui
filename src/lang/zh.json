@@ -1331,7 +1331,6 @@
   "Earn Rewards Description": "Earn voting incentives and trading fees. You will also earn rebase rewards because you locked your $THE.",
   "Active": "Active",
   "Contract Name": "Contract Name",
-  "Lock Page": "Lock Page",
   "Your veTHE ID": "Your veTHE ID",
   "Selected veTHE [ID]": "Selected veTHE {id}",
   "Create Automation Contract": "Create Automation Contract",
@@ -1555,5 +1554,7 @@
   "veThe Subheading": "Lock / Merge / Split / Transfer",
   "theNFT Description": "Stake / Unstake / Transfer / Buy",
   "Vote Subheading": "Vote on Pools with your veTHE",
-  "Rewards Subheading": "Claim your voting incentives and rebase"
+  "Rewards Subheading": "Claim your voting incentives and rebase",
+  "Fixed amount per epoch": "Fixed amount per epoch",
+  "Number of Epochs": "Number of Epochs"
 }

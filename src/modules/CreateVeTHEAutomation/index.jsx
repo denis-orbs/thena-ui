@@ -6,10 +6,9 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Box from '@/components/box'
-import { TextButton } from '@/components/buttons/Button'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAINLINK_ADDRESS } from '@/constant'
-import { ArrowLeftIcon, InfoNeutralIcon } from '@/svgs'
+import { InfoNeutralIcon } from '@/svgs'
 
 import NavigationBottom from './NavigationBottom'
 import NavigationTop from './NavigationTop'
@@ -39,14 +38,7 @@ function CreateVeTHEAutomation() {
 
   return (
     <div className='space-y-8'>
-      <div>
-        <div className='mb-4 h-11 w-[140px] max-lg:hidden'>
-          <TextButton onClick={() => push('/dashboard/lock')} LeadingIcon={ArrowLeftIcon}>
-            {t('Lock Page')}
-          </TextButton>
-        </div>
-        <NewTextHeading>{t('Create Automation')}</NewTextHeading>
-      </div>
+      <NewTextHeading>{t('Create Automation')}</NewTextHeading>
       <div className='space-y-3'>
         {currentStep === 1 && (
           <div className='hidden gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:flex lg:p-8'>
