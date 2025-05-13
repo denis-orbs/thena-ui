@@ -33,6 +33,11 @@ function Lock() {
     [veTHEs],
   )
 
+  const sortedVeTHEs = useMemo(() => {
+    const result = [...veTHEs].sort((a, b) => b.voting_amount - a.voting_amount)
+    return result
+  }, [veTHEs])
+
   const veTHEsToLock = useMemo(() => {
     const results = []
     veTHEs.forEach(veTHE => {
@@ -85,7 +90,7 @@ function Lock() {
               {isLoading ? (
                 <Skeleton className='h-full w-full' />
               ) : (
-                <VotingPowerChart data={veTHEs} extendVotingPower={totalExtendVotingPower} />
+                <VotingPowerChart data={sortedVeTHEs} extendVotingPower={totalExtendVotingPower} />
               )}
             </div>
             <div className='w-full text-center'>
