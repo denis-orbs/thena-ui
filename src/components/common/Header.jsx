@@ -430,6 +430,32 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
+        sub: [
+          {
+            heading: t('veThe'),
+            subheading: t('veThe Subheading'),
+            onClickHandler: () => push('/dashboard/lock'),
+          },
+          {
+            heading: t('theNFT'),
+            subheading: t('theNFT Description'),
+            onClickHandler: () => push('/dashboard/thenft'),
+          },
+          {
+            heading: t('Vote'),
+            subheading: t('Vote Subheading'),
+            onClickHandler: () => {
+              push('/dashboard/vote')
+            },
+          },
+          {
+            heading: t('Rewards'),
+            subheading: t('Rewards Subheading'),
+            onClickHandler: () => {
+              push('/dashboard/rewards')
+            },
+          },
+        ],
         onClickHandler: () => {
           push('/dashboard')
         },
