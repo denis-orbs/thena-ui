@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
@@ -9,12 +9,12 @@ import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { LinkExternalIcon } from '@/svgs'
 
-function LockExpire({ veTHEId }) {
+function LockExpire({ veTHEData }) {
   const t = useTranslations()
   const { push } = useRouter()
-
   const { data: veTHEs, isLoading } = useVeTheAutomations()
-  const veTHE = veTHEs?.find(item => item.id === veTHEId)
+
+  const veTHE = useMemo(() => veTHEs?.find(item => item.id === veTHEData?.id), [veTHEData?.id, veTHEs])
 
   if (isLoading) {
     return <Skeleton className='h-5 w-44' />
@@ -23,7 +23,7 @@ function LockExpire({ veTHEId }) {
   if (veTHE?.operations?.isRelockEveryWeek && veTHE?.statusString === AUTOMATION_STATUS.ACTIVE) {
     return (
       <div
-        onClick={() => push(`/dashboard/lock/automation/${veTHEId}`)}
+        onClick={() => push(`/dashboard/lock/automation/${veTHEData?.id}`)}
         className='flex cursor-pointer items-center gap-1'
       >
         <Paragraph>{t('Automated')}</Paragraph>
@@ -36,11 +36,11 @@ function LockExpire({ veTHEId }) {
 
   return (
     <div className='flex flex-col'>
-      <Paragraph>{dayjs.unix(veTHE?.lockedEnd).format('MMM D, YYYY')}</Paragraph>
+      <Paragraph>{dayjs.unix(veTHEData?.lockedEnd).format('MMM D, YYYY')}</Paragraph>
       <TextSubHeading>
-        {veTHE?.expire > 0
-          ? t('Expires in [x] days', { x: veTHE?.expire })
-          : `Expired ${(veTHE?.expire || 0) * -1} days ago`}
+        {veTHEData?.expire > 0
+          ? t('Expires in [x] days', { x: veTHEData?.expire })
+          : `Expired ${(veTHEData?.expire || 0) * -1} days ago`}
       </TextSubHeading>
     </div>
   )

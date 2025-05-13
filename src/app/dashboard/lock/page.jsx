@@ -147,7 +147,7 @@ export default function LockPage() {
             <TextSubHeading>${formatAmount(veTHE.amount.times(theAsset?.price ?? 0))}</TextSubHeading>
           </div>
         ),
-        expire: <LockExpire veTHEId={veTHE.id} />,
+        expire: <LockExpire veTHEData={veTHE} />,
         used: (
           <Paragraph className={veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600'}>
             {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}

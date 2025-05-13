@@ -44,7 +44,6 @@ function VeTHEsContextProvider({ children }) {
         expire: diff,
       }
     })
-
     return {
       veTHEs: finalData ?? [],
       isLoading,
