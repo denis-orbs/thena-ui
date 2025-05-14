@@ -194,7 +194,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
   veTheAutomationFactory: {
-    [CHAIN_ID.BSC]: '0xe228fc0359b754658c99f8d6b7874dede5b485b1',
+    [CHAIN_ID.BSC]: '0xd09a674bb59f8154f0754f2bc3cb161767b2db9f',
     [CHAIN_ID.TEST_BSC]: '0x2beE534A1b7C8e790F0bB56af4a5a6460B643079',
   },
 }
