@@ -13,7 +13,7 @@ import { WarningTriangleIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
-function AssetsOverview({ positions }) {
+function AssetsOverview({ positions, currentHoverTableRow }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { addReward, addFees } = useFarmRewards()
@@ -193,7 +193,11 @@ function AssetsOverview({ positions }) {
         </div>
 
         <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart data={filteredPositions} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
+          <LiquidityAPRChart
+            data={filteredPositions}
+            currentHoverTableRow={currentHoverTableRow}
+            className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]'
+          />
         </div>
       </div>
 
