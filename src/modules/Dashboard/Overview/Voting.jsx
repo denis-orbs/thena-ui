@@ -114,9 +114,9 @@ function Voting() {
   const timeDisplay = useMemo(
     () =>
       seconds <= 2 * 24 * 60 * 60
-        ? hours === 0
+        ? Number(hours) === 0
           ? `${mins} Mins`
-          : `${hours + days * 24} Hours ${mins} Mins`
+          : `${Number(hours) + Number(days) * 24} Hours ${mins} Mins`
         : `${days} Days`,
     [days, hours, mins, seconds],
   )
