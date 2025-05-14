@@ -1,6 +1,8 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -36,7 +38,7 @@ import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -415,6 +417,56 @@ export default function VotePage() {
     setCurrentPage(1)
   }, [isVoted, searchText])
 
+  const votingWarning = useMemo(() => {
+    const currentTime = dayjs().utc().unix()
+    const startTime = 1747868400 // 21/05/2025 23:00:00 UTC
+    // const endTime = 1748563199 // 29/05/2025 23:59:59 UTC
+
+    if (currentTime < startTime) {
+      return (
+        <p className='text-base text-error-100'>
+          {t.rich('Simulate and test the voting on new UI warning message', {
+            // eslint-disable-next-line react/no-unstable-nested-components
+            votepage: chunks => (
+              <Link
+                href='https://thena.fi/dashboard/vote'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+            // eslint-disable-next-line react/no-unstable-nested-components
+            discord: chunks => (
+              <Link
+                href='https://discord.com/invite/thena'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+            // eslint-disable-next-line react/no-unstable-nested-components
+            telegram: chunks => (
+              <Link
+                href='https://t.me/Thena_Fi'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      )
+    }
+
+    return null
+  }, [t])
+
   return (
     <LayoutWithBackButton backUrl='/dashboard'>
       <div className='flex flex-col gap-4'>
@@ -451,6 +503,15 @@ export default function VotePage() {
           </div>
 
           <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Cast`} />
+
+          {votingWarning && (
+            <div className={cn('flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+              <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
+                <WarningTriangleIcon className='size-full' />
+              </div>
+              {votingWarning}
+            </div>
+          )}
 
           <div className='flex flex-col gap-4'>
             <div className='flex justify-between gap-4 max-lg:flex-col'>
