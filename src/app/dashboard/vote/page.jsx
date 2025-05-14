@@ -294,7 +294,7 @@ export default function VotePage() {
               <div className='flex flex-col gap-1'>
                 {pool.gauge.bribes && pool.gauge.bribes.bribe && (
                   <>
-                    <TextHeading>{t('Voting Incentives')}</TextHeading>
+                    <TextHeading>{t('Incentives')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.bribe.map((bribe, idx) => (
                         <Paragraph key={`bribe-${idx}`}>
@@ -306,7 +306,7 @@ export default function VotePage() {
                 )}
                 {pool.gauge.bribes && pool.gauge.bribes.fee && (
                   <>
-                    <TextHeading>{t('Projected Fees')}</TextHeading>
+                    <TextHeading>{t('Fees')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.fee.map((fee, idx) => (
                         <Paragraph key={`fee-${idx}`}>
