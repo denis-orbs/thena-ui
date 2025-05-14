@@ -1558,5 +1558,7 @@
   "Rewards Subheading": "Claim your voting incentives and rebase",
   "Fixed amount per epoch": "Fixed amount per epoch",
   "Number of Epochs": "Number of Epochs",
-  "Pool not initialized liquidity": "Pool not initialized liquidity"
+  "Pool not initialized liquidity": "Pool not initialized liquidity",
+  "Campaign (Ended)": "Campaign (Ended)",
+  "Trading Competitions (to be updated)": "Trading Competitions (to be updated)"
 }

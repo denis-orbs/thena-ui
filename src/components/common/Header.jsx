@@ -461,30 +461,16 @@ function Header() {
         },
       },
       {
-        label: t('Arena'),
-        active: pathname.includes('/arena'),
-        onClickHandler: () => {
-          push('/arena')
-        },
-      },
-      {
-        label: 'THE Story',
-        active: pathname.includes('/story'),
-        onClickHandler: () => {
-          push('/story')
-        },
+        label: t('Analytics'),
+        active: pathname.includes('/analytics'),
+        onClickHandler: () => push('/analytics'),
       },
       {
         label: 'More',
-        active: pathname.includes('/analytics') || pathname.includes('/protocols'),
+        active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
             ? [
-                {
-                  heading: t('Analytics'),
-                  subheading: t('See platform data'),
-                  onClickHandler: () => push('/analytics'),
-                },
                 {
                   heading: t('Protocols'),
                   subheading: t('Add gauges and voting incentives'),
@@ -508,19 +494,28 @@ function Header() {
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
                 },
                 {
+                  heading: t('Arena'),
+                  subheading: t('Trading Competitions (to be updated)'),
+                  onClickHandler: () => {
+                    push('/arena')
+                  },
+                },
+                {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
                     push('/trade-to-earn')
                   },
                 },
+                {
+                  heading: 'THE Story',
+                  subheading: t('Campaign (Ended)'),
+                  onClickHandler: () => {
+                    push('/story')
+                  },
+                },
               ]
             : [
-                {
-                  heading: t('Analytics'),
-                  subheading: t('See platform data'),
-                  onClickHandler: () => push('/analytics'),
-                },
                 {
                   heading: t('Docs'),
                   subheading: t('Learn more about THENA'),
@@ -539,10 +534,24 @@ function Header() {
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
                 },
                 {
+                  heading: t('Arena'),
+                  subheading: t('Trading Competitions (to be updated)'),
+                  onClickHandler: () => {
+                    push('/arena')
+                  },
+                },
+                {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
                     push('/trade-to-earn')
+                  },
+                },
+                {
+                  heading: 'THE Story',
+                  subheading: t('Campaign (Ended)'),
+                  onClickHandler: () => {
+                    push('/story')
                   },
                 },
               ],
