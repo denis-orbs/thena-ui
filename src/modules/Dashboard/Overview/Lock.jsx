@@ -52,15 +52,13 @@ function Lock() {
     return results.sort((a, b) => Number(a.id) - Number(b.id))
   }, [veTHEs])
 
-  const extendVotingPower = useMemo(
-    () =>
-      veTHEsToLock.reduce(
-        (sum, veTHE) =>
-          sum.plus(veTHE.amount.times(veTHE.unlockTime.getTime() - new Date().getTime()).div(maxTimeStamp)),
-        ZERO_VALUE,
-      ),
-    [veTHEsToLock],
-  )
+  const extendVotingPower = useMemo(() => {
+    const totalExtend = veTHEsToLock.reduce(
+      (sum, veTHE) => sum.plus(veTHE.amount.times(veTHE.unlockTime.getTime() - new Date().getTime()).div(maxTimeStamp)),
+      ZERO_VALUE,
+    )
+    return totalExtend.minus(totalVotingPower)
+  }, [totalVotingPower, veTHEsToLock])
 
   const handleExtendLock = useCallback(() => {
     if (veTHEsToLock.length === 0) {
