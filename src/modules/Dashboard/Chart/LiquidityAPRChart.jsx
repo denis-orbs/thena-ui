@@ -65,7 +65,7 @@ function LiquidityAPRChart({ data = [], className }) {
       })
     } else {
       othersValue = dataSource.find(item => item.label === 'Others')?.fiatValueOfLiquidity || 0
-      formatted.push(...sorted.filter(item => item.label !== 'Others'))
+      formatted.push(...items.filter(item => item.label !== 'Others'))
     }
 
     if (othersValue > 0) {
@@ -201,6 +201,9 @@ function LiquidityAPRChart({ data = [], className }) {
 
   useEffect(() => {
     const handleMouseMove = e => {
+      e.stopPropagation()
+      e.preventDefault()
+
       const target = e.target.closest('.position-item')
       if (target) {
         setIsHoverFromChart(false)
