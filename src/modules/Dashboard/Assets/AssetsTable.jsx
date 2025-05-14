@@ -101,7 +101,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
   )
 }
 
-function TableBody({ positions, isXlDown }) {
+function TableBody({ positions, setCurrentHoverTableRow, isXlDown }) {
   const renderPosition = useCallback(position => {
     if (position.type === 'Manual') {
       return position?.deployer === zeroAddress ? (
@@ -132,7 +132,12 @@ function TableBody({ positions, isXlDown }) {
           key={`table-row-${index}`}
           id={`table-row-${index}`}
           className='position-item h-[60px] rounded-md hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
-          data-position-id={position.positionId}
+          onMouseEnter={() => {
+            setCurrentHoverTableRow(position.positionId)
+          }}
+          onMouseLeave={() => {
+            setCurrentHoverTableRow(null)
+          }}
         >
           {renderPosition(position)}
         </tr>
@@ -146,6 +151,12 @@ function TableBody({ positions, isXlDown }) {
         id={`table-row-${index}`}
         className='position-item hover:bg-neutral-800'
         data-position-id={position.positionId}
+        onMouseEnter={() => {
+          setCurrentHoverTableRow(position.positionId)
+        }}
+        onMouseLeave={() => {
+          setCurrentHoverTableRow(null)
+        }}
       >
         {renderPosition(position)}
       </div>
@@ -153,7 +164,7 @@ function TableBody({ positions, isXlDown }) {
   )
 }
 
-function AssetsTable({ positions = [] }) {
+function AssetsTable({ positions = [], setCurrentHoverTableRow }) {
   const { account, chainId } = useWallet()
   const accountRef = useRef(account)
   const chainIdRef = useRef(chainId)
@@ -239,11 +250,21 @@ function AssetsTable({ positions = [] }) {
             searchText={searchText}
             setSearchText={setSearchText}
           />
-          <TableBody positions={paginatedPositions} isXlDown={isXlDown} />
+          <TableBody
+            setCurrentHoverTableRow={setCurrentHoverTableRow}
+            positions={paginatedPositions}
+            isXlDown={isXlDown}
+          />
         </table>
       )}
 
-      {isXlDown && <TableBody positions={paginatedPositions} isXlDown={isXlDown} />}
+      {isXlDown && (
+        <TableBody
+          setCurrentHoverTableRow={setCurrentHoverTableRow}
+          positions={paginatedPositions}
+          isXlDown={isXlDown}
+        />
+      )}
 
       <Pagination
         currentPage={currentPage}

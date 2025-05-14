@@ -16,13 +16,12 @@ const OTHER_COLOR = '#F8CCF6'
 
 const NOT_HOVER_COLOR = '#580055'
 
-function LiquidityAPRChart({ data = [], className }) {
+function LiquidityAPRChart({ data = [], currentHoverTableRow = null, className }) {
   const t = useTranslations()
 
   const chartRef = useRef(null)
   const originalColors = useRef([])
 
-  const [currentHoverTableRow, setCurrentHoverTableRow] = useState(null)
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
   const [isHoverFromChart, setIsHoverFromChart] = useState(false)
@@ -65,7 +64,7 @@ function LiquidityAPRChart({ data = [], className }) {
       })
     } else {
       othersValue = dataSource.find(item => item.label === 'Others')?.fiatValueOfLiquidity || 0
-      formatted.push(...sorted.filter(item => item.label !== 'Others'))
+      formatted.push(...items.filter(item => item.label !== 'Others'))
     }
 
     if (othersValue > 0) {
@@ -198,25 +197,6 @@ function LiquidityAPRChart({ data = [], className }) {
     },
     events: ['mousemove', 'mouseout'],
   }
-
-  useEffect(() => {
-    const handleMouseMove = e => {
-      const target = e.target.closest('.position-item')
-      if (target) {
-        setIsHoverFromChart(false)
-        const positionId = target.getAttribute('data-position-id')
-        setCurrentHoverTableRow(positionId)
-      } else {
-        setCurrentHoverTableRow(null)
-      }
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [])
 
   useEffect(() => {
     if (!chartRef.current || isHoverFromChart) return

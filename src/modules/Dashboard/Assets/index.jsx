@@ -56,6 +56,7 @@ function UserAssets() {
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)
+  const [currentHoverTableRow, setCurrentHoverTableRow] = useState(null)
 
   const idleAssets = useMemo(
     () =>
@@ -95,7 +96,7 @@ function UserAssets() {
       [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions].map(
         (item, index) => ({
           ...item,
-          positionId: `pos-${item.address}-${item.tokenId}-${index}`,
+          positionId: `pos-${index}`,
         }),
       ),
     [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
@@ -112,7 +113,7 @@ function UserAssets() {
         >
           {allPositions.length > 0 ? (
             <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
-              <AssetsOverview positions={allPositions} />
+              <AssetsOverview currentHoverTableRow={currentHoverTableRow} positions={allPositions} />
               <div className='flex items-center justify-between xl:hidden'>
                 <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
                 <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
@@ -129,7 +130,7 @@ function UserAssets() {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className='overflow-hidden'
               >
-                <AssetsTable positions={allPositions} />
+                <AssetsTable positions={allPositions} setCurrentHoverTableRow={setCurrentHoverTableRow} />
               </motion.div>
             </div>
           ) : (
