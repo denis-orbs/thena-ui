@@ -7,6 +7,7 @@ import { useTokenBalance } from '@/hooks/fusion/Tokens'
 function InputTokenMemo({ token, autoFocus, amount, onAmountChange, alowDouble, weight, isError, showTitle = true }) {
   const { balance, isDouble } = useTokenBalance(token, alowDouble)
   const t = useTranslations()
+
   return (
     <TokenAmountInput
       type='number'

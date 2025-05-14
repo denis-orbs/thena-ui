@@ -2,6 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
+import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,31 +34,32 @@ const DEPOSIT_TYPE = {
 }
 
 function AddLiquidityWeighted({ pool }) {
+  const router = useRouter()
   const t = useTranslations()
+  const debounceTimeout = useRef(null)
+  const windowSize = useWindowSize()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
+  const { renderBackgroundColors } = useTokenColor()
+  const {
+    onAddLiquiditySingleToken,
+    onAddLiquidityAllToken,
+    calcMinBPTAmountOutSingleToken,
+    calcMinBPTAmountOutAllToken,
+  } = useWeightedPool()
+  const { mutatePoolBalance } = useWeightPoolData(pool?.address)
+
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.ALL)
   const [slippage, setSlippage] = useState(0.5)
   const [amountDeposit, setAmountDeposit] = useState('')
-
-  const router = useRouter()
   const [colors, setColors] = useState([])
-  const { renderBackgroundColors } = useTokenColor()
-
-  useEffect(() => {
-    renderBackgroundColors(
-      (pool?.tokens || []).map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/')),
-    ).then(result => {
-      setColors(result)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [(pool?.tokens || []).length, renderBackgroundColors])
-
-  const [tokensData, setTokensData] = useState([...(pool?.tokens || [])])
-
-  const [tokenDeposit, setTokenDeposit] = useState(tokensData?.[0])
+  const [tokensData, setTokensData] = useState([])
+  const [tokenDeposit, setTokenDeposit] = useState(null)
   const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
+  const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
 
-  const { mutatePoolBalance } = useWeightPoolData(pool?.address)
+  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+
+  const isLaptop = useMemo(() => windowSize.width > 1024, [windowSize.width])
 
   const toggleDepositType = useMemo(
     () => [
@@ -77,13 +79,6 @@ function AddLiquidityWeighted({ pool }) {
     [depositType, t],
   )
 
-  const {
-    onAddLiquiditySingleToken,
-    onAddLiquidityAllToken,
-    calcMinBPTAmountOutSingleToken,
-    calcMinBPTAmountOutAllToken,
-  } = useWeightedPool()
-
   const amountToWrap = useMemo(() => {
     let final
     if (depositType === DEPOSIT_TYPE.SINGLE) {
@@ -100,6 +95,21 @@ function AddLiquidityWeighted({ pool }) {
       }
     }
     return final
+  }, [amountDeposit, depositType, tokenDeposit, tokensData])
+
+  const isDisable = useMemo(() => {
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      if (!tokenDeposit || amountDeposit <= 0) {
+        return true
+      }
+    }
+
+    if (depositType === DEPOSIT_TYPE.ALL) {
+      const checkAmountValid = (tokensData || []).every(token => !isInvalidAmount(token.amount))
+      if (!checkAmountValid) return true
+    }
+
+    return false
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
   const calcMinBPT = useCallback(async () => {
@@ -121,14 +131,6 @@ function AddLiquidityWeighted({ pool }) {
     tokenDeposit,
     calcMinBPTAmountOutAllToken,
   ])
-
-  const debounceTimeout = useRef(null)
-  useEffect(() => {
-    clearTimeout(debounceTimeout.current)
-    debounceTimeout.current = setTimeout(() => {
-      calcMinBPT()
-    }, 300)
-  }, [calcMinBPT])
 
   const onAddLiquidity = useCallback(
     async withStake => {
@@ -165,20 +167,6 @@ function AddLiquidityWeighted({ pool }) {
       tokensData,
     ],
   )
-  const isDisable = useMemo(() => {
-    if (depositType === DEPOSIT_TYPE.SINGLE) {
-      if (!tokenDeposit || amountDeposit <= 0) {
-        return true
-      }
-    }
-
-    if (depositType === DEPOSIT_TYPE.ALL) {
-      const checkAmountValid = (tokensData || []).every(token => !isInvalidAmount(token.amount))
-      if (!checkAmountValid) return true
-    }
-
-    return false
-  }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
   const handleAmountChange = useCallback(
     (value, asset) => {
@@ -204,19 +192,42 @@ function AddLiquidityWeighted({ pool }) {
     [getValueTokenAmountToUSD],
   )
 
-  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+  useEffect(() => {
+    clearTimeout(debounceTimeout.current)
+    debounceTimeout.current = setTimeout(() => {
+      calcMinBPT()
+    }, 300)
+  }, [calcMinBPT])
 
   useEffect(() => {
-    setTokensData(prev => {
-      if ((prev || []).length <= 0) return pool?.tokens
+    renderBackgroundColors(
+      (pool?.tokens || []).map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/')),
+    ).then(result => {
+      setColors(result)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool?.tokens?.length, renderBackgroundColors])
+
+  useEffect(() => {
+    const poolTokens = pool?.tokens || []
+
+    setTokensData(tokens => {
+      let result = tokens || []
+      if (isEmpty(result) && !isEmpty(poolTokens)) {
+        result = poolTokens
+      }
+      result = result.map((tk, idx) => ({
+        ...tk,
+        balance: poolTokens[idx]?.balance,
+      }))
+      return result
+    })
+
+    setTokenDeposit(prev => {
+      if (!prev) return poolTokens[0]
       return prev
     })
   }, [pool?.tokens])
-
-  const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
-
-  const windowSize = useWindowSize()
-  const isLaptop = windowSize.width > 1024
 
   return (
     <div className='flex flex-col gap-4 2xl:gap-8'>
@@ -293,19 +304,17 @@ function AddLiquidityWeighted({ pool }) {
               </div>
             )}
             {depositType === DEPOSIT_TYPE.SINGLE && (
-              <div>
-                <TokenAmountInput
-                  type='number'
-                  amount={amountDeposit}
-                  setAsset={setTokenDeposit}
-                  asset={tokenDeposit}
-                  maxBalance={isDouble ? balance : null}
-                  autoFocus
-                  onAmountChange={setAmountDeposit}
-                  assetsSelect={tokensData}
-                  showPercent={false}
-                />
-              </div>
+              <TokenAmountInput
+                type='number'
+                amount={amountDeposit}
+                setAsset={setTokenDeposit}
+                asset={tokenDeposit}
+                maxBalance={isDouble ? balance : null}
+                autoFocus
+                onAmountChange={setAmountDeposit}
+                assetsSelect={tokensData}
+                showPercent={false}
+              />
             )}
           </div>
 
