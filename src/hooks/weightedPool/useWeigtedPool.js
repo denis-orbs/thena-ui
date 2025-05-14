@@ -55,6 +55,15 @@ const getBalance = async (contract, account, chainId) => {
   }
 }
 
+const getPoolOwner = async (contract, chainId) => {
+  try {
+    return readCall(contract, 'getOwner', [], chainId)
+  } catch (error) {
+    console.error('Failed to fetch pool owner:', error)
+    return null
+  }
+}
+
 export const useWeightPoolData = poolAddress => {
   const { account, chainId } = useWallet()
   const weightedPoolContract = useMemo(() => getWeightedPoolContract(poolAddress, chainId), [poolAddress, chainId])
@@ -372,6 +381,11 @@ export const useWeightedPool = () => {
         }
       }
 
+      if (!pool.tvlUSD) {
+        warnToast('Pool not initialized liquidity')
+        return false
+      }
+
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
       const joinPooluuid = uuidv4()
@@ -506,8 +520,17 @@ export const useWeightedPool = () => {
         warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
         isOutOfBalance = true
       }
-      const wrapTokens = new Set(['BNB', 'WBNB'])
 
+      if (!pool.tvlUSD) {
+        const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+        const poolOwner = await getPoolOwner(weightedPoolContract, chainId)
+        if (poolOwner?.toLowerCase() !== account.toLowerCase()) {
+          warnToast('Pool not initialized liquidity')
+          return false
+        }
+      }
+
+      const wrapTokens = new Set(['BNB', 'WBNB'])
       for (const token of tokensData) {
         // Convert amount and check if it exceeds the balance
         const convertedAmount = fromWei(toWei(token.amount, token?.decimals), token?.decimals)
@@ -534,6 +557,7 @@ export const useWeightedPool = () => {
       const wrapuuid = uuidv4()
       const stakeuuid = uuidv4()
       const approveLpuuid = uuidv4()
+      const initialLiquidityuuid = uuidv4()
 
       const lpContract = {
         address: pool.address,
@@ -575,10 +599,18 @@ export const useWeightedPool = () => {
         }
       }
 
-      transactions[addLiquidityuuid] = {
-        desc: t('Add Liquidity'),
-        status: TXN_STATUS.START,
-        hash: null,
+      if (!pool.tvlUSD) {
+        transactions[initialLiquidityuuid] = {
+          desc: t('Add Initial Liquidity'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      } else {
+        transactions[addLiquidityuuid] = {
+          desc: t('Add Liquidity'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
       }
 
       startTxn({
@@ -641,24 +673,39 @@ export const useWeightedPool = () => {
         return indexA - indexB
       })
 
-      const assetsAddress = tokensData.map(asset => asset.address)
+      const assetsAddress = sortedAsset.map(asset => asset.address)
       const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amount, asset.decimals).toString())
-      const minAmountOut = Math.floor(
-        toWei(minBPTAmountOut || 0)
-          .times((100 - slippage) / 100)
-          .toNumber(),
-      )
 
-      const result = await writeTxn(key, addLiquidityuuid, routerContract, 'joinPoolAllTokens', [
-        poolId32,
-        assetsAddress,
-        maxAmountsIn,
-        minAmountOut,
-      ])
+      let result = null
+      if (!pool.tvlUSD) {
+        result = await writeTxn(key, initialLiquidityuuid, routerContract, 'joinPoolInit', [
+          poolId32,
+          assetsAddress,
+          maxAmountsIn,
+        ])
 
-      if (!result) {
-        setPending(false)
-        return false
+        if (!result) {
+          setPending(false)
+          return false
+        }
+      } else {
+        const minAmountOut = Math.floor(
+          toWei(minBPTAmountOut || 0)
+            .times((100 - slippage) / 100)
+            .toNumber(),
+        )
+
+        result = await writeTxn(key, addLiquidityuuid, routerContract, 'joinPoolAllTokens', [
+          poolId32,
+          assetsAddress,
+          maxAmountsIn,
+          minAmountOut,
+        ])
+
+        if (!result) {
+          setPending(false)
+          return false
+        }
       }
 
       if (withStake) {

@@ -113,21 +113,24 @@ function AddLiquidityWeighted({ pool }) {
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
   const calcMinBPT = useCallback(async () => {
-    let minBPT = ''
-    if (depositType === DEPOSIT_TYPE.SINGLE) {
-      if (!isInvalidAmount(amountDeposit)) {
-        minBPT = await calcMinBPTAmountOutSingleToken(pool?.poolId, tokenDeposit, amountDeposit)
+    if (pool?.tvlUSD) {
+      let minBPT = ''
+      if (depositType === DEPOSIT_TYPE.SINGLE) {
+        if (!isInvalidAmount(amountDeposit)) {
+          minBPT = await calcMinBPTAmountOutSingleToken(pool?.poolId, tokenDeposit, amountDeposit)
+        }
+      } else if (tokensData?.length && !isInvalidAmount(tokensData[0]?.amount)) {
+        minBPT = await calcMinBPTAmountOutAllToken(pool?.poolId, tokensData)
       }
-    } else if (tokensData?.length && !isInvalidAmount(tokensData[0]?.amount)) {
-      minBPT = await calcMinBPTAmountOutAllToken(pool?.poolId, tokensData)
+      setMinBPTAmountOut(isInvalidAmount(minBPT) ? '' : fromWei(minBPT))
     }
-    setMinBPTAmountOut(isInvalidAmount(minBPT) ? '' : fromWei(minBPT))
   }, [
+    pool?.tvlUSD,
+    pool?.poolId,
     depositType,
     tokensData,
     amountDeposit,
     calcMinBPTAmountOutSingleToken,
-    pool?.poolId,
     tokenDeposit,
     calcMinBPTAmountOutAllToken,
   ])
