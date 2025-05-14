@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo } from 'react'
 
@@ -166,6 +168,58 @@ function AssetsOverview({ positions, currentHoverTableRow }) {
     })
   }, [positions, processManualPosition, processWeightedPosition, processV1Position, processV3Position])
 
+  const migrationMessageWarning = useMemo(() => {
+    const currentTime = dayjs().utc().unix()
+    const startTime = 1747868400 // 21/05/2025 23:00:00 UTC
+    const endTime = 1748563199 // 29/05/2025 23:59:59 UTC
+
+    if (currentTime >= startTime && currentTime <= endTime) {
+      return (
+        <Paragraph className='flex flex-col text-base text-error-100'>
+          {t('Migration earning rewards message')}
+        </Paragraph>
+      )
+    }
+
+    if (currentTime > endTime) {
+      return (
+        <div className='flex flex-col gap-2'>
+          <TextHeading className='text-xl font-medium text-error-100'>{t('Migrate your Positions')}</TextHeading>
+          <Paragraph className='flex text-base text-error-100'>{t('Migrate desc')}</Paragraph>
+        </div>
+      )
+    }
+
+    return (
+      <p className='text-base text-error-100'>
+        {t.rich('Simulate migration warning message', {
+          // eslint-disable-next-line react/no-unstable-nested-components
+          discord: chunks => (
+            <Link
+              href='https://discord.com/invite/thena'
+              className='text-primary-600 hover:underline'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {chunks}
+            </Link>
+          ),
+          // eslint-disable-next-line react/no-unstable-nested-components
+          telegram: chunks => (
+            <Link
+              href='https://t.me/Thena_Fi'
+              className='text-primary-600 hover:underline'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
+    )
+  }, [t])
+
   return (
     <div className='space-y-6'>
       <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
@@ -206,13 +260,7 @@ function AssetsOverview({ positions, currentHoverTableRow }) {
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
             <WarningTriangleIcon className='size-full' />
           </div>
-          <div className='flex flex-col gap-2'>
-            <TextHeading className='text-xl font-medium text-error-100'>{t('Migrate your Positions')}</TextHeading>
-            <Paragraph className='flex flex-col text-base text-error-100'>
-              <span>{t('Migrate desc 1')}</span>
-              <span>{t('Migrate desc 2')}</span>
-            </Paragraph>
-          </div>
+          {migrationMessageWarning}
         </div>
       )}
     </div>

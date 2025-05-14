@@ -1542,8 +1542,7 @@
   "Account not available title": "THENA ID – Your Digital Identity",
   "Mint your ID": "Mint your ID",
   "Migrate your Positions": "Migrate your Positions",
-  "Migrate desc 1": "You still have positions in pools that are no longer supported.",
-  "Migrate desc 2": "Please migrate your positions to V3 to unlock the full potential of THENA.",
+  "Migrate desc": "You still have positions in pools that are no longer supported. Please migrate your positions now to unlock the full potential of THENA.",
   "User Earnings": "User Earnings",
   "Treasury Earnings": "Treasury Earnings",
   "[fee] % (of fees)": "{fee}% (of fees)",
@@ -1560,5 +1559,7 @@
   "Number of Epochs": "Number of Epochs",
   "Pool not initialized liquidity": "Pool not initialized liquidity",
   "Campaign (Ended)": "Campaign (Ended)",
-  "Trading Competitions (to be updated)": "Trading Competitions (to be updated)"
+  "Trading Competitions (to be updated)": "Trading Competitions (to be updated)",
+  "Simulate migration warning message": "You can simulate and test the migration of your pools but no actual migration is necessary at this point. Please send your feedback on <discord>Discord</discord>, <telegram>Telegram</telegram> or by using the support widget below.",
+  "Migration earning rewards message": "You will still continue earning rewards until the end of this epoch but you are advised to migrate before the end of this epoch (29 May 2025 00:00 UTC) in order not to miss any farming rewards once the new epoch begins."
 }
