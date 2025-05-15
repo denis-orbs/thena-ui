@@ -429,7 +429,7 @@ export default function VotePage() {
             // eslint-disable-next-line react/no-unstable-nested-components
             votepage: chunks => (
               <Link
-                href='https://thena.fi/dashboard/vote'
+                href='https://thena.fi'
                 className='text-primary-600 hover:underline'
                 target='_blank'
                 rel='noopener noreferrer'

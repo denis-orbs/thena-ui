@@ -1560,6 +1560,6 @@
   "Campaign (Ended)": "Campaign (Ended)",
   "Trading Competitions (to be updated)": "Trading Competitions (to be updated)",
   "Simulate migration warning message": "You can simulate and test the migration of your pools but no actual migration is necessary at this point. Please send your feedback on <discord>Discord</discord>, <telegram>Telegram</telegram> or by using the support widget below.",
-  "Simulate and test the voting on new UI warning message": "You can simulate and test the voting on new UI but you should vote on <votepage>thena.fi/dashboard/vote</votepage> for your votes to be counted. Please send your feedback on <discord>Discord</discord>, <telegram>Telegram</telegram> or by using the support widget below.",
+  "Simulate and test the voting on new UI warning message": "You can simulate and test the voting on new UI but you should vote on <votepage>thena.fi</votepage> for your votes to be counted. Please send your feedback on <discord>Discord</discord>, <telegram>Telegram</telegram> or by using the support widget below.",
   "Migration earning rewards message": "You will still continue earning rewards until the end of this epoch but you are advised to migrate before the end of this epoch (29 May 2025 00:00 UTC) in order not to miss any farming rewards once the new epoch begins."
 }
