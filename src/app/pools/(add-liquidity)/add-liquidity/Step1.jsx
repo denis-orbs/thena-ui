@@ -8,17 +8,16 @@ import { SelectorPoolTypeLarge, SelectorPoolTypeMini } from '@/components/select
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 import { InfoNeutralIcon, PoolGroupIcon } from '@/svgs'
 
-function ContentTypeOption({ heading, desc, active }) {
+function ContentTypeOptionMini({ heading, desc, active }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
   return (
     <>
-      <div className='flex gap-2'>
+      <div className='flex gap-2 lg:hidden'>
         <div
           className={cn(
             'flex flex-1 gap-2 rounded-xl p-2 hover:bg-neutral-800',
@@ -71,10 +70,6 @@ export default function Step1() {
   const pairType = searchParams.get('pairType') || null
   const updateSearchParams = useUpdateSearchParams()
 
-  const { width } = useWindowSize()
-
-  const isDownLg = useMemo(() => width < 1024, [width])
-
   useEffect(() => {
     if (!pairType) {
       updateSearchParams({ pairType: PAIR_TYPES.LSD })
@@ -86,17 +81,15 @@ export default function Step1() {
       {
         content: (
           <>
-            {isDownLg ? (
-              <ContentTypeOption
-                active={pairType === PAIR_TYPES.LSD}
-                heading='Concentrated Liquidity'
-                desc='Conc Desc'
-              />
-            ) : (
-              <div className='flex flex-1 flex-col gap-1'>
-                <TextHeading className='text-sm lg:text-base'>{t('Concentrated Liquidity')}</TextHeading>
-              </div>
-            )}
+            <ContentTypeOptionMini
+              active={pairType === PAIR_TYPES.LSD}
+              heading='Concentrated Liquidity'
+              desc='Conc Desc'
+            />
+
+            <div className='hidden flex-1 flex-col gap-1 lg:flex'>
+              <TextHeading className='text-sm lg:text-base'>{t('Concentrated Liquidity')}</TextHeading>
+            </div>
           </>
         ),
         active: pairType === PAIR_TYPES.LSD,
@@ -107,13 +100,11 @@ export default function Step1() {
       {
         content: (
           <>
-            {isDownLg ? (
-              <ContentTypeOption active={pairType === PAIR_TYPES.WEIGHTED} heading='Weighted' desc='Weighted Desc' />
-            ) : (
-              <div className='flex flex-1 flex-col gap-1'>
-                <TextHeading className='text-sm lg:text-base'>{t('Weighted')}</TextHeading>
-              </div>
-            )}
+            <ContentTypeOptionMini active={pairType === PAIR_TYPES.WEIGHTED} heading='Weighted' desc='Weighted Desc' />
+
+            <div className='hidden flex-1 flex-col gap-1 lg:flex'>
+              <TextHeading className='text-sm lg:text-base'>{t('Weighted')}</TextHeading>
+            </div>
           </>
         ),
         active: pairType === PAIR_TYPES.WEIGHTED,
@@ -124,13 +115,11 @@ export default function Step1() {
       {
         content: (
           <>
-            {isDownLg ? (
-              <ContentTypeOption active={pairType === PAIR_TYPES.STABLE} heading='Stable' desc='Stable Desc' />
-            ) : (
-              <div className='flex flex-1 flex-col gap-1'>
-                <TextHeading className='text-sm lg:text-base'>{t('Stable')}</TextHeading>
-              </div>
-            )}
+            <ContentTypeOptionMini active={pairType === PAIR_TYPES.STABLE} heading='Stable' desc='Stable Desc' />
+
+            <div className='hidden flex-1 flex-col gap-1 lg:flex'>
+              <TextHeading className='text-sm lg:text-base'>{t('Stable')}</TextHeading>
+            </div>
           </>
         ),
         active: pairType === PAIR_TYPES.STABLE,
@@ -141,17 +130,11 @@ export default function Step1() {
       {
         content: (
           <>
-            {isDownLg ? (
-              <ContentTypeOption
-                active={pairType === PAIR_TYPES.CLASSIC}
-                heading='ClassicClassic'
-                desc='Classic Desc'
-              />
-            ) : (
-              <div className='flex flex-1 flex-col gap-1'>
-                <TextHeading className='text-sm lg:text-base'>{t('Classic')}</TextHeading>
-              </div>
-            )}
+            <ContentTypeOptionMini active={pairType === PAIR_TYPES.CLASSIC} heading='Classic' desc='Classic Desc' />
+
+            <div className='hidden flex-1 flex-col gap-1 lg:flex'>
+              <TextHeading className='text-sm lg:text-base'>{t('Classic')}</TextHeading>
+            </div>
           </>
         ),
         active: pairType === PAIR_TYPES.CLASSIC,
@@ -160,7 +143,7 @@ export default function Step1() {
         },
       },
     ],
-    [pairType, t, updateSearchParams, isDownLg],
+    [pairType, t, updateSearchParams],
   )
 
   return (
@@ -172,11 +155,13 @@ export default function Step1() {
 
       <div className='flex h-full gap-4'>
         <div className='flex h-full w-full flex-col gap-8 max-lg:min-h-[calc(100vh-180px)] lg:w-1/2'>
-          {isDownLg ? (
+          <div className='lg:hidden'>
             <SelectorPoolTypeMini data={poolTypesData} />
-          ) : (
+          </div>
+
+          <div className='max-lg:hidden'>
             <SelectorPoolTypeLarge data={poolTypesData} isGrid={false} />
-          )}
+          </div>
 
           <div className='mt-auto flex flex-col items-end justify-end gap-2'>
             <EmphasisButton className='w-full lg:hidden' onClick={() => push('/pools')}>
