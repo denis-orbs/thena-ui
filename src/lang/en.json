@@ -176,6 +176,7 @@
   "Pool Type": "Pool Type",
   "Conc Desc": "Liquidity that is allocated within a custom price range. You can either set this range manually or choose one of the CLAMM options that manage your liquidity.",
   "Stable Desc": "Solidly Stable liquidity pool. Ideal for stable pairs at 1:1 ratio.",
+  "Stable Desc new": "Curve V1 type of stable pools where you provide liquidity for stable coins in 50/50 ratio.",
   "Classic Desc": "Uniswap V2 type of volatile pools designed for uncorrelated pairs where you provide liquidity in the ratio determined by the asset balances in the pool.",
   "Continue": "Continue",
   "Choose Strategy": "Choose Strategy",

@@ -176,6 +176,7 @@
   "Pool Type": "流动性池类型",
   "Conc Desc": "在自定义价格范围内分配的流动性。您可以手动设置此范围，也可以选择集中流动性自动做市商（CLAMM）选项之一，管理您的流动性。",
   "Stable Desc": "Solidly 稳定型流动性池。适用于 1:1 比例的稳定币对。",
+  "Stable Desc new": "Curve V1 type of stable pools where you provide liquidity for stable coins in 50/50 ratio.",
   "Classic Desc": "Uniswap V2 类型波动性池，专为不相联的货币对而设计，您根据池中资产余额的比例提供流动性。",
   "Continue": "继续",
   "Choose Strategy": "选择策略",
