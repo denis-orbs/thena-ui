@@ -21,7 +21,10 @@ function AssetsOverview({ positions, currentHoverTableRow }) {
   const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
-  const filteredPositions = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+  const filteredPositions = useMemo(
+    () => positions.filter(pos => pos.version !== 2 || (pos.version === 2 && pos?.title === 'ICHI Single Sided')),
+    [positions],
+  )
 
   const [v1FeesPositions, migratePositions] = useMemo(() => {
     const v1FeesPos = []
