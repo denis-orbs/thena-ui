@@ -216,12 +216,12 @@ function NotStakedItem({ position }) {
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
           <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
-            {getDisplayedStrategy(position.title)}
+            {getDisplayedStrategy(position.title, position.version)}
           </Paragraph>
         </div>
       </div>
     ),
-    [position.token0, position.token1, position.symbol, position.title],
+    [position.token0, position.token1, position.symbol, position.title, position.version],
   )
 
   const rangeCell = useMemo(

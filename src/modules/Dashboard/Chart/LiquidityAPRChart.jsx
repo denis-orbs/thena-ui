@@ -16,7 +16,13 @@ const OTHER_COLOR = '#F8CCF6'
 
 const NOT_HOVER_COLOR = '#580055'
 
-function LiquidityAPRChart({ data = [], currentHoverTableRow = null, className }) {
+function LiquidityAPRChart({
+  data = [],
+  currentHoverTableRow = null,
+  isHoverFromChart = false,
+  setIsHoverFromChart,
+  className,
+}) {
   const t = useTranslations()
 
   const chartRef = useRef(null)
@@ -24,7 +30,6 @@ function LiquidityAPRChart({ data = [], currentHoverTableRow = null, className }
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
-  const [isHoverFromChart, setIsHoverFromChart] = useState(false)
 
   const avgApr = useMemo(() => {
     const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)

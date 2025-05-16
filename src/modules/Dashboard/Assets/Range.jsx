@@ -50,16 +50,20 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
         <div className='relative flex h-8 items-center justify-center overflow-hidden rounded-md border border-neutral-600 px-2 md:h-11'>
           <div className='flex w-full justify-between'>
             <TextSubHeading className='text-base text-neutral-300'>
-              {`${tickLowerPercent < 0 ? '-' : ''} ${formatAmount(
-                tickLowerPercent < 0 ? tickLowerPercent * -1 : tickLowerPercent,
-                true,
-              )}%`}
+              {tickLowerPercent > 1e9
+                ? '>1B'
+                : `${tickLowerPercent < 0 ? '-' : ''} ${formatAmount(
+                    tickLowerPercent < 0 ? tickLowerPercent * -1 : tickLowerPercent,
+                    true,
+                  )}%`}
             </TextSubHeading>
             <TextSubHeading className='text-base text-neutral-300'>
-              {`${tickUpperPercent < 0 ? '-' : ''} ${formatAmount(
-                tickUpperPercent < 0 ? tickUpperPercent * -1 : tickUpperPercent,
-                true,
-              )}%`}
+              {tickUpperPercent > 1e9
+                ? '>1B'
+                : `${tickUpperPercent < 0 ? '-' : ''} ${formatAmount(
+                    tickUpperPercent < 0 ? tickUpperPercent * -1 : tickUpperPercent,
+                    true,
+                  )}%`}
             </TextSubHeading>
           </div>
 

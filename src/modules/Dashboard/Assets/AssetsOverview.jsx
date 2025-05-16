@@ -15,13 +15,16 @@ import { WarningTriangleIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
-function AssetsOverview({ positions, currentHoverTableRow }) {
+function AssetsOverview({ positions, currentHoverTableRow, isHoverFromChart, setIsHoverFromChart }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
-  const filteredPositions = useMemo(() => positions.filter(pos => pos.version !== 2), [positions])
+  const filteredPositions = useMemo(
+    () => positions.filter(pos => pos.version !== 2 || (pos.version === 2 && pos?.title === 'ICHI Single Sided')),
+    [positions],
+  )
 
   const [v1FeesPositions, migratePositions] = useMemo(() => {
     const v1FeesPos = []
@@ -251,6 +254,8 @@ function AssetsOverview({ positions, currentHoverTableRow }) {
             data={filteredPositions}
             currentHoverTableRow={currentHoverTableRow}
             className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]'
+            isHoverFromChart={isHoverFromChart}
+            setIsHoverFromChart={setIsHoverFromChart}
           />
         </div>
       </div>
