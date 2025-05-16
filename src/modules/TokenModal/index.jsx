@@ -72,8 +72,25 @@ function TokenModal({
       result.push(customToken)
     }
 
-    return result
-  }, [baseAssets, customToken, localTokens, search])
+    // Sort tokens - first match tokens list order, then sort alphabetically
+    return result.sort((a, b) => {
+      const tokensList = tokens ?? []
+      const aIndex = tokensList.findIndex(token => token.address.toLowerCase() === a.address.toLowerCase())
+      const bIndex = tokensList.findIndex(token => token.address.toLowerCase() === b.address.toLowerCase())
+
+      // If both tokens are in the tokens list, maintain their order
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex
+      }
+
+      // If only one token is in the tokens list, prioritize it
+      if (aIndex !== -1) return -1
+      if (bIndex !== -1) return 1
+
+      // If neither token is in the tokens list, sort alphabetically by symbol
+      return a.symbol.toLowerCase().localeCompare(b.symbol.toLowerCase())
+    })
+  }, [baseAssets, customToken, localTokens, search, tokens])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
