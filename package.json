@@ -23,7 +23,7 @@
     "@orbs-network/twap-ui-thena": "^0.10.26",
     "@particle-network/auth-core-modal": "^1.5.1",
     "@particle-network/chains": "^1.3.24",
-    "@rainbow-me/rainbowkit": "^2.2.4",
+    "@rainbow-me/rainbowkit": "^2.2.5",
     "@reduxjs/toolkit": "^2.0.1",
     "@tanstack/react-query": "^5.17.19",
     "@vercel/analytics": "^1.1.4",
