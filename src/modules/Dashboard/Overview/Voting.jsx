@@ -111,15 +111,21 @@ function Voting() {
     [v3PoolsWithGauge],
   )
 
-  const timeDisplay = useMemo(
-    () =>
-      seconds <= 2 * 24 * 60 * 60
-        ? Number(hours) === 0
-          ? `${mins} Mins`
-          : `${Number(hours) + Number(days) * 24} Hours ${mins} Mins`
-        : `${days} Days`,
-    [days, hours, mins, seconds],
-  )
+  const timeDisplay = useMemo(() => {
+    const twoDays = 2 * 24 * 60 * 60
+    const twoHours = 2 * 60 * 60
+    const twoMins = 2 * 60
+    if (seconds < twoMins) {
+      return `${seconds} Seconds`
+    }
+    if (seconds < twoHours) {
+      return `${mins} Minutes`
+    }
+    if (seconds < twoDays) {
+      return `${hours} Hours`
+    }
+    return `${days} Days`
+  }, [days, hours, mins, seconds])
 
   return (
     <>
@@ -155,16 +161,10 @@ function Voting() {
             </div>
 
             <div className='flex flex-col gap-4'>
-              {seconds <= 120 ? (
-                <NewTextHeading className='text-center text-xl text-error-600 md:text-xl'>
-                  {t('Epoch [epoch] End in [seconds]', { epoch, seconds })}
-                </NewTextHeading>
-              ) : (
-                <div className='flex flex-col text-center'>
-                  <Paragraph className='text-neutral-500 lg:text-sm'>{t('Epoch [epoch] End in', { epoch })}</Paragraph>
-                  <NewTextHeading className='text-primary-300 md:text-3xl'>{timeDisplay}</NewTextHeading>
-                </div>
-              )}
+              <div className='flex flex-col text-center'>
+                <Paragraph className='text-neutral-500 lg:text-sm'>{t('Epoch [epoch] End in', { epoch })}</Paragraph>
+                <NewTextHeading className='text-primary-300 md:text-3xl'>{timeDisplay}</NewTextHeading>
+              </div>
 
               <div className='flex gap-2'>
                 <EmphasisButton className='w-1/2 max-md:h-8 max-md:text-xs' onClick={() => push('/dashboard/rewards')}>
@@ -189,9 +189,7 @@ function Voting() {
                 <Paragraph className='text-neutral-500'>{t('Empty Voting')}</Paragraph>
                 <NewTextHeading className='flex justify-center gap-1.5 text-xl md:text-xl'>
                   <span className='text-primary-300'>{t('Next distribution in')}</span>
-                  <span className='text-primary-600'>
-                    {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
-                  </span>
+                  <span className='text-primary-600'>{timeDisplay}</span>
                 </NewTextHeading>
               </div>
               <div className='flex flex-col gap-2'>
