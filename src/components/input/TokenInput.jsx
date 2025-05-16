@@ -127,26 +127,27 @@ function TokenInput({
             </span>
           </TextSubHeading>
         </div>
-        {!assetData ? (
-          <TokenModal
-            popup={tokenPopup}
-            setPopup={setTokenPopup}
-            selectedAsset={asset}
-            setSelectedAsset={setAsset}
-            otherAsset={otherAsset}
-            setOtherAsset={setOtherAsset}
-            isHideTrending={isHideTrending}
-          />
-        ) : (
-          <SelectTokenFromList
-            setIsOpen={setTokenPopup}
-            isOpen={tokenPopup}
-            selectedAsset={asset}
-            tokens={wrapAssetsData}
-            setToken={setAsset}
-          />
-        )}
       </div>
+
+      {!assetData ? (
+        <TokenModal
+          popup={tokenPopup}
+          setPopup={setTokenPopup}
+          selectedAsset={asset}
+          setSelectedAsset={setAsset}
+          otherAsset={otherAsset}
+          setOtherAsset={setOtherAsset}
+          isHideTrending={isHideTrending}
+        />
+      ) : (
+        <SelectTokenFromList
+          setIsOpen={setTokenPopup}
+          isOpen={tokenPopup}
+          selectedAsset={asset}
+          tokens={wrapAssetsData}
+          setToken={setAsset}
+        />
+      )}
     </div>
   )
 }
