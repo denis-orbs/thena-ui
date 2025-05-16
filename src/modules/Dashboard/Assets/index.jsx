@@ -57,6 +57,7 @@ function UserAssets() {
 
   const [showTable, setShowTable] = useState(true)
   const [currentHoverTableRow, setCurrentHoverTableRow] = useState(null)
+  const [isHoverFromChart, setIsHoverFromChart] = useState(false)
 
   const idleAssets = useMemo(
     () =>
@@ -113,7 +114,12 @@ function UserAssets() {
         >
           {allPositions.length > 0 ? (
             <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
-              <AssetsOverview currentHoverTableRow={currentHoverTableRow} positions={allPositions} />
+              <AssetsOverview
+                isHoverFromChart={isHoverFromChart}
+                setIsHoverFromChart={setIsHoverFromChart}
+                currentHoverTableRow={currentHoverTableRow}
+                positions={allPositions}
+              />
               <div className='flex items-center justify-between xl:hidden'>
                 <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
                 <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
@@ -130,7 +136,11 @@ function UserAssets() {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className='overflow-hidden'
               >
-                <AssetsTable positions={allPositions} setCurrentHoverTableRow={setCurrentHoverTableRow} />
+                <AssetsTable
+                  setIsHoverFromChart={setIsHoverFromChart}
+                  positions={allPositions}
+                  setCurrentHoverTableRow={setCurrentHoverTableRow}
+                />
               </motion.div>
             </div>
           ) : (

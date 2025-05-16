@@ -101,7 +101,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
   )
 }
 
-function TableBody({ positions, setCurrentHoverTableRow, isXlDown }) {
+function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFromChart }) {
   const renderPosition = useCallback(position => {
     if (position.type === 'Manual') {
       return position?.deployer === zeroAddress ? (
@@ -133,6 +133,7 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown }) {
           id={`table-row-${index}`}
           className='position-item h-[60px] rounded-md hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
           onMouseEnter={() => {
+            setIsHoverFromChart(false)
             setCurrentHoverTableRow(position.positionId)
           }}
           onMouseLeave={() => {
@@ -152,6 +153,7 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown }) {
         className='position-item hover:bg-neutral-800'
         data-position-id={position.positionId}
         onMouseEnter={() => {
+          setIsHoverFromChart(false)
           setCurrentHoverTableRow(position.positionId)
         }}
         onMouseLeave={() => {
@@ -164,7 +166,7 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown }) {
   )
 }
 
-function AssetsTable({ positions = [], setCurrentHoverTableRow }) {
+function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromChart }) {
   const { account, chainId } = useWallet()
   const accountRef = useRef(account)
   const chainIdRef = useRef(chainId)
@@ -254,6 +256,7 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow }) {
             setCurrentHoverTableRow={setCurrentHoverTableRow}
             positions={paginatedPositions}
             isXlDown={isXlDown}
+            setIsHoverFromChart={setIsHoverFromChart}
           />
         </table>
       )}
@@ -263,6 +266,7 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow }) {
           setCurrentHoverTableRow={setCurrentHoverTableRow}
           positions={paginatedPositions}
           isXlDown={isXlDown}
+          setIsHoverFromChart={setIsHoverFromChart}
         />
       )}
 

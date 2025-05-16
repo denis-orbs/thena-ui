@@ -15,7 +15,7 @@ import { WarningTriangleIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
-function AssetsOverview({ positions, currentHoverTableRow }) {
+function AssetsOverview({ positions, currentHoverTableRow, isHoverFromChart, setIsHoverFromChart }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { addReward, addFees } = useFarmRewards()
@@ -254,6 +254,8 @@ function AssetsOverview({ positions, currentHoverTableRow }) {
             data={filteredPositions}
             currentHoverTableRow={currentHoverTableRow}
             className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]'
+            isHoverFromChart={isHoverFromChart}
+            setIsHoverFromChart={setIsHoverFromChart}
           />
         </div>
       </div>
