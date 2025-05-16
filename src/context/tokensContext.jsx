@@ -24,14 +24,14 @@ function TokensContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { data: bscTokens, isLoading: bscLoading } = useSWR(
     networkId === CHAIN_ID.BSC ? ['bsc top tokens api', CHAIN_ID.BSC] : null,
-    { fetcher: fetchTopTokens },
+    { fetcher: () => fetchTopTokens({ networkId }) },
     {
       refreshInterval: 300000,
     },
   )
   const { data: opTokens, isLoading: opLoading } = useSWR(
     networkId === CHAIN_ID.OPBNB ? ['op top tokens api', CHAIN_ID.OPBNB] : null,
-    { fetcher: fetchTopTokens },
+    { fetcher: () => fetchTopTokens({ networkId }) },
     {
       refreshInterval: 60000,
     },
@@ -39,7 +39,7 @@ function TokensContextProvider({ children }) {
 
   const { data: testTokens, isLoading: testnetLoading } = useSWR(
     networkId === CHAIN_ID.TEST_BSC ? ['testnet tokens api', CHAIN_ID.TEST_BSC] : null,
-    { fetcher: fetchTopTokens },
+    { fetcher: () => fetchTopTokens({ networkId }) },
     {
       refreshInterval: 300000,
     },

@@ -119,8 +119,8 @@ export const fetchWeightedPools = ({ networkId }) =>
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
 
-export const fetchTopTokens = params =>
-  fetch(`${backendApi}/topTokens/${params[1]}`)
+export const fetchTopTokens = ({ networkId, version = 3 }) =>
+  fetch(`${backendApi}/topTokens/${networkId}?v=${version}`)
     .then(r => r.json())
     .then(r => r.data)
 
