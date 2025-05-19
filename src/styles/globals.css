@@ -83,7 +83,7 @@
   /* #endregion  /**======== Typography =========== */
 
   .layout {
-    @apply mx-4 mt-[64px] max-w-[1464px] pb-[150px] pt-6 lg:mx-[40px] lg:mt-[92px] lg:pb-20 lg:pt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1464px];
+    @apply mx-4 mt-[64px] max-w-[1464px] pb-[150px] pt-6 lg:mx-[40px] lg:mt-[92px] lg:pb-20 lg:pt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1312px] 3xl:w-[1464px];
   }
 
   .layout-add-liquidity {

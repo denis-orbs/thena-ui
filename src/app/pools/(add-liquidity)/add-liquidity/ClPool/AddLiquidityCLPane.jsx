@@ -29,7 +29,7 @@ export default function AddLiquidityCLPane({
   const [isZapper, setIsZapper] = useState(false)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
 
-  const isXlDown = useMediaQuery(1280)
+  const { isXlDown } = useMediaQuery()
 
   const addSelections = useMemo(
     () => [
@@ -76,7 +76,7 @@ export default function AddLiquidityCLPane({
             strategy={strategy}
             onShowModalSuccess={onShowModalSuccess}
             handleBack={handleBack}
-            isSmall={isXlDown}
+            isSmall={!isXlDown}
           />
         ) : (
           <div className='space-y-2'>
