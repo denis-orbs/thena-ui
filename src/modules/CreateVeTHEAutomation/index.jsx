@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
@@ -8,6 +9,7 @@ import { useSelector } from 'react-redux'
 import Box from '@/components/box'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAINLINK_ADDRESS } from '@/constant'
+import { goToDoc } from '@/lib/utils'
 import { InfoNeutralIcon } from '@/svgs'
 
 import NavigationBottom from './NavigationBottom'
@@ -51,7 +53,7 @@ function CreateVeTHEAutomation() {
                     You must have a{' '}
                     <TextHeading
                       className='cursor-pointer text-primary-500 hover:underline'
-                      onClick={() => push('/dashboard/lock')}
+                      onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe-specs')}
                     >
                       veTHE
                     </TextHeading>{' '}
@@ -59,12 +61,12 @@ function CreateVeTHEAutomation() {
                   </li>
                   <li>
                     You need to have approximately $15-$20 worth of{' '}
-                    <TextHeading
-                      className='cursor-pointer text-primary-500 hover:underline'
-                      onClick={() => push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)}
+                    <Link
+                      href={`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}&swapType=1`}
+                      target='_blank'
                     >
-                      $LINK
-                    </TextHeading>{' '}
+                      <TextHeading className='cursor-pointer text-primary-500 hover:underline'>$LINK</TextHeading>
+                    </Link>{' '}
                     in your wallet for minimum deposit.
                   </li>
                   <li>
