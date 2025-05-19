@@ -6,13 +6,15 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 import { ZERO_VALUE } from './utils'
 
 // TODO: Fix on prod
-// const backendApi = 'https://api.thena.fi/api/v1'
-const backendApi = 'https://api-dev.thena.fi/api/v1'
+// const backendApi = 'https://api.thena.fi/api'
+const backendApi = 'https://api-dev.thena.fi/api'
+
+const getApiVersion = version => (version === 3 ? 'v3' : 'v1')
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   try {
     const getTokens = async () => {
-      const response = await fetch(`${backendApi}/assets`, {
+      const response = await fetch(`${backendApi}/v1/assets`, {
         method: 'get',
       })
       return response.json()
@@ -62,7 +64,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 export const fetchCustomAssets = async networkId => {
   try {
     const getCustomTokens = async () => {
-      const response = await fetch(`${backendApi}/customAssets/${networkId}`, {
+      const response = await fetch(`${backendApi}/v3/customAssets/${networkId}`, {
         method: 'get',
       })
       return response.json()
@@ -87,7 +89,8 @@ export const fetchCustomAssets = async networkId => {
 }
 
 export const fetchFusionPools = async ({ networkId, version = 3, type }) => {
-  let url = `${backendApi}/fusions/${networkId}?v=${version}`
+  const apiVersion = getApiVersion(version)
+  let url = `${backendApi}/${apiVersion}/fusions/${networkId}`
   if (type) url += `&type=${type}`
 
   return fetch(url)
@@ -96,12 +99,13 @@ export const fetchFusionPools = async ({ networkId, version = 3, type }) => {
 }
 
 export const fetchStats = () =>
-  fetch(`${backendApi}/stats`)
+  fetch(`${backendApi}/v1/stats`)
     .then(r => r.json())
     .then(r => r.data)
 
 export const fetchTopPairs = async ({ networkId, version = 3, type }) => {
-  let url = `${backendApi}/topPairs/${networkId}?v=${version}`
+  const apiVersion = getApiVersion(version)
+  let url = `${backendApi}/${apiVersion}/topPairs/${networkId}`
   if (type) url += `&type=${type}`
 
   return fetch(url)
@@ -110,22 +114,24 @@ export const fetchTopPairs = async ({ networkId, version = 3, type }) => {
 }
 
 export const fetchV2SolidlyPairs = async ({ networkId }) =>
-  fetch(`${backendApi}/toppairs/${networkId}?v=2&type=solidly`)
+  fetch(`${backendApi}/v1/topPairs/${networkId}?type=solidly&populate=1`)
     .then(r => r.json())
     .then(r => r.data)
 
 export const fetchWeightedPools = ({ networkId }) =>
-  fetch(`${backendApi}/weightedpools/${networkId}`)
+  fetch(`${backendApi}/v3/weightedpools/${networkId}`)
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
 
-export const fetchTopTokens = ({ networkId, version = 3 }) =>
-  fetch(`${backendApi}/topTokens/${networkId}?v=${version}`)
+export const fetchTopTokens = async ({ networkId, version = 3 }) => {
+  const apiVersion = getApiVersion(version)
+  return fetch(`${backendApi}/${apiVersion}/topTokens/${networkId}`)
     .then(r => r.json())
     .then(r => r.data)
+}
 
 export const fetchVeTHETokens = (chainId, account) =>
-  fetch(`${backendApi}/vethes/${chainId}/${account}`)
+  fetch(`${backendApi}/v3/vethes/${chainId}/${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -135,22 +141,22 @@ export const fetchNfts = nftId =>
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 
 export const fetchFusionPoolsInfos = ({ account, chainId }) => {
-  const res = fetch(`${backendApi}/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
+  const res = fetch(`${backendApi}/v3/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)
   return res
 }
 
-export const fetchVotingHistory = (account, veTHEId, chainId, skip = 0, limit = 10) =>
-  fetch(
-    `${backendApi}/vote/history/${chainId}?${
-      veTHEId !== 'All' ? `tokenId=${veTHEId}&` : ''
-    }address=${account}&skip=${skip}&limit=${limit}`,
-  )
+export const fetchVotingHistory = async (account, veTHEId, chainId, skip = 0, limit = 10) => {
+  let url = `${backendApi}/v3/vote/history/${chainId}?address=${account?.toLowerCase()}&skip=${skip}&limit=${limit}`
+  if (veTHEId !== 'All') url += `&tokenId=${veTHEId}`
+
+  return fetch(url)
     .then(r => r.json())
     .then(r => r)
+}
 
 export const fetchAutomationHistory = (chainId, tokenId) =>
-  fetch(`${backendApi}/vethes/automation/${chainId}/${tokenId}`)
+  fetch(`${backendApi}/v3/vethes/automation/${chainId}/${tokenId}`)
     .then(r => r.json())
     .then(r => r.data)
