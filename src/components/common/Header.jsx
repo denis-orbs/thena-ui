@@ -437,8 +437,8 @@ function Header() {
             onClickHandler: () => push('/dashboard/lock'),
           },
           {
-            heading: t('TheNFT'),
-            subheading: t('TheNFT Description'),
+            heading: t('theNFT'),
+            subheading: t('theNFT Description'),
             onClickHandler: () => push('/dashboard/thenft'),
           },
           {
