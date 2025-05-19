@@ -15,22 +15,24 @@ export function PoolAttributesSection({ strategy, pair, className }) {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex w-full items-center justify-between gap-2'>
-        <Box className={cn('flex w-full rounded-lg bg-neutral-900 !py-1.5 !pl-4', className)}>
-          <NewTextSubHeading className='text-xs'>{t('Pool Attributes')}</NewTextSubHeading>
-        </Box>
+      <div className='flex h-11 items-end justify-end'>
+        <div className='flex w-fit items-center justify-between gap-2'>
+          <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4', className)}>
+            <NewTextSubHeading className='text-xs'>{t('Pool Attributes')}</NewTextSubHeading>
+          </Box>
 
-        <div className='flex items-center'>
-          <i
-            onClick={() => setShow(!show)}
-            className={cn(
-              'flex cursor-pointer items-center justify-center rounded-lg',
-              'size-8 min-w-8 md:size-11 md:min-w-11',
-              show ? 'bg-neutral-600' : 'bg-neutral-900',
-            )}
-          >
-            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
-          </i>
+          <div className='flex items-center'>
+            <i
+              onClick={() => setShow(!show)}
+              className={cn(
+                'flex cursor-pointer items-center justify-center rounded-lg',
+                'size-8 min-w-8 md:size-11 md:min-w-11',
+                show ? 'bg-neutral-600' : 'bg-neutral-900',
+              )}
+            >
+              <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+            </i>
+          </div>
         </div>
       </div>
 

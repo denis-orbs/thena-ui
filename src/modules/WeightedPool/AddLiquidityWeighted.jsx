@@ -233,7 +233,7 @@ function AddLiquidityWeighted({ pool }) {
   }, [pool?.tokens])
 
   return (
-    <div className='flex flex-col gap-4 xl:gap-8'>
+    <div className='flex flex-col'>
       <div className='space-y-2'>
         <div className='flex flex-row gap-4 lg:gap-8'>
           <GroupIconTokens
@@ -244,16 +244,21 @@ function AddLiquidityWeighted({ pool }) {
               images: 'size-6 lg:size-10 xl:size-[64px]',
             }}
           />
-          <NewTextHeading style={{ lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}px` }}>
+          <NewTextHeading
+            style={{
+              lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
+              fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
+            }}
+          >
             {pool?.symbol}
           </NewTextHeading>
         </div>
-        <div className='flex flex-col'>
+        <div className='flex flex-col xl:hidden'>
           <div className='flex flex-row items-center justify-between'>
             <NewTextSubHeading>{t('Weighted')}</NewTextSubHeading>
             <EmphasisButton
               className={cn(
-                'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11 xl:hidden',
+                'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11',
                 showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
               )}
               onClick={() => setShowLiquidityInfo(prev => !prev)}
@@ -274,8 +279,12 @@ function AddLiquidityWeighted({ pool }) {
           </motion.div>
         </div>
       </div>
-      <div className='grid gap-4 xl:grid-cols-add-liquidity-layout'>
-        <div className='w-full space-y-4 xl:flex-[6] xl:space-y-8'>
+      <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
+        <div className='w-full space-y-4'>
+          <div className='flex h-11 flex-col justify-end max-xl:hidden'>
+            <NewTextSubHeading className='text-2xl'>{t('Weighted')}</NewTextSubHeading>
+          </div>
+
           <div className='space-y-2 md:space-y-4'>
             <PairBasicInfo pair={pool} isMobile />
             <div className='block xl:hidden'>
@@ -355,7 +364,7 @@ function AddLiquidityWeighted({ pool }) {
             )}
           </div>
         </div>
-        <div className='hidden w-full space-y-2 xl:block xl:flex-[4]'>
+        <div className='hidden w-full space-y-4 xl:block'>
           <PoolAttributesSection pair={pool} />
           <LiquidityPoolInfo pool={pool} colors={colors} />
         </div>

@@ -12,6 +12,7 @@ import { NewTextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useBackURL } from '@/hooks/useBackURL'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
@@ -84,6 +85,7 @@ export default function CreateWeightedPoolPage() {
   const t = useTranslations()
   const { push } = useRouter()
   const backUrl = useBackURL(PAIR_TYPES.WEIGHTED)
+  const { is2XlDown } = useMediaQuery()
 
   const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
 
@@ -139,13 +141,19 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <LayoutWithBackButton backUrl={backUrl}>
-      <div className='flex flex-col gap-4 md:gap-8'>
+    <LayoutWithBackButton
+      hiddenBackButton={is2XlDown}
+      backUrl={backUrl}
+      className='xl:!mt-6 xl:!w-[1184px] 2xl:!mt-8 2xl:!w-[1312px] 3xl:!mt-16'
+    >
+      <div className='flex flex-col gap-4'>
         <div className='flex items-center gap-8'>
           <ScalesIcon className='hidden size-14 lg:block' />
-          <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
+          <NewTextHeading className='xl:!text-[40px] xl:!leading-[48px]'>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
-        <div className={cn('flex flex-col-reverse gap-4 lg:grid lg:grid-cols-add-liquidity-layout')}>
+        <div
+          className={cn('flex flex-col-reverse gap-4 xl:grid xl:grid-cols-2', currentStep === 3 && 'xl:grid-cols-1')}
+        >
           <div className='w-full flex-2 lg:flex-1'>
             <PoolWithStep
               currentStep={currentStep}
