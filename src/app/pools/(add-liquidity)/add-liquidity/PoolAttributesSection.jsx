@@ -15,11 +15,11 @@ export function PoolAttributesSection({ strategy, pair, className }) {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex h-8 items-end max-xl:w-full xl:h-11 xl:justify-end'>
+      <div className='flex h-8 items-end max-xl:w-full md:h-11 xl:h-11 xl:justify-end'>
         <div className='flex w-full items-center justify-between gap-2 xl:w-fit'>
           <Box
             className={cn(
-              'flex h-8 items-center rounded-lg bg-neutral-900 !p-4 max-xl:w-full xl:h-11 xl:justify-center',
+              'flex h-8 items-center rounded-lg bg-neutral-900 !p-4 max-xl:w-full md:h-11 xl:h-11 xl:justify-center',
               className,
             )}
           >
