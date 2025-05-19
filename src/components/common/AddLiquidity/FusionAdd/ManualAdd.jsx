@@ -113,8 +113,8 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='space-y-2 md:space-y-4'>
-      <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+    <section className='space-y-2 md:space-y-4 xl:space-y-6'>
+      <div className={cn('space-y-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts
           currencyA={baseCurrency}
@@ -123,6 +123,7 @@ export default function ManualAdd({
           setCurrencyB={setQuoteCurrency}
           mintInfo={mintInfo}
           position={position}
+          isSmall
         />
       </div>
 

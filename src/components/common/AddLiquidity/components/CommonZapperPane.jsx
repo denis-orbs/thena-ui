@@ -29,7 +29,7 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess, handleBack }) {
+export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
   const [slippage, setSlippage] = useState(0.5)
@@ -206,6 +206,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={[]}
+            isSmall={isSmall}
           />
           <div
             className={cn(

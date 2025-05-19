@@ -16,7 +16,7 @@ function LiquidityPoolInfo({ pool, colors, isMobile = false }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-2 flex-col gap-4 p-4 lg:flex-1'>
+      <div className='flex flex-2 flex-col gap-2 p-4 lg:flex-1'>
         <PieChart tokens={pool?.tokens || []} colors={colors} />
         <div className={cn('mx-auto flex w-fit gap-6', (pool?.tokens || []).length > 4 && 'grid grid-cols-4')}>
           {(pool?.tokens || []).map((item, idx) => (
@@ -27,7 +27,12 @@ function LiquidityPoolInfo({ pool, colors, isMobile = false }) {
           ))}
         </div>
       </div>
-      <div className={cn('flex-1 rounded-lg bg-neutral-900 p-4 lg:flex-2', isMobile && 'border-none bg-transparent')}>
+      <div
+        className={cn(
+          'flex-1 rounded-lg bg-neutral-900 p-4 lg:flex-2 xl:px-4 xl:py-2',
+          isMobile && 'border-none bg-transparent',
+        )}
+      >
         <div className='flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
           <div className='flex flex-col gap-3'>

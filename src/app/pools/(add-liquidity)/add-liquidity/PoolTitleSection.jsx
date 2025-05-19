@@ -39,8 +39,8 @@ export default function PoolTitleSection({ pairType }) {
   return (
     <div className='flex flex-col'>
       <h4 className='flex flex-row items-center gap-2 md:gap-5 xl:gap-8'>
-        {Icon && <Icon className='hidden size-6 md:block lg:size-12 2xl:size-14' />}
-        <NewTextHeading>{t(text)}</NewTextHeading>
+        {Icon && <Icon className='hidden size-6 md:block lg:size-10 2xl:size-12' />}
+        <NewTextHeading className='text-3xl lg:text-4xl 2xl:text-5xl'>{t(text)}</NewTextHeading>
 
         <div className='ml-auto hidden max-lg:block'>
           <i

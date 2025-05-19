@@ -96,6 +96,8 @@ export default function ChooseStrategy({
   position,
   isAutomatic,
   setIsAutomatic,
+  setFullRangeWarningShown,
+  fullRangeWarningShown,
 }) {
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -235,24 +237,28 @@ export default function ChooseStrategy({
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
+              <TextHeading className='text-sm xl:!text-[11px] xl:!leading-[13.5px]'>
+                {getDisplayedStrategy(sub.title, sub.version)}
+              </TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(sub.tvl ?? sub.gauge.tvl)}</Paragraph>
+                  <TextHeading className='text-sm xl:!text-[10px] xl:!leading-[13.5px]'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm xl:!text-[10px] xl:!leading-[13.5px]'>
+                    ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
+                  </Paragraph>
                 </div>
               </div>
             </div>
 
-            <TextHeading className='font-archia text-xl font-semibold text-primary-600'>
+            <TextHeading className='font-archia text-xl font-semibold leading-[16px] text-gradient-primary-start xl:!text-[13.56px]'>
               {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
             <div className='flex flex-wrap justify-end gap-2'>
               {ICHI_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
-                  <CircleImage alt={sub.title} className='h-8 w-8' src={sub.allowed.logoURI} />
-                  <Paragraph className='text-sm'>{t('Deposit')}</Paragraph>
+                  <CircleImage alt={sub.title} className='h-8 w-8 xl:!size-4' src={sub.allowed.logoURI} />
+                  <Paragraph className='text-sm leading-[13.5px] xl:!text-[10px]'>{t('Deposit')}</Paragraph>
                 </div>
               )}
               {NARROW_TYPES.includes(sub.title) && (
@@ -260,12 +266,12 @@ export default function ChooseStrategy({
                   <IconGroup
                     className='-space-x-2'
                     classNames={{
-                      image: 'outline-2 w-7 h-7',
+                      image: 'outline-2 w-7 h-7 xl:!size-4',
                     }}
                     logo1={sub.token0.logoURI}
                     logo2={sub.token1.logoURI}
                   />
-                  <Paragraph className='text-sm'>{t('Deposit')}</Paragraph>
+                  <Paragraph className='text-sm leading-[13.5px] xl:!text-[10px]'>{t('Deposit')}</Paragraph>
                 </div>
               )}
             </div>
@@ -280,7 +286,7 @@ export default function ChooseStrategy({
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-4'>
+      <div className='flex-[6] space-y-2'>
         {!position && (
           <div className='space-y-2 md:space-y-4'>
             <StrategyTitle
@@ -294,7 +300,7 @@ export default function ChooseStrategy({
               strategy={strategy}
             />
             {pair && (
-              <div className={cn('!mt-2 hidden max-2xl:block md:!mt-4')}>
+              <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
                 <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
               </div>
             )}
@@ -310,6 +316,8 @@ export default function ChooseStrategy({
             strategy={strategy}
             position={position}
             isEarnFees={isEarnFees}
+            setFullRangeWarningShown={setFullRangeWarningShown}
+            fullRangeWarningShown={fullRangeWarningShown}
           />
         )}
       </div>

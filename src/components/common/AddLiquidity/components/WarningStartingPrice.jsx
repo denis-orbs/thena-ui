@@ -12,7 +12,7 @@ function WarningStartingPrice() {
   const [showWarning, setShowWarning] = useState(true)
 
   return (
-    <Info className={cn('flex-col items-start gap-0 px-3 py-2 md:p-8')}>
+    <Info className={cn('flex-col items-start gap-0 px-3 py-2')}>
       <div className='flex w-full items-center gap-2 md:gap-4'>
         <InfoIcon className='size-4 !stroke-primary-600 md:size-8' />
 

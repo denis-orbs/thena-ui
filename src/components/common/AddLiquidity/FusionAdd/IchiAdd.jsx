@@ -52,7 +52,7 @@ export const fetchIchiInfo = async (chainId, strategy) => {
   }
 }
 
-export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, handleBack }) {
+export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, handleBack, isSmall = false }) {
   const [amount, setAmount] = useState('')
   const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
   const { addIchiPool: addIchiPoolV3, pending: pendingV3 } = useIchiManageV3()
@@ -105,19 +105,16 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
       <div className={cn('inline-flex w-full flex-col gap-4', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
-        <div className='flex justify-end'>
-          <SettingSlippageDropDown className='mb-0' slippage={slippage} updateSlippage={setSlippage} />
-        </div>
+        <SettingSlippageDropDown className='mb-0' slippage={slippage} updateSlippage={setSlippage} />
 
-        <div className='flex flex-col gap-4'>
-          <TokenAmountInput
-            asset={depositToken}
-            maxBalance={isDouble ? balance : null}
-            amount={amount}
-            onAmountChange={setAmount}
-            showPercent={false}
-          />
-        </div>
+        <TokenAmountInput
+          asset={depositToken}
+          maxBalance={isDouble ? balance : null}
+          amount={amount}
+          onAmountChange={setAmount}
+          showPercent={false}
+          isSmall={isSmall}
+        />
       </div>
 
       <div className={cn('mt-4 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>

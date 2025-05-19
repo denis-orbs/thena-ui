@@ -8,6 +8,7 @@ import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, TextHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
@@ -68,6 +69,7 @@ export default function ChartPriceRangeInput({
   fullRangeWarningShown = false,
   setLastPrice = () => {},
   isCreate = false,
+  height = 300,
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
@@ -103,10 +105,10 @@ export default function ChartPriceRangeInput({
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address,
-    token1Address: isReverse ? quoteCurrency.wrapped.address : baseCurrency.wrapped.address,
+    token0Address: isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address,
+    token1Address: isReverse ? quoteCurrency?.wrapped?.address : baseCurrency?.wrapped?.address,
     timeWindow,
-    currentSwapPrice: { [isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address]: price },
+    currentSwapPrice: { [isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address]: price },
   })
 
   const brushDomain = useMemo(() => {
@@ -274,7 +276,7 @@ export default function ChartPriceRangeInput({
   const chartSize = useMemo(
     () => ({
       chartContainerWidth: containerRef?.current?.offsetWidth || 300,
-      chartContainerHeight: containerRef?.current?.offsetHeight || 300,
+      chartContainerHeight: containerRef?.current?.offsetHeight || height,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [containerRef?.current, windowSize],
@@ -397,16 +399,16 @@ export default function ChartPriceRangeInput({
       {isFullRange && fullRangeWarningShown && <Warning className='mt-4 text-sm'>{t('Full range position')}</Warning>}
       {outOfRange && <Warning className='mt-4 text-sm'>{t('Out range warning')}</Warning>}
       {invalidRange && <Warning className='mt-4 text-sm'>{t('Invalid range warning')}</Warning>}
-      <div className='flex max-h-[300px] flex-col gap-2 md:gap-4'>
-        <div className='relative flex h-[300px] w-full items-center justify-center'>
+      <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
+        <div className='relative flex h-[235px] w-full items-center justify-center'>
           {isUninitialized ? (
             <TextHeading>Your position will appear here.</TextHeading>
           ) : isLoading ? (
-            <Skeleton className='absolute h-[300px] w-full' />
+            <Skeleton className={cn('absolute w-full', `h-[${height}px]`)} />
           ) : error ? (
             <TextHeading>Liquidity data not available.</TextHeading>
           ) : (
-            <div className='flex h-full max-h-[300px] w-full flex-col' ref={containerRef}>
+            <div className={cn('flex h-full w-full flex-col', `max-h-[${height}px}]`)} ref={containerRef}>
               <div className='flex h-full w-full flex-col gap-8'>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div

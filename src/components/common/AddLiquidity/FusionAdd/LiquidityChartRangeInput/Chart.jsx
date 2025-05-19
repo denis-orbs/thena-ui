@@ -31,6 +31,7 @@ export function Chart({
   zoomLevels,
   handleShow,
   showZoom = true,
+  chartHeight = 280,
 }) {
   const t = useTranslations()
 
@@ -130,7 +131,7 @@ export function Chart({
         )}
       </div>
 
-      <div className='h-[280px] content-center justify-center'>
+      <div className='content-center justify-center' style={{ height: `${chartHeight}px` }}>
         <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
           <defs>
             <clipPath id={`${id}-chart-clip`}>

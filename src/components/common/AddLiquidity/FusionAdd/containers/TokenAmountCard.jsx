@@ -28,6 +28,7 @@ export function TokenAmountCard({
   title,
   showPercent = true,
   showOutsideWarning = true,
+  isSmall = false,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -111,6 +112,7 @@ export function TokenAmountCard({
               'flex flex-col gap-3 self-stretch rounded-xl p-4',
               'border border-neutral-700 hover:bg-neutral-900',
               'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
+              isSmall && 'box-border !gap-1 !px-3 !py-2',
             )}
             onClick={onfocusInput}
           >
@@ -169,8 +171,10 @@ export function TokenAmountCard({
               )}
             </div>
             <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading className='truncate text-neutral-500'>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
+              <TextSubHeading className={cn('truncate text-neutral-500', isSmall && '!text-xs')}>
+                ${formatAmount(value * price)}
+              </TextSubHeading>
+              <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && '!text-xs')}>
                 <span>
                   {t('Balance')}: {balanceString}
                 </span>
