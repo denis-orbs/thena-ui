@@ -16,7 +16,7 @@ export default function AddLiquidityPage() {
   const step = Number(params.get('step') ?? 1)
 
   return (
-    <LayoutWithBackButton backUrl={backUrl}>
+    <LayoutWithBackButton hiddenBackButton={step === 3} className='!mt-6' backUrl={backUrl}>
       <div className='container mx-auto flex flex-col'>
         {step === 1 && <Step1 />}
         {step === 2 && <Step2 />}

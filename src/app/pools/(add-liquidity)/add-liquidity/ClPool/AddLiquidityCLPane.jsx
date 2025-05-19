@@ -9,6 +9,7 @@ import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import ManualPositionInfo from '@/components/common/AddLiquidity/FusionAdd/ManualPositionInfo'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ZapperIcon } from '@/svgs'
 
@@ -27,6 +28,8 @@ export default function AddLiquidityCLPane({
 
   const [isZapper, setIsZapper] = useState(false)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
+
+  const isXlDown = useMediaQuery(1280)
 
   const addSelections = useMemo(
     () => [
@@ -69,9 +72,14 @@ export default function AddLiquidityCLPane({
     <div className='mt-4 flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
       <div className='w-full flex-[6] flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
-          <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} handleBack={handleBack} />
+          <FusionAdd
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+            handleBack={handleBack}
+            isSmall={isXlDown}
+          />
         ) : (
-          <div className='space-y-2 md:space-y-4'>
+          <div className='space-y-2'>
             {!mintInfo?.noLiquidity && !position && (
               <Selection
                 className='w-full items-stretch md:h-11'

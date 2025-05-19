@@ -32,6 +32,7 @@ export function TokenAmountInput({
   showPercent = true,
   assetsSelect,
   classNames,
+  isSmall = false,
 }) {
   const assets = useAssets()
   const t = useTranslations()
@@ -130,11 +131,12 @@ export function TokenAmountInput({
           'border border-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
+          isSmall && 'xl:!gap-1 xl:!px-3 xl:!py-2',
         )}
         onClick={onfocusInput}
         ref={wrapperSelectRef}
       >
-        <div className='flex items-center justify-between gap-2'>
+        <div className={cn('flex items-center justify-between gap-2', isSmall && 'xl:!gap-1')}>
           <input
             ref={inputRefer}
             type='number'
@@ -219,10 +221,10 @@ export function TokenAmountInput({
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading className='truncate text-neutral-500'>
+          <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'xl:!text-xs')}>
             ${formatAmount(amount * (asset?.price || 0))}
           </TextSubHeading>
-          <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
+          <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'xl:!text-xs')}>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>

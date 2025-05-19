@@ -30,12 +30,20 @@ import WarningStartingPrice from '../components/WarningStartingPrice'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFees }) {
+function ManualStrategy({
+  firstAsset,
+  secondAsset,
+  strategy,
+  position,
+  isEarnFees,
+  setFullRangeWarningShown,
+  fullRangeWarningShown,
+}) {
   const t = useTranslations()
   // const { isViewDown } = useMediaQuery('down', 640)
   // const { isViewUp } = useMediaQuery('up', 460)
 
-  const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
+  // const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
   const stableAssets = useStableTokens()
   const { isReverse } = useSelector(state => state.fusion)
@@ -103,7 +111,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
         onRightRangeInput(preset ? String(+price * preset.max) : '')
       }
     },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
+    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, setFullRangeWarningShown, price],
   )
 
   // const currentPrice = useMemo(() => {
@@ -211,7 +219,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'flex items-center justify-between rounded-xl bg-primary-950 bg-opacity-50 p-4 font-medium md:p-5',
+                'flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -233,25 +241,33 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
                   />
                 )}
 
-                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
+                {/* <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
-                </NewTextSubHeading>
+                </NewTextSubHeading> */}
+                <div className='flex flex-col'>
+                  <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
+                    {isEarnFees ? 'Fees' : '$THE'}
+                  </NewTextSubHeading>
+                  <Paragraph className='text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
+                    {t('Earn')}
+                  </Paragraph>
+                </div>
               </div>
 
               <div className='flex flex-col'>
-                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
-                <Paragraph className='text-xs font-medium leading-5 text-neutral-300 md:text-base'>
+                <Paragraph className='md:eading-5 text-xs font-medium text-neutral-300 md:text-base'>
                   {t('TVL')}
                 </Paragraph>
               </div>
 
               <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-xs font-bold text-primary-600 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-gradient-primary-start md:text-xl md:leading-6'>
                   {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                 </NewTextSubHeading>
-                <Paragraph className='text-xs font-medium leading-5 text-neutral-300 md:text-base'>
+                <Paragraph className='text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
                   {t('Estimated APR')}
                 </Paragraph>
               </div>
@@ -263,7 +279,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
       {strategy && (
         <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
-            <div className='mt-0 flex flex-col'>
+            <div className='mt-0 flex flex-col xl:hidden'>
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}

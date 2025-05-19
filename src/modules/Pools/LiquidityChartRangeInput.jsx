@@ -5,6 +5,7 @@ import { Chart } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChart
 import { useDensityChartData } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/hooks'
 import Spinner from '@/components/spinner'
 import { TextHeading } from '@/components/typography'
+import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 
 const ZOOM_LEVEL = {
@@ -42,6 +43,7 @@ export default function LiquidityChartRangeInput({
   handleShow = true,
   showZoom = true,
   label,
+  height = 280,
 }) {
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
 
@@ -111,7 +113,7 @@ export default function LiquidityChartRangeInput({
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
   return (
-    <div className='flex min-h-[280px] w-full items-center justify-center overflow-hidden'>
+    <div className={cn('flex w-full items-center justify-center overflow-hidden', `min-h-[${height}px]`)}>
       {isUninitialized ? (
         <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
       ) : isLoading ? (
@@ -125,7 +127,7 @@ export default function LiquidityChartRangeInput({
           <Chart
             label={label}
             data={{ series: formattedData, current: price }}
-            dimensions={{ width: 440, height: 280 }}
+            dimensions={{ width: 440, height }}
             margins={{ top: showZoom ? 10 : 0, right: 2, bottom: showZoom ? 20 : 30, left: 0 }}
             styles={{
               area: { selection: '#C672D8' },
@@ -139,6 +141,7 @@ export default function LiquidityChartRangeInput({
             ticksAtLimit={ticksAtLimit}
             handleShow={handleShow}
             showZoom={showZoom}
+            chartHeight={height}
           />
         </div>
       )}

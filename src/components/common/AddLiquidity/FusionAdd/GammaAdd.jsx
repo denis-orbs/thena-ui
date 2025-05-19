@@ -64,7 +64,7 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack }) {
+export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack, isSmall = false }) {
   const t = useTranslations()
 
   const [isZapper, setIsZapper] = useState(false)
@@ -112,6 +112,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
             strategy={strategy}
             onShowModalSuccess={onShowModalSuccess}
             handleBack={handleBack}
+            isSmall={isSmall}
           />
         ) : (
           <ManualPane
@@ -120,6 +121,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
             strategy={strategy}
             onShowModalSuccess={onShowModalSuccess}
             handleBack={handleBack}
+            isSmall={isSmall}
           />
         )}
       </div>
@@ -127,7 +129,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
   const t = useTranslations()
   const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()
@@ -194,7 +196,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
     <div>
       <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
       <div className='flex flex-col'>
-        <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+        <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} isSmall={isSmall} />
 
         {/* <div className='mt-5 flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>

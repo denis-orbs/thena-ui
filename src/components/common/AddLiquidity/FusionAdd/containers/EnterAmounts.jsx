@@ -11,7 +11,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 
 import { TokenAmountCard } from './TokenAmountCard'
 
-export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB, mintInfo, position }) {
+export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB, mintInfo, position, isSmall }) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
@@ -100,6 +100,7 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
         showOutsideWarning={!position}
+        isSmall={isSmall}
       />
       <TokenAmountCard
         currency={currencyB}
@@ -112,6 +113,7 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
         showOutsideWarning={!position}
+        isSmall={isSmall}
       />
     </div>
   )

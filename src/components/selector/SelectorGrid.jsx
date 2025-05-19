@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils'
 
 function SelectorGrid({ data, classNames, className, canSelect = true, isGrid = true }) {
   return (
-    <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-2', !isGrid && 'xl:grid-cols-1', className)}>
+    <div className={cn('grid grid-cols-1 gap-2 xl:grid-cols-2', !isGrid && 'xl:grid-cols-1', className)}>
       {data.map((ele, idx) => (
         <div
           className={cn(
-            'flex items-center gap-2 rounded-xl border-neutral-700 p-2 hover:bg-neutral-800 md:gap-4 md:p-6',
+            'flex items-center gap-2 rounded-xl border-neutral-700 p-2 hover:bg-neutral-800 md:p-4',
             ele.active ? 'bg-primary-950/60 hover:bg-primary-950/60' : classNames?.item ?? 'bg-neutral-900',
             canSelect ? 'cursor-pointer' : 'cursor-default',
           )}

@@ -77,11 +77,11 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     () =>
       ranges.map(range => ({
         label: (
-          <div className='flex flex-col items-center justify-center gap-1'>
+          <div className='gap flex flex-col items-center justify-center'>
             <Paragraph className='font-medium text-neutral-50 lg:text-sm'>
               APR: {formatAmount(APRs?.[range.type])}%
             </Paragraph>
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center'>
               <Paragraph className='text-xs lg:text-xs'>{t(range.title)}</Paragraph>
               {range.percent ? (
                 <div className='flex items-center gap-1'>

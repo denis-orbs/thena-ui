@@ -787,18 +787,61 @@ function Header() {
       <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl md:h-[92px]'>
         <div
           className={cn(
-            'flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-6',
+            'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pb-6 lg:pt-6',
             !pathname.includes('/add-liquidity') && 'lg:pt-3',
           )}
         >
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
-              {!pathname.includes('/add-liquidity') ? (
-                menus.map((item, idx) => (
-                  <div key={`tab-${idx}`}>
+              {/* {!pathname.includes('/add-liquidity') ? (
+
+              ) : (
+                <></>
+              )} */}
+              {menus.map((item, idx) => (
+                <div key={`tab-${idx}`}>
+                  <div
+                    className='flex items-center justify-center py-3'
+                    onMouseEnter={() => {
+                      setOpenMenu(item.label)
+                    }}
+                    onMouseLeave={() => {
+                      setOpenMenu(null)
+                    }}
+                  >
                     <div
-                      className='flex items-center justify-center py-3'
+                      className={cn(
+                        item.isHighlight
+                          ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
+                          : '',
+                        item.active && 'after:bg-neutral-800',
+                        item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
+                        openMenu === item.label && 'after:bg-neutral-800',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'flex h-11 cursor-pointer items-center justify-center',
+                          'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
+                          'outline outline-2 outline-offset-4 outline-transparent',
+                          'transition-all duration-150 ease-out',
+                          !item.isHighlight && 'hover:bg-neutral-800',
+                          !item.isHighlight && item.active && 'bg-neutral-800',
+                          !item.isHighlight &&
+                            item.disabled &&
+                            'disabled:cursor-not-allowed disabled:outline-transparent',
+                          !item.isHighlight && openMenu === item.label && 'bg-neutral-800',
+                        )}
+                        onClick={() => item.onClickHandler && item.onClickHandler()}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                  </div>
+                  {item.sub && (
+                    <div
+                      className='relative'
                       onMouseEnter={() => {
                         setOpenMenu(item.label)
                       }}
@@ -808,77 +851,35 @@ function Header() {
                     >
                       <div
                         className={cn(
-                          item.isHighlight
-                            ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
-                            : '',
-                          item.active && 'after:bg-neutral-800',
-                          item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
-                          openMenu === item.label && 'after:bg-neutral-800',
+                          'visible absolute w-[344px] flex-col items-start justify-start gap-1',
+                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow',
+                          'transition-all duration-150 ease-out',
+                          openMenu !== item.label && 'invisible opacity-0',
                         )}
                       >
-                        <span
-                          className={cn(
-                            'flex h-11 cursor-pointer items-center justify-center',
-                            'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
-                            'outline outline-2 outline-offset-4 outline-transparent',
-                            'transition-all duration-150 ease-out',
-                            !item.isHighlight && 'hover:bg-neutral-800',
-                            !item.isHighlight && item.active && 'bg-neutral-800',
-                            !item.isHighlight &&
-                              item.disabled &&
-                              'disabled:cursor-not-allowed disabled:outline-transparent',
-                            !item.isHighlight && openMenu === item.label && 'bg-neutral-800',
-                          )}
-                          onClick={() => item.onClickHandler && item.onClickHandler()}
-                        >
-                          {item.label}
-                        </span>
+                        {item.sub.map((subitem, subidx) => (
+                          <div
+                            className={cn(
+                              'inline-flex h-[68px] w-full cursor-pointer flex-col items-start justify-center gap-1',
+                              'rounded-lg p-3 transition-all duration-150 ease-out hover:bg-neutral-700',
+                            )}
+                            key={`sub-${subidx}`}
+                            onClick={() => {
+                              if (subitem.onClickHandler) {
+                                subitem.onClickHandler()
+                                setOpenMenu(false)
+                              }
+                            }}
+                          >
+                            <TextHeading>{subitem.heading}</TextHeading>
+                            <TextSubHeading>{subitem.subheading}</TextSubHeading>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    {item.sub && (
-                      <div
-                        className='relative'
-                        onMouseEnter={() => {
-                          setOpenMenu(item.label)
-                        }}
-                        onMouseLeave={() => {
-                          setOpenMenu(null)
-                        }}
-                      >
-                        <div
-                          className={cn(
-                            'visible absolute w-[344px] flex-col items-start justify-start gap-1',
-                            'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow',
-                            'transition-all duration-150 ease-out',
-                            openMenu !== item.label && 'invisible opacity-0',
-                          )}
-                        >
-                          {item.sub.map((subitem, subidx) => (
-                            <div
-                              className={cn(
-                                'inline-flex h-[68px] w-full cursor-pointer flex-col items-start justify-center gap-1',
-                                'rounded-lg p-3 transition-all duration-150 ease-out hover:bg-neutral-700',
-                              )}
-                              key={`sub-${subidx}`}
-                              onClick={() => {
-                                if (subitem.onClickHandler) {
-                                  subitem.onClickHandler()
-                                  setOpenMenu(false)
-                                }
-                              }}
-                            >
-                              <TextHeading>{subitem.heading}</TextHeading>
-                              <TextSubHeading>{subitem.subheading}</TextSubHeading>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <></>
-              )}
+                  )}
+                </div>
+              ))}
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>

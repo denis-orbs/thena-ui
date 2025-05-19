@@ -28,11 +28,11 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
   )
 
   return (
-    <div className={cn('mb-4 flex items-center justify-end', className)}>
+    <div className={cn('mb-4 flex items-center justify-start', className)}>
       <div className={cn('flex flex-col')} ref={dropdownRef}>
-        <div className='flex justify-end'>
+        <div className='flex justify-start'>
           <div
-            className='flex cursor-pointer items-center justify-end gap-2'
+            className='flex cursor-pointer items-center justify-start gap-2'
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={() => setShow(prev => !prev)}
