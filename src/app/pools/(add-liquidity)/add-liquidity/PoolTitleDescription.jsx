@@ -5,8 +5,8 @@ import { PAIR_TYPES } from '@/constant'
 
 const descriptionSections = {
   [PAIR_TYPES.STABLE]: {
-    text: 'Stable',
-    description: 'Stable Desc',
+    text: 'Stable Pool',
+    description: 'Stable Desc new',
   },
   [PAIR_TYPES.CLASSIC]: {
     text: 'Classic',

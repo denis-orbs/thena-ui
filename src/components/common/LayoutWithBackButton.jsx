@@ -13,9 +13,9 @@ function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }
   return (
     <div className='mt-[64px] lg:mt-[92px]'>
       {!hiddenBackButton && (
-        <div className='hidden lg:block'>
+        <div className='hidden 2xl:block'>
           <TextButton
-            className='ml-4 w-fit outline-0 max-lg:pl-0 lg:ml-10'
+            className='ml-4 w-fit outline-0 max-2xl:pl-0 2xl:ml-10'
             LeadingIcon={ArrowLeftIcon}
             onClick={() => {
               if (backUrl) {

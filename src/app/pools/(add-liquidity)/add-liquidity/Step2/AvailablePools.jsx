@@ -123,12 +123,12 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
               <InfoIcon className='size-5 !stroke-primary-600 md:size-8' />
             </div>
             <div className='flex flex-col gap-2'>
-              <Paragraph className='text-base font-medium text-neutral-100 md:text-xl'>
+              <Paragraph className='text-xl font-medium text-neutral-100 lg:text-xl'>
                 {t('No [type] pool available for the selected tokens', {
                   type: pairType,
                 })}
               </Paragraph>
-              <Paragraph className='text-sm leading-5 text-primary-100 md:text-base'>
+              <Paragraph className='text-base leading-5 text-primary-100'>
                 {t('You can begin to create a new pool below')}
               </Paragraph>
             </div>
