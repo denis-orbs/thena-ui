@@ -1,58 +1,23 @@
-import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { useManuals } from '@/context/manualsContext'
-import { useVaults } from '@/context/vaultsContext'
-import { useFarmPositions } from '@/hooks/position/useFarmPosition'
-import { useManualPositions } from '@/hooks/position/useManualPosition'
-import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
-import { useStakedPosition } from '@/hooks/position/useStakedPosition'
-import { useWeightedPositions } from '@/hooks/position/useWeightedPosition'
-import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
-import { usePools } from '@/state/pools/hooks'
+import { usePositions } from '@/hooks/usePositions'
+import { cn, formatAmount } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
 import SectionDivider from '../SectionDivider'
 
-const updateWalletBalance = positions => {
-  const groupedPositions = positions.reduce((map, position) => {
-    if (!map[position.address]) {
-      map[position.address] = []
-    }
-    map[position.address].push(position)
-    return map
-  }, {})
-
-  Object.values(groupedPositions).forEach(group => {
-    const posV2 = group.find(pos => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pos.type) && pos.version === 2)
-    const posV3 = group.find(pos => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pos.type) && pos.version === 3)
-
-    if (posV2 && posV3 && !isInvalidAmount(posV2.account.walletBalance)) {
-      // Update walletBalance for the version 2 position
-      posV2.account.walletBalance = new BigNumber(0)
-    }
-  })
-
-  return positions
-}
-
 function UserAssets() {
   const t = useTranslations()
   const { push } = useRouter()
-  const pools = usePools()
-  const vaults = useVaults()
-  const userManuals = useManuals()
+  const positions = usePositions()
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)
@@ -68,57 +33,22 @@ function UserAssets() {
     [assets],
   )
 
-  const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
-
-  const positions = useMemo(() => {
-    const pos = [...userPools, ...userManuals]
-    return updateWalletBalance(pos)
-  }, [userManuals, userPools])
-
-  const manualPositions = useManualPositions(
-    positions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
-  )
-  const farmingPositions = useFarmPositions(
-    positions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
-  )
-
-  const weightedPositionList = useWeightedPositionList()
-  const weightedPositions = useWeightedPositions(weightedPositionList)
-
-  const stakedPosition = useStakedPosition(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.gaugeBalance.gt(0)),
-  )
-  const notStakedPosition = useNotStakedPositions(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.walletBalance.gt(0)),
-  )
-
-  const allPositions = useMemo(
-    () =>
-      [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions].map(
-        (item, index) => ({
-          ...item,
-          positionId: `pos-${index}`,
-        }),
-      ),
-    [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
-  )
-
   return (
     <>
       <div className='flex flex-col rounded-xl max-md:bg-neutral-900 md:gap-2'>
         <div
           className={cn(
             'rounded-xl',
-            allPositions.length === 0 && 'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
+            positions.length === 0 && 'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
           )}
         >
-          {allPositions.length > 0 ? (
+          {positions.length > 0 ? (
             <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
               <AssetsOverview
                 isHoverFromChart={isHoverFromChart}
                 setIsHoverFromChart={setIsHoverFromChart}
                 currentHoverTableRow={currentHoverTableRow}
-                positions={allPositions}
+                positions={positions}
               />
               <div className='flex items-center justify-between xl:hidden'>
                 <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
@@ -138,7 +68,7 @@ function UserAssets() {
               >
                 <AssetsTable
                   setIsHoverFromChart={setIsHoverFromChart}
-                  positions={allPositions}
+                  positions={positions}
                   setCurrentHoverTableRow={setCurrentHoverTableRow}
                 />
               </motion.div>

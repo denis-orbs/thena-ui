@@ -44,36 +44,34 @@ const fetchManualInfo = async (positions, account, chainId) => {
   return manualBalances
 }
 
-export const useManualPositions = manualPositions => {
+export const useManualPositions = positions => {
   const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
 
   // Fees list for manual positions
   const feesListKey = useMemo(
-    () =>
-      manualPositions.length > 0 && account && chainId ? ['manuals/fee', manualPositions, account, chainId] : null,
-    [account, manualPositions, chainId],
+    () => (positions.length > 0 && account && chainId ? ['manuals/fee', positions, account, chainId] : null),
+    [account, positions, chainId],
   )
 
-  const { data: feesList } = useCachedSWR(feesListKey, () => fetchManualInfo(manualPositions, account, chainId), {
+  const { data: feesList } = useCachedSWR(feesListKey, () => fetchManualInfo(positions, account, chainId), {
     refreshInterval: REFRESH_INTERVAL,
   })
 
   // Pool address list
   const addressListKey = useMemo(
-    () =>
-      manualPositions.length && account && chainId ? ['getFeePoolAddress', chainId, account, manualPositions] : null,
-    [manualPositions, chainId, account],
+    () => (positions.length && account && chainId ? ['getFeePoolAddress', chainId, account, positions] : null),
+    [positions, chainId, account],
   )
 
   const { data: addressList } = useCachedSWR(
     addressListKey,
-    () => getListComputePoolAddress(manualPositions, chainId, getAsset),
+    () => getListComputePoolAddress(positions, chainId, getAsset),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
   // Fusion states
-  const fusionStates = useGetMultipleFusionState(manualPositions, addressList)
+  const fusionStates = useGetMultipleFusionState(positions, addressList)
   const prevFusionStates = usePrevious(fusionStates)
 
   const _fusionStates = useMemo(() => {
@@ -127,7 +125,7 @@ export const useManualPositions = manualPositions => {
   const result = useMemo(() => {
     if (!_fusionStates || _fusionStates.length <= 0) return []
 
-    return manualPositions.map((farmPos, index) => {
+    return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
       const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
       const fees = feesList?.[index]
@@ -204,7 +202,7 @@ export const useManualPositions = manualPositions => {
         poolAddress,
       }
     })
-  }, [annualPoolFeesPools, farmInfoList, feesList, _fusionStates, getAsset, manualPositions])
+  }, [annualPoolFeesPools, farmInfoList, feesList, _fusionStates, getAsset, positions])
 
   return result
 }

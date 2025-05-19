@@ -50,20 +50,20 @@ const getFarmRewardList = async (positions, poolKeys, chainId) => {
   return farmRewardsList
 }
 
-export const useFarmPositions = farmPositions => {
+export const useFarmPositions = positions => {
   const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
 
   // Generate SWR keys with memoization
   const farmAddressesKey = useMemo(
-    () => (farmPositions.length && account && chainId ? ['getFarmPoolAddress', chainId, account, farmPositions] : null),
-    [farmPositions, chainId, account],
+    () => (positions.length && account && chainId ? ['getFarmPoolAddress', chainId, account, positions] : null),
+    [positions, chainId, account],
   )
 
   // Farm address list
   const { data: farmAddresses } = useCachedSWR(
     farmAddressesKey,
-    () => getListComputePoolAddress(farmPositions, chainId, getAsset),
+    () => getListComputePoolAddress(positions, chainId, getAsset),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
@@ -96,7 +96,7 @@ export const useFarmPositions = farmPositions => {
   )
 
   // Fusion states
-  const fusionStates = useGetMultipleFusionState(farmPositions, farmAddresses)
+  const fusionStates = useGetMultipleFusionState(positions, farmAddresses)
   const prevFusionStates = usePrevious(fusionStates)
 
   const _fusionStates = useMemo(() => {
@@ -124,7 +124,7 @@ export const useFarmPositions = farmPositions => {
 
   const { data: farmRewardsList = [] } = useCachedSWR(
     farmRewardsKey,
-    () => getFarmRewardList(farmPositions, poolKeys, chainId),
+    () => getFarmRewardList(positions, poolKeys, chainId),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
@@ -147,7 +147,7 @@ export const useFarmPositions = farmPositions => {
   const result = useMemo(() => {
     if (!_fusionStates || !_fusionStates.length) return []
 
-    return farmPositions.map((farmPos, index) => {
+    return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
       const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
       const farmRewardData = farmRewardsList[index]
@@ -239,7 +239,7 @@ export const useFarmPositions = farmPositions => {
     })
   }, [
     _fusionStates,
-    farmPositions,
+    positions,
     farmRewardsList,
     fusionFarmings,
     farmAddresses,
