@@ -432,13 +432,13 @@ function Header() {
         active: pathname.includes('/dashboard'),
         sub: [
           {
-            heading: t('veThe'),
-            subheading: t('veThe Subheading'),
+            heading: t('veTHE'),
+            subheading: t('veTHE Subheading'),
             onClickHandler: () => push('/dashboard/lock'),
           },
           {
-            heading: t('theNFT'),
-            subheading: t('theNFT Description'),
+            heading: t('TheNFT'),
+            subheading: t('TheNFT Description'),
             onClickHandler: () => push('/dashboard/thenft'),
           },
           {
