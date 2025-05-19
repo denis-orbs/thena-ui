@@ -152,7 +152,7 @@ function ManualStrategy({
     <>
       <div className='space-y-4'>
         {mintInfo.noLiquidity && (
-          <div className='!mt-4 flex flex-col gap-4 md:!mt-8'>
+          <div className='flex flex-col gap-4'>
             <WarningStartingPrice />
 
             <div className='flex items-end gap-2 md:gap-8'>

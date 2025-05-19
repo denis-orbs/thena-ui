@@ -105,10 +105,10 @@ export default function ChartPriceRangeInput({
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address,
-    token1Address: isReverse ? quoteCurrency.wrapped.address : baseCurrency.wrapped.address,
+    token0Address: isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address,
+    token1Address: isReverse ? quoteCurrency?.wrapped?.address : baseCurrency?.wrapped?.address,
     timeWindow,
-    currentSwapPrice: { [isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address]: price },
+    currentSwapPrice: { [isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address]: price },
   })
 
   const brushDomain = useMemo(() => {

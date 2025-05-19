@@ -9,7 +9,7 @@ import Box from '@/components/box'
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, NewTextSubHeading, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -105,54 +105,17 @@ function AddLiquidityClPool({ pool, handleBack }) {
           <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
           <NewTextHeading className='xl:text-4xl'> {t('Add Liquidity')}</NewTextHeading>
         </div>
-        <div className='flex w-full flex-row items-center justify-between gap-4 max-xl:hidden'>
-          <NewTextSubHeading>{isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}</NewTextSubHeading>
-          {pair ? (
-            <div className={cn('mt-0')}>
-              <div className='flex w-full items-center justify-between gap-2'>
-                <Box className={cn('flex w-full rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
-                  <TextHeading className='!text-xl !font-medium text-neutral-500'>{t('Pool Attributes')}</TextHeading>
-                </Box>
+        {/* <div className='grid w-full grid-cols-2 flex-row items-center gap-4 max-xl:hidden'>
 
-                <div className='flex items-center'>
-                  <i
-                    onClick={() => setShow(!show)}
-                    className={cn(
-                      'flex cursor-pointer items-center justify-center rounded-lg',
-                      'size-8 min-w-8 md:size-11 md:min-w-11',
-                      show ? 'bg-neutral-600' : 'bg-neutral-900',
-                    )}
-                  >
-                    <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
-                  </i>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
-            //   <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
-            //   <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
-            // </div>
-            <></>
-          )}
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 0, height: 0 }}
-          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className='overflow-hidden'
-        >
-          <div className='mt-2 w-full'>
-            {pair?.type === PAIR_TYPES.LSD ? (
-              <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-            ) : (
-              <>{pair && <NormalPoolAttributes pool={pair} />}</>
-            )}
-          </div>
-        </motion.div>
+        </div> */}
       </div>
-      <section className='mt-4 grid w-full grid-cols-1 gap-4 xl:grid-cols-2'>
+      <section className='grid w-full grid-cols-1 gap-4 xl:grid-cols-2'>
         <div id='LEFT-BLOCK' className='col-span-1 w-full'>
+          <div className='mb-4 flex h-11 items-end'>
+            <NewTextSubHeading className='block text-2xl'>
+              {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
+            </NewTextSubHeading>
+          </div>
           <ChooseStrategy
             firstAsset={firstAsset}
             secondAsset={secondAsset}
@@ -194,6 +157,47 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
+          {pair ? (
+            <div className='mb-4 mt-0 flex w-full flex-col items-end'>
+              <div className='flex w-fit items-center gap-2'>
+                <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
+                  <TextHeading className='!text-xl !font-medium text-neutral-500'>{t('Pool Attributes')}</TextHeading>
+                </Box>
+
+                <div className='flex items-center'>
+                  <i
+                    onClick={() => setShow(!show)}
+                    className={cn(
+                      'flex cursor-pointer items-center justify-center rounded-lg',
+                      'size-8 min-w-8 md:size-11 md:min-w-11',
+                      show ? 'bg-neutral-600' : 'bg-neutral-900',
+                    )}
+                  >
+                    <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+                  </i>
+                </div>
+              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 0, height: 0 }}
+                animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className='w-full overflow-hidden'
+              >
+                <div className='mt-2 w-full'>
+                  {pair?.type === PAIR_TYPES.LSD ? (
+                    <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+                  ) : (
+                    <>{pair && <NormalPoolAttributes pool={pair} />}</>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+          ) : (
+            <div className='mb-4 flex h-max flex-col gap-3 rounded-md bg-neutral-800 px-3 py-2'>
+              <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
+              <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+            </div>
+          )}
           <div className='hidden h-full flex-[4] flex-col gap-2 md:gap-4 xl:flex'>
             {/* <PoolDescriptionSection pairType={strategy?.title} /> */}
             {!isAutomatic && (
