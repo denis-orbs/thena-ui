@@ -44,7 +44,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
       <>
         {pair ? (
           <div className='flex flex-col'>
-            <div className='flex flex-row items-center gap-2 2xl:gap-8'>
+            <div className='flex flex-row items-center gap-2 xl:gap-8'>
               <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
                 logo2={pair?.token1?.logoURI ?? UNKNOWN_LOGO}
@@ -57,8 +57,8 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
             </div>
 
             <div className='flex items-center justify-between'>
-              <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>{t(text.split(' ')[0])}</NewTextSubHeading>
-              <div className='flex items-center 2xl:hidden'>
+              <NewTextSubHeading className='lg:text-xl xl:text-3xl'>{t(text.split(' ')[0])}</NewTextSubHeading>
+              <div className='flex items-center xl:hidden'>
                 <i
                   onClick={() => setShowReserve(show => !show)}
                   className={cn(
@@ -73,8 +73,8 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
             </div>
           </div>
         ) : (
-          <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
-            <Icon className='size-6 lg:size-12 2xl:size-14' />
+          <div className='flex flex-row items-center gap-2 lg:gap-4 xl:gap-8'>
+            <Icon className='size-6 lg:size-12 xl:size-14' />
             <NewTextHeading>{t(text)}</NewTextHeading>
           </div>
         )}
@@ -94,27 +94,27 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
     <div className='flex flex-col'>
       {PageTitleSection}
 
-      <div className='grid 2xl:grid-cols-add-liquidity-layout 2xl:gap-4'>
+      <div className='grid xl:grid-cols-add-liquidity-layout xl:gap-4'>
         {/* Left side */}
-        <div className='order-2 flex flex-col gap-4 2xl:order-1'>
+        <div className='order-2 flex flex-col gap-4 xl:order-1'>
           {pair ? (
-            <div className='mt-4 flex flex-col gap-2 md:gap-4 2xl:mt-8 2xl:gap-8'>
+            <div className='mt-4 flex flex-col gap-2 md:gap-4 xl:mt-8 xl:gap-8'>
               <PairBasicInfo pair={pair} />
-              <div className='hidden max-2xl:block'>
+              <div className='hidden max-xl:block'>
                 <PoolAttributesSection pair={pair} />
               </div>
             </div>
           ) : (
-            <div className='mt-4 flex flex-col gap-4 2xl:mt-8'>
-              <div className='flex flex-row items-center gap-2 py-2.5 lg:gap-4 2xl:gap-8'>
+            <div className='mt-4 flex flex-col gap-4 xl:mt-8'>
+              <div className='flex flex-row items-center gap-2 py-2.5 lg:gap-4 xl:gap-8'>
                 <NewIconGroup
                   classNames={{
-                    image: '2xl:size-12',
+                    image: 'xl:size-12',
                   }}
                   logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
                   logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
                 />
-                <NewTextHeading className='2xl:text-5xl'>
+                <NewTextHeading className='xl:text-5xl'>
                   {`${firstAsset?.symbol === 'WBNB' ? 'BNB' : firstAsset?.symbol || ''}/${
                     secondAsset?.symbol === 'WBNB' ? 'BNB' : secondAsset?.symbol || ''
                   }`}
@@ -141,13 +141,13 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
         {/* Right side */}
         {pool && (
-          <div className='order-1 flex flex-col gap-0 2xl:order-2 2xl:gap-2'>
-            <div className='mt-8 hidden 2xl:block'>
+          <div className='order-1 flex flex-col gap-0 xl:order-2 xl:gap-2'>
+            <div className='mt-8 hidden xl:block'>
               <PoolAttributesSection pair={pair} />
             </div>
 
-            <div className='order-1 2xl:order-2'>
-              <PoolReserveSection pool={pool} className='hidden 2xl:block' />
+            <div className='order-1 xl:order-2'>
+              <PoolReserveSection pool={pool} className='hidden xl:block' />
 
               <motion.div
                 initial={{ opacity: 0, y: -10, height: 0 }}
@@ -155,7 +155,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className='overflow-hidden'
               >
-                <PoolReserveSection pool={pool} className='mt-4 block 2xl:hidden' />
+                <PoolReserveSection pool={pool} className='mt-4 block xl:hidden' />
               </motion.div>
             </div>
           </div>
