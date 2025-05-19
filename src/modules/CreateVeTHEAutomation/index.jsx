@@ -44,33 +44,37 @@ function CreateVeTHEAutomation() {
           <div className='hidden gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:flex lg:p-8'>
             <InfoNeutralIcon className='h-8 w-8' />
             <div className='flex flex-col gap-2'>
-              <TextHeading className='text-xl'>{t('What you need to create an Automation')}</TextHeading>
+              <TextHeading className='text-xl'>{t('Information on creating veTHE automation')}</TextHeading>
               <div className='flex flex-col gap-4'>
-                <Paragraph className='text-base'>
-                  {t('To create an automation, the following prerequisites must be met')}:
-                </Paragraph>
                 <ul className='list-disc px-6 text-neutral-300'>
                   <li>
-                    An existing{' '}
+                    You must have a{' '}
                     <TextHeading
                       className='cursor-pointer text-primary-500 hover:underline'
                       onClick={() => push('/dashboard/lock')}
                     >
                       veTHE
                     </TextHeading>{' '}
-                    position.
+                    position and have already claimed your rebase.
                   </li>
                   <li>
-                    Approximately $15-$20 USD USD worth of{' '}
+                    You need to have approximately $15-$20 worth of{' '}
                     <TextHeading
                       className='cursor-pointer text-primary-500 hover:underline'
                       onClick={() => push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)}
                     >
                       $LINK
                     </TextHeading>{' '}
-                    in your wallet.
+                    in your wallet for minimum deposit.
                   </li>
-                  <li>This will cover automation costs for a few months.</li>
+                  <li>
+                    The minimum deposit will cover automation costs for a few months. Actual duration is determined
+                    based on gas costs, your settings & available funds in the deposit account.
+                  </li>
+                  <li>
+                    Next 3 Scheduled Dates are displayed for informational purposes. Automations will proceed as long as
+                    sufficient funds are available in the deposit account.
+                  </li>
                 </ul>
               </div>
             </div>
@@ -108,13 +112,46 @@ function CreateVeTHEAutomation() {
             )}
             {currentStep === 1 && (
               <div className='mt-4 flex gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 lg:mt-0 lg:hidden lg:p-8'>
-                <InfoNeutralIcon className='size-6' />
+                <div className='size-6'>
+                  <InfoNeutralIcon className='size-6' />
+                </div>
                 <div className='flex flex-col'>
                   <div className='flex flex-col'>
-                    <TextHeading className='text-xs'>{t('To create an automation you need')}</TextHeading>
-                    <TextHeading className='text-xs'>
-                      Approximately $15-$20 USD worth of $Link in your wallet.
+                    <TextHeading className='text-base font-bold'>
+                      {t('Information on creating veTHE automation')}
                     </TextHeading>
+                    <ul className='list-disc px-6 text-neutral-50'>
+                      <li>
+                        You must have a{' '}
+                        <TextHeading
+                          className='cursor-pointer text-primary-500 hover:underline'
+                          onClick={() => push('/dashboard/lock')}
+                        >
+                          veTHE
+                        </TextHeading>{' '}
+                        position and have already claimed your rebase.
+                      </li>
+                      <li>
+                        You need to have approximately $15-$20 worth of{' '}
+                        <TextHeading
+                          className='cursor-pointer text-primary-500 hover:underline'
+                          onClick={() => {
+                            push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)
+                          }}
+                        >
+                          $LINK
+                        </TextHeading>{' '}
+                        in your wallet for minimum deposit.
+                      </li>
+                      <li>
+                        The minimum deposit will cover automation costs for a few months. Actual duration is determined
+                        based on gas costs, your settings & available funds in the deposit account.
+                      </li>
+                      <li>
+                        Next 3 Scheduled Dates are displayed for informational purposes. Automations will proceed as
+                        long as sufficient funds are available in the deposit account.
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
