@@ -175,9 +175,9 @@ const getWeightedOverviewChartData = async (chainId, skip) => {
 }
 
 const fetchGlobalChartData = async chainId => {
-  const [{ data: v1data }, { data: fusiondata3 }, { data: weightedData }] = await Promise.all([
+  const [{ data: v1data }, { data: fusiondata2 }, { data: fusiondata3 }, { data: weightedData }] = await Promise.all([
     fetchChartData(getV1OverviewChartData, [chainId], false),
-    // fetchChartData(getFusionOverviewChartData, [{ chainId, version: 2 }], true),
+    fetchChartData(getFusionOverviewChartData, [{ chainId, version: 2 }], true),
     fetchChartData(getFusionOverviewChartData, [{ chainId, version: 3 }], true),
     fetchChartData(getWeightedOverviewChartData, [chainId], true),
   ])
@@ -185,13 +185,14 @@ const fetchGlobalChartData = async chainId => {
   // console.log({ v1data, fusiondata2, fusiondata3, weightedData })
 
   return v1data.map(ele => {
-    // const foundV2 = fusiondata2.find(fusion => fusion.date === ele.date)
+    const foundV2 = fusiondata2.find(fusion => fusion.date === ele.date)
     const foundV3 = fusiondata3.find(fusion => fusion.date === ele.date)
     const foundWeighted = weightedData.find(weighted => weighted.date === ele.date)
     return {
       ...ele,
-      volumeUSD: ele.volumeUSD + (foundV3?.volumeUSD ?? 0) + (foundWeighted?.volumeUSD ?? 0),
-      tvlUSD: ele.tvlUSD + (foundV3?.tvlUSD ?? 0) + (foundWeighted?.tvlUSD ?? 0),
+      volumeUSD:
+        ele.volumeUSD + (foundV2?.volumeUSD ?? 0) + (foundV3?.volumeUSD ?? 0) + (foundWeighted?.volumeUSD ?? 0),
+      tvlUSD: ele.tvlUSD + (foundV2?.tvlUSD ?? 0) + (foundV3?.tvlUSD ?? 0) + (foundWeighted?.tvlUSD ?? 0),
     }
   })
 }
