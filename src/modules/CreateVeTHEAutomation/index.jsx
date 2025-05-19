@@ -61,7 +61,7 @@ function CreateVeTHEAutomation() {
                     position.
                   </li>
                   <li>
-                    Approximately $150-$200 USD worth of{' '}
+                    Approximately $15-$20 USD USD worth of{' '}
                     <TextHeading
                       className='cursor-pointer text-primary-500 hover:underline'
                       onClick={() => push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)}
@@ -70,6 +70,7 @@ function CreateVeTHEAutomation() {
                     </TextHeading>{' '}
                     in your wallet.
                   </li>
+                  <li>This will cover automation costs for a few months.</li>
                 </ul>
               </div>
             </div>
@@ -112,7 +113,7 @@ function CreateVeTHEAutomation() {
                   <div className='flex flex-col'>
                     <TextHeading className='text-xs'>{t('To create an automation you need')}</TextHeading>
                     <TextHeading className='text-xs'>
-                      Approximately $150-$200 USD worth of $Link in your wallet.
+                      Approximately $15-$20 USD worth of $Link in your wallet.
                     </TextHeading>
                   </div>
                 </div>

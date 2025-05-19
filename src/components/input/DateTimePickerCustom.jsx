@@ -76,6 +76,7 @@ function DateTimePickerModal({
             dateFormat='yyyy/MM/dd'
             minDate={minDate}
             maxDate={maxDate}
+            calendarStartDay={1}
             {...rest}
           />
         </div>

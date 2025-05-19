@@ -27,6 +27,7 @@ function DateInput({
         showTimeSelect={showTimeSelect}
         calendarClassName={showTimeSelect ? 'w-[326px]' : ''}
         timeFormat='HH:mm:ss'
+        calendarStartDay={1}
         {...rest}
       />
       <CalendarIcon className='absolute left-4 top-[14px] h-5 w-5' />
