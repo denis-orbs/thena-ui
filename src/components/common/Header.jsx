@@ -247,6 +247,7 @@ function ChainMobileSelect({ t }) {
   )
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function LanguageSelect() {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -961,7 +962,7 @@ function Header() {
                   )}
                 </div>
                 <ChainSelect t={t} />
-                <LanguageSelect />
+                {/* <LanguageSelect /> */}
                 <OutlinedButton
                   className='hidden 2xl:flex'
                   onClick={() => window.open('https://alpha.thena.fi', '_blank')}
