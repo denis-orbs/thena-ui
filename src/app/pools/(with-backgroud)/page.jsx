@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -8,10 +9,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 
-import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
@@ -22,9 +23,8 @@ import Selection from '@/components/selection'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
-import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -32,11 +32,11 @@ import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
-import { BarChartIcon, InfoIcon } from '@/svgs'
+import { BarChartIcon, ChevronDownIcon, InfoIcon, PoolCoinsIcon } from '@/svgs'
 
 import NewListings from '../NewListings'
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 6
 
 const sortOptions = [
   {
@@ -92,6 +92,7 @@ export default function PoolsPage() {
   const [strategy, setStrategy] = useState(STRATEGIES.All)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
+  const [toggleVault, setToggleVault] = useState(true)
 
   const { push } = useRouter()
   const { pairs } = usePairs()
@@ -539,184 +540,188 @@ export default function PoolsPage() {
     setCurrentPage(1)
   }, [filter, strategy, searchText, isInactive])
 
-  const userManuals = useManuals()
-  const isShowMigrationWarning = useMemo(() => userManuals.some(ele => ele.version === 2), [userManuals])
-
   return (
-    <div>
-      {vaults.length > 0 && networkId === ChainId.BSC && (
-        <>
-          <div className='flex items-center justify-between'>
-            <h2>{t('THE Single Sided Vaults')} </h2>
+    <LayoutWithBackButton
+      hiddenBackButton
+      className='!pt-6 xl:mx-12 2xl:mx-auto 2xl:w-[1344px] 3xl:w-[1464px] 3xl:!pt-8'
+    >
+      <div className='flex flex-col gap-6 2xl:gap-8'>
+        {/* Filter section */}
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-center gap-4'>
+            <PoolCoinsIcon className='size-12' />
+            <NewTextHeading>{t('Pools')}</NewTextHeading>
           </div>
-          <div className='mt-4 flex items-center gap-8 overflow-auto pb-4'>
-            {vaults.map(trending => (
-              <Box
-                className='flex w-full cursor-pointer flex-col gap-4'
-                key={trending.address}
-                onClick={() => {
-                  push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
-                }}
-              >
-                <div className='flex items-start justify-between gap-4'>
-                  <div className='flex items-center gap-3'>
-                    <IconGroup
-                      className='-space-x-3'
-                      classNames={{
-                        image: 'outline-4 w-10 h-10',
-                      }}
-                      logo1={trending.token0.logoURI}
-                      logo2={trending.token1.logoURI}
-                    />
-                    <div className='flex flex-col'>
-                      <div className='flex items-start gap-5'>
-                        <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
-                        <NeutralBadge className='text-nowrap'>ICHI</NeutralBadge>
-                      </div>
-                      {/* <Paragraph className='text-sm'>{t(PAIR_TYPES.LSD)}</Paragraph> */}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex flex-col gap-2'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>{t('Deposit Token')}</Paragraph>
-                    <div className='flex items-center gap-1'>
-                      <CircleImage className='h-4 w-4' src={trending.allowed.logoURI} alt='thena logo' />
-                      <TextHeading className='text-sm'>{trending.allowed.symbol}</TextHeading>
-                    </div>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>{t('APR')}</Paragraph>
-                    <div className='flex items-center gap-1'>
-                      <TextHeading className='text-sm'>{formatAmount(trending.gauge.apr)}%</TextHeading>
-                      <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`tvl-${trending.address}`} />
-                      <CustomTooltip id={`tvl-${trending.address}`}>
-                        <div className='flex flex-col gap-1'>
-                          {trending.gauge.apr_list.map(ele => (
-                            <div className='flex justify-between gap-1' key={`${ele.symbol}`}>
-                              <span>{ele.symbol}</span>
-                              <span>{formatAmount(ele.apr)}%</span>
-                            </div>
-                          ))}
-                        </div>
-                      </CustomTooltip>
-                    </div>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
-                    <TextHeading className='text-sm'>${formatAmount(trending.gauge.tvl)}</TextHeading>
-                  </div>
-                </div>
-              </Box>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* TODO: only show when CL pool V2 (ICHI/GAMMA or manual */}
-      <Box
-        className={cn(
-          'mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
-          !isShowMigrationWarning && 'hidden',
-        )}
-      >
-        <div className='h-8 w-8'>
-          <InfoIcon className='h-8 w-8 stroke-primary-600' />
-        </div>
-
-        <div className='flex flex-col'>
-          <TextHeading className='text-xl text-neutral-100'>{t('Migrate Your Conc Liquidity Positions')}</TextHeading>
-          <TextSubHeading className='text-base text-primary-100'>
-            {t('Migrate Your Conc Liquidity Positions description')}
-            &nbsp;
-            <span>
-              <Link className='text-primary-600' href='/'>
-                {/* TODO: Link */}
-                {t('Learn more')}
-              </Link>
-            </span>
-          </TextSubHeading>
-        </div>
-      </Box>
-
-      <div className='mt-6 flex flex-col gap-4'>
-        <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>{isInactive ? t('Inactive Pools') : t('Active Pools')}</TextHeading>
-          <Toggle
-            className='lg:hidden'
-            checked={isInactive}
-            onChange={() => setIsInactive(!isInactive)}
-            toggleId='active'
-            label='Inactive Pools'
-          />
-        </div>
-        <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
-          <div className='flex w-full flex-col gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-            <SearchInput className='w-full lg:w-[220px]' val={searchText} setVal={setSearchText} />
-            <Dropdown
-              className='w-full lg:w-[220px]'
-              data={Object.values(PAIR_TYPES).map(item => ({
-                label: item,
-              }))}
-              selected={filter}
-              setSelected={ele => setFilter(ele.label)}
-              placeHolder='Choose Category'
-            />
-            {filter === PAIR_TYPES.LSD && <Selection data={strategySelections} isFull />}
-            <Toggle
-              className='hidden lg:flex'
-              checked={isInactive}
-              onChange={() => setIsInactive(!isInactive)}
-              toggleId='active'
-              label='Inactive Pools'
-            />
-            <div className='flex items-center justify-between gap-2 lg:hidden'>
-              <Paragraph>{t('Sort By')}</Paragraph>
-              <Dropdown
-                data={sortOptions.slice(0, sortOptions.length - 1)}
-                selected={sort ? `${sort.label}` : ''}
-                setSelected={ele => setSort(ele)}
+          <div className='flex flex-col gap-2 lg:flex-row'>
+            <div className='flex items-center justify-between'>
+              <Toggle
+                className='lg:hidden'
+                checked={isInactive}
+                onChange={() => setIsInactive(!isInactive)}
+                toggleId='active'
+                label='Inactive Pools'
               />
             </div>
-          </div>
-          <div className='ml-auto flex gap-4 lg:flex-row'>
-            <Link href='/pools/add-liquidity?step=1&pairType=Conc+Liquidity'>
-              <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
-            </Link>
+            <div className='flex w-full flex-col items-center justify-between gap-4 lg:flex-row'>
+              <div className='flex w-full flex-col gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+                <Dropdown
+                  className='h-11 w-full lg:w-[129px]'
+                  data={Object.values(PAIR_TYPES).map(item => ({
+                    label: item,
+                  }))}
+                  selected={filter}
+                  setSelected={ele => setFilter(ele.label)}
+                  placeHolder='Choose Category'
+                />
+                <SearchInput
+                  className='!h-11 w-full lg:w-[280px]'
+                  classNames={{ input: '!h-11' }}
+                  val={searchText}
+                  setVal={setSearchText}
+                />
+                {filter === PAIR_TYPES.LSD && <Selection data={strategySelections} isFull />}
+                <Toggle
+                  className='hidden lg:flex'
+                  checked={isInactive}
+                  onChange={() => setIsInactive(!isInactive)}
+                  toggleId='active'
+                  label='Inactive Pools'
+                />
+                <div className='flex items-center justify-between gap-2 lg:hidden'>
+                  <Paragraph>{t('Sort By')}</Paragraph>
+                  <Dropdown
+                    data={sortOptions.slice(0, sortOptions.length - 1)}
+                    selected={sort ? `${sort.label}` : ''}
+                    setSelected={ele => setSort(ele)}
+                  />
+                </div>
+              </div>
+              <div className='ml-auto flex gap-4 lg:flex-row'>
+                <Link href='/pools/add-liquidity?step=1&pairType=Conc+Liquidity'>
+                  <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
-        {/* New Listings pool */}
-        {newListingsPool.length > 0 && (
-          <NewListings
-            title={`✨ ${t('New Listings')}`}
-            pools={newListingsPool}
-            sortOptions={sortOptions}
-            listPoolAddressSpecial={SPECIAL_POOLS}
-          />
-        )}
+        {vaults.length > 0 && networkId === ChainId.BSC && (
+          <div className='flex flex-col'>
+            <div className='flex items-center gap-4'>
+              <h2 className='text-2xl font-medium text-neutral-50'>{t('THE Single Sided Vaults')} </h2>
+              <ChevronDownIcon
+                className={cn('size-8 cursor-pointer', toggleVault && 'rotate-180')}
+                onClick={() => setToggleVault(!toggleVault)}
+              />
+            </div>
+            <AnimatePresence>
+              {toggleVault && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className='mt-4 flex items-center gap-2 overflow-auto'
+                >
+                  {vaults.map(trending => (
+                    <Box className='flex w-full cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
+                      <div className='space-y-2'>
+                        <div className='flex items-start justify-between gap-2'>
+                          <div className='flex items-center gap-2'>
+                            <CircleImage
+                              className='size-6 2xl:size-9'
+                              src={trending.allowed.logoURI}
+                              alt='thena logo'
+                            />
+                            <div className='flex flex-col'>
+                              <TextHeading className='!text-base !leading-5 2xl:!text-xl 2xl:!leading-6'>
+                                {`${trending.allowed.symbol}/${
+                                  trending.token0.symbol !== trending.allowed.symbol
+                                    ? trending.token0.symbol
+                                    : trending.token1.symbol
+                                }`}
+                              </TextHeading>
+                              <TextSubHeading className='text-nowrap !text-xs 2xl:!text-sm'>ICHI</TextSubHeading>
+                            </div>
+                          </div>
+                          <TextHeading className='font-archia !text-base font-bold !leading-5 text-primary-600 2xl:!text-xl 2xl:font-semibold 2xl:!leading-6'>
+                            {formatAmount(trending.gauge.apr)}%
+                          </TextHeading>
+                        </div>
+                        <div className='space-y-1'>
+                          <div className='flex items-center justify-between gap-2'>
+                            <Paragraph className='!text-xs font-medium text-neutral-500 2xl:!text-sm'>
+                              {t('Total Value Locked')}
+                            </Paragraph>
+                            <TextHeading className='text-xs font-medium text-neutral-400 2xl:!text-sm'>
+                              ${formatAmount(trending.gauge.tvl)}
+                            </TextHeading>
+                          </div>
+                          <div className='flex items-center gap-2'>
+                            <IconGroup
+                              className='-space-x-1'
+                              classNames={{
+                                image: 'outline-0 size-4',
+                              }}
+                              logo1={trending.token0.logoURI}
+                              logo2={trending.token1.logoURI}
+                            />
 
-        {/* Hot Pools */}
-        {hotPools.length > 0 && (
-          <NewListings
-            title={`🔥 ${t('Hot Pools')}`}
-            pools={hotPools}
-            sortOptions={sortOptions}
-            listPoolAddressSpecial={SPECIAL_POOLS}
-          />
+                            <TextHeading className='text-xs text-neutral-500 2xl:!text-base 2xl:!leading-4'>{`Pool Token ${trending.symbol}`}</TextHeading>
+                          </div>
+                        </div>
+                      </div>
+                      <EmphasisButton
+                        className='h-8 w-full text-xs font-medium'
+                        onClick={() => {
+                          push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
+                        }}
+                      >
+                        {t('Deposit')}
+                      </EmphasisButton>
+                    </Box>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         )}
-        <Table
-          tableBasic={!isLgDown}
-          sortOptions={sortOptions}
-          data={finalPools}
-          showNumberOfPage
-          setNumberOfPage={setItemsPerPage}
-          pageSize={itemsPerPage}
-          sort={sort}
-          setSort={setSort}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+        <div className='flex flex-col gap-4'>
+          <TextHeading className='text-2xl font-medium text-neutral-50'>
+            {isInactive ? t('Inactive Pools') : t('Active Pools')}
+          </TextHeading>
+          {/* New Listings pool */}
+          {newListingsPool.length > 0 && (
+            <NewListings
+              title={`✨ ${t('New Listings')}`}
+              pools={newListingsPool}
+              sortOptions={sortOptions}
+              listPoolAddressSpecial={SPECIAL_POOLS}
+            />
+          )}
+
+          {/* Hot Pools */}
+          {hotPools.length > 0 && (
+            <NewListings
+              title={`🔥 ${t('Hot Pools')}`}
+              pools={hotPools}
+              sortOptions={sortOptions}
+              listPoolAddressSpecial={SPECIAL_POOLS}
+            />
+          )}
+          <Table
+            tableBasic={!isLgDown}
+            sortOptions={sortOptions}
+            data={finalPools}
+            showNumberOfPage
+            setNumberOfPage={setItemsPerPage}
+            pageSize={itemsPerPage}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
       </div>
-    </div>
+    </LayoutWithBackButton>
   )
 }

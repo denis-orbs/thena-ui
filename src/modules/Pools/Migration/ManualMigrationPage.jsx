@@ -12,7 +12,7 @@ import { useSimulateContract } from 'wagmi'
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, POSITION_EARNED_TYPES } from '@/constant'
@@ -28,7 +28,7 @@ import { getPositionManagerContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
 import { GaugeItemManual } from '@/modules/Pools/Migration'
-import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
+import { ArrowRightIcon } from '@/svgs'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()
@@ -273,11 +273,11 @@ export function ManualMigrationPage({ tokenId }) {
 
   return (
     <div className='mx-auto max-w-5xl'>
-      <div className='h-11 w-[98px]'>
+      {/* <div className='h-11 w-[98px]'>
         <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
           {t('Back')}
         </TextButton>
-      </div>
+      </div> */}
 
       <Box className='rounded-xl bg-neutral-900 px-3 py-6 lg:px-7'>
         <div className='mb-10 flex flex-col gap-2'>
