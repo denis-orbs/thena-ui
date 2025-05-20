@@ -37,3 +37,16 @@ function SearchInput({
 }
 
 export default SearchInput
+
+export function SearchInput2({ val, setVal, placeholder = 'Search', ...rest }) {
+  return (
+    <Input
+      type='text'
+      val={val}
+      onChange={e => setVal(e.target.value)}
+      placeholder={placeholder}
+      TrailingIcon={<SearchIcon />}
+      {...rest}
+    />
+  )
+}

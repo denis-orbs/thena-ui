@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
 import Loading from '@/app/loading'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { AutoMigrationPage, ManualMigrationPage } from '@/modules/Pools/Migration'
 
 export default function MigrationPage() {
@@ -14,11 +15,19 @@ export default function MigrationPage() {
   const withdraw = Boolean(searchParams.get('withdraw') === 'true')
 
   if (tokenId) {
-    return <ManualMigrationPage tokenId={tokenId} />
+    return (
+      <LayoutWithBackButton>
+        <ManualMigrationPage tokenId={tokenId} />
+      </LayoutWithBackButton>
+    )
   }
 
   if (address) {
-    return <AutoMigrationPage address={address} staked={staked} withdraw={withdraw} />
+    return (
+      <LayoutWithBackButton>
+        <AutoMigrationPage address={address} staked={staked} withdraw={withdraw} />
+      </LayoutWithBackButton>
+    )
   }
 
   return <Loading />

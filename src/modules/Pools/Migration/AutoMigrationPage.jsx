@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
@@ -19,7 +19,7 @@ import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useGetAutoPoolMigration, usePairInfo, usePools } from '@/state/pools/hooks'
-import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
+import { ArrowRightIcon } from '@/svgs'
 
 import NavigateToAddLiquidityModal from './NavigateToAddLiquidityModal'
 
@@ -180,11 +180,11 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
   return (
     <div className='mx-auto max-w-5xl'>
-      <div className='h-11 w-[98px]'>
+      {/* <div className='h-11 w-[98px]'>
         <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
           {t('Back')}
         </TextButton>
-      </div>
+      </div> */}
 
       <Box className='rounded-xl bg-neutral-900 px-3 py-6 lg:px-7'>
         <div className='mb-10 flex flex-col gap-2'>

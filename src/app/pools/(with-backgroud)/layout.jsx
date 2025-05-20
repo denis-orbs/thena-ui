@@ -10,7 +10,7 @@ export const metadata = {
 export default function PoolsLayout({ children }) {
   return (
     <main className='flex min-h-screen flex-col bg-[url(/pool-background.png)] bg-cover bg-fixed bg-center'>
-      <section className='layout'>
+      <section>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
     </main>

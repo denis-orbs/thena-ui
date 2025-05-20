@@ -354,7 +354,7 @@ function NewListings({
       action: (
         <div className='flex gap-2.5'>
           <EmphasisIconButton
-            className={cn('!size-8 p-2', size !== 'small' && 'lg:!size-9')}
+            className={cn('!size-8 p-2', size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!size-9 lg:w-fit')}
             classNames='[&>path]:group-hover:stroke-neutral-100 !size-4'
             Icon={BarChartIcon}
             onClick={() => push(`/analytics/pairs/${pool?.address}`)}
@@ -364,7 +364,7 @@ function NewListings({
             className={cn(
               '!h-8 w-full p-2 text-xs lg:w-fit lg:text-sm',
               size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
-              size !== 'small' && 'lg:!h-9',
+              size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!h-9 lg:w-fit',
             )}
             onClick={e => {
               e.stopPropagation()
