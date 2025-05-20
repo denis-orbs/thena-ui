@@ -488,7 +488,7 @@ export default function PoolsPage() {
         action: (
           <div className='flex gap-2.5'>
             <EmphasisIconButton
-              className='!size-8 !min-w-8 p-2'
+              className='size-8 min-w-8 max-lg:p-2 lg:size-11 lg:min-w-11'
               classNames='[&>path]:group-hover:stroke-neutral-100'
               Icon={BarChartIcon}
               onClick={e => {
@@ -499,7 +499,7 @@ export default function PoolsPage() {
               data-tooltip-id='analytics-tooltip'
             />
             <EmphasisButton
-              className='w-full p-2 text-xs lg:w-fit'
+              className='w-full text-xs max-lg:p-2 lg:w-fit'
               onClick={e => {
                 e.stopPropagation()
                 e.preventDefault()
