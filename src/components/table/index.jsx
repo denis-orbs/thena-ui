@@ -120,6 +120,7 @@ function Table({
   setNumberOfPage,
   classNames,
   summary = undefined,
+  defaultNumberItem = undefined,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
@@ -472,7 +473,13 @@ function Table({
               className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
               classNames={{ trailingIcon: 'right-4', input: 'pr-12 text-right' }}
               listClassNames='z-40'
-              data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
+              data={[
+                ...(defaultNumberItem ? [{ label: defaultNumberItem }] : []),
+                { label: 10 },
+                { label: 20 },
+                { label: 50 },
+                { label: 100 },
+              ]}
               selected={pageSize}
               setSelected={ele => setNumberOfPage(ele.label)}
               prefix={<PoolCoinsIcon className='h-5 w-5 stroke-neutral-400' />}
