@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -159,13 +159,13 @@ function WeightedItem({ position, isStake }) {
               {t('Unstake')}
             </EmphasisButton>
 
-            <PrimaryButton
+            <EmphasisButton
               className='flex-1 px-1'
               disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
               onClick={() => onGaugeHarvest(position)}
             >
-              {t('Harvest')}
-            </PrimaryButton>
+              {t('Claim')}
+            </EmphasisButton>
 
             <EmphasisButton
               className='flex-1 px-1'
@@ -176,14 +176,14 @@ function WeightedItem({ position, isStake }) {
           </>
         ) : (
           <>
-            <PrimaryButton
+            <EmphasisButton
               disabled={stakePending || position.gauge.address === zeroAddress}
               className='h-11 flex-1 px-1'
               onClick={() => setPopupStake(true)}
               data-tooltip-id={`stake-position-${position.address}`}
             >
               {t('Stake')}
-            </PrimaryButton>
+            </EmphasisButton>
 
             {position.gauge.address === zeroAddress && (
               <CustomTooltip id={`stake-position-${position.address}`} className='max-w-[500px]'>

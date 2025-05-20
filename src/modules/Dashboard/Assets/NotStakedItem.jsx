@@ -303,14 +303,14 @@ function NotStakedItem({ position }) {
     () => (
       <div
         className={cn('flex w-full justify-center gap-2', {
-          'grid-cols-2': !!migrationOptions && !isSingleSided,
-          'grid-cols-3': !migrationOptions && isSingleSided,
+          'grid grid-cols-2': !!migrationOptions && !isSingleSided,
+          'grid grid-cols-3': !migrationOptions && isSingleSided,
         })}
       >
         {(!migrationOptions || isSingleSided) && (
-          <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+          <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
             {t('Stake')}
-          </PrimaryButton>
+          </EmphasisButton>
         )}
 
         {isV1Pool ? (

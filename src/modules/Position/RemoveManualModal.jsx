@@ -115,7 +115,7 @@ export default function RemoveManualModal({
           {outOfRange ? <PrimaryBadge>Out of Range</PrimaryBadge> : <GreenBadge>In Range</GreenBadge>}
         </div>
         <div className='flex justify-end'>
-          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} position='end' />
         </div>
         <div className='flex flex-col gap-4'>
           <CustomSlider percent={percent} onPercentChange={setPercent} />
