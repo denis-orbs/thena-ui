@@ -43,8 +43,6 @@ export default function Step3({ setStep }) {
     return <Loading />
   }
 
-  console.log(pairType)
-
   return (
     <div>
       {pairType === PAIR_TYPES.WEIGHTED && (

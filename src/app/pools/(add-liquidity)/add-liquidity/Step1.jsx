@@ -153,7 +153,7 @@ export default function Step1() {
         <NewTextHeading className='max-lg:text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
-      <div className='flex h-full gap-4'>
+      <div className='flex h-full gap-8'>
         <div className='flex h-full w-full flex-col gap-8 max-lg:min-h-[calc(100vh-180px)] lg:w-1/2'>
           <div className='lg:hidden'>
             <SelectorPoolTypeMini data={poolTypesData} />

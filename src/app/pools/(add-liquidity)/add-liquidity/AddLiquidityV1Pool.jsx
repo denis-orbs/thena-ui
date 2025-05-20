@@ -82,7 +82,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
       </div>
 
-      <div className='grid xl:grid-cols-add-liquidity-layout xl:gap-4'>
+      <div className='grid xl:grid-cols-add-liquidity-layout xl:gap-8'>
         {/* Left side */}
         <div className='order-2 flex flex-col gap-4 xl:order-1'>
           <NewTextSubHeading className='hidden min-h-11 items-end text-xl xl:flex 2xl:text-3xl'>

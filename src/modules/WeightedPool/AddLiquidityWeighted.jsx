@@ -279,7 +279,7 @@ function AddLiquidityWeighted({ pool }) {
           </motion.div>
         </div>
       </div>
-      <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
+      <div className='grid grid-cols-1 gap-8 xl:grid-cols-2'>
         <div className='w-full space-y-4'>
           <div className='flex h-11 flex-col justify-end max-xl:hidden'>
             <NewTextSubHeading className='!text-2xl'>{t('Weighted')}</NewTextSubHeading>

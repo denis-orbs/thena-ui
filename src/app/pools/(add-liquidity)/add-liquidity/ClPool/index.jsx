@@ -109,7 +109,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
         </div> */}
       </div>
-      <section className='grid w-full grid-cols-1 gap-4 xl:grid-cols-2'>
+      <section className='grid w-full grid-cols-1 gap-8 xl:grid-cols-2'>
         <div id='LEFT-BLOCK' className='col-span-1 w-full'>
           <div className='mb-4 flex h-11 items-end'>
             <NewTextSubHeading className='block text-2xl'>
