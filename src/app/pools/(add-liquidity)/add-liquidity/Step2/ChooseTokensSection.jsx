@@ -156,12 +156,12 @@ export default function ChooseTokensSection({ pairType }) {
   ])
 
   return (
-    <div className='flex h-full flex-col gap-8 lg:gap-16'>
+    <div className='flex h-full flex-col gap-6'>
       <div className='flex-grow'>
         {pairType === PAIR_TYPES.WEIGHTED ? (
           <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
         ) : (
-          <div className='flex flex-col gap-3 md:gap-4'>
+          <div className='flex flex-col gap-2 md:gap-4 lg:gap-6'>
             <NewTextSubHeading className='text-lg 2xl:text-2xl 3xl:text-3xl'>{t('Choose Tokens')}</NewTextSubHeading>
             <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
               <SelectToken

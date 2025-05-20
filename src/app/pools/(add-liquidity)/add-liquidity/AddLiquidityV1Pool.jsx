@@ -82,9 +82,9 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
       </div>
 
-      <div className='grid xl:grid-cols-add-liquidity-layout xl:gap-8'>
+      <div className='grid grid-cols-1 xl:grid-cols-2 xl:gap-8'>
         {/* Left side */}
-        <div className='order-2 flex flex-col gap-4 xl:order-1'>
+        <div className='order-2 col-span-1 flex flex-col gap-4 xl:order-1'>
           <NewTextSubHeading className='hidden min-h-11 items-end text-xl xl:flex 2xl:text-3xl'>
             {t((pair?.type || pairType) === PAIR_TYPES.STABLE ? 'Stable' : 'Classic')}
           </NewTextSubHeading>
@@ -109,11 +109,11 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
 
         {/* Right side */}
-        <div className='order-1 flex-col gap-2 md:gap-4 xl:flex'>
+        <div className='order-1 col-span-1 flex-col gap-2 md:gap-4 xl:flex'>
           {!pair && (
             <div className='mt-4 hidden h-max flex-col gap-2 rounded-md bg-neutral-800 p-4 xl:mt-8 xl:flex'>
-              <NewTextSubHeading className='!text-xl'>{t('New Deposit')}</NewTextSubHeading>
-              <Paragraph>{t('New Deposit description')}</Paragraph>
+              <NewTextSubHeading className='font-archia !text-xl'>{t('New Deposit')}</NewTextSubHeading>
+              <Paragraph className='text-neutral-400'>{t('New Deposit description')}</Paragraph>
             </div>
           )}
 

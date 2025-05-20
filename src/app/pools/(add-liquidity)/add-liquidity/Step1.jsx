@@ -153,7 +153,7 @@ export default function Step1() {
         <NewTextHeading className='max-lg:text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
-      <div className='flex h-full gap-8'>
+      <div className='flex h-full gap-4'>
         <div className='flex h-full w-full flex-col gap-8 max-lg:min-h-[calc(100vh-180px)] lg:w-1/2'>
           <div className='lg:hidden'>
             <SelectorPoolTypeMini data={poolTypesData} />
@@ -175,20 +175,20 @@ export default function Step1() {
             </EmphasisButton>
           </div>
         </div>
-        <div className='w-1/2 space-y-2 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
-          <div className='flex flex-col gap-1'>
+        <div className='w-1/2 space-y-4 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
+          <div className='flex flex-col gap-2'>
             <TextHeading className='leading-5'>{t('Concentrated Liquidity')}</TextHeading>
             <Paragraph className='!text-sm font-normal'>{t('Conc Desc')}</Paragraph>
           </div>
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Weighted')}</TextHeading>
             <Paragraph className='!text-sm font-normal'>{t('Weighted Desc')}</Paragraph>
           </div>
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Stable')}</TextHeading>
             <Paragraph className='!text-sm font-normal'>{t('Stable Desc new')}</Paragraph>
           </div>
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Classic')}</TextHeading>
             <Paragraph className='!text-sm font-normal'>{t('Classic Desc')}</Paragraph>
           </div>
