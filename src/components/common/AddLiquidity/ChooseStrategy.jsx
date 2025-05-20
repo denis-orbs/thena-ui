@@ -237,28 +237,26 @@ export default function ChooseStrategy({
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading className='text-sm xl:!text-[11px] xl:!leading-[13.5px]'>
-                {getDisplayedStrategy(sub.title, sub.version)}
-              </TextHeading>
+              <TextHeading className='text-sm'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm xl:!text-[10px] xl:!leading-[13.5px]'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm xl:!text-[10px] xl:!leading-[13.5px]'>
+                  <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-xs font-medium text-neutral-300 lg:text-xs'>
                     ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
                   </Paragraph>
                 </div>
               </div>
             </div>
 
-            <TextHeading className='font-archia text-xl font-semibold leading-[16px] text-gradient-primary-start xl:!text-[13.56px]'>
+            <TextHeading className='text-base font-semibold text-primary-600'>
               {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
             <div className='flex flex-wrap justify-end gap-2'>
               {ICHI_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
-                  <CircleImage alt={sub.title} className='h-8 w-8 xl:!size-4' src={sub.allowed.logoURI} />
-                  <Paragraph className='text-sm leading-[13.5px] xl:!text-[10px]'>{t('Deposit')}</Paragraph>
+                  <CircleImage alt={sub.title} className='size-4' src={sub.allowed.logoURI} />
+                  <Paragraph className='text-xs text-neutral-400 lg:text-xs'>{t('Deposit')}</Paragraph>
                 </div>
               )}
               {NARROW_TYPES.includes(sub.title) && (
@@ -266,12 +264,12 @@ export default function ChooseStrategy({
                   <IconGroup
                     className='-space-x-2'
                     classNames={{
-                      image: 'outline-2 w-7 h-7 xl:!size-4',
+                      image: 'outline-2 size-4',
                     }}
                     logo1={sub.token0.logoURI}
                     logo2={sub.token1.logoURI}
                   />
-                  <Paragraph className='text-sm leading-[13.5px] xl:!text-[10px]'>{t('Deposit')}</Paragraph>
+                  <Paragraph className='text-xs text-neutral-400 lg:text-xs'>{t('Deposit')}</Paragraph>
                 </div>
               )}
             </div>
