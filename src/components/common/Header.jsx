@@ -45,7 +45,7 @@ import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
-  { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
+  // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
@@ -353,7 +353,7 @@ function Header() {
   }, [account, signWallet])
 
   useEffect(() => {
-    if ([ChainId.BSC, ChainId.OPBNB, 97].includes(chainId) && chainId !== networkId) {
+    if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
       updateNetwork(chainId)
     }
   }, [account, chainId, networkId, updateNetwork])
