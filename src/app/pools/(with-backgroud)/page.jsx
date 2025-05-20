@@ -1,7 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -620,76 +620,69 @@ export default function PoolsPage() {
                 onClick={() => setToggleVault(!toggleVault)}
               />
             </div>
-            <AnimatePresence>
-              {toggleVault && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className='mt-4 flex items-center gap-2 overflow-auto'
-                >
-                  {vaults.map(trending => (
-                    <Box className='flex w-full cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
-                      <div className='space-y-2'>
-                        <div className='flex items-start justify-between gap-2'>
-                          <div className='flex items-center gap-2'>
-                            <CircleImage
-                              className='size-6 2xl:size-9'
-                              src={trending.allowed.logoURI}
-                              alt='thena logo'
-                            />
-                            <div className='flex flex-col'>
-                              <TextHeading className='!text-base !leading-5 2xl:!text-xl 2xl:!leading-6'>
-                                {`${trending.allowed.symbol}/${
-                                  trending.token0.symbol !== trending.allowed.symbol
-                                    ? trending.token0.symbol
-                                    : trending.token1.symbol
-                                }`}
-                              </TextHeading>
-                              <TextSubHeading className='text-nowrap !text-xs 2xl:!text-sm'>ICHI</TextSubHeading>
-                            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 0, height: 0 }}
+              animate={toggleVault ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='overflow-x-auto overflow-y-hidden'
+            >
+              <div className='mt-4 flex items-center gap-2'>
+                {vaults.map(trending => (
+                  <Box className='flex w-full cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
+                    <div className='space-y-2'>
+                      <div className='flex items-start justify-between gap-2'>
+                        <div className='flex items-center gap-2'>
+                          <CircleImage className='size-6 2xl:size-9' src={trending.allowed.logoURI} alt='thena logo' />
+                          <div className='flex flex-col'>
+                            <TextHeading className='!text-base !leading-5 2xl:!text-xl 2xl:!leading-6'>
+                              {`${trending.allowed.symbol}/${
+                                trending.token0.symbol !== trending.allowed.symbol
+                                  ? trending.token0.symbol
+                                  : trending.token1.symbol
+                              }`}
+                            </TextHeading>
+                            <TextSubHeading className='text-nowrap !text-xs 2xl:!text-sm'>ICHI</TextSubHeading>
                           </div>
-                          <TextHeading className='font-archia !text-base font-bold !leading-5 text-primary-600 2xl:!text-xl 2xl:font-semibold 2xl:!leading-6'>
-                            {formatAmount(trending.gauge.apr)}%
+                        </div>
+                        <TextHeading className='font-archia !text-base font-bold !leading-5 text-primary-600 2xl:!text-xl 2xl:font-semibold 2xl:!leading-6'>
+                          {formatAmount(trending.gauge.apr)}%
+                        </TextHeading>
+                      </div>
+                      <div className='space-y-1'>
+                        <div className='flex items-center justify-between gap-2'>
+                          <Paragraph className='!text-xs font-medium text-neutral-500 2xl:!text-sm'>
+                            {t('Total Value Locked')}
+                          </Paragraph>
+                          <TextHeading className='text-xs font-medium text-neutral-400 2xl:!text-sm'>
+                            ${formatAmount(trending.gauge.tvl)}
                           </TextHeading>
                         </div>
-                        <div className='space-y-1'>
-                          <div className='flex items-center justify-between gap-2'>
-                            <Paragraph className='!text-xs font-medium text-neutral-500 2xl:!text-sm'>
-                              {t('Total Value Locked')}
-                            </Paragraph>
-                            <TextHeading className='text-xs font-medium text-neutral-400 2xl:!text-sm'>
-                              ${formatAmount(trending.gauge.tvl)}
-                            </TextHeading>
-                          </div>
-                          <div className='flex items-center gap-2'>
-                            <IconGroup
-                              className='-space-x-1'
-                              classNames={{
-                                image: 'outline-0 size-4',
-                              }}
-                              logo1={trending.token0.logoURI}
-                              logo2={trending.token1.logoURI}
-                            />
+                        <div className='flex items-center gap-2'>
+                          <IconGroup
+                            className='-space-x-1'
+                            classNames={{
+                              image: 'outline-0 size-4',
+                            }}
+                            logo1={trending.token0.logoURI}
+                            logo2={trending.token1.logoURI}
+                          />
 
-                            <TextHeading className='text-xs text-neutral-500 2xl:!text-base 2xl:!leading-4'>{`Pool Token ${trending.symbol}`}</TextHeading>
-                          </div>
+                          <TextHeading className='text-xs text-neutral-500 2xl:!text-base 2xl:!leading-4'>{`Pool Token ${trending.symbol}`}</TextHeading>
                         </div>
                       </div>
-                      <EmphasisButton
-                        className='h-8 w-full text-xs font-medium'
-                        onClick={() => {
-                          push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
-                        }}
-                      >
-                        {t('Deposit')}
-                      </EmphasisButton>
-                    </Box>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    </div>
+                    <EmphasisButton
+                      className='h-8 w-full text-xs font-medium'
+                      onClick={() => {
+                        push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
+                      }}
+                    >
+                      {t('Deposit')}
+                    </EmphasisButton>
+                  </Box>
+                ))}
+              </div>
+            </motion.div>
           </div>
         )}
         <div className='flex flex-col gap-4'>
@@ -726,6 +719,7 @@ export default function PoolsPage() {
             setSort={setSort}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            defaultNumberItem={ITEMS_PER_PAGE}
           />
         </div>
       </div>
