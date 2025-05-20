@@ -119,10 +119,10 @@ function Voting() {
       return `${seconds} Seconds`
     }
     if (seconds < twoHours) {
-      return `${mins} Minutes`
+      return `${Number(hours) * 60 + Number(mins)} Minutes`
     }
     if (seconds < twoDays) {
-      return `${hours} Hours`
+      return `${Number(days) * 24 + Number(hours)} Hours`
     }
     return `${days} Days`
   }, [days, hours, mins, seconds])
