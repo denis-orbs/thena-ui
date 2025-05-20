@@ -144,7 +144,7 @@ export default function CreateWeightedPoolPage() {
     <LayoutWithBackButton
       hiddenBackButton={is2XlDown}
       backUrl={backUrl}
-      className='mx-auto xl:!mt-6 xl:!w-[1184px] 2xl:!mt-8 2xl:!w-[1312px] 3xl:!mt-16 3xl:!w-[1440px]'
+      className='max-lg:mx-4 lg:mx-[40px] xl:mx-auto xl:!mt-6 xl:!w-[1184px] 2xl:!mt-8 2xl:!w-[1312px] 3xl:!mt-16 3xl:!w-[1440px]'
     >
       <div className='flex flex-col gap-4'>
         <div className='flex items-center gap-8'>

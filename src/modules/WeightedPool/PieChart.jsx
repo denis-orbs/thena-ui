@@ -5,7 +5,7 @@ import { Doughnut } from 'react-chartjs-2'
 import { TextHeading } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 
-const colorsDefault = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
+const colorsDefault = ['#F199EE', '#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F', '#580055', '#32002F']
 
 function calculatePadding(ctx) {
   const { chart } = ctx
@@ -36,7 +36,7 @@ function PieChart({ tokens, colors, showTotalPercent = true, className }) {
         : tokens.map((item, index) => ({
             data: item,
             value: Number(item.weight),
-            color: (colors || colorsDefault)[index % (colors || colorsDefault).length],
+            color: (colors || colorsDefault)[index],
             cutout: '50%',
           })),
     [colors, tokens, allZero],

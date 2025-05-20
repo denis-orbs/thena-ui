@@ -11,6 +11,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
+import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
@@ -107,9 +108,17 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
             checkError && token.weight < 0.01 && 'border-error-600',
           )}
         >
-          <div className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
+          <div
+            data-tooltip-id={`${token.token.address}-token`}
+            className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'
+          >
             <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
-            <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
+            <Paragraph className='text-sm text-neutral-200'>
+              {token.token.symbol.length > 4 ? token.token.symbol.slice(0, 4) : token.token.symbol}
+            </Paragraph>
+            {token.token.symbol.length > 4 && (
+              <CustomTooltip id={`${token.token.address}-token`}>{token.token.symbol}</CustomTooltip>
+            )}
           </div>
           <Input
             className='h-11 w-full border-none bg-transparent'
