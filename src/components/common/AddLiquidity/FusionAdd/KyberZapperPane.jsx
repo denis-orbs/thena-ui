@@ -147,7 +147,7 @@ function KyberZapperPane({
             autoFocus
             onAmountChange={setAmount}
             showPercent={false}
-            assetsSelect={[asset0, asset1, (isToken0Wbnb || isToken1Wbnb) && BNB]}
+            assetsSelect={isToken0Wbnb || isToken1Wbnb ? [asset0, asset1, BNB] : [asset0, asset1]}
           />
 
           <div
