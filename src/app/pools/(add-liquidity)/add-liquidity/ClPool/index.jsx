@@ -28,7 +28,7 @@ import AddLiquidityCLPane from './AddLiquidityCLPane'
 
 function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
-  const { isViewDown: isXlDown } = useMediaQuery(1280)
+  const { isMdDown, isXlDown, is2XlDown } = useMediaQuery()
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -98,6 +98,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
     if (price) return parseFloat(price)
   }, [mintInfo.invertPrice, mintInfo.price, position])
 
+  const [chartWidth, chartHeight] = useMemo(() => {
+    if (isMdDown) return [343, 168]
+    if (isXlDown) return [576, 221]
+    if (is2XlDown) return [640, 221]
+    return [704, 221]
+  }, [isMdDown, isXlDown, is2XlDown])
+
   return (
     <>
       <div className='flex flex-col'>
@@ -129,9 +136,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
           />
 
           {strategy?.isAutomatic && isXlDown && (
-            <div className='mt-4 space-y-4'>
-              <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Range')}</NewTextSubHeading>
+            <div className='mt-4'>
               <AutomaticLiquidityChart
+                label='Liquidity Range'
                 currencyA={currencyA ?? undefined}
                 currencyB={currencyB ?? undefined}
                 onLeftRangeInput={onLeftRangeInput}
@@ -158,10 +165,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
           {pair ? (
-            <div className='mb-4 mt-0 flex w-full flex-col items-end'>
+            <div className='mb-4 mt-0 flex w-full flex-col items-end max-xl:hidden'>
               <div className='flex w-fit items-center gap-2'>
                 <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
-                  <TextHeading className='!text-xl !font-medium text-neutral-500'>{t('Pool Attributes')}</TextHeading>
+                  <TextHeading className='!text-xl !font-medium xl:text-neutral-500'>
+                    {t('Pool Attributes')}
+                  </TextHeading>
                 </Box>
 
                 <div className='flex items-center'>
@@ -224,6 +233,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
             )}
             {strategy?.isAutomatic && (
               <AutomaticLiquidityChart
+                label='Liquidity Range'
                 currencyA={currencyA ?? undefined}
                 currencyB={currencyB ?? undefined}
                 onLeftRangeInput={onLeftRangeInput}
@@ -248,7 +258,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 onLeftRangeInput={onLeftRangeInput}
                 onRightRangeInput={onRightRangeInput}
                 interactive={false}
-                height={221}
+                width={chartWidth}
+                height={chartHeight}
               />
             )}
           </div>

@@ -24,6 +24,7 @@ export const useMediaQuery = (key, value) => {
     isLgDown: width < 1024,
     isXlDown: width < 1280,
     is2XlDown: width < 1440,
+    is3XlDown: width < 1920,
     isViewDown: key === 'down' && width < value,
     isViewUp: key === 'up' && width >= value,
   }

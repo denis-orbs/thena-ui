@@ -43,7 +43,8 @@ export default function LiquidityChartRangeInput({
   handleShow = true,
   showZoom = true,
   label,
-  height = 280,
+  width = 576,
+  height = 221,
 }) {
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
 
@@ -127,7 +128,7 @@ export default function LiquidityChartRangeInput({
           <Chart
             label={label}
             data={{ series: formattedData, current: price }}
-            dimensions={{ width: 440, height }}
+            dimensions={{ width, height }}
             margins={{ top: showZoom ? 10 : 0, right: 2, bottom: showZoom ? 20 : 30, left: 0 }}
             styles={{
               area: { selection: '#C672D8' },

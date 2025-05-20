@@ -31,7 +31,7 @@ export function Chart({
   zoomLevels,
   handleShow,
   showZoom = true,
-  chartHeight = 280,
+  chartHeight = 221,
 }) {
   const t = useTranslations()
 

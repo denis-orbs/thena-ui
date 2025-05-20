@@ -23,7 +23,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
               className,
             )}
           >
-            <NewTextSubHeading className='text-xs text-neutral-500 xl:!text-xl'>
+            <NewTextSubHeading className='text-xs xl:!text-xl xl:text-neutral-500'>
               {t('Pool Attributes')}
             </NewTextSubHeading>
           </Box>
