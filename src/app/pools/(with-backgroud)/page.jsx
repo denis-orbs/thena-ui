@@ -18,7 +18,7 @@ import IconGroup from '@/components/icongroup'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CircleImage from '@/components/image/CircleImage'
 import NextImage from '@/components/image/NextImage'
-import SearchInput from '@/components/input/SearchInput'
+import { SearchInput2 } from '@/components/input/SearchInput'
 import Selection from '@/components/selection'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
@@ -32,7 +32,7 @@ import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
-import { BarChartIcon, ChevronDownIcon, InfoIcon, PoolCoinsIcon } from '@/svgs'
+import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/svgs'
 
 import NewListings from '../NewListings'
 
@@ -499,7 +499,7 @@ export default function PoolsPage() {
               data-tooltip-id='analytics-tooltip'
             />
             <EmphasisButton
-              className='w-full text-xs max-lg:p-2 lg:w-fit'
+              className='w-full max-lg:p-2 max-lg:text-xs lg:w-fit'
               onClick={e => {
                 e.stopPropagation()
                 e.preventDefault()
@@ -572,10 +572,12 @@ export default function PoolsPage() {
                   selected={filter}
                   setSelected={ele => setFilter(ele.label)}
                   placeHolder='Choose Category'
+                  classNames={{ input: 'pl-4 py-3' }}
+                  prefixClass='pr-4 py-3'
                 />
-                <SearchInput
-                  className='!h-11 w-full lg:w-[280px]'
-                  classNames={{ input: '!h-11' }}
+                <SearchInput2
+                  className='!h-11 w-full !text-neutral-400 lg:w-[280px]'
+                  classNames={{ input: '!h-11 !text-neutral-400' }}
                   val={searchText}
                   setVal={setSearchText}
                 />
@@ -606,10 +608,15 @@ export default function PoolsPage() {
         </div>
         {vaults.length > 0 && networkId === ChainId.BSC && (
           <div className='flex flex-col'>
-            <div className='flex items-center gap-4'>
-              <h2 className='text-2xl font-medium text-neutral-50'>{t('THE Single Sided Vaults')} </h2>
-              <ChevronDownIcon
-                className={cn('size-8 cursor-pointer', toggleVault && 'rotate-180')}
+            <div className='flex items-center gap-4 max-md:justify-between'>
+              <TextHeading className='text-xl font-medium text-neutral-50 md:text-2xl'>
+                {t('THE Single Sided Vaults')}
+              </TextHeading>
+              <ChevronDownWhiteIcon
+                className={cn(
+                  'size-8 cursor-pointer !stroke-neutral-50 transition-all duration-150 ease-in-out',
+                  toggleVault ? 'rotate-180' : 'rotate-0',
+                )}
                 onClick={() => setToggleVault(!toggleVault)}
               />
             </div>

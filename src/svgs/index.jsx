@@ -27,6 +27,7 @@ import Check2Icon from '~/svgs/check2.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import ChevronDownWhiteIcon from '~/svgs/chevron-down-white.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
 import ChevronSelectorVerticalIcon from '~/svgs/chevron-selector-vertical.svg'
 import ChevronUpIcon from '~/svgs/chevron-up.svg'
@@ -175,6 +176,7 @@ export {
   CheckPurpleIcon,
   CheckPurpleLargeIcon,
   ChevronDownIcon,
+  ChevronDownWhiteIcon,
   ChevronRightIcon,
   ChevronSelectorVerticalIcon,
   ChevronUpIcon,
