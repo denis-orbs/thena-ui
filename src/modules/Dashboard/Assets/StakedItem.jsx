@@ -174,8 +174,6 @@ function StakedItem({ position }) {
     [position.token0, position.token1, position.symbol, position.title, position.version],
   )
 
-  console.log({ position })
-
   const rangeCell = useMemo(
     () => (
       <div className='w-full text-center'>
