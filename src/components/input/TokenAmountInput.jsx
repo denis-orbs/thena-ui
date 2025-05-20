@@ -181,6 +181,7 @@ export function TokenAmountInput({
                   style={SELECT_TOKEN_STYLE.BADGE}
                   allowDouble={Boolean(maxBalance)}
                   assetOptions={assetsSelect}
+                  classNames={{ dropdown: '2xl:grid-cols-2' }}
                 />
               ) : (
                 <AssetDropdown

@@ -13,10 +13,10 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -247,6 +247,7 @@ function ChainMobileSelect({ t }) {
   )
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function LanguageSelect() {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -308,6 +309,59 @@ function LanguageSelect() {
   )
 }
 
+function V3Banner({ onClose }) {
+  const router = useRouter()
+  const { push } = router
+  useEffect(() => {
+    document.body.classList.add('has-v3-banner')
+    return () => {
+      document.body.classList.remove('has-v3-banner')
+    }
+  }, [])
+
+  return (
+    <div
+      id='v3-banner'
+      className='fixed left-0 top-0 z-[100] flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
+    >
+      <div className='flex flex-1 flex-col items-center justify-center gap-2 md:flex-row'>
+        <span className='font-semibold'>🔥 THENA V3,3 is Launched!</span>
+        <span className='text-center font-normal'>
+          Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.
+        </span>
+        <TertiaryButton
+          className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
+          onClick={() => push('/dashboard')}
+        >
+          Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
+        </TertiaryButton>
+      </div>
+      <button
+        onClick={onClose}
+        type='button'
+        data-drawer-hide='v3-banner'
+        aria-controls='v3-banner'
+        className='inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
+      >
+        <svg
+          aria-hidden='true'
+          className='h-5 w-5'
+          fill='currentColor'
+          viewBox='0 0 20 20'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            fillRule='evenodd'
+            d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+            clipRule='evenodd'
+          />
+        </svg>
+        <span className='sr-only'>Close</span>
+      </button>
+    </div>
+  )
+}
+
 function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
@@ -326,6 +380,14 @@ function Header() {
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
   const { width } = useWindowSize()
+
+  const [showBannerMigrate, setShowBannerMigrate] = useState(
+    !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22'),
+  )
+  const handleCloseV3Banner = () => {
+    localStorage.setItem(NotShowBannerV3, 'true')
+    setShowBannerMigrate(false)
+  }
 
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
@@ -784,7 +846,13 @@ function Header() {
 
   return (
     <div>
-      <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl md:h-[92px]'>
+      {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
+      <header
+        className={cn(
+          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl md:h-[92px]',
+          showBannerMigrate && 'top-[116px] md:top-[54px]',
+        )}
+      >
         <div
           className={cn(
             'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pb-6 lg:pt-6',
@@ -894,7 +962,7 @@ function Header() {
                   )}
                 </div>
                 <ChainSelect t={t} />
-                <LanguageSelect />
+                {/* <LanguageSelect /> */}
                 <OutlinedButton
                   className='hidden 2xl:flex'
                   onClick={() => window.open('https://alpha.thena.fi', '_blank')}
@@ -991,7 +1059,12 @@ function Header() {
         </div>
       )} */}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
+        <div
+          className={cn(
+            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
+            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+          )}
+        >
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch
@@ -1013,7 +1086,12 @@ function Header() {
         </div>
       )}
       {pathname.startsWith('/story') && isRegistered && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+        <div
+          className={cn(
+            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
+            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+          )}
+        >
           <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
             {!isUpcoming && (
               <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
