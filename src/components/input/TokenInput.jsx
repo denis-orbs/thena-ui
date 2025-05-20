@@ -122,9 +122,12 @@ function TokenInput({
             <span>
               {t('Balance')}: {formatAmount(isDouble ? balance : asset?.balance)}
             </span>
-            <span onClick={() => setAmount(asset.balance)} className={cn('cursor-pointer text-primary-600')}>
-              {t('Max')}
-            </span>
+
+            {!readOnly && (
+              <span onClick={() => setAmount(asset.balance)} className={cn('cursor-pointer text-primary-600')}>
+                {t('Max')}
+              </span>
+            )}
           </TextSubHeading>
         </div>
       </div>

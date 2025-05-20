@@ -43,7 +43,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
   const [tokenReceive, setTokenReceive] = useState(pool?.tokens?.[0])
   const [totalWithdrawal, setTotalWithdrawal] = useState(0)
 
-  const [slippagge, setSlippage] = useState(0.5) // default = 0.5
+  const [slippage, setSlippage] = useState(0.5) // default = 0.5
 
   const [minAmountsOut, setMinAmountsOut] = useState([])
   const [minAmountOut, setMinAmountOut] = useState('')
@@ -112,13 +112,11 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
   const onRemove = useCallback(async () => {
     const amountToWei = toWei(amount)
     if (removeType === REMOVE_TYPE.SINGLE) {
-      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, minAmountOut, slippagge, () =>
+      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, minAmountOut, slippage, () =>
         mutatePoolBalance(),
       )
     } else {
-      await onRemoveLiquidityAllToken(pool, amountToWei, minAmountsOut, tokensData, slippagge, () =>
-        mutatePoolBalance(),
-      )
+      await onRemoveLiquidityAllToken(pool, amountToWei, minAmountsOut, tokensData, slippage, () => mutatePoolBalance())
     }
   }, [
     amount,
@@ -127,7 +125,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
     pool,
     tokenReceive,
     minAmountOut,
-    slippagge,
+    slippage,
     mutatePoolBalance,
     onRemoveLiquidityAllToken,
     minAmountsOut,
@@ -195,7 +193,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleRemoveType} />
           <div className='flex flex-col'>
             <div className='flex justify-end'>
-              <SettingSlippageDropDown slippage={slippagge} updateSlippage={setSlippage} />
+              <SettingSlippageDropDown position='end' slippage={slippage} updateSlippage={setSlippage} />
             </div>
             <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title='Amount' />
           </div>

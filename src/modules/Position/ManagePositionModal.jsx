@@ -19,7 +19,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
         label: 'Add',
         active: !isRemove,
         onClickHandler: () => {
-          push(`/pools/add-liquidity?step=3&poolAddress=${strategy.address}`)
+          push(`/pools/add-liquidity?step=3&poolAddress=${strategy.address}&back=2`)
         },
       },
       {
