@@ -152,7 +152,10 @@ export default function CreateWeightedPoolPage() {
           <NewTextHeading className='xl:!text-[40px] xl:!leading-[48px]'>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
         <div
-          className={cn('flex flex-col-reverse gap-8 xl:grid xl:grid-cols-2', currentStep === 3 && 'xl:grid-cols-1')}
+          className={cn(
+            'flex flex-col-reverse gap-4 xl:grid xl:grid-cols-2 xl:gap-8',
+            currentStep === 3 && 'xl:grid-cols-1',
+          )}
         >
           <div className='w-full flex-2 lg:flex-1'>
             <PoolWithStep

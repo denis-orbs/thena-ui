@@ -31,7 +31,7 @@ function AddLiquidityWeightedPool({ setCurrentStep }) {
         <ScalesIcon className='size-14' />
         <NewTextHeading>{t('Add to Weighted Pool')}</NewTextHeading>
       </div>
-      <div className='flex flex-col gap-8 lg:flex-row'>
+      <div className='flex flex-col gap-4 lg:flex-row lg:gap-8'>
         <div className='flex flex-[6]'>
           <ChoosePoolTokens setTokensSelect={updateTokensSelected} />
         </div>
