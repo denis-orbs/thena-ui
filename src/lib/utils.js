@@ -299,7 +299,7 @@ export const getDisplayedStrategy = (strategy, version = 3) => {
   }
 
   if (ICHI_TYPES.includes(strategy)) {
-    return version === 2 ? 'ICHI Single Sided' : 'ICHI'
+    return version === 2 && strategy === 'ICHI_Single_Sided' ? 'ICHI Single Sided' : 'ICHI'
   }
 
   if (MANUAL_TYPES.includes(strategy)) {

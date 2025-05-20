@@ -290,13 +290,13 @@ function ManualItem({ position }) {
 
         {version === 3 && (
           <>
-            <PrimaryButton
+            <EmphasisButton
               className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
               disabled={feesInUsd.isZero()}
               onClick={() => setClaimPopup(true)}
             >
               {t('Claim')}
-            </PrimaryButton>
+            </EmphasisButton>
             <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
               {t('Add')}
             </EmphasisButton>

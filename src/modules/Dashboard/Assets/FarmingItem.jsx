@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -289,7 +289,7 @@ function FarmingItem({ position }) {
           {t('Claim')}
         </TextButton>
 
-        <PrimaryButton
+        <EmphasisButton
           className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
             hidden: hideButton.earn,
           })}
@@ -297,7 +297,7 @@ function FarmingItem({ position }) {
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
         >
           {t('Earn $THE')}
-        </PrimaryButton>
+        </EmphasisButton>
 
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {

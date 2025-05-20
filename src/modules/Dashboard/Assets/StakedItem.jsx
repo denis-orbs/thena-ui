@@ -271,23 +271,26 @@ function StakedItem({ position }) {
   const actionCell = useMemo(() => {
     let actions = (
       <>
-        {position.type === PAIR_TYPES.LSD ? (
-          <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setRemovePopup(true)}>
-            {t('Remove')}
-          </EmphasisButton>
-        ) : (
-          <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-            {t('Unstake')}
-          </EmphasisButton>
-        )}
+        <EmphasisButton
+          className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base'
+          onClick={() => {
+            if (position.type === PAIR_TYPES.LSD) {
+              setRemovePopup(true)
+            } else {
+              setPopup(true)
+            }
+          }}
+        >
+          {t('Remove')}
+        </EmphasisButton>
 
-        <PrimaryButton
+        <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
           onClick={handleHarvest}
           disabled={claimPending || position.account.earnedUsd.isZero()}
         >
-          {t('Harvest')}
-        </PrimaryButton>
+          {t('Claim')}
+        </EmphasisButton>
 
         <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
           {t('Add')}
@@ -299,15 +302,15 @@ function StakedItem({ position }) {
         actions = (
           <>
             <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-              {t('Unstake')}
+              {t('Remove')}
             </EmphasisButton>
-            <PrimaryButton
+            <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
               onClick={handleHarvest}
               disabled={claimPending || position.account.earnedUsd.isZero()}
             >
-              {t('Harvest')}
-            </PrimaryButton>
+              {t('Claim')}
+            </EmphasisButton>
 
             <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
               {t('Add')}

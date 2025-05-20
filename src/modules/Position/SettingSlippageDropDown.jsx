@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { SettingPrimaryIcon, SettingsIcon } from '@/svgs'
 
 const defaultSlippageOptions = [0.1, 0.5, 1]
-function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
+function SettingSlippageDropDown({ slippage, updateSlippage, className, position = 'start' }) {
   const [show, setShow] = useState(false)
   const dropdownRef = useRef(null)
   const t = useTranslations()
@@ -28,11 +28,11 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
   )
 
   return (
-    <div className={cn('mb-4 flex items-center justify-start', className)}>
+    <div className={cn('mb-4 flex items-center justify-start', className, position === 'end' && 'justify-end')}>
       <div className={cn('flex flex-col')} ref={dropdownRef}>
-        <div className='flex justify-start'>
+        <div className={cn('flex justify-start', position === 'end' && 'justify-end')}>
           <div
-            className='flex cursor-pointer items-center justify-start gap-2'
+            className={cn('flex cursor-pointer items-center justify-start gap-2', position === 'end' && 'justify-end')}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={() => setShow(prev => !prev)}

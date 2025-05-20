@@ -22,7 +22,7 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
         label: 'Add',
         active: !isRemove,
         onClickHandler: () => {
-          push(`/pools/add-liquidity/weighted/${pool.address}`)
+          push(`/pools/add-liquidity/weighted/${pool.address}?back=2`)
         },
       },
       {

@@ -98,7 +98,12 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       <ModalBody>
         {!isManage && <PoolTitle strategy={strategy} />}
         <div className='flex justify-end'>
-          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown
+            className='justify-end'
+            slippage={slippage}
+            updateSlippage={setSlippage}
+            position='end'
+          />
         </div>
         <DoubleInput
           title='Amount'
