@@ -553,15 +553,13 @@ export default function PoolsPage() {
             <NewTextHeading>{t('Pools')}</NewTextHeading>
           </div>
           <div className='flex flex-col gap-2 lg:flex-row'>
-            <div className='flex items-center justify-between'>
-              <Toggle
-                className='lg:hidden'
-                checked={isInactive}
-                onChange={() => setIsInactive(!isInactive)}
-                toggleId='active'
-                label='Inactive Pools'
-              />
-            </div>
+            <Toggle
+              className='lg:hidden'
+              checked={isInactive}
+              onChange={() => setIsInactive(!isInactive)}
+              toggleId='active'
+              label='Inactive Pools'
+            />
             <div className='flex w-full flex-col items-center justify-between gap-4 lg:flex-row'>
               <div className='flex w-full flex-col gap-4 lg:w-auto lg:flex-row lg:gap-2'>
                 <Dropdown
