@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
@@ -18,11 +19,20 @@ import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
-import { cn, formatAmount, fromWei, getDisplayedStrategy, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import {
+  cn,
+  formatAmount,
+  fromWei,
+  getDisplayedStrategy,
+  getLiquidityRangeType,
+  isInvalidAmount,
+  ZERO_VALUE,
+} from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
+import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
@@ -30,6 +40,7 @@ import { InfoIcon } from '@/svgs'
 import Range from './Range'
 
 function NotStakedItem({ position, isXlDown }) {
+  const dispatch = useDispatch()
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -114,6 +125,7 @@ function NotStakedItem({ position, isXlDown }) {
     position.token1.decimals,
     position.token1.price,
   ])
+
   const isSingleSided = useMemo(
     () => ICHI_VAULTS[networkId].some(v => v.address === position.address),
     [position.address, networkId],
@@ -197,6 +209,13 @@ function NotStakedItem({ position, isXlDown }) {
     position.token0,
     position.token1,
   ])
+
+  const handleAdd = useCallback(() => {
+    console.log(strategy)
+    dispatch(updateStrategy({ strategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
+  }, [dispatch, position.basePool, position.title, push, strategy])
 
   const pairCell = useMemo(
     () => (
@@ -337,10 +356,7 @@ function NotStakedItem({ position, isXlDown }) {
             </EmphasisButton>
 
             {version === 3 || isSingleSided ? (
-              <EmphasisButton
-                className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)}
-              >
+              <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
                 {t('Add')}
               </EmphasisButton>
             ) : migrationOptions?.length > 0 ? (
@@ -359,7 +375,7 @@ function NotStakedItem({ position, isXlDown }) {
         )}
       </div>
     ),
-    [feesInUsd, feesPending, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, push, t, version],
+    [feesInUsd, feesPending, handleAdd, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, t, version],
   )
 
   return (

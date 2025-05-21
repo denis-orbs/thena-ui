@@ -28,9 +28,9 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
+import { cn, formatAmount, getLiquidityRangeType, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { updateStrategy } from '@/state/fusion/actions'
+import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
 import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/svgs'
 
@@ -536,6 +536,43 @@ export default function PoolsPage() {
     [strategy],
   )
 
+  const handleDepositSingleSidedVault = useCallback(
+    position => {
+      const newStrategy = {
+        title: position?.title,
+        tvl: position?.gauge?.tvl?.toNumber() ?? 0,
+        apr: position?.gauge?.apr.toNumber() ?? 0,
+        account: {
+          totalLp: position?.account?.totalLp?.toNumber(),
+          gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+        },
+        allowed: { ...position?.allowed, balance: position?.allowed?.balance?.toNumber() },
+        token0: {
+          ...position?.token0,
+          reserve: position?.token0?.reserve?.toNumber(),
+          balance: position?.token0?.balance?.toNumber(),
+          totalValue: position?.token0?.totalValue,
+        },
+        token1: {
+          ...position?.token1,
+          reserve: position?.token1?.reserve?.toNumber(),
+          balance: position?.token1?.balance?.toNumber(),
+          totalValue: position?.token1?.totalValue,
+        },
+        address: position?.address,
+        isFarming: position?.title?.includes('Farming'),
+        isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+        isDefault: true,
+        version: position.version,
+        fee: position?.fee,
+      }
+      dispatch(updateStrategy({ strategy: newStrategy }))
+      dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
+      push(`/pools/add-liquidity?step=3&poolAddress=${position.algebra}&back=1`)
+    },
+    [dispatch, push],
+  )
+
   useEffect(() => {
     setCurrentPage(1)
   }, [filter, strategy, searchText, isInactive])
@@ -671,9 +708,7 @@ export default function PoolsPage() {
                     </div>
                     <EmphasisButton
                       className='h-8 w-full text-xs font-medium'
-                      onClick={() => {
-                        push(`/pools/add-liquidity?step=3&poolAddress=${trending.algebra}&back=1`)
-                      }}
+                      onClick={() => handleDepositSingleSidedVault(trending)}
                     >
                       {t('Deposit')}
                     </EmphasisButton>
