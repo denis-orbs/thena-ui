@@ -245,8 +245,8 @@ function WeightedItem({ position, isStake }) {
         </div>
       )}
 
-      <RemoveWeightedModal isOpen={isOpenRemove} pool={position} setIsOpen={setIsOpenRemove} />
-      <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={position} />
+      {isOpenRemove && <RemoveWeightedModal isOpen={isOpenRemove} pool={position} setIsOpen={setIsOpenRemove} />}
+      {managePopup && <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={position} />}
       <GaugeWeightedManageModal
         title={!isStake ? 'Stake LP' : 'Unstake LP'}
         onGaugeManage={!isStake ? onGaugeStake : onGaugeUnstake}
