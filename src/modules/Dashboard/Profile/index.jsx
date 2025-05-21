@@ -80,7 +80,7 @@ function DashboardProfile() {
           <div className='flex h-full flex-col justify-between gap-4'>
             <div className='flex flex-col gap-4'>
               <div className='flex h-[130px] flex-col justify-end'>
-                <NewTextHeading className='text-gradient-primary-b text-5xl md:text-5xl'>
+                <NewTextHeading className='text-gradient-primary-b text-5xl leading-tight md:text-5xl'>
                   {t('Mint your ID')}
                 </NewTextHeading>
               </div>
