@@ -9,20 +9,20 @@ import { cn, formatAmount } from '@/lib/utils'
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 const GRAY_COLOR = '#281B2E'
 
-function formatDuration(seconds) {
-  const days = Math.floor(seconds / (3600 * 24))
-  const hours = Math.floor((seconds % (3600 * 24)) / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
+// function formatDuration(seconds) {
+//   const days = Math.floor(seconds / (3600 * 24))
+//   const hours = Math.floor((seconds % (3600 * 24)) / 3600)
+//   const minutes = Math.floor((seconds % 3600) / 60)
+//   const secs = seconds % 60
 
-  const parts = []
-  if (days) parts.push(`${days}d`)
-  if (hours) parts.push(`${hours}h`)
-  if (minutes) parts.push(`${minutes}m`)
-  if (secs || parts.length === 0) parts.push(`${secs}s`)
+//   const parts = []
+//   if (days) parts.push(`${days}d`)
+//   if (hours) parts.push(`${hours}h`)
+//   if (minutes) parts.push(`${minutes}m`)
+//   if (secs || parts.length === 0) parts.push(`${secs}s`)
 
-  return parts.join('')
-}
+//   return parts.join('')
+// }
 
 function getSecondsRelativeToThursdayUTC() {
   const now = new Date()
@@ -75,12 +75,12 @@ function VotingChart({ data = [], className }) {
         logo: (
           <GroupIconTokens
             classNames={{
-              image: 'outline-2 w-7 h-7',
+              image: 'outline-2 w-8 h-8',
               rows: '-space-x-2',
               toolTip: 'hidden',
             }}
-            width={28}
-            height={28}
+            width={32}
+            height={32}
             tokens={d.type === PAIR_TYPES.WEIGHTED ? d.tokens : [d.token0, d.token1]}
           />
         ),
@@ -88,17 +88,7 @@ function VotingChart({ data = [], className }) {
       }
     })
 
-    if (!result || result.length === 0) {
-      return [
-        {
-          label: 'Not voted',
-          value: 1000,
-          rewards: new BigNumber(0),
-          weightPercent: new BigNumber(100),
-        },
-      ]
-    }
-    return result
+    return result || []
   }
 
   const pools = formatData()
@@ -119,23 +109,26 @@ function VotingChart({ data = [], className }) {
 
   const chartData = {
     datasets: [
-      {
-        label: 'vote',
-        data: pools.map(d => d.value),
-        backgroundColor: poolColors,
-        borderWidth: 0,
-        spacing: pools.length === 1 && pools[0].label === 'Not voted' ? 0 : 2,
-        radius: '72%',
-        cutout: '62%',
-      },
-      {
-        label: 'time',
-        data: timeData.map(d => d.value),
-        backgroundColor: timeColors,
-        borderWidth: 0,
-        radius: '100%',
-        cutout: '75%',
-      },
+      ...[
+        pools.length > 0
+          ? {
+              label: 'vote',
+              data: pools.map(d => d.value),
+              backgroundColor: poolColors,
+              borderWidth: 0,
+              spacing: pools.length === 1 ? 0 : 2,
+              radius: '100%',
+              cutout: '87%',
+            }
+          : {
+              label: 'time',
+              data: timeData.map(d => d.value),
+              backgroundColor: timeColors,
+              borderWidth: 0,
+              radius: '100%',
+              cutout: '87%',
+            },
+      ],
     ],
   }
 
@@ -148,19 +141,14 @@ function VotingChart({ data = [], className }) {
     rotation: -90,
     plugins: {
       tooltip: {
-        filter: tooltipItem => tooltipItem.datasetIndex === 1,
-        callbacks: {
-          label(context) {
-            return formatDuration(Number(context.raw))
-          },
-        },
+        enabled: false,
       },
       legend: {
         display: false,
       },
     },
     onHover: (_, elements) => {
-      if (!chartRef.current) return
+      if (!chartRef.current || pools.length === 0) return
 
       const chart = chartRef.current
 
@@ -168,13 +156,11 @@ function VotingChart({ data = [], className }) {
         const hoveredPoolIndex = elements[0].index
         setHoveredIndex(hoveredPoolIndex)
 
-        // only for voting dataset
         const newColors = originalColors.current.map((color, idx) => (idx === hoveredPoolIndex ? color : GRAY_COLOR))
-        chart.data.datasets[0].backgroundColor = newColors
 
+        chart.data.datasets[0].backgroundColor = newColors
         chart.update('none')
       } else if (hoveredIndex !== null) {
-        // Reset colors when not hovering
         setHoveredIndex(null)
         chart.data.datasets[0].backgroundColor = originalColors.current
         chart.update('none')
@@ -185,25 +171,31 @@ function VotingChart({ data = [], className }) {
 
   // Center content based on hover state
   const renderCenterContent = () => {
-    if (pools.length === 1 && pools[0].label === 'Not voted') {
-      return <span className='font-bold uppercase text-error-600'>Not voted</span>
-    }
-
-    if (hoveredIndex !== null && pools[hoveredIndex]?.label !== 'Not voted') {
-      const pool = pools[hoveredIndex]
-      return (
-        <>
-          {pool.logo}
-          <div className='text-2xl font-semibold text-primary-300'>${formatAmount(pool.rewards, true)}</div>
-          <div className='text-sm text-neutral-500'>{formatAmount(pool.weightPercent)}% vote power</div>
-        </>
-      )
-    }
+    const isHoveringValid = hoveredIndex !== null && pools[hoveredIndex]?.label !== 'Not voted'
+    const pool = pools[hoveredIndex]
 
     return (
       <>
-        <div className='text-3xl font-semibold text-primary-300'>${formatAmount(expectedRewards, true)}</div>
-        <div className='text-sm text-neutral-500'>Expected Rewards</div>
+        <div className='mb-1 h-8'>{isHoveringValid && pool.logo}</div>
+
+        <div
+          className={cn(
+            'min-h-[40px] font-archia text-3xl font-semibold text-primary-300',
+            pools.length === 0 && 'text-xl uppercase leading-6 text-error-600',
+          )}
+        >
+          {pools.length > 0
+            ? isHoveringValid
+              ? `$${formatAmount(pool.rewards, true)}`
+              : `$${formatAmount(expectedRewards, true)}`
+            : 'NOT VOTED'}
+        </div>
+
+        <div className='text-sm text-neutral-500'>{pools.length > 0 && 'Expected Rewards'}</div>
+
+        <div className='min-h-[20px] text-sm text-neutral-500'>
+          {pools.length > 0 && isHoveringValid ? `${formatAmount(pool.weightPercent)}% vote power` : ''}
+        </div>
       </>
     )
   }
