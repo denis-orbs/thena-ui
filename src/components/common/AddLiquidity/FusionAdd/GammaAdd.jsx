@@ -154,8 +154,6 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
     [mintInfo.errorMessage, mintInfo.errorCode],
   )
 
-  console.log({ errorMessage, errorCode })
-
   const { handleAddGamma, pending } = useAddGamma()
   const dispatch = useDispatch()
 
