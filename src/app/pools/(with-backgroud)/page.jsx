@@ -581,7 +581,7 @@ export default function PoolsPage() {
                 />
                 {filter === PAIR_TYPES.LSD && <Selection data={strategySelections} isFull />}
                 <Toggle
-                  className='hidden lg:flex'
+                  className='ml-2 hidden lg:flex'
                   checked={isInactive}
                   onChange={() => setIsInactive(!isInactive)}
                   toggleId='active'
