@@ -92,11 +92,15 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const currentPrice = useMemo(() => {
-    if (position) return position.currentPrice
+    if (position) {
+      const isSorted = baseCurrency && quoteCurrency && baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
+      return isSorted ? position.currentPrice : 1 / position.currentPrice
+    }
+
     if (!mintInfo.price) return
     const price = mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
     if (price) return parseFloat(price)
-  }, [mintInfo.invertPrice, mintInfo.price, position])
+  }, [baseCurrency, mintInfo.invertPrice, mintInfo.price, position, quoteCurrency])
 
   const [chartWidth, chartHeight] = useMemo(() => {
     if (isMdDown) return [343, 168]
@@ -260,6 +264,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 interactive={false}
                 width={chartWidth}
                 height={chartHeight}
+                isFixed={!!position}
               />
             )}
           </div>

@@ -36,7 +36,7 @@ function ClaimableRewards({ setClaimableRewards }) {
     let total = ZERO_VALUE
     Object.values(rewards).forEach(list => {
       list.forEach(val => {
-        total = total.plus(val.amount)
+        total = total.plus(val.amount ?? 0)
       })
     })
     return total.times(prices.THE).toNumber()

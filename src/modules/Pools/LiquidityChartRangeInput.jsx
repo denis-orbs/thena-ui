@@ -43,6 +43,7 @@ export default function LiquidityChartRangeInput({
   handleShow = true,
   showZoom = true,
   label,
+  isFixed = false,
   width = 576,
   height = 221,
 }) {
@@ -143,6 +144,7 @@ export default function LiquidityChartRangeInput({
             handleShow={handleShow}
             showZoom={showZoom}
             chartHeight={height}
+            isFixed={isFixed}
           />
         </div>
       )}

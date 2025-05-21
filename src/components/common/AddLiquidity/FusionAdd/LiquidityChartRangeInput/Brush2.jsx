@@ -65,7 +65,7 @@ export const Brush2 = ({
   }, [localBrushExtent, setLiveLocalBrushExtent])
 
   useEffect(() => {
-    if (!brushRef.current || brushInProgress) return
+    if (!brushRef.current || brushInProgress || !interactive) return
 
     const normalizedExtent = normalizeExtent(brushExtent)
     const scaledExtent = toYScale(normalizedExtent, yScale)

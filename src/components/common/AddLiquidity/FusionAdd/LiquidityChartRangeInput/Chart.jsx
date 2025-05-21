@@ -31,14 +31,14 @@ export function Chart({
   zoomLevels,
   handleShow,
   showZoom = true,
+  isFixed = false,
   chartHeight = 221,
 }) {
   const t = useTranslations()
-
   const zoomRef = useRef(null)
+  const { preset } = useSelector(state => state.fusion)
 
   const [zoom, setZoom] = useState(null)
-  const { preset } = useSelector(state => state.fusion)
 
   const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
 
@@ -48,6 +48,8 @@ export function Chart({
   )
 
   const [leftDomain, rightDomain] = useMemo(() => {
+    if (isFixed) return [brushDomain[0], brushDomain[1]]
+
     let midPrice = current
     const filteredSeries = series.filter(item => item.price0 < 1e10).sort((a, b) => a.price0 - b.price0)
     const seriesLength = filteredSeries.length
