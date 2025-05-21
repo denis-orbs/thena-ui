@@ -176,11 +176,11 @@ function VotingChart({ data = [], className }) {
 
     return (
       <>
-        <div className='mb-1 h-8'>{isHoveringValid && pool.logo}</div>
+        <div className='mb-2 h-8'>{isHoveringValid && pool.logo}</div>
 
         <div
           className={cn(
-            'min-h-[40px] font-archia text-3xl font-semibold text-primary-300',
+            'min-h-[36px] font-archia text-3xl font-semibold leading-9 text-primary-300',
             pools.length === 0 && 'text-xl uppercase leading-6 text-error-600',
           )}
         >
@@ -191,10 +191,9 @@ function VotingChart({ data = [], className }) {
             : 'NOT VOTED'}
         </div>
 
-        <div className='text-sm text-neutral-500'>{pools.length > 0 && 'Expected Rewards'}</div>
-
-        <div className='min-h-[20px] text-sm text-neutral-500'>
-          {pools.length > 0 && isHoveringValid ? `${formatAmount(pool.weightPercent)}% vote power` : ''}
+        <div className='flex min-h-[40px] flex-col text-sm text-neutral-500'>
+          <span>{pools.length > 0 && 'Expected Rewards'}</span>
+          <span>{pools.length > 0 && isHoveringValid ? `${formatAmount(pool.weightPercent)}% vote power` : ''}</span>
         </div>
       </>
     )

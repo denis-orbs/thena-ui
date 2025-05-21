@@ -129,7 +129,7 @@ function Voting() {
 
   return (
     <>
-      <Box className='flex h-full flex-col justify-between !p-4'>
+      <Box className='flex h-full flex-col justify-between gap-2 !p-4'>
         {veTHEs.length > 0 ? (
           <>
             <div className='flex justify-between gap-2'>
@@ -154,7 +154,7 @@ function Voting() {
               />
             </div>
 
-            <div className='fex flex-col gap-4'>
+            <div className='fex flex-col'>
               <div className='flex items-center justify-center'>
                 <VotingChart className='h-[260px] w-[260px]' data={userPools} />
               </div>
