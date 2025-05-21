@@ -12,6 +12,7 @@ import TokenInput from '@/components/input/TokenInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
@@ -32,7 +33,6 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
     onRemoveLiquidityAllToken,
     calcMinAmountOutRemoveSingle,
     calcMinAmountOutRemoveAll,
-    pending,
   } = useWeightedPool()
 
   const { mutatePoolBalance } = useWeightPoolData(pool.address)
@@ -48,7 +48,22 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
   const [minAmountsOut, setMinAmountsOut] = useState([])
   const [minAmountOut, setMinAmountOut] = useState('')
 
-  const tokensData = useMemo(() => pool?.tokens || [], [pool?.tokens])
+  const [initialState, setInitialState] = useState(true)
+  const [tokensData, setTokensData] = useState(pool?.tokens || [])
+
+  const assets = useAssets()
+
+  useEffect(() => {
+    if (pool?.tokens?.length > 0 && initialState) {
+      const updatedTokensData = pool.tokens.map(token => ({
+        ...token,
+        balance: assets.find(asset => asset.address === token.address)?.balance,
+      }))
+      setTokensData(updatedTokensData)
+      setTokenReceive(updatedTokensData[0])
+      setInitialState(false)
+    }
+  }, [assets, pool, initialState])
 
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -154,10 +169,10 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
       return true
     }
 
-    if (!amount || amount <= 0 || pending) return true
+    if (!amount || amount <= 0) return true
 
     return false
-  }, [removeType, tokenReceive, minAmountOut, minAmountsOut, amount, pending, impact])
+  }, [removeType, tokenReceive, minAmountOut, minAmountsOut, amount, impact])
 
   return (
     <>
@@ -233,7 +248,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
               )}
             </div>
           </div>
-          {impact >= 10 && !pending && (
+          {impact >= 10 && (
             <Alert>
               <InfoIcon className='h-4 w-4 stroke-error-600' />
               <p>{`${t('Price impact too high').replace('!', '')}: ${formatAmount(impact)}%`}</p>

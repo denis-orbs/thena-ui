@@ -48,55 +48,59 @@ function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false
         <p className='font-medium text-white'>{t(title)}</p>
         {!readOnly && <Tabs data={percents} />}
       </div>
-      <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
-        <div className='flex items-center justify-between gap-2'>
-          <input
-            type='number'
-            className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
-            placeholder='0.0'
-            value={amount}
-            onChange={e => {
-              onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
-            }}
-            min={0}
-            autoFocus={autoFocus}
-            readOnly={readOnly}
-          />
-          {pair ? (
-            <div
-              className={cn(
-                'inline-flex items-center justify-center gap-2',
-                'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                'max-w-[60%] py-1.5 pl-1.5 pr-2',
-              )}
-            >
-              <ThreeIconGroup
-                logo1={pair?.tokens?.[0]?.logoURI}
-                logo2={pair?.tokens?.[1]?.logoURI}
-                extendNumber={(pair?.tokens?.length || 2) - 2}
-                classNames={{ image: 'w-6 h-6' }}
-                className='-space-x-1'
-              />
-              <span className='text-wrap' data-tooltip-id={toolTipId}>
-                {pair?.symbol?.length > 10 ? formatAddress(pair?.symbol) : pair?.symbol}
-              </span>
-              {pair?.symbol?.length > 10 && (
-                <CustomTooltip id={toolTipId} className='max-w-[500px]'>
-                  {pair?.symbol}
-                </CustomTooltip>
-              )}
-            </div>
-          ) : (
-            <Skeleton className='h-6 w-10' />
-          )}
+      {pending ? (
+        <Skeleton className='h-6 w-full' />
+      ) : (
+        <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+          <div className='flex items-center justify-between gap-2'>
+            <input
+              type='number'
+              className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+              placeholder='0.0'
+              value={amount}
+              onChange={e => {
+                onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
+              }}
+              min={0}
+              autoFocus={autoFocus}
+              readOnly={readOnly}
+            />
+            {pair ? (
+              <div
+                className={cn(
+                  'inline-flex items-center justify-center gap-2',
+                  'rounded-full bg-neutral-600 text-sm text-neutral-200',
+                  'max-w-[60%] py-1.5 pl-1.5 pr-2',
+                )}
+              >
+                <ThreeIconGroup
+                  logo1={pair?.tokens?.[0]?.logoURI}
+                  logo2={pair?.tokens?.[1]?.logoURI}
+                  extendNumber={(pair?.tokens?.length || 2) - 2}
+                  classNames={{ image: 'w-6 h-6' }}
+                  className='-space-x-1'
+                />
+                <span className='text-wrap' data-tooltip-id={toolTipId}>
+                  {pair?.symbol?.length > 10 ? formatAddress(pair?.symbol) : pair?.symbol}
+                </span>
+                {pair?.symbol?.length > 10 && (
+                  <CustomTooltip id={toolTipId} className='max-w-[500px]'>
+                    {pair?.symbol}
+                  </CustomTooltip>
+                )}
+              </div>
+            ) : (
+              <Skeleton className='h-6 w-10' />
+            )}
+          </div>
+          <div className='flex items-center justify-between gap-2'>
+            <TextSubHeading>${formatAmount(pair.lpPrice * amount)}</TextSubHeading>
+            <TextSubHeading className='flex items-center'>
+              {t('Balance')}: {!pending ? <>{formatAmount(balance)}</> : <Skeleton className='h-6 w-10' />}
+            </TextSubHeading>
+          </div>
         </div>
-        <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading>${formatAmount(pair.lpPrice * amount)}</TextSubHeading>
-          <TextSubHeading className='flex items-center'>
-            {t('Balance')}: {!pending ? <>{formatAmount(balance)}</> : <Skeleton className='h-6 w-10' />}
-          </TextSubHeading>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -84,7 +84,7 @@ export const useWeightPoolData = poolAddress => {
     mutate: mutatePoolBalance,
     isLoading,
   } = useSWR(
-    poolAddress && account && chainId && ['get balance pool', account?.toLowerCase()],
+    poolAddress && account && chainId && ['get balance pool', account, poolAddress, chainId],
     () => getBalanceAndDecimals(),
     {
       refreshInterval: 0,
