@@ -1,12 +1,8 @@
 'use client'
 
-import React, { useContext, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
-import { rewardsContext } from '@/context/rewardsContext'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
-import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { ZERO_VALUE } from '@/lib/utils'
 
 import UserAssets from './Assets'
 import HeaderRewards from './HeaderRewards'
@@ -18,29 +14,21 @@ import TheNFT from './theNFT'
 
 function Dashboard() {
   const { account } = useWallet()
-  const prices = usePrices()
-  const { veTHEs } = useVeTHEsContext()
-  const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
-  const { current } = useContext(rewardsContext)
-  const { rewards: veRewardsV3 } = current
-  const totalUsd = useMemo(() => {
-    let total = [...veRewardsV3].reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE)
-    filteredVeTHEs.forEach(ele => {
-      total = total?.plus(ele?.rebase_amount?.times(prices.THE))
-    })
-    return total
-  }, [veRewardsV3, filteredVeTHEs, prices.THE])
+  const [positionRewards, setPositionRewards] = useState(0)
+  const [claimableRewards, setClaimableRewards] = useState(0)
+
+  const totalUsd = useMemo(() => positionRewards + claimableRewards, [claimableRewards, positionRewards])
 
   return (
     <div className='flex flex-col gap-4'>
       <HeaderRewards totalUsd={totalUsd} account={account} />
       <div className='flex max-w-[1464px] flex-col gap-4 md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px] 2xl:w-[1352px] 3xl:w-[1490px]'>
-        {account && <UserAssets />}
+        {account && <UserAssets setPositionRewards={setPositionRewards} />}
 
         <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
           <Voting />
-          <ClaimableRewards />
+          <ClaimableRewards setClaimableRewards={setClaimableRewards} />
           <Lock />
           <TheNFT />
           <DashboardProfile />

@@ -357,3 +357,8 @@ export const shortenNumber = num => {
   const roundedBase = parseFloat(base.toFixed(1))
   return roundedBase * 10 ** exponent
 }
+
+export const formatNumber = num => {
+  if (!num || Number.isNaN(num)) return 0
+  return Number(num)
+}

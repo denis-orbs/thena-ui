@@ -14,7 +14,7 @@ import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
 import SectionDivider from '../SectionDivider'
 
-function UserAssets() {
+function UserAssets({ setPositionRewards }) {
   const t = useTranslations()
   const { push } = useRouter()
   const positions = usePositions()
@@ -49,6 +49,7 @@ function UserAssets() {
                 setIsHoverFromChart={setIsHoverFromChart}
                 currentHoverTableRow={currentHoverTableRow}
                 positions={positions}
+                setPositionRewards={setPositionRewards}
               />
               <div className='flex items-center justify-between xl:hidden'>
                 <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>

@@ -15,7 +15,13 @@ import { WarningTriangleIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
-function AssetsOverview({ positions, currentHoverTableRow, isHoverFromChart, setIsHoverFromChart }) {
+function AssetsOverview({
+  positions,
+  currentHoverTableRow,
+  isHoverFromChart,
+  setIsHoverFromChart,
+  setPositionRewards,
+}) {
   const t = useTranslations()
   const { account } = useWallet()
   const { addReward, addFees } = useFarmRewards()
@@ -170,6 +176,10 @@ function AssetsOverview({ positions, currentHoverTableRow, isHoverFromChart, set
       }
     })
   }, [positions, processManualPosition, processWeightedPosition, processV1Position, processV3Position])
+
+  useEffect(() => {
+    setPositionRewards(totalRewards)
+  }, [setPositionRewards, totalRewards])
 
   const migrationMessageWarning = useMemo(() => {
     const currentTime = dayjs().utc().unix()

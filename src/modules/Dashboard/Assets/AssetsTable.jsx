@@ -5,7 +5,7 @@ import NewSearchInput from '@/components/input/NewSearchInput'
 import { TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import { cn, formatNumber } from '@/lib/utils'
 import { ArrowDownIcon } from '@/svgs'
 
 import FarmingItem from './FarmingItem'
@@ -200,13 +200,13 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
           res = (a.symbol?.localeCompare(b.symbol) || 0) * desc
           break
         case 'apr':
-          res = (Number(a.apr) - Number(b.apr)) * desc
+          res = (formatNumber(a.apr) - formatNumber(b.apr)) * desc
           break
         case 'value':
-          res = (Number(a.fiatValueOfLiquidity) - Number(b.fiatValueOfLiquidity)) * desc
+          res = (formatNumber(a.fiatValueOfLiquidity) - formatNumber(b.fiatValueOfLiquidity)) * desc
           break
         case 'rewards':
-          res = (Number(a.rewardUsd) - Number(b.rewardUsd)) * desc
+          res = (formatNumber(a.rewardUsd) - formatNumber(b.rewardUsd)) * desc
           break
 
         default:

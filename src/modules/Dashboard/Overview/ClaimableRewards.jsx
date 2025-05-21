@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -15,7 +15,7 @@ import { useFarmRewards } from '@/state/farmReward/store'
 
 import SectionDivider from '../SectionDivider'
 
-function ClaimableRewards() {
+function ClaimableRewards({ setClaimableRewards }) {
   const t = useTranslations()
   const prices = usePrices()
   const { current: currentRewardsV3 } = useContext(rewardsContext)
@@ -114,6 +114,10 @@ function ClaimableRewards() {
     filteredVeTHEs,
     refreshVetheRewardV3,
   ])
+
+  useEffect(() => {
+    setClaimableRewards(votingRewards + theNftRewards.toNumber())
+  }, [setClaimableRewards, theNftRewards, votingRewards])
 
   return (
     totalRewards > 0 && (
