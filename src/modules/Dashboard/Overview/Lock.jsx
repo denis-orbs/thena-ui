@@ -52,6 +52,8 @@ function Lock() {
     return results.sort((a, b) => Number(a.id) - Number(b.id))
   }, [veTHEs])
 
+  const expiredVeTHEs = useMemo(() => veTHEs.filter(veTHE => veTHE.expire <= 0), [veTHEs])
+
   const extendVotingPower = useMemo(() => {
     const totalExtend = veTHEsToLock.reduce(
       (sum, veTHE) => sum.plus(veTHE.amount.times(veTHE.unlockTime.getTime() - new Date().getTime()).div(maxTimeStamp)),
@@ -61,12 +63,18 @@ function Lock() {
   }, [totalVotingPower, veTHEsToLock])
 
   const handleExtendLock = useCallback(() => {
+    if (expiredVeTHEs.length === 1 && veTHEsToLock.length === 0) {
+      warnToast('Withdraw your THE from [veTHEID]', {
+        veTHEID: expiredVeTHEs[0].id,
+      })
+      return
+    }
     if (veTHEsToLock.length === 0) {
       warnToast('Can only increase lock duration')
       return
     }
     onExtend(veTHEsToLock)
-  }, [onExtend, veTHEsToLock])
+  }, [expiredVeTHEs, onExtend, veTHEsToLock])
 
   return (
     veTHEs.length > 0 && (
