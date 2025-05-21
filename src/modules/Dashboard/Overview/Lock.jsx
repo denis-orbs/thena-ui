@@ -52,7 +52,7 @@ function Lock() {
     return results.sort((a, b) => Number(a.id) - Number(b.id))
   }, [veTHEs])
 
-  const expiredVeTHEs = useMemo(() => veTHEs.filter(veTHE => veTHE.expire <= 0), [veTHEs])
+  const veTHEsToWithdraw = useMemo(() => veTHEs.filter(veTHE => veTHE.voting_amount.isZero()), [veTHEs])
 
   const extendVotingPower = useMemo(() => {
     const totalExtend = veTHEsToLock.reduce(
@@ -63,10 +63,13 @@ function Lock() {
   }, [totalVotingPower, veTHEsToLock])
 
   const handleExtendLock = useCallback(() => {
-    if (expiredVeTHEs.length === 1 && veTHEsToLock.length === 0) {
+    if (veTHEsToWithdraw.length === 1) {
       warnToast('Withdraw your THE from [veTHEID]', {
-        veTHEID: expiredVeTHEs[0].id,
+        veTHEID: veTHEsToWithdraw[0].id,
       })
+      if (veTHEsToLock.length !== 0) {
+        onExtend(veTHEsToLock)
+      }
       return
     }
     if (veTHEsToLock.length === 0) {
@@ -74,7 +77,7 @@ function Lock() {
       return
     }
     onExtend(veTHEsToLock)
-  }, [expiredVeTHEs, onExtend, veTHEsToLock])
+  }, [veTHEsToWithdraw, onExtend, veTHEsToLock])
 
   return (
     veTHEs.length > 0 && (
