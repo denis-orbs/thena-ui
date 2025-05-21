@@ -3,6 +3,7 @@ import { create } from 'zustand'
 export const useFarmRewards = create()(set => ({
   rewards: {
     ichi: new Map(),
+    ichiSingleSided: new Map(),
     gamma: new Map(),
     manual: new Map(),
     oldGauge: new Map(),

@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewParagraph, NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
+import { ICHI_SINGLE_SIDED, PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
@@ -28,7 +28,7 @@ function AssetsOverview({
   const { onClaimAllRewardPosition } = useRewardPosition()
 
   const filteredPositions = useMemo(
-    () => positions.filter(pos => pos.version !== 2 || (pos.version === 2 && pos?.title === 'ICHI Single Sided')),
+    () => positions.filter(pos => pos.version !== 2 || (pos.version === 2 && pos?.title === ICHI_SINGLE_SIDED)),
     [positions],
   )
 
@@ -121,6 +121,20 @@ function AssetsOverview({
     [addFees],
   )
 
+  const processIchiSingleSidedPosition = useCallback(
+    pos => {
+      if (pos.rewardUsd > 0) {
+        addReward({
+          type: 'ichiSingleSided',
+          symbol: pos.symbol,
+          args: pos.gauge.address,
+          key: getKeyFromTokenAddress('ichi-single-sided', [pos.token0.address, pos.token1.address]),
+        })
+      }
+    },
+    [addReward],
+  )
+
   const processV3Position = useCallback(
     pos => {
       const type = getStrategy(pos.title)
@@ -171,11 +185,20 @@ function AssetsOverview({
         processWeightedPosition(pos)
       } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pos.title) && pos.version === 2) {
         processV1Position(pos)
+      } else if (pos.title === ICHI_SINGLE_SIDED) {
+        processIchiSingleSidedPosition(pos)
       } else if (pos.version === 3) {
         processV3Position(pos)
       }
     })
-  }, [positions, processManualPosition, processWeightedPosition, processV1Position, processV3Position])
+  }, [
+    positions,
+    processManualPosition,
+    processWeightedPosition,
+    processV1Position,
+    processV3Position,
+    processIchiSingleSidedPosition,
+  ])
 
   useEffect(() => {
     setPositionRewards(totalRewards)

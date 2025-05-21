@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { isNil } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 
-import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
+import { FusionRangeType, GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
 import Contracts from '@/constant/contracts'
 
 BigNumber.config({
@@ -299,7 +299,7 @@ export const getDisplayedStrategy = (strategy, version = 3) => {
   }
 
   if (ICHI_TYPES.includes(strategy)) {
-    return version === 2 && strategy === 'ICHI_Single_Sided' ? 'ICHI Single Sided' : 'ICHI'
+    return version === 2 && strategy === ICHI_SINGLE_SIDED ? 'ICHI Single Sided' : 'ICHI'
   }
 
   if (MANUAL_TYPES.includes(strategy)) {

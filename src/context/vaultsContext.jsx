@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { PAIR_TYPES } from '@/constant'
+import { ICHI_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
@@ -115,7 +115,7 @@ export function VaultsContextProvider({ children }) {
       return {
         address: vault.address,
         symbol: vault.symbol,
-        title: 'ICHI_Single_Sided',
+        title: ICHI_SINGLE_SIDED,
         type: PAIR_TYPES.LSD,
         totalSupply: vault.totalSupply,
         lpPrice,

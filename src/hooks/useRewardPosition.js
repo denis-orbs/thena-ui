@@ -9,6 +9,7 @@ import {
   getClaimerContract,
   getFarmingCenterContract,
   getGammaHyperVisorContract,
+  getGaugeContract,
   getIchiVaultContract,
   getMultiFeeDistributionContract,
   getPairContract,
@@ -33,13 +34,13 @@ export const useRewardPosition = () => {
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
 
-    const { newGauge, manual, gamma, ichi } = rewards
+    const { newGauge, manual, gamma, ichi, ichiSingleSided } = rewards
     const { classic: classicFees, stable: stableFees, manual: manualFees } = fees
 
     const transactions = {}
     if (newGauge.size > 0) {
       transactions[harvestNewGaugeId] = {
-        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted pools`,
+        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted Pools`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -47,7 +48,7 @@ export const useRewardPosition = () => {
 
     if (manual.size > 0) {
       transactions[claimFarmId] = {
-        desc: `${t('Harvest Rewards')} Manual pools`,
+        desc: `${t('Harvest Rewards')} Manual Pools`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -56,7 +57,7 @@ export const useRewardPosition = () => {
     if (gamma.size > 0) {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pool`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -66,7 +67,17 @@ export const useRewardPosition = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pool`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi Pool`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      })
+    }
+
+    if (ichiSingleSided.size > 0) {
+      ichiSingleSided.forEach(_pair => {
+        transactions[`ichi-single-sided-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Single Sided Vault`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -76,7 +87,7 @@ export const useRewardPosition = () => {
     if (classicFees.size > 0) {
       classicFees.forEach(_pair => {
         transactions[`classic-fees-${_pair.args}`] = {
-          desc: `${t('Claim Fees')} ${_pair.symbol} Classic pool`,
+          desc: `${t('Claim Fees')} ${_pair.symbol} Classic Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -86,7 +97,7 @@ export const useRewardPosition = () => {
     if (stableFees.size > 0) {
       stableFees.forEach(_pair => {
         transactions[`stable-fees-${_pair.args}`] = {
-          desc: `${t('Claim Fees')} ${_pair.symbol} Stable pool`,
+          desc: `${t('Claim Fees')} ${_pair.symbol} Stable Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -96,7 +107,7 @@ export const useRewardPosition = () => {
     if (manualFees.size > 0) {
       manualFees.forEach(_pair => {
         transactions[`manual-fees-${_pair.args}`] = {
-          desc: `${t('Claim Fees')} ${_pair.symbol} Manual pool #${_pair.args[1]}`,
+          desc: `${t('Claim Fees')} ${_pair.symbol} Manual Pool #${_pair.args[1]}`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -181,6 +192,20 @@ export const useRewardPosition = () => {
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
         const tx = await writeTxn(key, `ichi-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
         if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
+    if (ichiSingleSided.size > 0) {
+      const gaugeAddresses = []
+      ichiSingleSided.forEach(pair => gaugeAddresses.push(pair.args))
+
+      for (let i = 0; i < gaugeAddresses.length; i++) {
+        const gaugeAddress = gaugeAddresses[i]
+        const gaugeContract = getGaugeContract(gaugeAddress, chainId)
+        if (!(await writeTxn(key, `ichi-single-sided-${gaugeAddresses}`, gaugeContract, 'getReward', []))) {
           setPending(false)
           return
         }

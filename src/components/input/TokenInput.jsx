@@ -53,7 +53,7 @@ function TokenInput({
   }, [])
 
   return (
-    <div className='flex flex-col gap-3'>
+    <div className='flex w-full flex-col gap-3'>
       {typeof title === 'string' && <TextHeading>{title}</TextHeading>}
       <div
         className='flex cursor-text flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 focus-within:border-neutral-500 hover:bg-neutral-700'
