@@ -14,9 +14,11 @@ import {
   typeStartPriceInput,
   updateCurrentStep,
   updateDynamicFee,
+  updateIsReverse,
   updateLiquidityRangeType,
   updatePresetRange,
   updateSelectedPreset,
+  updateStrategy,
 } from './actions'
 
 export const Presets = {
@@ -45,6 +47,7 @@ const initialState = {
   },
   liquidityRangeType: FusionRangeType.MANUAL_RANGE,
   presetRange: undefined,
+  isReverse: true,
 }
 
 export default createReducer(initialState, builder =>
@@ -98,6 +101,10 @@ export default createReducer(initialState, builder =>
       ...state,
       preset,
     }))
+    .addCase(updateIsReverse, (state, { payload: { isReverse } }) => ({
+      ...state,
+      isReverse,
+    }))
     .addCase(selectCurrency, (state, { payload: { currencyId, field } }) => {
       const otherField = field === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
       if (currencyId === state[otherField].currencyId) {
@@ -130,5 +137,16 @@ export default createReducer(initialState, builder =>
     .addCase(updatePresetRange, (state, { payload: { presetRange } }) => ({
       ...state,
       presetRange,
+    }))
+    /**
+     * @property {Object} strategy - The strategy payload.
+     * @property {boolean} strategy.isAutomatic - Indicates if the strategy is automatic.
+     * @property {boolean} strategy.isFarming - Indicates if the strategy is for farming.
+     * @property {number} strategy.version - The version of the strategy (2 or 3).
+     * ...
+     */
+    .addCase(updateStrategy, (state, { payload: { strategy } }) => ({
+      ...state,
+      strategy,
     })),
 )

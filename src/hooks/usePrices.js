@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { CHAINLINK_TOKEN } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -25,11 +26,16 @@ const usePrices = () => {
       const liveTHEAsset = assets.find(
         asset => asset.address.toLowerCase() === '0xcdc3a010a3473c0c4b2cb03d8489d6ba387b83cd',
       )
+
+      const chainLinkPrice = assets.find(
+        asset => asset.address.toLowerCase() === CHAINLINK_TOKEN[networkId]?.[0]?.address?.toLowerCase(),
+      )
       setPrices({
         THE: theAsset?.price || 0,
         BNB: bnbAsset?.price || 0,
         PSTAKE: pstakeAsset?.price || 0,
         liveTHE: liveTHEAsset?.price || 0,
+        CHAINLINK: chainLinkPrice?.price || 0,
       })
     }
   }, [assets, networkId])
@@ -55,7 +61,7 @@ export const useTokenUSDValue = () => {
   const assets = useAssets()
   const getValueTokenAmountToUSD = useCallback(
     (address, amount) => {
-      const token = assets.find(item => item.address.toLowerCase() === address.toLowerCase())
+      const token = assets.find(item => item?.address?.toLowerCase() === address?.toLowerCase())
       return (token?.price || 0) * amount
     },
     [assets],

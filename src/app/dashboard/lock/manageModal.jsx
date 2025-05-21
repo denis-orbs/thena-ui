@@ -6,6 +6,8 @@ import React, { useMemo, useState } from 'react'
 import Highlight from '@/components/highlight'
 import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { AUTOMATION_STATUS } from '@/constant'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { cn } from '@/lib/utils'
 import { LockIcon, MergeIcon, SplitIcon, TransferIcon } from '@/svgs'
 
@@ -24,6 +26,10 @@ const ManageTypes = {
 export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVeTHEs }) {
   const [type, setType] = useState(null)
   const t = useTranslations()
+
+  const { data: veTHEs } = useVeTheAutomations()
+  const found = veTHEs?.find(item => item.id === veTHE?.id)
+  const status = found?.statusString ?? AUTOMATION_STATUS.NO
 
   const typesData = useMemo(
     () => [
@@ -126,11 +132,30 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           </div>
         </ModalBody>
       )}
-      {type === ManageTypes.lock && <LockManage selected={veTHE} theAsset={theAsset} updateVeTHEs={updateVeTHEs} />}
-      {type === ManageTypes.merge && <MergeManage selected={veTHE} />}
-      {type === ManageTypes.split && <SplitManage selected={veTHE} setPopup={setPopup} updateVeTHEs={updateVeTHEs} />}
+      {type === ManageTypes.lock && (
+        <LockManage
+          selected={veTHE}
+          theAsset={theAsset}
+          updateVeTHEs={updateVeTHEs}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+        />
+      )}
+      {type === ManageTypes.merge && <MergeManage selected={veTHE} isAutomation={status !== AUTOMATION_STATUS.NO} />}
+      {type === ManageTypes.split && (
+        <SplitManage
+          selected={veTHE}
+          setPopup={setPopup}
+          updateVeTHEs={updateVeTHEs}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+        />
+      )}
       {type === ManageTypes.transfer && (
-        <TransferManage selected={veTHE} setPopup={setPopup} updateVeTHEs={updateVeTHEs} />
+        <TransferManage
+          selected={veTHE}
+          setPopup={setPopup}
+          updateVeTHEs={updateVeTHEs}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+        />
       )}
     </Modal>
   )

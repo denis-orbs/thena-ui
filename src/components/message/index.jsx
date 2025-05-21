@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React from 'react'
 import { ChainId } from 'thena-sdk-core'
-import { bsc, opBNB } from 'viem/chains'
+import { bsc, bscTestnet, opBNB } from 'viem/chains'
 
 import { AlertTriangleIcon, CheckGradientIcon, InfoCircleGradient, XIcon } from '@/svgs'
 
@@ -10,8 +10,23 @@ import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import { Paragraph, TextHeading } from '../typography'
 
+function getScanner(chainId) {
+  switch (chainId) {
+    case ChainId.OPBNB:
+      return opBNB.blockExplorers.default.url
+
+    case 97:
+      return bscTestnet.blockExplorers.default.url
+
+    case ChainId.BSC:
+    default:
+      return bsc.blockExplorers.default.url
+  }
+}
+
 export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, icon = null, translate = true }) {
   const t = useTranslations()
+  const urlScanner = getScanner(chainId)
 
   return (
     <div className='flex items-start justify-between gap-4'>
@@ -24,12 +39,7 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, 
             <EmphasisButton
               className='mt-2 p-2 text-xs'
               onClick={() => {
-                window.open(
-                  `${
-                    chainId === ChainId.BSC ? bsc.blockExplorers.default.url : opBNB.blockExplorers.default.url
-                  }/tx/${hash}`,
-                  '_blank',
-                )
+                window.open(`${urlScanner}/tx/${hash}`, '_blank')
               }}
             >
               {t('See Transaction')}

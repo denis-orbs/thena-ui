@@ -1,37 +1,44 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
-import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Dropdown from '@/components/dropdown'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
+import { ProgressBar } from '@/components/progress-bar'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
+import { PAIR_TYPES } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount } from '@/lib/utils'
-import { usePools } from '@/state/pools/hooks'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -78,11 +85,6 @@ const sortOptions = [
   },
 ]
 
-// const HIDDEN_POOLS = [
-//   '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
-//   '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
-// ]
-
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -93,8 +95,10 @@ export default function VotePage() {
   const [percent, setPercent] = useState({})
   const { account } = useWallet()
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
-  const pools = usePools()
+  const v3PoolsWithGauge = useV3PoolsWithGauge()
   const prices = usePrices()
+  const { isLgDown } = useMediaQuery()
+
   const { voteEmssions } = useVoteEmissions()
   const { days, hours, mins, epoch } = useEpochTimer()
   const { onVote, pending: votePending } = useVote()
@@ -105,7 +109,9 @@ export default function VotePage() {
   const debouncedId = useDebounce(approvedId)
   const t = useTranslations()
   const { data: isApproved } = useSWR(
-    debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
+    debouncedId &&
+      account &&
+      (networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC) && ['vethe/approved', debouncedId, account],
     async () => {
       const veTHEContract = getVeTHEContract(networkId)
       return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
@@ -114,9 +120,13 @@ export default function VotePage() {
       refreshInterval: 0,
     },
   )
-  const { data: approvedInfo } = useSWR(
-    account && isApproved && networkId === ChainId.BSC ? ['vethes/approved api', debouncedId, networkId] : null,
-    () => fetchVeTHEFromId(debouncedId, networkId),
+  const { data: totalVotesSupply } = useSWR(
+    [ChainId.BSC, CHAIN_ID.TEST_BSC].includes(networkId) && ['vethe/totalSupply', networkId],
+    async () => {
+      const veTHEContract = getVeTHEContract(networkId)
+      return await readCall(veTHEContract, 'totalSupply', [], networkId)
+    },
+    { refreshInterval: 0 },
   )
 
   useEffect(() => {
@@ -126,50 +136,46 @@ export default function VotePage() {
   }, [isApproved, approvedId])
 
   const veTHE = useMemo(() => {
-    const list = [...veTHEs, approvedInfo]
+    const list = [...veTHEs]
     return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
-  }, [veTHEs, veTHEId, approvedInfo])
+  }, [veTHEs, veTHEId])
 
   const totalPercent = useMemo(
     () => Object.values(percent).reduce((sum, current) => sum + (!current || current === '' ? 0 : Number(current)), 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(percent), percent],
+    [percent],
   )
 
   const userPools = useMemo(
     () =>
-      pools
-        // .filter(pair => !HIDDEN_POOLS.includes(pair.address))
-        .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
-        .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
-        .map(pair => {
-          const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
-          let votes = {
-            weight: new BigNumber(0),
-            weightPercent: new BigNumber(0),
-            rewards: new BigNumber(0),
-            perRewards,
-          }
-          if (veTHE && veTHE.votes.length > 0) {
-            const found = veTHE.votes.find(ele => ele.address.toLowerCase() === pair.address.toLowerCase())
-            if (found) {
-              const rewards =
-                !veTHE.votedCurrentEpoch || pair.gauge.weight.isZero()
-                  ? new BigNumber(0)
-                  : pair.gauge.bribeUsd.div(pair.gauge.weight).times(found.weight)
-              votes = {
-                ...found,
-                rewards,
-                perRewards,
-              }
+      v3PoolsWithGauge.map(pair => {
+        const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
+        let votes = {
+          weight: new BigNumber(0),
+          weightPercent: new BigNumber(0),
+          rewards: new BigNumber(0),
+          perRewards,
+        }
+        if (veTHE && veTHE.votes.length > 0) {
+          const found = veTHE.votes.find(ele => ele.address.toLowerCase() === pair.address.toLowerCase())
+          if (found) {
+            const rewards =
+              !veTHE.votedCurrentEpoch || pair.gauge.weight.isZero()
+                ? new BigNumber(0)
+                : pair.gauge.bribeUsd.div(pair.gauge.weight).times(found.weight)
+            votes = {
+              ...found,
+              rewards,
+              perRewards,
             }
           }
-          return {
-            ...pair,
-            votes,
-          }
-        }),
-    [pools, veTHE],
+        }
+
+        return {
+          ...pair,
+          votes,
+        }
+      }),
+    [v3PoolsWithGauge, veTHE],
   )
 
   const filteredPools = useMemo(() => {
@@ -238,57 +244,59 @@ export default function VotePage() {
     [filteredPools, sort],
   )
 
+  const voteCastedPercentage = useMemo(() => {
+    const totalVotes = sortedPools.reduce((prev, pool) => prev + Number(pool?.gauge?.weight ?? 0), 0)
+    const totalSupply = fromWei(totalVotesSupply, 18).toNumber()
+    return totalSupply ? (totalVotes / fromWei(totalVotesSupply, 18).toNumber()) * 100 : 0
+  }, [sortedPools, totalVotesSupply])
+
   const finalPools = useMemo(
     () =>
       sortedPools.map(pool => ({
         pair: (
-          <div className='flex items-center gap-3'>
-            <IconGroup
-              className='-space-x-2'
-              classNames={{
-                image: 'outline-2 w-7 h-7',
-              }}
-              logo1={pool.token0.logoURI}
-              logo2={pool.token1.logoURI}
-            />
-            <div className='flex flex-col'>
-              <TextHeading>{pool.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{pool.title}</Paragraph>
-            </div>
-          </div>
+          <>
+            {pool.type !== PAIR_TYPES.WEIGHTED ? (
+              <>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={pool.token0.logoURI}
+                  logo2={pool.token1.logoURI}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{pool.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>
+                    {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title}
+                  </Paragraph>
+                </div>
+              </>
+            ) : (
+              <ListTokenPercantage listToken={pool.tokens} />
+            )}
+          </>
         ),
-        apr: <Paragraph>{formatAmount(pool.gauge.voteApr, true)}%</Paragraph>,
+        apr: <Paragraph>{formatAmount(pool.gauge?.voteApr, true)}%</Paragraph>,
         votes: (
           <div className='flex flex-col'>
-            <Paragraph>{formatAmount(pool.gauge.weight)}</Paragraph>
+            <Paragraph>{formatAmount(pool.gauge?.weight)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>
-              {formatAmount(Math.ceil(pool.gauge.weightPercent.toNumber()))}%
+              {formatAmount(pool.gauge?.weightPercent?.toNumber())}%
             </TextSubHeading>
           </div>
         ),
         rewards: (
           <div className='flex items-center gap-1'>
-            <Paragraph>
-              $
-              {formatAmount(
-                // pool.title === 'DefiEdge' ||
-                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
-                  pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
-                  ? 0
-                  : pool.gauge.bribeUsd,
-              )}
-            </Paragraph>
-            {pool.gauge.bribeUsd.gt(0) &&
-              // pool.title !== 'DefiEdge' &&
-              pool.address !== '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' &&
-              pool.address !== '0xac7042fed4e724107fd5778f4a9cad894a5e18ab' && (
-                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
-              )}
+            <Paragraph>${formatAmount(pool.gauge.bribeUsd)}</Paragraph>
+            {pool.gauge.bribeUsd.gt(0) && (
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
+            )}
             <CustomTooltip className='min-w-[136px]' id={`projected-${pool.gauge.address}`}>
               <div className='flex flex-col gap-1'>
                 {pool.gauge.bribes && pool.gauge.bribes.bribe && (
                   <>
-                    <TextHeading>{t('Voting Incentives')}</TextHeading>
+                    <TextHeading>{t('Incentives')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.bribe.map((bribe, idx) => (
                         <Paragraph key={`bribe-${idx}`}>
@@ -300,7 +308,7 @@ export default function VotePage() {
                 )}
                 {pool.gauge.bribes && pool.gauge.bribes.fee && (
                   <>
-                    <TextHeading>{t('Projected Fees')}</TextHeading>
+                    <TextHeading>{t('Fees')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.fee.map((fee, idx) => (
                         <Paragraph key={`fee-${idx}`}>
@@ -316,16 +324,7 @@ export default function VotePage() {
         ),
         estimate: (
           <div className='flex flex-col'>
-            <Paragraph>
-              $
-              {formatAmount(
-                // pool.title === 'DefiEdge' ||
-                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
-                  pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
-                  ? 0
-                  : pool.votes.perRewards,
-              )}
-            </Paragraph>
+            <Paragraph>${formatAmount(pool.votes.perRewards)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>{t('Per 1000 Votes')}</TextSubHeading>
           </div>
         ),
@@ -333,7 +332,7 @@ export default function VotePage() {
           <div className='flex flex-col'>
             <Paragraph>{formatAmount(pool.votes.weight)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>
-              {formatAmount(Math.ceil(pool.votes.weightPercent.toNumber()))}%
+              {formatAmount(pool.votes.weightPercent.toNumber())}%
             </TextSubHeading>
           </div>
         ),
@@ -390,7 +389,7 @@ export default function VotePage() {
       const totalBribe = userPools.reduce((sum, cur) => sum.plus(cur.gauge.bribeUsd), new BigNumber(0))
       const totalWeight = userPools.reduce((sum, cur) => sum.plus(cur.gauge.weight), new BigNumber(0))
       const totalVoteUsd = totalWeight.times(prices.THE)
-      return totalVoteUsd.isZero() ? 0 : totalBribe.times(52).div(totalVoteUsd).times(100)
+      return totalVoteUsd.isZero() || totalVoteUsd.isNaN() ? 0 : totalBribe.times(52).div(totalVoteUsd).times(100)
     }
     return new BigNumber(0)
   }, [userPools, prices])
@@ -410,7 +409,7 @@ export default function VotePage() {
 
   useEffect(() => {
     if (!veTHEId && !!veTHEs.length) {
-      setVeTHEId(veTHEs[0].id)
+      setVeTHEId(veTHEs.filter(ve => ve.voting_amount.gt(0))?.[0]?.id)
     }
   }, [veTHEId, veTHEs])
 
@@ -418,153 +417,228 @@ export default function VotePage() {
     setCurrentPage(1)
   }, [isVoted, searchText])
 
+  const votingWarning = useMemo(() => {
+    const currentTime = dayjs().utc().unix()
+    const startTime = 1747868400 // 21/05/2025 23:00:00 UTC
+    // const endTime = 1748563199 // 29/05/2025 23:59:59 UTC
+
+    if (currentTime < startTime) {
+      return (
+        <p className='text-base text-error-100'>
+          {t.rich('Simulate and test the voting on new UI warning message', {
+            // eslint-disable-next-line react/no-unstable-nested-components
+            votepage: chunks => (
+              <Link
+                href='https://thena.fi'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+            // eslint-disable-next-line react/no-unstable-nested-components
+            discord: chunks => (
+              <Link
+                href='https://discord.com/invite/thena'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+            // eslint-disable-next-line react/no-unstable-nested-components
+            telegram: chunks => (
+              <Link
+                href='https://t.me/Thena_Fi'
+                className='text-primary-600 hover:underline'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      )
+    }
+
+    return null
+  }, [t])
+
   return (
-    <div className='flex flex-col gap-4'>
-      <h2>{t('Vote')}</h2>
-      <div className='flex flex-col gap-10'>
-        <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
-          <Box className='flex w-full flex-col gap-2'>
-            <div className='flex items-center gap-1'>
-              <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
-            </div>
-            <Paragraph className='text-sm'>{t('Expected Rewards')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <div className='flex items-center gap-1'>
-              <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
-              <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
-            </div>
-            <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
-            <Paragraph className='text-sm'>{t('Emissions vote')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
-            <Paragraph className='text-sm'>{t('Average Voting APR')}</Paragraph>
-          </Box>
-          <Box className='flex w-full flex-col gap-2'>
-            <TextHeading className='text-2xl'>
-              {days}d {hours}h {mins}m
-            </TextHeading>
-            <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
-          </Box>
-        </div>
-        <div className='flex flex-col gap-4'>
-          <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
-            <div className='flex w-full items-center justify-between lg:w-fit'>
-              <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
-              <Toggle
-                className='lg:hidden'
-                checked={isVoted}
-                onChange={() => setIsVoted(!isVoted)}
-                toggleId='voted'
-                label='Voted Only'
-              />
-            </div>
-            <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-              <div className='flex items-center justify-between gap-2 lg:hidden'>
-                <Paragraph>Sort By</Paragraph>
-                <Dropdown
-                  data={sortOptions.slice(0, sortOptions.length - 1)}
-                  selected={sort ? `${sort.label}` : ''}
-                  setSelected={ele => setSort(ele)}
-                />
+    <LayoutWithBackButton backUrl='/dashboard'>
+      <div className='flex flex-col gap-4'>
+        <h2>{t('Vote')}</h2>
+        <div className='flex flex-col gap-10'>
+          <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
+            <Box className='flex w-full flex-col gap-2'>
+              <div className='flex items-center gap-1'>
+                <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
               </div>
-              <Toggle
-                className='hidden lg:flex'
-                checked={isVoted}
-                onChange={() => setIsVoted(!isVoted)}
-                toggleId='active'
-                label='Voted Only'
-              />
-              <VeTheDropdown
-                className='w-full lg:w-[220px]'
-                data={veTHEs.map(item => ({
-                  ...item,
-                  label: `veTHE #${item.id}`,
-                }))}
-                selected={veTHE ? `veTHE #${veTHE.id}` : ''}
-                setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder={t('Select veTHE')}
-                isLocale={false}
-                isApproved={isApproved}
-                approvedId={approvedId}
-                setApprovedId={setApprovedId}
-              />
-              <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
-            </div>
+              <Paragraph className='text-sm'>{t('Expected Rewards')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <div className='flex items-center gap-1'>
+                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
+              </div>
+              <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
+              <Paragraph className='text-sm'>{t('Emissions vote')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
+              <Paragraph className='text-sm'>{t('Average Voting APR')}</Paragraph>
+            </Box>
+            <Box className='flex w-full flex-col gap-2'>
+              <TextHeading className='text-2xl'>
+                {days}d {hours}h {mins}m
+              </TextHeading>
+              <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
+            </Box>
           </div>
-          <Table
-            sortOptions={sortOptions}
-            data={finalPools}
-            sort={sort}
-            setSort={setSort}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            showNumberOfPage
-            pageSize={itemsPerPage}
-            setNumberOfPage={item => {
-              setItemsPerPage(item)
-              setCurrentPage(1)
-            }}
-          />
-        </div>
-        {account && (
-          <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
-            <div className='flex items-center justify-center'>
-              <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
-              <span
-                className={cn('font-medium', veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600')}
-              >
-                {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
-              </span>
+
+          <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Cast`} />
+
+          {votingWarning && (
+            <div className={cn('flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+              <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
+                <WarningTriangleIcon className='size-full' />
+              </div>
+              {votingWarning}
             </div>
-            <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
-              <PrimaryButton
-                className='px-2.5 py-2'
-                disabled={votePending}
-                onClick={() => {
-                  if (errorMsg) {
-                    warnToast(errorMsg)
-                    return
-                  }
-                  onVote(veTHE.id, percent, () => {
-                    updateVeTHEs()
-                  })
-                }}
-              >
-                {t('Cast Votes')}
-              </PrimaryButton>
-              <div className='flex gap-2'>
-                <TextButton
-                  className='w-full px-2.5 py-2'
+          )}
+
+          <div className='flex flex-col gap-4'>
+            <div className='flex justify-between gap-4 max-lg:flex-col'>
+              <div className='flex w-full items-center justify-between lg:w-fit'>
+                <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
+                <div className='flex gap-6'>
+                  <Toggle
+                    className='lg:hidden'
+                    checked={isVoted}
+                    onChange={() => setIsVoted(!isVoted)}
+                    toggleId='voted'
+                    label='Voted Only'
+                  />
+                </div>
+              </div>
+              <div className='flex w-full justify-between gap-4 max-lg:flex-col-reverse lg:w-auto lg:gap-2'>
+                <div className='flex flex-col gap-4 md:flex-row'>
+                  <Toggle
+                    className='hidden lg:flex'
+                    checked={isVoted}
+                    onChange={() => setIsVoted(!isVoted)}
+                    toggleId='active'
+                    label='Voted Only'
+                  />
+                  <div className='flex items-center justify-between gap-2 lg:hidden'>
+                    <Paragraph>Sort By</Paragraph>
+                    <Dropdown
+                      className='min-w-[200px]'
+                      data={sortOptions.slice(0, sortOptions.length - 1)}
+                      selected={sort ? `${sort.label}` : ''}
+                      setSelected={ele => setSort(ele)}
+                    />
+                  </div>
+                  <VeTheDropdown
+                    className='w-full md:w-[200px]'
+                    data={veTHEs
+                      .filter(ve => ve.voting_amount.gt(0))
+                      .map(item => ({
+                        ...item,
+                        label: `veTHE #${item.id}`,
+                      }))}
+                    selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+                    setSelected={ele => setVeTHEId(ele.id)}
+                    placeHolder={t('Select veTHE')}
+                    isLocale={false}
+                    isApproved={isApproved}
+                    approvedId={approvedId}
+                    setApprovedId={setApprovedId}
+                  />
+                  <SearchInput className='flex-1' val={searchText} setVal={setSearchText} />
+                </div>
+              </div>
+            </div>
+            <Table
+              tableBasic={!isLgDown}
+              sortOptions={sortOptions}
+              data={finalPools}
+              sort={sort}
+              setSort={setSort}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              showNumberOfPage
+              pageSize={itemsPerPage}
+              setNumberOfPage={item => {
+                setItemsPerPage(item)
+                setCurrentPage(1)
+              }}
+            />
+          </div>
+          {account && (
+            <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
+              <div className='flex items-center justify-center'>
+                <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
+                <span
+                  className={cn(
+                    'font-medium',
+                    veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600',
+                  )}
+                >
+                  {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
+                </span>
+              </div>
+              <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
+                <PrimaryButton
+                  className='px-2.5 py-2'
+                  disabled={votePending}
                   onClick={() => {
-                    onReset(veTHE.id, () => {
+                    if (errorMsg) {
+                      warnToast(errorMsg)
+                      return
+                    }
+                    onVote(veTHE.id, percent, () => {
                       updateVeTHEs()
                     })
                   }}
-                  disabled={!veTHE || !veTHE.voted || resetPending}
                 >
-                  {t('Reset')}
-                </TextButton>
-                <TextButton
-                  className='w-full px-2.5 py-2'
-                  onClick={() => {
-                    onPoke(veTHE.id, () => {
-                      updateVeTHEs()
-                    })
-                  }}
-                  disabled={!veTHE || !veTHE.voted || pokePending}
-                >
-                  {t('Revote')}
-                </TextButton>
+                  {t('Cast Votes')}
+                </PrimaryButton>
+                <div className='flex gap-2'>
+                  <TextButton
+                    className='w-full px-2.5 py-2'
+                    onClick={() => {
+                      onReset(veTHE.id, () => {
+                        updateVeTHEs()
+                      })
+                    }}
+                    disabled={!veTHE || !veTHE.voted || resetPending}
+                  >
+                    {t('Reset')}
+                  </TextButton>
+                  <TextButton
+                    className='w-full px-2.5 py-2'
+                    onClick={() => {
+                      onPoke(veTHE.id, () => {
+                        updateVeTHEs()
+                      })
+                    }}
+                    disabled={!veTHE || !veTHE.voted || pokePending}
+                  >
+                    {t('Revote')}
+                  </TextButton>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </LayoutWithBackButton>
   )
 }

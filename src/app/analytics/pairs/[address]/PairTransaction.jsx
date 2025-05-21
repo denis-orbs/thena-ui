@@ -8,13 +8,14 @@ import useSWR from 'swr'
 
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
+import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
-const TXN_TYPE = {
+export const TXN_TYPE = {
   All: 'All',
   SWAP: 'Swaps',
   ADD: 'Additions',
@@ -264,10 +265,10 @@ const getV1Transactions = async (chainId, pairs) => {
   }
 }
 
-const getFusionTransactions = async (chainId, pairs) => {
+const getFusionTransactions = async (chainId, version, pairs) => {
   try {
     const newTxns = []
-    const result = await fusionClient[chainId].request(FUSION_TRANSACTIONS, {
+    const result = await fusionClient[version][chainId].request(FUSION_TRANSACTIONS, {
       pairs,
     })
 
@@ -319,6 +320,7 @@ const getFusionTransactions = async (chainId, pairs) => {
       newTxn.amountUSD = swap.amountUSD
       newTxns.push(newTxn)
     })
+
     const data = newTxns
       .map(ele => ({
         ...ele,
@@ -344,6 +346,7 @@ const getTransactionType = (event, symbol0, symbol1, t) => {
         symbolA: formattedS0,
         symbolB: formattedS1,
       })
+
     case TXN_TYPE.REMOVE:
       return t('Remove [symbolA] and [symbolB]', {
         symbolA: formattedS0,
@@ -359,12 +362,15 @@ const getTransactionType = (event, symbol0, symbol1, t) => {
   }
 }
 
-const fetchPairTransaction = async (chainId, pairs, isFusion) => {
-  if (isFusion) {
-    const { data: fusiondata } = await getFusionTransactions(chainId, pairs)
+const fetchPairTransaction = async (chainId, pair) => {
+  if (pair.type === PAIR_TYPES.LSD) {
+    const version = pair?.version
+    const swapPool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[0])?.address
+    const { data: fusiondata } = await getFusionTransactions(chainId, version, [pair.address, swapPool])
     return fusiondata
   }
-  const { data: v1data } = await getV1Transactions(chainId, pairs)
+
+  const { data: v1data } = await getV1Transactions(chainId, [pair.address])
   return v1data
 }
 
@@ -407,7 +413,7 @@ const sortOptions = [
   },
 ]
 
-export default function TransactionTable({ pairs, isFusion }) {
+export default function TransactionTable({ pair }) {
   const [sort, setSort] = useState(sortOptions[5])
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState(TXN_TYPE.All)
@@ -415,8 +421,8 @@ export default function TransactionTable({ pairs, isFusion }) {
   const t = useTranslations()
 
   const { data: txnData } = useSWR(
-    pairs && pairs.length > 0 && ['analytics/pair/transaction', pairs[0]],
-    () => fetchPairTransaction(networkId, pairs, isFusion),
+    pair && ['analytics/pair/transaction', pair.address],
+    () => fetchPairTransaction(networkId, pair),
     {
       refreshInterval: 0,
     },
@@ -503,14 +509,13 @@ export default function TransactionTable({ pairs, isFusion }) {
         ),
         time: <Paragraph>{formatTime(item.timestamp)}</Paragraph>,
       })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData), t],
+    [networkId, sortedData, t],
   )
 
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>{t('Transactions')}</TextHeading>
+        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
         <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
       </div>
       <Table

@@ -1,7 +1,7 @@
 import { select, zoom } from 'd3'
 import React, { useEffect, useMemo, useRef } from 'react'
 
-import { OutlineIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }) {
@@ -11,7 +11,7 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
     () => [
       () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleBy, 2),
       () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleBy, 0.5),
-      () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleTo, 0.5),
+      () => svg && zoomBehavior.current && select(svg).transition().call(zoomBehavior.current.scaleTo, 1),
     ],
     [svg],
   )
@@ -36,17 +36,17 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
   }, [zoomInitial, zoomLevels])
 
   return (
-    <div className='absolute -top-[20px] right-0 grid grid-cols-2 gap-1'>
-      <OutlineIconButton
-        className='lg:h-6 lg:w-6'
-        classNames='lg:h-4 lg:w-4'
+    <div className='flex justify-end gap-2 md:-top-5'>
+      <EmphasisIconButton
+        className='lg:size-8'
+        classNames='lg:size-4 stroke-neutral-400'
         Icon={ZoomInIcon}
         onClick={zoomIn}
         disabled={false}
       />
-      <OutlineIconButton
-        className='lg:h-6 lg:w-6'
-        classNames='lg:h-4 lg:w-4'
+      <EmphasisIconButton
+        className='lg:size-8'
+        classNames='lg:size-4 stroke-neutral-400'
         Icon={ZoomOutIcon}
         onClick={zoomOut}
         disabled={false}

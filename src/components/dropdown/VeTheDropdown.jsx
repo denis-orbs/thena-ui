@@ -17,7 +17,9 @@ function VeTheDropdown({
   isApproved,
   approvedId,
   setApprovedId,
+  disabled = false,
   isLocale = true,
+  classNames,
 }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -39,7 +41,8 @@ function VeTheDropdown({
     <div className={cn('relative', className)} ref={wrapperRef}>
       <Input
         classNames={{
-          input: cn('cursor-pointer caret-transparent', className),
+          ...classNames,
+          input: cn('cursor-pointer caret-transparent pl-2 pr-6', classNames?.input),
         }}
         type='text'
         val={selected}
@@ -54,6 +57,7 @@ function VeTheDropdown({
         }
         isLocale={isLocale}
         readOnly
+        disabled={disabled}
       />
       <div
         className={cn(

@@ -1,47 +1,156 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import { useAlgebraAdd } from '@/hooks/fusion/useAlgebra'
+import { MANUAL_TYPES } from '@/constant'
+import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { Field } from '@/state/fusion/actions'
+import { cn } from '@/lib/utils'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
+import { useAprStore } from '@/state/APR/store'
+import { Bound, Field } from '@/state/fusion/actions'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
+import { EnterAmounts } from './containers/EnterAmounts'
+
+export default function ManualAdd({
+  baseCurrency,
+  quoteCurrency,
+  setBaseCurrency,
+  setQuoteCurrency,
+  mintInfo,
+  onShowModalSuccess,
+  position,
+  handleBack,
+}) {
   const { account } = useWallet()
-  const { errorMessage } = mintInfo
-  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
-  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
+  const { setAPRs } = useAprStore()
+
+  const { errorMessage, errorCode } = useMemo(
+    () => ({
+      errorMessage: position ? position.errorMessage : mintInfo.errorMessage,
+      errorCode: position ? position.errorCode : mintInfo.errorCode,
+    }),
+    [mintInfo.errorMessage, mintInfo.errorCode, position],
+  )
+
+  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
+
+  const amountA = useMemo(
+    () => (position ? position.parsedAmounts?.[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_A]),
+    [mintInfo.parsedAmounts, position],
+  )
+  const amountB = useMemo(
+    () => (position ? position.parsedAmounts?.[Field.CURRENCY_B] : mintInfo.parsedAmounts[Field.CURRENCY_B]),
+    [mintInfo.parsedAmounts, position],
+  )
+
+  const { startPriceTypedValue } = useV3MintState()
   const { onAlgebraAdd, pending } = useAlgebraAdd()
-  const { slippage, deadline } = useSettings()
+  const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
+  const { deadline } = useSettings()
   const t = useTranslations()
+
+  const [slippage, setSlippage] = useState(0.5)
+
+  const { strategy, ticks, pool, poolAddress, parsedAmounts } = mintInfo
+  const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
+
+  const estimateAPR = useEstimateAPR({
+    pool,
+    poolAddress: poolAddress?.toLowerCase(),
+    tickLower: ticks[Bound.LOWER],
+    tickUpper: ticks[Bound.UPPER],
+    token0: baseCurrency,
+    amount0: currencyAAmount?.quotient,
+    token1: quoteCurrency,
+    amount1: currencyBAmount?.quotient,
+    isFarming: strategy?.title === MANUAL_TYPES[0],
+  })
+
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(estimateAPR), setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
-      warnToast(errorMessage, 'warn')
+      if (errorCode === 3 || errorCode === 4 || errorCode === 5 || (position && position.errorMessage)) {
+        setCheckIsInvalid(true)
+      } else {
+        warnToast(errorMessage, 'warn')
+      }
       return
     }
 
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline)
-  }, [errorMessage, baseCurrency, quoteCurrency, amountA, amountB, mintInfo, slippage, deadline, onAlgebraAdd])
-
-  if (!account) {
-    return <ConnectButton className='w-full' />
-  }
+    if (!position) {
+      onAlgebraAdd({ amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline }, onShowModalSuccess)
+    } else {
+      onAlgebraIncrease(
+        amountA,
+        amountB,
+        position.pos,
+        position.depositADisabled,
+        position.depositBDisabled,
+        slippage,
+        deadline,
+        position.tokenId,
+        () => {
+          position.setTypedValue('')
+          onShowModalSuccess()
+        },
+      )
+    }
+  }, [
+    errorMessage,
+    position,
+    errorCode,
+    onAlgebraAdd,
+    amountA,
+    amountB,
+    baseCurrency,
+    quoteCurrency,
+    mintInfo,
+    slippage,
+    deadline,
+    onShowModalSuccess,
+    onAlgebraIncrease,
+  ])
 
   return (
-    <PrimaryButton
-      disabled={pending}
-      onClick={() => {
-        onAddLiquidity()
-      }}
-      className='w-full'
-    >
-      {t('Add Liquidity')}
-    </PrimaryButton>
+    <section className='space-y-2 md:space-y-4 xl:space-y-6'>
+      <div className={cn('space-y-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
+        <EnterAmounts
+          currencyA={baseCurrency}
+          currencyB={quoteCurrency}
+          setCurrencyA={setBaseCurrency}
+          setCurrencyB={setQuoteCurrency}
+          mintInfo={mintInfo}
+          position={position}
+          isSmall
+          checkIsInvalid={checkIsInvalid}
+        />
+      </div>
+
+      <div className={cn('flex w-full flex-col items-center gap-2 lg:flex-row')}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Cancel')}
+        </EmphasisButton>
+        {account ? (
+          <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
+            {t('Deposit')}
+          </PrimaryButton>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
+    </section>
   )
 }

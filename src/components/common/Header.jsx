@@ -13,10 +13,11 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
@@ -43,6 +44,7 @@ import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
+  // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
@@ -106,7 +108,10 @@ function ChainSelect({ t }) {
   const [open, setOpen] = useState(false)
   const [showBridgePopup, setShowBridgePopup] = useState(false)
 
-  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(
+    () => chains[networkId === ChainId.BSC ? 0 : networkId === ChainId.OPBNB ? 1 : 2],
+    [networkId],
+  )
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -127,7 +132,7 @@ function ChainSelect({ t }) {
           'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
           'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
         )}
-        key={`dropdown-${idx}`}
+        key={`dropdown-${idx}-${item.chainId}`}
         onClick={async () => {
           if (item.chainId && networkId !== item.chainId) {
             updateNetwork(item.chainId)
@@ -193,7 +198,10 @@ function ChainMobileSelect({ t }) {
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
-  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(
+    () => chains[networkId === ChainId.BSC ? 0 : networkId === ChainId.OPBNB ? 1 : 2],
+    [networkId],
+  )
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -254,6 +262,7 @@ function ChainMobileSelect({ t }) {
   )
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function LanguageSelect() {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -315,6 +324,59 @@ function LanguageSelect() {
   )
 }
 
+function V3Banner({ onClose }) {
+  const router = useRouter()
+  const { push } = router
+  useEffect(() => {
+    document.body.classList.add('has-v3-banner')
+    return () => {
+      document.body.classList.remove('has-v3-banner')
+    }
+  }, [])
+
+  return (
+    <div
+      id='v3-banner'
+      className='fixed left-0 top-0 z-[100] flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
+    >
+      <div className='flex flex-1 flex-col items-center justify-center gap-2 md:flex-row'>
+        <span className='font-semibold'>🔥 THENA V3,3 is Launched!</span>
+        <span className='text-center font-normal'>
+          Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.
+        </span>
+        <TertiaryButton
+          className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
+          onClick={() => push('/dashboard')}
+        >
+          Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
+        </TertiaryButton>
+      </div>
+      <button
+        onClick={onClose}
+        type='button'
+        data-drawer-hide='v3-banner'
+        aria-controls='v3-banner'
+        className='inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
+      >
+        <svg
+          aria-hidden='true'
+          className='h-5 w-5'
+          fill='currentColor'
+          viewBox='0 0 20 20'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            fillRule='evenodd'
+            d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+            clipRule='evenodd'
+          />
+        </svg>
+        <span className='sr-only'>Close</span>
+      </button>
+    </div>
+  )
+}
+
 function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
@@ -332,6 +394,15 @@ function Header() {
   const { connect } = useConnect()
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
+  const { width } = useWindowSize()
+
+  const [showBannerMigrate, setShowBannerMigrate] = useState(
+    !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22'),
+  )
+  const handleCloseV3Banner = () => {
+    localStorage.setItem(NotShowBannerV3, 'true')
+    setShowBannerMigrate(false)
+  }
 
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
@@ -436,35 +507,47 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
+        sub: [
+          {
+            heading: t('veTHE'),
+            subheading: t('veTHE Subheading'),
+            onClickHandler: () => push('/dashboard/lock'),
+          },
+          {
+            heading: t('theNFT'),
+            subheading: t('theNFT Description'),
+            onClickHandler: () => push('/dashboard/thenft'),
+          },
+          {
+            heading: t('Vote'),
+            subheading: t('Vote Subheading'),
+            onClickHandler: () => {
+              push('/dashboard/vote')
+            },
+          },
+          {
+            heading: t('Rewards'),
+            subheading: t('Rewards Subheading'),
+            onClickHandler: () => {
+              push('/dashboard/rewards')
+            },
+          },
+        ],
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: t('Arena'),
-        active: pathname.includes('/arena'),
-        onClickHandler: () => {
-          push('/arena')
-        },
-      },
-      {
-        label: 'THE Story',
-        active: pathname.includes('/story'),
-        onClickHandler: () => {
-          push('/story')
-        },
+        label: t('Analytics'),
+        active: pathname.includes('/analytics'),
+        onClickHandler: () => push('/analytics'),
       },
       {
         label: 'More',
-        active: pathname.includes('/analytics') || pathname.includes('/protocols'),
+        active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
         sub:
-          networkId === ChainId.BSC
+          networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
             ? [
-                {
-                  heading: t('Analytics'),
-                  subheading: t('See platform data'),
-                  onClickHandler: () => push('/analytics'),
-                },
                 {
                   heading: t('Protocols'),
                   subheading: t('Add gauges and voting incentives'),
@@ -488,19 +571,28 @@ function Header() {
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
                 },
                 {
+                  heading: t('Arena'),
+                  subheading: t('Trading Competitions (to be updated)'),
+                  onClickHandler: () => {
+                    push('/arena')
+                  },
+                },
+                {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
                     push('/trade-to-earn')
                   },
                 },
+                {
+                  heading: 'THE Story',
+                  subheading: t('Campaign (Ended)'),
+                  onClickHandler: () => {
+                    push('/story')
+                  },
+                },
               ]
             : [
-                {
-                  heading: t('Analytics'),
-                  subheading: t('See platform data'),
-                  onClickHandler: () => push('/analytics'),
-                },
                 {
                   heading: t('Docs'),
                   subheading: t('Learn more about THENA'),
@@ -519,10 +611,24 @@ function Header() {
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
                 },
                 {
+                  heading: t('Arena'),
+                  subheading: t('Trading Competitions (to be updated)'),
+                  onClickHandler: () => {
+                    push('/arena')
+                  },
+                },
+                {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
                     push('/trade-to-earn')
+                  },
+                },
+                {
+                  heading: 'THE Story',
+                  subheading: t('Campaign (Ended)'),
+                  onClickHandler: () => {
+                    push('/story')
                   },
                 },
               ],
@@ -531,46 +637,45 @@ function Header() {
     [t, pathname, networkId, push],
   )
 
-  const submenus = useMemo(() => {
-    const subs = [
-      {
-        label: 'My Assets',
-        active: pathname === '/dashboard',
-        onClickHandler: () => {
-          push('/dashboard')
-        },
-      },
-      {
-        label: 'Lock',
-        active: pathname === '/dashboard/lock',
-        onClickHandler: () => {
-          push('/dashboard/lock')
-        },
-      },
-      {
-        label: 'Vote',
-        active: pathname === '/dashboard/vote',
-        onClickHandler: () => {
-          push('/dashboard/vote')
-        },
-      },
-      {
-        label: 'Rewards',
-        active: pathname === '/dashboard/rewards',
-        onClickHandler: () => {
-          push('/dashboard/rewards')
-        },
-      },
-      {
-        label: 'theNFT',
-        active: pathname === '/dashboard/thenft',
-        onClickHandler: () => {
-          push('/dashboard/thenft')
-        },
-      },
-    ]
-    return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [pathname, networkId, push])
+  // const submenus = useMemo(() => {
+  //   const subs = [
+  //     {
+  //       label: 'My Assets',
+  //       active: pathname === '/dashboard',
+  //       onClickHandler: () => {
+  //         push('/dashboard')
+  //       },
+  //     },
+  //     {
+  //       label: 'Lock',
+  //       active: pathname.includes('/dashboard/lock'),
+  //       onClickHandler: () => {
+  //         push('/dashboard/lock')
+  //       },
+  //     },
+  //     {
+  //       label: 'Vote',
+  //       active: pathname === '/dashboard/vote',
+  //       href: '/dashboard/vote',
+  //       isLink: true,
+  //     },
+  //     {
+  //       label: 'Rewards',
+  //       active: pathname === '/dashboard/rewards',
+  //       onClickHandler: () => {
+  //         push('/dashboard/rewards')
+  //       },
+  //     },
+  //     {
+  //       label: 'theNFT',
+  //       active: pathname === '/dashboard/thenft',
+  //       onClickHandler: () => {
+  //         push('/dashboard/thenft')
+  //       },
+  //     },
+  //   ]
+  //   return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
+  // }, [pathname, networkId, push])
 
   const arenaSubmenus = useMemo(
     () =>
@@ -756,11 +861,27 @@ function Header() {
 
   return (
     <div>
-      <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl lg:h-[92px]'>
-        <div className='flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-3'>
+      {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
+      <header
+        className={cn(
+          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl md:h-[92px]',
+          showBannerMigrate && 'top-[116px] md:top-[54px]',
+        )}
+      >
+        <div
+          className={cn(
+            'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pb-6 lg:pt-6',
+            !pathname.includes('/add-liquidity') && 'lg:pt-3',
+          )}
+        >
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
+              {/* {!pathname.includes('/add-liquidity') ? (
+
+              ) : (
+                <></>
+              )} */}
               {menus.map((item, idx) => (
                 <div key={`tab-${idx}`}>
                   <div
@@ -845,22 +966,37 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
-              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
-              {prices.THE > 0 ? (
-                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
-              ) : (
-                <Skeleton className='h-5 w-10' />
-              )}
-            </div>
-            <ChainSelect t={t} />
-            <LanguageSelect />
-            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
-              {t('Enter ALPHA')}
-            </OutlinedButton>
+            {!pathname.includes('/add-liquidity') ? (
+              <>
+                <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
+                  <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+                  {prices.THE > 0 ? (
+                    <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+                  ) : (
+                    <Skeleton className='h-5 w-10' />
+                  )}
+                </div>
+                <ChainSelect t={t} />
+                {/* <LanguageSelect /> */}
+                <OutlinedButton
+                  className='hidden 2xl:flex'
+                  onClick={() => window.open('https://alpha.thena.fi', '_blank')}
+                >
+                  {t('Enter ALPHA')}
+                </OutlinedButton>
+              </>
+            ) : (
+              <></>
+            )}
             {!isSmallScreen() && <ConnectButton className='flex' />}
-            <Notification />
-            <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
+            {!pathname.includes('/add-liquidity') || width < 1024 ? (
+              <>
+                {!pathname.includes('/add-liquidity') && <Notification />}
+                <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <Modal
@@ -931,13 +1067,18 @@ function Header() {
         </Modal>
         <TxnModal />
       </header>
-      {pathname.startsWith('/dashboard') && (
+      {/* {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
-      )}
+      )} */}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
+        <div
+          className={cn(
+            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
+            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+          )}
+        >
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch
@@ -959,7 +1100,12 @@ function Header() {
         </div>
       )}
       {pathname.startsWith('/story') && isRegistered && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+        <div
+          className={cn(
+            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
+            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+          )}
+        >
           <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
             {!isUpcoming && (
               <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />

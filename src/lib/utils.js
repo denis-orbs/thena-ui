@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { isNil } from 'lodash'
 import { twMerge } from 'tailwind-merge'
-import { WBNB } from 'thena-sdk-core'
 
-import { SCAN_URLS } from '@/constant'
+import { FusionRangeType, GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
+import Contracts from '@/constant/contracts'
 
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
@@ -134,8 +134,15 @@ export const goScan = (chainId, address, isTxn) => {
 
 export const isInvalidAmount = amount => !amount || Number(amount) === Number.isNaN || Number(amount) <= 0
 
-export const wrappedAddress = asset =>
-  !asset ? null : asset.address === 'BNB' ? WBNB[asset.chainId].address.toLowerCase() : asset.address
+export const wrappedAddress = asset => {
+  if (!asset) return null
+
+  if (asset.address === 'BNB') {
+    return Contracts.WBNB[asset.chainId].toLowerCase()
+  }
+
+  return asset?.address?.toLowerCase()
+}
 
 export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB' ? 'BNB' : asset.symbol)
 
@@ -246,6 +253,112 @@ export const sortAchievements = (a, b) => {
 
   // If both groupIndex and typeIndex are the same, they are equal
   return 0
+}
+
+export const getPoolType = type =>
+  type === 'Conc Liquidity'
+    ? 'Conc. Liquidity'
+    : type === 'Classic'
+      ? 'Classic'
+      : type === 'Stable'
+        ? 'Stable'
+        : 'Weighted'
+
+export const roundIfMoreThanDecimals = (number, decimals = 18) => {
+  if (!number) return number
+  const parts = number.toString().split('.')
+  if (parts[1] && parts[1].length > decimals) {
+    return Math.floor(number * 10 ** decimals) / 10 ** decimals
+  }
+  return number
+}
+
+export const getLiquidityRangeType = strategyTitle => {
+  if (GAMMA_TYPES.includes(strategyTitle)) {
+    return FusionRangeType.GAMMA_RANGE
+  }
+
+  if (MANUAL_TYPES.includes(strategyTitle)) {
+    return FusionRangeType.MANUAL_RANGE
+  }
+
+  if (strategyTitle === 'DefiEdge') {
+    return FusionRangeType.DEFIEDGE_RANGE
+  }
+
+  return FusionRangeType.ICHI_RANGE
+}
+
+export const getDisplayedStrategy = (strategy, version = 3) => {
+  const str = strategy.replace(/_(Farming|SwapFee)$/, '').replace('_', ' ')
+
+  if (GAMMA_TYPES.includes(strategy)) {
+    return `Gamma ${str}`
+  }
+
+  if (ICHI_TYPES.includes(strategy)) {
+    return version === 2 && strategy === ICHI_SINGLE_SIDED ? 'ICHI Single Sided' : 'ICHI'
+  }
+
+  if (MANUAL_TYPES.includes(strategy)) {
+    return 'Manual'
+  }
+
+  return str
+}
+
+/**
+ *
+ * @param {vote} bit0
+ * @param {relock} bit1
+ * @param {rebase} bit2
+ * @returns
+ */
+export const convertBooleansToHex = (bit0, bit1, bit2) => {
+  const bitA = bit0 ? 1 : 0 // vote
+  const bitB = bit1 ? 1 : 0 // relock
+  const bitC = bit2 ? 1 : 0 // rebase
+
+  const binaryString = `${bitA}${bitB}${bitC}`
+
+  const hexValue = parseInt(binaryString, 2).toString(16).toUpperCase()
+
+  return `0x0${hexValue}`
+}
+
+export const convertHexToBooleans = hexValue => {
+  const binaryString = parseInt(hexValue, 16).toString(2).padStart(3, '0')
+
+  const booleansArray = binaryString.split('').map(bit => bit === '1')
+
+  return booleansArray
+}
+
+export const calculateNextWeek = startTime => {
+  const now = Date.now() + new Date().getTimezoneOffset() * 60 * 1000
+  if (startTime > now) {
+    return startTime
+  }
+  const oneWeekInMs = 86400 * 7 * 1000
+
+  const weeksElapsed = Math.floor((now - startTime) / oneWeekInMs)
+
+  const nextWeek = startTime + (weeksElapsed + 1) * oneWeekInMs
+
+  return nextWeek
+}
+
+export const shortenNumber = num => {
+  if (!num) return 0
+  const exponent = Math.floor(Math.log10(num))
+  const base = num / 10 ** exponent
+  const roundedBase = parseFloat(base.toFixed(1))
+  return roundedBase * 10 ** exponent
+}
+
+export const formatNumber = num => {
+  if (!num || Number.isNaN(num)) return 0
+  return Number(num)
 }
 
 export const rewriteS3Host = (host, rewrite = 'amazonaws.com/') => (host ? host.split(rewrite)[1] : null)

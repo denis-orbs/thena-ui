@@ -15,6 +15,7 @@ import { useMutateAssets } from '@/context/assetsContext'
 import { useExtendLock, useIncreaseLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
 const week = 86400 * 7 * 1000
 const minTimeStamp = 86400 * 14 * 1000
@@ -22,7 +23,7 @@ const maxTimeStamp = 86400 * 730 * 1000
 const maxTimes = Math.floor((new Date().getTime() + maxTimeStamp) / week) * week
 const maxDate = new Date(maxTimes)
 
-export default function LockManage({ selected, theAsset, updateVeTHEs }) {
+export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomation }) {
   const [isExtend, setIsExtend] = useState(true)
   const [amount, setAmount] = useState('')
   const [periodLevel, setPeriodLevel] = useState(0)
@@ -169,13 +170,14 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
             </div>
           </div>
         )}
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         {isExtend ? (
           <>
             <SecondaryButton
               className='w-full'
-              disabled={extendPending}
+              disabled={extendPending || isAutomation}
               onClick={() => {
                 if (selectedDate.getTime() / 1000 === selected.lockedEnd) {
                   warnToast('Can only increase lock duration')
@@ -191,7 +193,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
             </SecondaryButton>
             <PrimaryButton
               className='w-full'
-              disabled={extendPending}
+              disabled={extendPending || isAutomation}
               onClick={() => {
                 let period
                 if (periodLevel === 3) {
@@ -217,7 +219,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
         ) : (
           <PrimaryButton
             className='w-full'
-            disabled={increasePending}
+            disabled={increasePending || isAutomation}
             onClick={() => {
               if (errorMsg) {
                 warnToast(errorMsg, 'warn')

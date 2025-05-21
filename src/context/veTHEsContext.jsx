@@ -2,92 +2,50 @@ import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core/dist'
 
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
-import { getVeTHEAPIContract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
+import { fetchVeTHETokens } from '@/lib/api'
 
 const veTHEsContext = React.createContext({
   veTHEs: [],
 })
 
-async function fetchVeTHEsFromAddress([_, account, chainId]) {
-  console.log('------------------ vethes from address --------------------------')
-  const contract = getVeTHEAPIContract(chainId)
-  const veTHEInfos = await readCall(contract, 'getNFTFromAddress', [account], chainId)
-  return veTHEInfos.map(veTHE => {
-    const { votes, vote_ts, voted, id, amount, voting_amount, rebase_amount, lockEnd } = veTHE
-    const totalWeight = votes.reduce((sum, current) => sum + current.weight, 0n)
-    const votedWeek = Math.floor(Number(vote_ts) / (86400 * 7))
-    const currentWeek = Math.floor(new Date().getTime() / (86400 * 7 * 1000))
-    const votedCurrentEpoch = votedWeek === currentWeek && voted
-    const diff = dayjs.unix(Number(lockEnd)).diff(dayjs(), 'days')
-
-    return {
-      voted,
-      votedCurrentEpoch,
-      id: Number(id),
-      amount: fromWei(amount),
-      voting_amount: fromWei(voting_amount),
-      rebase_amount: fromWei(rebase_amount),
-      lockedEnd: Number(lockEnd),
-      vote_ts: Number(vote_ts),
-      votes: votes.map(ele => ({
-        address: ele.pair,
-        weight: fromWei(ele.weight),
-        weightPercent: totalWeight > 0 ? new BigNumber(ele.weight).div(totalWeight).times(100) : new BigNumber(0),
-      })),
-      expire: diff,
-    }
-  })
-}
-
-export async function fetchVeTHEFromId(veTHEId, chainId) {
-  console.log('------------------ vethes id --------------------------')
-  const contract = getVeTHEAPIContract(chainId)
-  const veTHEInfo = await readCall(contract, 'getNFTFromId', [veTHEId], chainId)
-  const { votes, vote_ts, voted, id, amount, voting_amount, rebase_amount, lockEnd } = veTHEInfo
-  const totalWeight = votes.reduce((sum, current) => sum + current.weight, 0n)
-  const votedWeek = Math.floor(Number(vote_ts) / (86400 * 7))
-  const currentWeek = Math.floor(new Date().getTime() / (86400 * 7 * 1000))
-  const votedCurrentEpoch = votedWeek === currentWeek && voted
-  const diff = dayjs.unix(Number(lockEnd)).diff(dayjs(), 'days')
-
-  return {
-    voted,
-    votedCurrentEpoch,
-    id: Number(id),
-    amount: fromWei(amount),
-    voting_amount: fromWei(voting_amount),
-    rebase_amount: fromWei(rebase_amount),
-    lockedEnd: Number(lockEnd),
-    vote_ts: Number(vote_ts),
-    votes: votes.map(ele => ({
-      address: ele.pair,
-      weight: fromWei(ele.weight),
-      weightPercent: totalWeight > 0 ? new BigNumber(ele.weight).div(totalWeight).times(100) : new BigNumber(0),
-    })),
-    expire: diff,
-  }
-}
-
 function VeTHEsContextProvider({ children }) {
   const { account, chainId } = useWallet()
-  const { data, isLoading, error, mutate } = useSWR(
-    account && chainId === ChainId.BSC ? ['vethes api', account, chainId] : null,
-    {
-      fetcher: fetchVeTHEsFromAddress,
-    },
+
+  const { data, isLoading, error, mutate } = useSWR(account ? ['vethes api', account, chainId] : null, () =>
+    fetchVeTHETokens(chainId, account),
   )
 
   const result = useMemo(() => {
     if (error) {
       console.log('vethes api error :>> ', error)
     }
+
+    const finalData = (data || []).map(veTHE => {
+      const { amount, rebaseAmount, votingAmount, tokenId, lockedEnd, lockedAt, votes, voted, votedCurrentEpoch } =
+        veTHE
+      const totalWeight = votes.reduce((sum, current) => sum + Number(current.weight), 0)
+      const diff = dayjs.unix(Number(lockedEnd)).diff(dayjs(), 'days')
+      return {
+        voted,
+        votedCurrentEpoch,
+        id: Number(tokenId),
+        amount: new BigNumber(amount),
+        voting_amount: new BigNumber(votingAmount),
+        rebase_amount: new BigNumber(rebaseAmount),
+        lockedEnd: Number(lockedEnd),
+        lockedAt: Number(lockedAt),
+        votes: votes.map(ele => ({
+          address: ele.pair,
+          weight: new BigNumber(ele.weight),
+          weightPercent: totalWeight > 0 ? new BigNumber(ele.weight).div(totalWeight).times(100) : new BigNumber(0),
+        })),
+        expire: diff,
+      }
+    })
     return {
-      veTHEs: data ?? [],
+      veTHEs: finalData ?? [],
       isLoading,
       updateVeTHEs: () => {
         mutate()

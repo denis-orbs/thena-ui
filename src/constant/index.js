@@ -1,22 +1,33 @@
 import dayjs from 'dayjs'
-import { ChainId, WBNB } from 'thena-sdk-core'
+import { WBNB } from 'thena-sdk-core'
+
+import { CHAIN_ID } from './contracts'
 
 export const CHAIN_LIST = {
-  [ChainId.BSC]: {
-    chainId: ChainId.BSC,
+  [CHAIN_ID.BSC]: {
+    chainId: CHAIN_ID.BSC,
     title: 'BNB Chain',
     img: '/images/header/bnb.svg',
     scanUrl: 'https://bscscan.com',
     scanName: 'View on BscScan',
   },
-  [ChainId.OPBNB]: {
-    chainId: ChainId.OPBNB,
+  [CHAIN_ID.OPBNB]: {
+    chainId: CHAIN_ID.OPBNB,
     title: 'opBNB',
     img: '/images/header/opbnb.svg',
     scanUrl: 'https://opbnb.bscscan.com/',
     scanName: 'View on opBNBScan',
   },
+  97: {
+    chainId: 97,
+    title: 'Testnet BNB',
+    img: '/images/header/opbnb.svg',
+    scanUrl: 'https://testnet.bscscan.com/',
+    scanName: 'View on testnet',
+  },
 }
+
+export const CHAINLINK_ADDRESS = '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd'
 
 // export const RPC_PROVIDERS = {
 //   // [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
@@ -30,8 +41,9 @@ export const LOCALES = {
 }
 
 export const SCAN_URLS = {
-  [ChainId.BSC]: 'https://bscscan.com',
-  [ChainId.OPBNB]: 'https://opbnb.bscscan.com',
+  [CHAIN_ID.BSC]: 'https://bscscan.com',
+  [CHAIN_ID.OPBNB]: 'https://opbnb.bscscan.com',
+  97: 'https://testnet.bscscan.com',
 }
 
 export const TXN_STATUS = {
@@ -48,10 +60,10 @@ export const LOTTERY_STATUS = {
   LOST: 2,
 }
 
-export const SupportedChainIds = [ChainId.BSC, ChainId.OPBNB]
+export const SupportedChainIds = [CHAIN_ID.BSC, CHAIN_ID.OPBNB]
 
 export const V1_ROUTE_ASSETS = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     {
       symbol: 'WBNB',
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -113,10 +125,10 @@ export const V1_ROUTE_ASSETS = {
       logoURI: 'https://thena.fi/logo.png',
     },
   ],
-  [ChainId.OPBNB]: [
+  [CHAIN_ID.OPBNB]: [
     {
       symbol: 'WBNB',
-      address: WBNB[ChainId.OPBNB].address,
+      address: WBNB[CHAIN_ID.OPBNB].address,
       logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
     },
     {
@@ -144,22 +156,23 @@ export const NEXT_EPOCH_TIMESTAMP = 1696464000
 export const ONE_DAY_UNIX = 86400
 
 export const V1_MULTI_CHAIN_START_TIME = {
-  [ChainId.BSC]: 1672790400,
-  [ChainId.OPBNB]: 1701993600,
+  [CHAIN_ID.BSC]: 1672790400,
+  [CHAIN_ID.OPBNB]: 1701993600,
 }
 
 export const FUSION_MULTI_CHAIN_START_TIME = {
-  [ChainId.BSC]: 1681862400,
-  [ChainId.OPBNB]: 1702339200,
+  [CHAIN_ID.BSC]: 1681862400,
+  [CHAIN_ID.OPBNB]: 1702339200,
 }
 
-export const NEW_POOLS = {
-  [ChainId.BSC]: ['0xdc6f26e5f8a7ea128a8a06ce07681b3cde5280f2', '0x01dd2d28eeb95d740acb5344b1e2c99b61cc3e64'],
-  [ChainId.OPBNB]: [],
+export const WEIGHTED_MULTI_CHAIN_START_TIME = {
+  [CHAIN_ID.BSC]: 1681862400,
+  [CHAIN_ID.OPBNB]: 1702339200,
+  [CHAIN_ID.TEST_BSC]: 1681862400,
 }
 
 export const STABLE_TOKENS = {
-  [ChainId.BSC]: {
+  [CHAIN_ID.BSC]: {
     BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     USDT: '0x55d398326f99059fF775485246999027B3197955',
     USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
@@ -176,13 +189,13 @@ export const STABLE_TOKENS = {
     CASH: '0x54c331bb7d32fbfc17bc9accab2e2d12d0d1b222',
     USDV: '0x953e94caf91a1e32337d0548b9274f337920edfa',
   },
-  [ChainId.OPBNB]: {
+  [CHAIN_ID.OPBNB]: {
     USDT: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
   },
 }
 
 export const DoubleRewarders = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     {
       pairAddress: '0x2b3510f57365aa17bff8e6360ea67c136175dc6d',
       doubleRewarderAddress: '0xA7266B2303725F731851dfE944a432f8A2EA5c9c',
@@ -194,7 +207,8 @@ export const DoubleRewarders = {
       doubleRewarderSymbol: 'liveTHE',
     },
   ],
-  [ChainId.OPBNB]: [],
+  [CHAIN_ID.OPBNB]: [],
+  97: [],
 }
 
 export const PERIOD_LEVELS = [
@@ -221,6 +235,81 @@ export const PAIR_TYPES = {
   LSD: 'Conc Liquidity',
   STABLE: 'Stable',
   CLASSIC: 'Classic',
+  WEIGHTED: 'Weighted',
+}
+
+export const DataQuality = {
+  VALID: 'valid',
+  INVALID: 'invalid',
+  STALE: 'stale',
+}
+
+export const POSITION_EARNED_TYPES = {
+  EARN_THE: 'Earn $THE',
+  EARN_FEE: 'Earn Fees',
+  STAKED: 'Staked',
+  NOT_STAKED: 'Not Staked',
+}
+
+export const AUTOMATION_STATUS = {
+  PENDING: 'Pending',
+  ACTIVE: 'Active',
+  PAUSED: 'Paused',
+  CANCELED: 'Canceled',
+  NO: 'No',
+}
+
+export const ACTION_AUTOMATION_TYPE = {
+  DETAIL: 'detail',
+  EDIT_SETTINGS: 'editSettings',
+  EDIT_EXECUTION_TIME: 'editExecutionTime',
+  EDIT_GAS_LIMIT: 'editGasLimit',
+  EDIT_MAX_GAS_PRICE: 'editMaxGasPrice',
+  WITHDRAW_FUNDS: 'withdrawFunds',
+  PAUSE: 'pause',
+  CANCEL: 'cancel',
+  UNPAUSE: 'unpause',
+  CREATE: 'create',
+  REGISTER_AUTOMATION: 'registerAutomation',
+  DEPOSIT_FUNDS: 'depositFunds',
+}
+
+export const SELECT_TOKEN_STYLE = {
+  LARGE: 'large',
+  BADGE: 'bage',
+}
+
+export const CHAINLINK_TOKEN = {
+  [CHAIN_ID.BSC]: [
+    {
+      address: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
+      name: 'Chainlink Token ERC20',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+    {
+      address: '0x404460c6a5ede2d891e8297795264fde62adbb75',
+      name: 'Chainlink Token ERC677',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+  ],
+  [CHAIN_ID.TEST_BSC]: [
+    {
+      address: '0x84b9b910527ad5c03a9ca831909e21e236ea7b06',
+      name: 'Chainlink Token ERC20',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+  ],
+}
+
+export const chainLINKLogo = 'https://cdn.thena.fi/assets/LINK.png'
+
+export const EDIT_AUTOMATION_TYPE = {
+  OPERATIONS: 'operations',
+  POOL_AND_WEIGHT: 'poolAndWeight',
+  ALL: 'all',
 }
 
 export const FusionRangeType = {
@@ -230,10 +319,27 @@ export const FusionRangeType = {
   MANUAL_RANGE: 'manual',
 }
 
-export const GAMMA_TYPES = ['Narrow', 'Wide', 'Correlated', 'CL_Stable']
+export const GAMMA_TYPES = [
+  'Narrow',
+  'Wide',
+  'Correlated',
+  'CL_Stable',
+  'Narrow_Farming',
+  'Narrow_SwapFee',
+  'Wide_Farming',
+  'Wide_SwapFee',
+  'Correlated_SwapFee',
+  'Correlated_Farming',
+  'CL_Stable_Farming',
+]
+export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
+export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI', 'ICHI_Single_Sided']
+export const NARROW_TYPES = ['Narrow_Farming', 'Narrow_SwapFee']
+export const ICHI_SwapFee = 'ICHI_SwapFee'
+export const ICHI_SINGLE_SIDED = 'ICHI_Single_Sided'
 
 export const TAX_ASSETS = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     '0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979', // fBOMB
     '0xc95cd75dcea473a30c8470b232b36ee72ae5dcc2', // CHAM
     '0x3a806a3315e35b3f5f46111adb6e2baf4b14a70d', // LIBERA
@@ -242,8 +348,17 @@ export const TAX_ASSETS = {
     '0xa7266989b0df675cc8257d53b6bc1358faf6626a', // IPAD
     '0xa1a020d3b354d6460ee3c272976f213160bd6b1c', // FS
   ],
-  [ChainId.OPBNB]: [],
+  [CHAIN_ID.OPBNB]: [],
 }
+
+export const SPECIAL_POOLS = [
+  '0x755a52d29b24d6871899a84f476339183e9dc95d',
+  '0xa07bbf09b48e8d219774ac9b92622f5260a9c9f4',
+  '0x04d6115703b0127888323f142b8046c7c13f857d',
+  '0x5b0baf66718caabda49a4af32eb455c3b99b5821',
+  '0xbf121d987f9635ed6d2f7bb957fbbe163bdea0e0',
+  '0xf8a4cdf9efc4b9b38eaa6e27ee281cb2111fa664',
+]
 
 export const STABLE_FEE = 0.0001
 export const VOLATILE_FEE = 0.002
@@ -612,4 +727,8 @@ export const LIST_PAIRS = {
 
 export const ThenaAuthToken = 'thena-token'
 export const NotShowDiscoverArenaModal = 'not-show-discover-arena-modal'
+export const NotShowBannerV3 = 'not-show-banner-v3'
 export const NotShowDiscoverPoolsAnalyticsModal = 'not-show-discover-pools-analytics-modal'
+export const HASH = {
+  TRANSFER: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+}

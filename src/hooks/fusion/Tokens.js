@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
+import BigNumber from 'bignumber.js'
+import { useCallback, useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
 import { UNKNOWN_LOGO } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
@@ -25,6 +27,27 @@ export function useGetAsset(tokenAddress) {
   }, [assets, customAssets, localTokens, tokenAddress])
 }
 
+export function useGetAssetFn() {
+  const assets = useAssets()
+  const customAssets = useCustomAssets()
+  const { localTokens } = useLocalTokens()
+
+  const getAsset = useCallback(
+    tokenAddress => {
+      if (!tokenAddress) return undefined
+      let asset = getTokenInfo({ tokenAddress, assets, customAssets })
+
+      if (!asset) {
+        asset = localTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
+      }
+
+      return asset
+    },
+    [assets, customAssets, localTokens],
+  )
+
+  return { getAsset }
+}
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
@@ -37,11 +60,42 @@ export function useToken(tokenAddress) {
   }, [asset])
 }
 
+export const getToken = (tokenAddress, getAsset = () => {}) => {
+  const asset = getAsset(tokenAddress)
+  if (!asset) return undefined
+  const token = new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+  token.logoURI = asset.logoURI ?? UNKNOWN_LOGO
+  return token
+}
+
 export const useCurrency = tokenAddress => {
   const { networkId } = useChainSettings()
   const isBNB = tokenAddress?.toUpperCase() === 'BNB'
   const token = useToken(isBNB ? undefined : tokenAddress)
-  return isBNB ? BNB.onChain(networkId) : token
+  if (isBNB) {
+    const currency = BNB.onChain(networkId)
+    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.address = 'BNB'
+    return currency
+  }
+  return token
+}
+
+export const getCurrency = (tokenAddress, chainId, getAsset = () => {}) => {
+  const isBNB = tokenAddress?.toUpperCase() === 'BNB'
+  const asset = getAsset(isBNB ? undefined : tokenAddress)
+  if (isBNB) {
+    const currency = BNB.onChain(chainId)
+    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.address = 'BNB'
+    return currency
+  }
+  const token = !asset ? undefined : new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+  if (token) {
+    token.logoURI = asset.logoURI ?? UNKNOWN_LOGO
+    return token
+  }
+  return token
 }
 
 const STABLE_TOKENS = {
@@ -66,6 +120,7 @@ const STABLE_TOKENS = {
     USDT: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
     FDUSD: '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',
   },
+  97: {},
 }
 
 export const useStableTokens = () => {
@@ -83,4 +138,56 @@ export const useStableTokens = () => {
         : [],
     [assets],
   )
+}
+
+export const useTokenBalance = (token, alowDouble) => {
+  const assets = useAssets()
+  const { networkId } = useChainSettings()
+  const bnbBalance = useMemo(() => assets.find(ele => ele.address === 'BNB')?.balance || new BigNumber(0), [assets])
+  const wbnbBalance = useMemo(
+    () => assets.find(ele => ele.address === Contracts.WBNB[networkId].toLowerCase())?.balance || new BigNumber(0),
+    [assets, networkId],
+  )
+  const isDouble = useMemo(() => token?.symbol === 'BNB' || token?.name === 'Wrapped BNB', [token])
+  const balance = useMemo(() => {
+    if (isDouble && alowDouble) {
+      return wbnbBalance.plus(bnbBalance)
+    }
+    return token?.balance
+  }, [isDouble, alowDouble, token?.balance, wbnbBalance, bnbBalance])
+
+  if (!token) {
+    return { balance: new BigNumber(0), isDouble: false }
+  }
+
+  return { balance, isDouble: alowDouble ? isDouble : false }
+}
+
+export const useTokenBalanceFn = () => {
+  const assets = useAssets()
+  const { networkId } = useChainSettings()
+
+  const bnbBalance = useMemo(() => assets.find(ele => ele.address === 'BNB')?.balance || new BigNumber(0), [assets])
+  const wbnbBalance = useMemo(
+    () => assets.find(ele => ele.address === Contracts.WBNB[networkId].toLowerCase())?.balance || new BigNumber(0),
+    [assets, networkId],
+  )
+
+  const getBalance = useCallback(
+    (token, alowDouble) => {
+      const isDouble = token?.symbol === 'BNB' || token?.name === 'Wrapped BNB'
+
+      if (!token) {
+        return { balance: new BigNumber(0), isDouble: false }
+      }
+
+      if (isDouble && alowDouble) {
+        return { balance: wbnbBalance.plus(bnbBalance), isDouble: true }
+      }
+      return { balance: token?.balance, isDouble: alowDouble ? isDouble : false }
+    },
+    [bnbBalance, wbnbBalance],
+  )
+
+  return { getBalance }
 }

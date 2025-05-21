@@ -9,6 +9,7 @@ import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { Collapse } from '@/components/collapse'
 import TruncateContent from '@/components/common/TruncateContent'
+import SuccessModal from '@/components/modal/SuccessModal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
@@ -17,8 +18,6 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useConfetti } from '@/hooks/useConfetti'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
-
-import SuccessModal from '../../thena-id/SuccessModal'
 
 function CompetitionDetail({ competition, isPreview = false }) {
   const [bodyRef, triggerConfetti] = useConfetti(2, {

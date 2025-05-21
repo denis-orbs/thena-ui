@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -5,50 +6,75 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
-import Contracts from '@/constant/contracts'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { fetchPools } from '@/lib/api'
+import { fetchFusionPools, fetchFusionPoolsInfos } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 
-import { updatePools } from './actions'
+import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
-const fetchUserFusions = async (url, account, pools, chainId) => {
-  const pairInfos = await callMulti(
-    pools.map(pool => ({
-      address: Contracts.pairAPI[chainId],
-      abi: pairAPIAbi,
-      functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
-      args: [pool.address, account],
-      chainId,
-    })),
-    true,
-  )
+const fetchUserFusionsV2 = async (account, pools, chainId) => {
+  if (chainId === CHAIN_ID.TEST_BSC) return []
 
-  return pairInfos.map(pool => {
-    const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
+  try {
+    const pairInfos = await callMulti(
+      pools.map(pool => ({
+        address: Contracts.pairAPI[chainId],
+        abi: pairAPIAbi,
+        functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
+        args: [pool.address, account],
+        chainId,
+      })),
+      true,
+    )
+
+    return pairInfos.map(pool => {
+      const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
+        pool
+      return {
+        version: 2,
+        address: pair_address, // pair contract address
+        walletBalance: account_lp_balance, // account LP tokens balance
+        gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
+        totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
+        gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+        token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
+        token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+const fetchUserFusionsV3 = async (account, chainId) => {
+  const fusionPoolsInfos = await fetchFusionPoolsInfos({ account, chainId })
+  return fusionPoolsInfos.map(pool => {
+    const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned, account_lp_balance } =
       pool
     return {
-      address: pair_address, // pair contract address
-      walletBalance: account_lp_balance, // account LP tokens balance
-      gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
-      totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
-      gaugeEarned: account_gauge_earned, // account earned emissions for this pair
-      token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
-      token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
+      version: 3,
+      address: pair_address,
+      walletBalance: new BigNumber(account_lp_balance),
+      gaugeBalance: new BigNumber(account_gauge_balance),
+      totalLp: new BigNumber(account_lp_balance).plus(account_gauge_balance),
+      gaugeEarned: new BigNumber(account_gauge_earned),
+      token0claimable: new BigNumber(claimable0),
+      token1claimable: new BigNumber(claimable1),
     }
   })
 }
 
-const fetchIchiAllowed = async (_, pools, chainId) => {
-  const ichi = pools.filter(pool => pool.type === 'ICHI')
+const fetchIchiAllowed = async (pools, chainId) => {
+  const ichi = pools.filter(pool => ICHI_TYPES.includes(pool.type))
   const allowed0 = await callMulti(
     ichi.map(pool => ({
       address: pool.address,
@@ -58,10 +84,12 @@ const fetchIchiAllowed = async (_, pools, chainId) => {
       chainId,
     })),
   )
+
   let index = 0
   const result = []
   pools.forEach(pool => {
-    const isIchi = pool.type === 'ICHI'
+    const isIchi = ICHI_TYPES.includes(pool.type)
+    if (pool.type === 'Volatile') pool.type = PAIR_TYPES.CLASSIC
     const deposit = !isIchi ? null : allowed0[index] ? pool.token0 : pool.token1
     if (isIchi) {
       index++
@@ -79,19 +107,54 @@ function Updater() {
   const { account } = useWallet()
   const assets = useAssets()
   const prices = usePrices()
-  const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  const { data: pools } = useSWR(['pools api', networkId], { fetcher: fetchPools })
-  const { data: userInfos } = useSWRImmutable(account && pools ? ['pools user api', account, networkId] : null, url =>
-    fetchUserFusions(url, account, pools, networkId),
+
+  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(
+    ['fusions api', networkId],
+    () =>
+      Promise.all([
+        fetchFusionPools({
+          networkId,
+          version: 3,
+        }),
+        fetchFusionPools({
+          networkId,
+          version: 2,
+        }),
+      ]),
+    {
+      refreshInterval: 60000,
+    },
   )
-  const { data: poolsWithAllowed } = useSWR(pools && pools.length > 0 ? ['vaults/allowed', networkId] : null, url =>
-    fetchIchiAllowed(url, pools, networkId),
+
+  const { data: userInfos } = useSWRImmutable(
+    account && fusionPoolsV2.length > 0 ? ['pools user api', account, fusionPoolsV2.length, networkId] : null,
+    async () => {
+      const [userFusionsV2, userFusionsV3] = await Promise.all([
+        fetchUserFusionsV2(account, fusionPoolsV2, networkId),
+        fetchUserFusionsV3(account, networkId),
+      ])
+      return [...userFusionsV2, ...userFusionsV3]
+    },
+  )
+
+  const { data: poolsWithAllowed } = useSWR(
+    fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0
+      ? ['vaults/allowed', networkId, fusionPoolsV2.length, fusionPoolsV3.length]
+      : null,
+    () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),
   )
 
   const fetchInfo = useCallback(async () => {
     if (!poolsWithAllowed || poolsWithAllowed.length === 0) return
     let userInfo = []
+    const autoPoolV3 = {
+      ichi: [],
+      gamma: [],
+      classic: [],
+      stable: [],
+    }
+
     if (poolsWithAllowed.length > 0 && assets.length > 0) {
       const bnbTheNarrow = '0xed044cd5654ad208b1bc594fd108c132224e3f3c'
       const bnbTheWide = '0xe8ec29b75d98d3cdc47db9797b00dcaabea2b15b'
@@ -99,20 +162,19 @@ function Updater() {
       const theUsdtWide = '0xb420adb29afd0a4e771739f0a29a4e077eff1acb' // the/usdt wide
       const ankrBnbTheNarrow = '0xd2f1045b4e5ba91ee725e8bf50740617a92e4a5f' // ankrbnb/the wide
 
-      const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + current.gauge.weight, 0)
-
       userInfo = poolsWithAllowed
         .map(fusion => {
           const { lpPrice, gauge } = fusion
           let kind
-          if (['Narrow', 'Wide', 'Correlated', 'CL_Stable', 'ICHI', 'DefiEdge'].includes(fusion.type)) {
+          if ([...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES, 'DefiEdge'].includes(fusion.type)) {
             kind = PAIR_TYPES.LSD
           } else {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
           }
-          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion.token0.address.toLowerCase())
-          const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion.token1.address.toLowerCase())
-          const allowed = assets.find(ele => ele.address.toLowerCase() === fusion.allowed?.address.toLowerCase())
+
+          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0?.address?.toLowerCase())
+          const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion?.token1?.address?.toLowerCase())
+          const allowed = assets.find(ele => ele.address.toLowerCase() === fusion?.allowed?.address?.toLowerCase())
           const token0 = {
             address: asset0?.address || fusion.token0.address,
             symbol: asset0?.symbol || 'UNKNOWN',
@@ -139,8 +201,7 @@ function Updater() {
           } else {
             totalTvl = 0
           }
-          const gaugeTvl = lpPrice * gauge.totalSupply
-          const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
+          const gaugeTvl = fusion.tvl
           let bribeUsd = 0
           const poolBribes = gauge.bribes
           let finalBribes = { fee: null, bribe: null }
@@ -183,7 +244,9 @@ function Updater() {
               })
             }
           }
-          const found = (userInfos ?? []).find(item => item.address.toLowerCase() === fusion.address.toLowerCase())
+          const found = (userInfos ?? []).find(
+            item => item.address.toLowerCase() === fusion.address.toLowerCase() && item.version === fusion.version,
+          )
           let user = {
             walletBalance: 0,
             gaugeBalance: 0,
@@ -199,33 +262,55 @@ function Updater() {
             total1: 0,
             totalUsd: 0,
           }
-          let extraApr = 0
-          let extraRewards = null
-          let extraRewardsInUsd = 0
-          const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === fusion.address)
-          if (foundExtra) {
-            extraApr = ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / gaugeTvl) * 100
-            extraRewards = {
-              amount: foundExtra.pendingReward,
-              symbol: foundExtra.doubleRewarderSymbol,
-            }
-            extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
-          }
+
           if (found) {
+            let walletBalance = formatEther(found.walletBalance)
+            let gaugeBalance = formatEther(found.gaugeBalance)
+
+            // ICHI Swap fees => make it Staked
+            if (
+              fusion.type === ICHI_SwapFee ||
+              (GAMMA_TYPES.includes(fusion.type) && fusion.type.includes('SwapFee'))
+            ) {
+              gaugeBalance = formatEther(found.walletBalance)
+              walletBalance = '0'
+            }
+
             user = {
               ...found,
               token0claimable: formatUnits(found.token0claimable, token0.decimals),
               token1claimable: formatUnits(found.token1claimable, token1.decimals),
-              walletBalance: formatEther(found.walletBalance),
-              gaugeBalance: formatEther(found.gaugeBalance),
+              walletBalance,
+              gaugeBalance,
               totalLp: formatEther(found.totalLp),
-              gaugeEarned: formatEther(found.gaugeEarned),
+              gaugeEarned: fromWei(found.gaugeEarned).toNumber(),
               stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
-              earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
+              earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).toNumber(),
               totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
-              extraRewards,
             }
           }
+
+          if (fusion?.version === 3) {
+            if (ICHI_TYPES.includes(fusion.type)) {
+              autoPoolV3.ichi.push({
+                ...fusion,
+                allowed: {
+                  address: allowed?.address,
+                  symbol: allowed?.symbol,
+                  decimals: allowed?.decimals,
+                  logoURI: allowed?.logoURI,
+                  price: allowed?.price,
+                },
+              })
+            } else if (GAMMA_TYPES.includes(fusion.type)) {
+              autoPoolV3.gamma.push(fusion)
+            } else if (fusion.type === PAIR_TYPES.CLASSIC) {
+              autoPoolV3.classic.push(fusion)
+            } else if (fusion.type === PAIR_TYPES.STABLE) {
+              autoPoolV3.stable.push(fusion)
+            }
+          }
+
           return {
             ...fusion,
             stable: fusion.type === 'Stable',
@@ -251,8 +336,7 @@ function Updater() {
               ...fusion.gauge,
               bribes: finalBribes,
               tvl: gaugeTvl,
-              apr: fusion.gauge.apr + extraApr,
-              weightPercent,
+              apr: fusion.gauge.apr,
               bribeUsd,
               pooled0: fusion.totalSupply ? (fusion.token0.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
               pooled1: fusion.totalSupply ? (fusion.token1.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
@@ -274,7 +358,8 @@ function Updater() {
         networkId,
       }),
     )
-  }, [dispatch, assets, extraRewardsInfo, networkId, poolsWithAllowed, userInfos, prices])
+    dispatch(updatePoolsMigration(autoPoolV3))
+  }, [dispatch, assets, networkId, poolsWithAllowed, userInfos, prices])
 
   useEffect(() => {
     fetchInfo()

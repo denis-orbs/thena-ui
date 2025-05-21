@@ -11,7 +11,7 @@ function MenuTab({ menuData, className }) {
         <EmphasisButton
           key={`${item.title}_${index}`}
           onClick={item?.onClick}
-          className={cn('px-3 py-2', item.isActive ? 'bg-neutral-600' : 'bg-transparent')}
+          className={cn('h-full px-2 py-1 lg:px-3 lg:py-2', item.isActive ? 'bg-neutral-600' : 'bg-transparent')}
         >
           {item.isLink ? (
             <Link href={item.url} className='text-xs lg:text-sm' prefetch={false}>

@@ -10,14 +10,23 @@ import { cn, formatAmount, fromWei } from '@/lib/utils'
 
 import AssetDropdown from '../dropdown/AssetDropdown'
 import IconGroup from '../icongroup'
-// import { InfoIcon } from '@/svgs'
-// import { Alert } from '../alert'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { TextSubHeading } from '../typography'
 
-function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChange, title, autoFocus = false }) {
+function BalanceInput({
+  asset,
+  setAsset,
+  maxBalance = null,
+  amount,
+  onAmountChange,
+  title,
+  autoFocus = false,
+  weight,
+  showPercent = true,
+  classNames,
+}) {
   const assets = useAssets()
   const t = useTranslations()
   const { account } = useWallet()
@@ -47,16 +56,10 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
   }, [asset?.address, asset?.decimals, balanceOf, maxBalance, nativeBalance])
 
   const data = useMemo(
-    () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId].address.toLowerCase()),
+    () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId]?.address?.toLowerCase()),
     [assets],
   )
 
-  // const errorMsg = useMemo(() => {
-  //   if (!asset || maxBalance.lt(amount)) {
-  //     return 'Insufficient Balance'
-  //   }
-  //   return null
-  // }, [amount, asset])
   const percents = useMemo(
     () => [
       {
@@ -82,16 +85,21 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
-        <p className='font-medium text-white'>{title}</p>
-        <Tabs data={percents} />
+        <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
+        {showPercent && <Tabs data={percents} />}
       </div>
-      <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+      <div
+        className={cn(
+          'flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 hover:bg-neutral-800',
+          classNames?.input,
+        )}
+      >
         <div className='flex items-center justify-between gap-2'>
           <input
             type='number'
             className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
-            value={amount}
+            value={amount ?? ''}
             onChange={e => {
               onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
             }}
@@ -118,9 +126,11 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
                   logo2='https://cdn.thena.fi/assets/BNB.png'
                 />
               ) : (
-                <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI} />
+                <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI ?? ''} />
               )}
-              <span className='text-nowrap'>{maxBalance ? 'BNB + WBNB' : asset.symbol}</span>
+              <span className='text-nowrap'>
+                {`${maxBalance ? 'BNB + WBNB' : asset.symbol} ${weight ? `(${weight}%)` : ''}`}
+              </span>
             </div>
           ) : (
             <Skeleton className='h-6 w-10' />
@@ -128,17 +138,19 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading>
-            {t('Balance')}: {formatAmount(max)}
+          <TextSubHeading className='space-x-2'>
+            <span>
+              {t('Balance')}:{formatAmount(max)}
+            </span>
+            <span
+              onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
+              className={cn('cursor-pointer text-primary-600 hover:text-primary-400', max?.eq(0) && 'hidden')}
+            >
+              {t('Max')}
+            </span>
           </TextSubHeading>
         </div>
       </div>
-      {/* {errorMsg && (
-        <Alert>
-          <InfoIcon className='h-4 w-4 stroke-error-600' />
-          <p>{errorMsg}</p>
-        </Alert>
-      )} */}
     </div>
   )
 }

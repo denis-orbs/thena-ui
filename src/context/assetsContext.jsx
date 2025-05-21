@@ -17,7 +17,6 @@ const initialState = {
 }
 
 const fetchAssetsBalances = async (assets, account, networkId) => {
-  console.log('----------------- user assets ------------------')
   const res = await callMulti(
     assets.map(asset => ({
       address: asset.address,
@@ -63,6 +62,7 @@ function AssetsContextProvider({ children }) {
       return data
     },
     {
+      refreshInterval: 60000,
       revalidateOnFocus: false,
     },
   )
@@ -80,7 +80,7 @@ function AssetsContextProvider({ children }) {
         .sort((a, b) => b.totalValue - a.totalValue)
     },
     {
-      refreshInterval: 10000,
+      refreshInterval: 15000,
       revalidateOnFocus: false,
     },
   )

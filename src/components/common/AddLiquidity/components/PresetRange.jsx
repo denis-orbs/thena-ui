@@ -1,10 +1,12 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
-import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
+import { Paragraph } from '@/components/typography'
+import { cn, formatAmount } from '@/lib/utils'
+import { useAprStore } from '@/state/APR/store'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { ChevronSelectorVerticalIcon, InfinityIcon } from '@/svgs'
 
 const PresetProfits = {
   VERY_LOW: 'VERY_LOW',
@@ -14,8 +16,8 @@ const PresetProfits = {
 }
 
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
-  // const [init, setInit] = useState(false)
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { APRs } = useAprStore()
   const t = useTranslations()
 
   const ranges = useMemo(() => {
@@ -43,7 +45,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.SAFE,
-        title: 'Safe',
+        title: 'Broad',
+        percent: '±20%',
         min: 0.8,
         max: 1.2,
         risk: PresetProfits.LOW,
@@ -51,7 +54,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.NORMAL,
-        title: 'Common',
+        title: 'Moderate',
+        percent: '±10%',
         min: 0.9,
         max: 1.1,
         risk: PresetProfits.MEDIUM,
@@ -59,7 +63,8 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       },
       {
         type: Presets.RISK,
-        title: 'Expert',
+        title: 'Tight',
+        percent: '±5%',
         min: 0.95,
         max: 1.05,
         risk: PresetProfits.HIGH,
@@ -71,26 +76,52 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   const rangeSelections = useMemo(
     () =>
       ranges.map(range => ({
-        label: range.title,
+        label: (
+          <div className='gap flex flex-col items-center justify-center'>
+            <Paragraph className='font-medium text-neutral-50 lg:text-sm'>
+              APR: {formatAmount(APRs?.[range.type])}%
+            </Paragraph>
+            <div className='flex items-center'>
+              <Paragraph className='text-xs lg:text-xs'>{t(range.title)}</Paragraph>
+              {range.percent ? (
+                <div className='flex items-center gap-1'>
+                  <ChevronSelectorVerticalIcon className='size-4' />
+                  <Paragraph className='text-xs lg:text-xs'>{range.percent}</Paragraph>
+                </div>
+              ) : (
+                <InfinityIcon className='size-4' />
+              )}
+            </div>
+          </div>
+        ),
         active: activePreset === range.type,
         onClickHandler: () => {
-          if (activePreset === range.type) {
-            handlePresetRangeSelection(null)
-          } else {
-            handlePresetRangeSelection(range)
-          }
+          handlePresetRangeSelection(range)
           onChangePresetRange(range)
         },
       })),
-    [ranges, activePreset, handlePresetRangeSelection, onChangePresetRange],
+    [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
   return (
-    <div className='flex flex-col gap-3'>
-      <div className='flex items-center justify-between'>
-        <TextHeading>{t('Range Type')}</TextHeading>
-      </div>
-      <Selection data={rangeSelections} isFull />
+    <div
+      className={cn(
+        'grid grid-cols-2 bg-neutral-900 md:grid-cols-4',
+        'items-stretch gap-1 rounded-xl p-0.5 md:items-center',
+      )}
+    >
+      {rangeSelections.map((range, index) => (
+        <div
+          key={index}
+          onClick={range.onClickHandler}
+          className={cn(
+            'cursor-pointer rounded-xl bg-neutral-800 p-2 hover:bg-neutral-700',
+            range.active && 'bg-neutral-700',
+          )}
+        >
+          {range.label}
+        </div>
+      ))}
     </div>
   )
 }

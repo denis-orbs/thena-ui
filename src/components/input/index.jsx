@@ -26,7 +26,7 @@ function Input({
         type={type}
         lang='en'
         className={cn(
-          'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500',
+          'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out hover:bg-neutral-800 focus:border-neutral-500',
           LeadingIcon ? 'pl-12' : prefix ? prefixClass || 'pl-7' : 'pl-4',
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           TrailingIcon && TrailingButton ? 'pr-20' : '',
@@ -40,8 +40,9 @@ function Input({
         <span
           onClick={rest?.onClick}
           className={cn(
-            'absolute bottom-0 left-3 top-0 my-auto h-fit text-neutral-400',
+            'absolute bottom-0 left-4 top-0 my-auto h-fit text-neutral-400',
             rest?.onClick ? 'cursor-pointer' : '',
+            classNames?.prefix,
           )}
         >
           {prefix}
@@ -50,7 +51,14 @@ function Input({
       {LeadingIcon && <div className='absolute bottom-0 left-4 top-0 my-auto h-5 w-5'>{LeadingIcon}</div>}
       {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
       {TrailingIcon && (
-        <div className='pointer-events-none absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>{TrailingIcon}</div>
+        <div
+          className={cn(
+            'pointer-events-none absolute bottom-0 right-3 top-0 my-auto h-5 w-5',
+            classNames?.trailingIcon,
+          )}
+        >
+          {TrailingIcon}
+        </div>
       )}
       {TrailingButton && (
         <div className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingIcon ? 'right-12' : 'right-3')}>

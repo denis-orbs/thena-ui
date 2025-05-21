@@ -75,7 +75,7 @@ export const useChainSettings = () => {
       }
       dispatch(switchNetwork(val))
     },
-    [dispatch, address, chainId, switchChain],
+    [address, chainId, dispatch, switchChain],
   )
 
   return { networkId: networkId || ChainId.BSC, updateNetwork }

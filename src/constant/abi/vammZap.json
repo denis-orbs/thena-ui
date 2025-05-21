@@ -1,0 +1,217 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_router", "type": "address" },
+      { "internalType": "address", "name": "_odosRouter", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "ZapCalculationNotValid", "type": "error" },
+  { "inputs": [], "name": "ZapNoTokensToSkim", "type": "error" },
+  { "inputs": [], "name": "ZapParametersNotValid", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "tokenSkimmed", "type": "address" }],
+    "name": "Skimmed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "pair", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "tokenInAmount", "type": "uint256" }
+    ],
+    "name": "ZappedIn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "tokenOut", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "pair", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "lpAmountIn", "type": "uint256" }
+    ],
+    "name": "ZappedOut",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" }
+    ],
+    "name": "getEstimatedZapIn",
+    "outputs": [{ "internalType": "uint256", "name": "liquidityAdded", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pair", "type": "address" },
+      { "internalType": "uint256", "name": "lpAmount", "type": "uint256" },
+      { "internalType": "address", "name": "tokenOut", "type": "address" }
+    ],
+    "name": "getEstimatedZapOut",
+    "outputs": [{ "internalType": "uint256", "name": "tokenOutReceived", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" }
+    ],
+    "name": "getSwapAmount",
+    "outputs": [
+      { "internalType": "uint256", "name": "tokenInToSwap", "type": "uint256" },
+      { "internalType": "uint256", "name": "estimatedTokenOut", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "odosRouter",
+    "outputs": [{ "internalType": "contract IOdosRouter", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [],
+    "name": "router",
+    "outputs": [{ "internalType": "contract IRouter", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "tokenToSkim", "type": "address" }],
+    "name": "skim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOdosRouter", "type": "address" }],
+    "name": "updateOdosRouter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newRouter", "type": "address" }],
+    "name": "updateRouter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "uint256", "name": "zapSwapSlippage", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" }
+    ],
+    "name": "zapIn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "zapSwapSlippage", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" },
+      {
+        "components": [
+          { "internalType": "address", "name": "inputToken", "type": "address" },
+          { "internalType": "uint256", "name": "inputAmount", "type": "uint256" },
+          { "internalType": "address", "name": "inputReceiver", "type": "address" },
+          { "internalType": "address", "name": "outputToken", "type": "address" },
+          { "internalType": "uint256", "name": "outputQuote", "type": "uint256" },
+          { "internalType": "uint256", "name": "outputMin", "type": "uint256" },
+          { "internalType": "address", "name": "outputReceiver", "type": "address" }
+        ],
+        "internalType": "struct IOdosRouter.swapTokenInfo",
+        "name": "tokenInfo",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "pathDefinition", "type": "bytes" },
+      { "internalType": "address", "name": "executor", "type": "address" },
+      { "internalType": "uint32", "name": "referralCode", "type": "uint32" }
+    ],
+    "name": "zapInOdos",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pair", "type": "address" },
+      { "internalType": "uint256", "name": "lpAmount", "type": "uint256" },
+      { "internalType": "address", "name": "tokenOut", "type": "address" },
+      { "internalType": "uint256", "name": "zapSwapSlippage", "type": "uint256" }
+    ],
+    "name": "zapOut",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pair", "type": "address" },
+      { "internalType": "uint256", "name": "lpAmount", "type": "uint256" },
+      { "internalType": "address", "name": "lpTokenOut", "type": "address" },
+      { "internalType": "uint256", "name": "zapSwapSlippage", "type": "uint256" },
+      {
+        "components": [
+          { "internalType": "address", "name": "inputToken", "type": "address" },
+          { "internalType": "uint256", "name": "inputAmount", "type": "uint256" },
+          { "internalType": "address", "name": "inputReceiver", "type": "address" },
+          { "internalType": "address", "name": "outputToken", "type": "address" },
+          { "internalType": "uint256", "name": "outputQuote", "type": "uint256" },
+          { "internalType": "uint256", "name": "outputMin", "type": "uint256" },
+          { "internalType": "address", "name": "outputReceiver", "type": "address" }
+        ],
+        "internalType": "struct IOdosRouter.swapTokenInfo",
+        "name": "tokenInfo",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "pathDefinition", "type": "bytes" },
+      { "internalType": "address", "name": "executor", "type": "address" },
+      { "internalType": "uint32", "name": "referralCode", "type": "uint32" }
+    ],
+    "name": "zapOutOdos",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

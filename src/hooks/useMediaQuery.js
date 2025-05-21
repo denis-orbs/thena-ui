@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export const useMediaQuery = () => {
+export const useMediaQuery = (key, value) => {
   const [width, setWidth] = useState(0)
 
   useEffect(() => {
@@ -20,7 +20,12 @@ export const useMediaQuery = () => {
   }, [])
 
   return {
-    isMdDown: width < 768,
+    isMdDown: width < 834,
     isLgDown: width < 1024,
+    isXlDown: width < 1280,
+    is2XlDown: width < 1440,
+    is3XlDown: width < 1920,
+    isViewDown: key === 'down' && width < value,
+    isViewUp: key === 'up' && width >= value,
   }
 }

@@ -190,10 +190,10 @@ export const useTxn = () => {
         })
         successToast('Transaction confirmed', hash, networkId)
         console.log('txnReceipt :>> ', txnReceipt)
-        return true
+        return hash
       } catch (error) {
-        console.log(error)
-        console.log(error?.shortMessage)
+        console.debug({ error, to, data })
+
         if (error && error.name === 'TransactionReceiptNotFoundError') {
           // Fix case if RPC error -> still shows tx
           updateTxn({
@@ -203,7 +203,7 @@ export const useTxn = () => {
             hash,
           })
           successToast('Transaction confirmed', hash, networkId)
-          return true
+          return hash
         }
         updateTxn({
           key,

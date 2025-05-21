@@ -18,7 +18,7 @@ import usePrices from './usePrices'
 const getFloorPrice = async () => {
   try {
     const apiKey = process.env.NEXT_PUBLIC_NFT_MARKET_API_KEY
-    const response = await fetch('https://api.element.market/openapi/v1/collection/stats?collection_slug=thenian', {
+    const response = await fetch('/element-market/openapi/v1/collection/stats?collection_slug=thenian', {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
@@ -70,6 +70,7 @@ export const useTheNftInfo = () => {
     return {
       apr,
       lastEarnings,
+      floorPrice,
     }
   }, [data, prices])
 
@@ -77,6 +78,7 @@ export const useTheNftInfo = () => {
     totalStaked: data?.totalStaked ?? 0,
     apr: totalInfo?.apr ?? 0,
     lastEarnings: totalInfo?.lastEarnings ?? 0,
+    floorPrice: totalInfo?.floorPrice ?? 0,
     isLoading,
   }
 }
@@ -307,7 +309,7 @@ export const useNftFeesClaim = () => {
     const harvestuuid = uuidv4()
     startTxn({
       key,
-      title: 'Claim Fees',
+      title: 'Claim TheNFT Rewards',
       transactions: {
         [harvestuuid]: {
           desc: t('Claim Fees'),
@@ -376,4 +378,64 @@ export const useNftRoyaltyClaim = () => {
   )
 
   return { onRoyaltyClaim: handleRoyaltyClaim, pending }
+}
+
+export const useNftClaimAllReward = () => {
+  const [pending, setPending] = useState(false)
+  const { account } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const handleClaimAll = useCallback(
+    async callback => {
+      const key = uuidv4()
+      const harvestfeesuuid = uuidv4()
+      const harvestroyaltyuuid = uuidv4()
+
+      const transactions = {
+        [harvestfeesuuid]: {
+          desc: t('Claim Fees'),
+          status: TXN_STATUS.START,
+          hash: null,
+        },
+        [harvestroyaltyuuid]: {
+          desc: t('Claim Royalty'),
+          status: TXN_STATUS.START,
+          hash: null,
+        },
+      }
+
+      startTxn({
+        key,
+        title: 'Claim TheNFT Rewards',
+        transactions,
+      })
+
+      setPending(true)
+
+      const nftStakingContract = getNftStakingContract()
+      const isFeesSuccess = await writeTxn(key, harvestfeesuuid, nftStakingContract, 'harvest')
+      if (!isFeesSuccess) {
+        setPending(false)
+        return
+      }
+
+      const royaltyContract = getRoyaltyContract()
+      const isRoyaltySuccess = await writeTxn(key, harvestroyaltyuuid, royaltyContract, 'claim', [account])
+      if (!isRoyaltySuccess) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Claim Successful',
+      })
+      setPending(false)
+      callback()
+    },
+    [startTxn, endTxn, writeTxn, account, t],
+  )
+
+  return { onTheNftClaim: handleClaimAll, pending }
 }

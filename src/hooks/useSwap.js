@@ -20,9 +20,60 @@ import { useTxn } from '@/state/transactions/hooks'
 const EnabledDexIds = '43,47'
 const Connectors =
   '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11,0x52f24a5e03aee338da5fd9df68d2b6fae1178827,0x90c97f71e18723b0cf0dfa30ee176ab653e89f40,0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275'
-const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
+
+export const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
+export const assembleOdosUrl = 'https://api.odos.xyz/sor/assemble'
+
+export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outputToken, account, slippage }) => {
+  const quoteRequestBody = {
+    chainId: networkId,
+    inputTokens: [
+      {
+        tokenAddress: getAddress(inputToken),
+        amount: inputAmount,
+      },
+    ],
+    outputTokens: [
+      {
+        tokenAddress: getAddress(outputToken),
+        proportion: 1,
+      },
+    ],
+    userAddr: getAddress(account || zeroAddress),
+    slippageLimitPercent: slippage,
+    referralCode: 121015208,
+    sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
+    pathVizImage: true,
+    disableRFQs: true,
+    compact: true,
+    pathVizImageConfig: {
+      linkColors: ['#B386FF', '#FBA499', '#F9EC66', '#F199EE'],
+      nodeColor: '#422D4C',
+      nodeTextColor: '#D9D5DB',
+      legendTextColor: '#FCE6FB',
+      height: 300,
+    },
+  }
+
+  const response = await fetch(quoteUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(quoteRequestBody),
+  })
+  let quote
+  if (response.status === 200) {
+    quote = await response.json()
+    // handle quote response data
+  }
+
+  return quote
+}
 
 export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId) => {
+  const inputAmount = toWei(fromAmount, fromAsset?.decimals).dp(0).toString(10)
+  const inputToken = getAddress(fromAsset?.address === 'BNB' ? zeroAddress : fromAsset?.address ?? zeroAddress)
+  const outputToken = getAddress(toAsset?.address === 'BNB' ? zeroAddress : toAsset?.address ?? zeroAddress)
+
   const res = useSWR(
     fromAsset &&
       toAsset &&
@@ -35,52 +86,15 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         fromAmount,
         slippage,
       ],
-    async () => {
-      const inputAmount = toWei(fromAmount, fromAsset.decimals).dp(0).toString(10)
-
-      const quoteRequestBody = {
-        chainId: networkId, // Replace with desired chainId
-        inputTokens: [
-          {
-            tokenAddress: getAddress(fromAsset.address === 'BNB' ? zeroAddress : fromAsset.address), // checksummed input token address
-            amount: inputAmount, // input amount as a string in fixed integer precision
-          },
-        ],
-        outputTokens: [
-          {
-            tokenAddress: getAddress(toAsset.address === 'BNB' ? zeroAddress : toAsset.address), // checksummed output token address
-            proportion: 1,
-          },
-        ],
-        userAddr: getAddress(account || zeroAddress), // checksummed user address
-        slippageLimitPercent: slippage, // set your slippage limit percentage (1 = 1%),
-        referralCode: 121015208, // referral code (recommended)
-        sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
-        pathVizImage: true,
-        disableRFQs: true,
-        compact: true,
-        pathVizImageConfig: {
-          linkColors: ['#B386FF', '#FBA499', '#F9EC66', '#F199EE'],
-          nodeColor: '#422D4C',
-          nodeTextColor: '#D9D5DB',
-          legendTextColor: '#FCE6FB',
-          height: 300,
-        },
-      }
-
-      const response = await fetch(quoteUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(quoteRequestBody),
-      })
-      let quote
-      if (response.status === 200) {
-        quote = await response.json()
-        // handle quote response data
-      }
-
-      return quote
-    },
+    async () =>
+      await fetchOdosQuote({
+        inputAmount,
+        networkId,
+        inputToken,
+        outputToken,
+        account,
+        slippage,
+      }),
     {
       refreshInterval: 30000,
     },
@@ -94,8 +108,7 @@ export async function simulateOdosSwap(account, quotePathId, onError) {
     pathId: quotePathId, // Replace with the pathId from quote response in step 1
     simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
   }
-  const assembleUrl = 'https://api.odos.xyz/sor/assemble'
-  const response = await fetch(assembleUrl, {
+  const response = await fetch(assembleOdosUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(assembleRequestBody),
@@ -889,14 +902,12 @@ export const useGetOdosTxSwap = (account, quote) => {
   const { data: assembleData, isFetching } = useQuery({
     queryKey: ['getTx', quote?.pathId, getAddress(account || zeroAddress)],
     queryFn: async () => {
-      const assembleUrl = 'https://api.odos.xyz/sor/assemble'
-
       const assembleRequestBody = {
         userAddr: getAddress(account || zeroAddress), // the checksummed address used to generate the quote
         pathId: quote?.pathId, // Replace with the pathId from quote response in step 1
         simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
       }
-      const response_2 = await fetch(assembleUrl, {
+      const response_2 = await fetch(assembleOdosUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(assembleRequestBody),
@@ -908,7 +919,7 @@ export const useGetOdosTxSwap = (account, quote) => {
       }
       return undefined
     },
-    refetchInterval: 10000,
+    refetchInterval: 20000,
     enabled: Boolean(quote),
     gcTime: 0,
   })
@@ -949,7 +960,7 @@ export const useGetOdosTxSwap = (account, quote) => {
       })
       return { data: args, isLoading: isFetching }
     } catch (error) {
-      console.log('error')
+      console.error('error', error)
       return { data: undefined, isLoading: false }
     }
   }

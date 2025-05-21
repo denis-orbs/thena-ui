@@ -64,10 +64,10 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
                 classNames={{
                   image: 'outline-2 w-6 h-6',
                 }}
-                logo1={pair.token0.logoURI}
-                logo2={pair.token1.logoURI}
+                logo1={pair?.token0?.logoURI}
+                logo2={pair?.token1?.logoURI}
               />
-              <span className='text-nowrap'>{pair.symbol}</span>
+              <span className='text-nowrap'>{pair?.symbol}</span>
             </div>
           ) : (
             <Skeleton className='h-6 w-10' />

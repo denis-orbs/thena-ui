@@ -9,8 +9,8 @@ import { Chart } from './Chart'
 import { useDensityChartData } from './hooks'
 
 const ZOOM_LEVEL = {
-  initialMin: 0.9,
-  initialMax: 1.1,
+  initialMin: 0.8,
+  initialMax: 1.2,
   min: 0.00001,
   max: 20,
 }
@@ -42,7 +42,10 @@ export default function LiquidityChartRangeInput({
   interactive,
   handleShow = true,
 }) {
-  const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+  const isSorted = useMemo(
+    () => currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped),
+    [currencyA, currencyB],
+  )
 
   const { isLoading, error, formattedData } = useDensityChartData({
     currencyA,
@@ -110,29 +113,29 @@ export default function LiquidityChartRangeInput({
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
   return (
-    <div className='flex min-h-[200px] w-full items-center justify-center'>
+    <div className='flex min-h-[280px] w-full items-center justify-center'>
       {isUninitialized ? (
-        <TextHeading>Your position will appear here.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
       ) : isLoading ? (
         <Spinner />
       ) : error ? (
-        <TextHeading>Liquidity data not available.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
       ) : !formattedData || formattedData.length === 0 || !price ? (
-        <TextHeading>There is no liquidity data.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
       ) : (
-        <div className='relative h-[200px] w-full content-center justify-center'>
+        <div className='relative w-full'>
           <Chart
             data={{ series: formattedData, current: price }}
             dimensions={{ width: 560, height: 200 }}
             margins={{ top: 10, right: 2, bottom: 20, left: 0 }}
             styles={{
               area: {
-                selection: '#EA66E5',
+                selection: '#C672D8',
               },
               brush: {
                 handle: {
-                  west: '#DC00D4',
-                  east: '#DC00D4',
+                  west: '#E333DD',
+                  east: '#580055',
                 },
               },
             }}

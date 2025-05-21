@@ -448,7 +448,7 @@ export const useWithdrawTCPerps = () => {
       }
       endTxn({
         key,
-        final: 'Withdraw Successful',
+        final: 'Withdraw Successfully',
       })
       setLoading(false)
       closeTxnModal()
@@ -778,7 +778,7 @@ export const useClaimRewardTCPerp = () => {
 
       startTxn({
         key,
-        title: `${t('Claim Rewards')}`,
+        title: 'Claim Rewards',
         transactions: {
           [claimuuid]: {
             desc: t('Claim Rewards'),

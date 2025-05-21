@@ -8,7 +8,7 @@ import CircleImage from '@/components/image/CircleImage'
 import DoubleInput from '@/components/input/DoubleInput'
 import { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useDefiedgeRemove } from '@/hooks/fusion/useDefiedge'
 import { useGammaRemove } from '@/hooks/fusion/useGamma'
 import { useIchiRemove } from '@/hooks/fusion/useIchi'
@@ -17,18 +17,22 @@ import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
+import SettingSlippageDropDown from './SettingSlippageDropDown'
 import PoolTitle from '../PoolTitle'
 
 export default function RemovePosition({ setPopup, strategy, isManage = false }) {
   const [amount, setAmount] = useState('')
   const { deadline } = useSettings()
+  const [slippage, setSlippage] = useState(0.5)
   const { onV1Remove, pending: v1Pending } = useV1Remove()
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
   const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
   const t = useTranslations()
 
-  const balance = strategy.account.walletBalance
+  const version = strategy?.account?.version ?? 3
+  const balance = version === 2 ? strategy.account.walletBalance : strategy.account.gaugeBalance
+
   const firstAmount = useMemo(
     () => strategy.token0.reserve && strategy.token0.reserve.times(amount || 0).div(strategy.totalSupply),
     [strategy, amount],
@@ -59,26 +63,33 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       warnToast(errorMsg, 'warn')
       return
     }
-    if (['Stable', 'Volatile'].includes(strategy.title)) {
-      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, callback)
+    if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
+      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount, callback)
-    } else if (strategy.title === 'ICHI') {
-      onIchiRemove(strategy, amount, callback)
+      onGammaRemove(strategy, amount, version, callback)
+    } else if (ICHI_TYPES.includes(strategy.title)) {
+      onIchiRemove({
+        pool: strategy,
+        amount,
+        version,
+        callback,
+      })
     } else if (strategy.title === 'DefiEdge') {
       onDefiedgeRemove(strategy, amount, callback)
     }
   }, [
+    errorMsg,
     strategy,
+    onV1Remove,
     amount,
     deadline,
     firstAmount,
     secondAmount,
-    errorMsg,
+    slippage,
     callback,
-    onV1Remove,
     onGammaRemove,
     onIchiRemove,
+    version,
     onDefiedgeRemove,
   ])
 
@@ -86,6 +97,14 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     <>
       <ModalBody>
         {!isManage && <PoolTitle strategy={strategy} />}
+        <div className='flex justify-end'>
+          <SettingSlippageDropDown
+            className='justify-end'
+            slippage={slippage}
+            updateSlippage={setSlippage}
+            position='end'
+          />
+        </div>
         <DoubleInput
           title='Amount'
           pair={strategy}

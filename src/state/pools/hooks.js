@@ -1,9 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
-import { PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useFusionPairs } from '@/context/fusionsContext'
+import { usePairs } from '@/context/pairsContext'
+import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
+import { fetchV2SolidlyPairs } from '@/lib/api'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -22,7 +28,7 @@ export const usePools = () => {
           gauge: {
             ...fusion.gauge,
             tvl: new BigNumber(fusion.gauge.tvl),
-            apr: new BigNumber(fusion.gauge.apr),
+            apr: new BigNumber(fusion.gauge.apr || 0),
             voteApr: new BigNumber(fusion.gauge.voteApr),
             projectedApr: new BigNumber(fusion.gauge.projectedApr),
             weight: new BigNumber(fusion.gauge.weight),
@@ -86,8 +92,114 @@ export const useDefiedges = () => {
   return useMemo(() => pools.filter(pool => pool.title === 'DefiEdge'), [pools])
 }
 
-export const usePoolsWithGauge = () => {
+export const useV3PoolsWithGauge = (isAlive = true) => {
+  const pools = usePools()
+  const weightedPools = useWeightedPools()
+
+  return useMemo(() => {
+    if (!Array.isArray(pools) || !Array.isArray(weightedPools)) return []
+
+    return [...pools, ...weightedPools].filter(pool => {
+      const hasGauge = pool.version === 3 && pool.gauge.address !== zeroAddress
+      return isAlive ? hasGauge && pool.gauge.isAlive : hasGauge
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAlive, pools, weightedPools.length])
+}
+
+export const getStrategy = type => {
+  if (GAMMA_TYPES.includes(type)) {
+    return 'gamma'
+  }
+  if (ICHI_TYPES.includes(type)) {
+    return 'ichi'
+  }
+  if (type === PAIR_TYPES.CLASSIC) {
+    return 'classic'
+  }
+  if (type === PAIR_TYPES.STABLE) {
+    return 'stable'
+  }
+  return null
+}
+
+export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, version }) => {
+  const { autoPoolsMigration } = useSelector(state => state.pools)
+  if (version === 3) return null
+  const strategy = getStrategy(type)
+
+  if (!strategy) return null
+  return autoPoolsMigration[strategy].filter(
+    pool =>
+      (pool.token0.address === token0Address && pool.token1.address === token1Address) ||
+      (pool.token0.address === token1Address && pool.token1.address === token0Address),
+  )
+}
+
+export const useGetV2SolidlyPairs = pairType => {
+  const { networkId } = useChainSettings()
   const pools = usePools()
 
-  return useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
+  const { data: v2PairsRes = [] } = useQuery({
+    queryKey: ['v2-solidly-pairs'],
+    queryFn: () => fetchV2SolidlyPairs({ networkId }),
+    enabled: [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pairType),
+    retry: 3,
+    retryDelay: 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  })
+
+  const v2Pairs = useMemo(
+    () =>
+      v2PairsRes.map(pair => ({
+        ...pair,
+        apr: '0%',
+        subpools: pools.filter(pool => pool.basePool.toLowerCase() === pair.address.toLowerCase()),
+      })),
+    [pools, v2PairsRes],
+  )
+
+  return { v2Pairs }
+}
+
+export const usePairInfo = ({
+  token0Address = '',
+  token1Address = '',
+  type = PAIR_TYPES.CLASSIC,
+  poolAddress = '',
+}) => {
+  const { pairs } = usePairs()
+  const fusionPairs = useFusionPairs()
+  const { v2Pairs } = useGetV2SolidlyPairs(type || PAIR_TYPES.CLASSIC)
+
+  return useMemo(() => {
+    if (type === PAIR_TYPES.WEIGHTED) {
+      return
+    }
+    const found = [...pairs, ...v2Pairs].find(
+      pair =>
+        pair.address === poolAddress ||
+        (((pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
+          (pair.token0?.address === token1Address && pair.token1?.address === token0Address)) &&
+          pair.type === type),
+    )
+    if (!found) return
+
+    const fusionPool = (fusionPairs ?? []).find(ele => found?.address?.toLowerCase() === ele.address)
+    return {
+      ...found,
+      currentTick: Number(fusionPool?.globalState.tick || 0),
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    JSON.stringify(fusionPairs),
+    JSON.stringify(pairs),
+    poolAddress,
+    token0Address,
+    token1Address,
+    type,
+    JSON.stringify(v2Pairs),
+  ])
 }

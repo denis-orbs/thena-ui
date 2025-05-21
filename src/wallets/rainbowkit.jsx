@@ -14,7 +14,7 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import merge from 'lodash/merge'
 import { createConfig, fallback, http, unstable_connector, WagmiProvider } from 'wagmi'
-import { bsc, opBNB } from 'wagmi/chains'
+import { bsc, bscTestnet, opBNB } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 
 import { particleAppleWallet, particleGoogleWallet, particleTwitterWallet, particleWallet } from './particleWallet'
@@ -47,7 +47,7 @@ const connectors = connectorsForWallets(
 
 export const wagmiConfig = createConfig({
   connectors,
-  chains: [bsc, opBNB],
+  chains: [bsc, opBNB, bscTestnet],
   transports: {
     [bsc.id]: fallback([
       http('https://bsc-dataseed2.ninicoin.io'),
@@ -56,6 +56,7 @@ export const wagmiConfig = createConfig({
       unstable_connector(injected),
     ]),
     [opBNB.id]: fallback([http('https://opbnb-mainnet-rpc.bnbchain.org'), unstable_connector(injected)]),
+    [bscTestnet.id]: http('https://bsc-testnet-rpc.publicnode.com'),
   },
   ssr: true,
 })

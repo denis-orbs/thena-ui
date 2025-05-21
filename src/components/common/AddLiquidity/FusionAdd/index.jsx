@@ -2,19 +2,32 @@
 
 import React from 'react'
 
-import DefiedgeAdd from './DefiedgeAdd'
+import { ICHI_TYPES } from '@/constant'
+
 import GammaAdd from './GammaAdd'
 import IchiAdd from './IchiAdd'
 
-export default function FusionAdd({ strategy, isModal, isAdd }) {
+export default function FusionAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack, isSmall = false }) {
   return (
     <>
-      {strategy.title === 'ICHI' ? (
-        <IchiAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />
-      ) : strategy.title === 'DefiEdge' ? (
-        <DefiedgeAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />
+      {ICHI_TYPES.includes(strategy?.title) ? (
+        <IchiAdd
+          strategy={strategy}
+          isModal={isModal}
+          isAdd={isAdd}
+          onShowModalSuccess={onShowModalSuccess}
+          handleBack={handleBack}
+          isSmall={isSmall}
+        />
       ) : (
-        <GammaAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />
+        <GammaAdd
+          strategy={strategy}
+          isModal={isModal}
+          isAdd={isAdd}
+          onShowModalSuccess={onShowModalSuccess}
+          handleBack={handleBack}
+          isSmall={isSmall}
+        />
       )}
     </>
   )

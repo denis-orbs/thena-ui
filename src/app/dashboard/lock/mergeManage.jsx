@@ -13,8 +13,9 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useMerge } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount } from '@/lib/utils'
+import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
-export default function MergeManage({ selected }) {
+export default function MergeManage({ selected, isAutomation }) {
   const [veTHE, setVeTHE] = useState(null)
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
   const t = useTranslations()
@@ -62,6 +63,7 @@ export default function MergeManage({ selected }) {
               setSelected={setVeTHE}
               placeHolder='Make a selection'
               isLocale={false}
+              listClassNames='z-[60]'
             />
           </div>
           <div className='flex flex-col gap-2'>
@@ -85,11 +87,12 @@ export default function MergeManage({ selected }) {
             </div>
           )}
         </div>
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton
           className='w-full'
-          disabled={pending}
+          disabled={pending || isAutomation}
           onClick={() => {
             if (!veTHE) {
               warnToast('Select veTHE')

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
@@ -9,10 +9,12 @@ import CircleImage from '@/components/image/CircleImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import usePrices from '@/hooks/usePrices'
-import { useClaimBribes, useClaimRebase } from '@/hooks/useVeThe'
+import { useClaimBribes, useClaimBribesV2, useClaimRebase } from '@/hooks/useVeThe'
 import { formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { InfoIcon } from '@/svgs'
 
 import { NoRewards } from './NoRewards'
@@ -44,19 +46,32 @@ const sortOptions = [
   },
 ]
 
-export default function CurrentRewards({ rewards, currentMutate }) {
+export default function CurrentRewards({ rewards, currentMutate, version = 3 }) {
+  const t = useTranslations()
+
+  const prices = usePrices()
+  const { updateVeTHEs } = useVeTHEsContext()
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState({})
-  const prices = usePrices()
-  const { onClaimBribes, pending: bribePending } = useClaimBribes()
+
+  const { onClaimBribes: onClaimBribesV3, pending: bribePendingV3 } = useClaimBribes()
+  const { onClaimBribes: onClaimBribesV2, pending: bribePendingV2 } = useClaimBribesV2()
   const { onClaimRebase, pending: rebasePending } = useClaimRebase()
-  const { updateVeTHEs } = useVeTHEsContext()
-  const t = useTranslations()
+
+  const handleClaimBribe = useCallback(
+    pool => {
+      if (version === 3) onClaimBribesV3(pool, () => currentMutate())
+      else onClaimBribesV2(pool, () => currentMutate())
+    },
+    [currentMutate, version, onClaimBribesV2, onClaimBribesV3],
+  )
 
   const finalVeTHEs = useMemo(
     () =>
       rewards.map(pool => {
         const isVeTHE = pool && Number(pool.id) > 0
+
+        // Rebase rewards
         if (isVeTHE) {
           return {
             id: (
@@ -86,22 +101,30 @@ export default function CurrentRewards({ rewards, currentMutate }) {
             ),
           }
         }
+
+        // Incentive rewards
         return {
           id: (
-            <div className='flex items-center gap-3'>
-              <IconGroup
-                className='-space-x-2'
-                classNames={{
-                  image: 'outline-2 w-7 h-7',
-                }}
-                logo1={pool.token0.logoURI}
-                logo2={pool.token1.logoURI}
-              />
-              <div className='flex flex-col'>
-                <TextHeading>{pool.symbol}</TextHeading>
-                <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
-              </div>
-            </div>
+            <>
+              {pool.type !== PAIR_TYPES.WEIGHTED ? (
+                <>
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={pool.token0?.logoURI}
+                    logo2={pool.token1?.logoURI}
+                  />
+                  <div className='flex flex-col'>
+                    <TextHeading>{pool.symbol}</TextHeading>
+                    <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+                  </div>
+                </>
+              ) : (
+                <ListTokenPercantage listToken={pool.tokens} />
+              )}
+            </>
           ),
           type: <Paragraph>{`${t('Incentives')} + ${t('Fees')}`}</Paragraph>,
           tokens: (
@@ -121,16 +144,25 @@ export default function CurrentRewards({ rewards, currentMutate }) {
           action: (
             <EmphasisButton
               className='w-full lg:w-fit'
-              onClick={() => onClaimBribes(pool, () => currentMutate())}
-              disabled={bribePending}
+              onClick={() => handleClaimBribe(pool)}
+              disabled={bribePendingV3 || bribePendingV2}
             >
               {t('Claim')}
             </EmphasisButton>
           ),
         }
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(rewards), prices.THE, t],
+    [
+      bribePendingV2,
+      bribePendingV3,
+      handleClaimBribe,
+      onClaimRebase,
+      prices.THE,
+      rebasePending,
+      rewards,
+      t,
+      updateVeTHEs,
+    ],
   )
 
   return rewards.length > 0 ? (

@@ -138,7 +138,7 @@ export function JoinModal({ competition, open, onClose }) {
 
   const totalToken = useMemo(() => {
     const indexToken = prizeToken.findIndex(
-      (token, index) => token.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0,
+      (token, index) => token?.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0,
     )
     if (indexToken !== -1) {
       const depositBalance =
@@ -148,13 +148,13 @@ export function JoinModal({ competition, open, onClose }) {
 
       prizeTokenArr = prizeToken.map((pt, index) => ({
         data:
-          pt.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0
+          pt?.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0
             ? formatAmount(
-                fromWei(entryFeeUpdate[index], pt.decimals).toNumber() +
-                  fromWei(depositBalance, pt.decimals).toNumber(),
+                fromWei(entryFeeUpdate[index], pt?.decimals).toNumber() +
+                  fromWei(depositBalance, pt?.decimals).toNumber(),
               )
-            : formatAmount(fromWei(entryFeeUpdate[index], pt.decimals).toNumber()),
-        ticker: pt.symbol,
+            : formatAmount(fromWei(entryFeeUpdate[index], pt?.decimals).toNumber()),
+        ticker: pt?.symbol,
       }))
 
       if (prizeTokenArr.some(item => !isInvalidAmount(item.data))) {

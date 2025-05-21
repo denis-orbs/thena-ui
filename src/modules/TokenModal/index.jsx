@@ -16,7 +16,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useTokens } from '@/context/tokensContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import { cn, wrappedAddress } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 
 import { ItemToken } from './ItemToken'
@@ -29,6 +29,8 @@ function TokenModal({
   otherAsset,
   setOtherAsset,
   onAssetSelect = () => {},
+  hiddenTokens = [],
+  isHideTrending = false,
   hiddenAssets = [],
 }) {
   const t = useTranslations()
@@ -36,7 +38,18 @@ function TokenModal({
   const rootRef = useRef(null)
   const { tokens } = useTokens()
 
-  const baseAssets = useAssets()
+  const assets = useAssets()
+
+  const baseAssets = useMemo(
+    () =>
+      hiddenTokens && Array.isArray(hiddenTokens) && hiddenTokens.length > 0
+        ? assets.filter(
+            asset => !hiddenTokens.filter(Boolean).some(token => wrappedAddress(asset).includes(token.toLowerCase())),
+          )
+        : assets,
+    [assets, hiddenTokens],
+  )
+
   const [customToken, setCustomToken] = useState()
   const [searchText, setSearchText] = useState('')
 
@@ -60,8 +73,27 @@ function TokenModal({
       result.push(customToken)
     }
 
-    return result.filter(asset => !hiddenAssets.includes(asset.address))
-  }, [baseAssets, customToken, localTokens, search, hiddenAssets])
+    // Sort tokens - first match tokens list order, then sort alphabetically
+    return result
+      .filter(asset => !hiddenAssets.includes(asset.address))
+      .sort((a, b) => {
+        const tokensList = tokens ?? []
+        const aIndex = tokensList.findIndex(token => token.address.toLowerCase() === a.address.toLowerCase())
+        const bIndex = tokensList.findIndex(token => token.address.toLowerCase() === b.address.toLowerCase())
+
+        // If both tokens are in the tokens list, maintain their order
+        if (aIndex !== -1 && bIndex !== -1) {
+          return aIndex - bIndex
+        }
+
+        // If only one token is in the tokens list, prioritize it
+        if (aIndex !== -1) return -1
+        if (bIndex !== -1) return 1
+
+        // If neither token is in the tokens list, sort alphabetically by symbol
+        return a.symbol.toLowerCase().localeCompare(b.symbol.toLowerCase())
+      })
+  }, [baseAssets, customToken, hiddenAssets, localTokens, search, tokens])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
@@ -127,7 +159,7 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        {trendingTokens.length > 0 && (
+        {trendingTokens.length > 0 && !isHideTrending && (
           <>
             <Paragraph>{t('Trending Assets')}</Paragraph>
             <div className='grid grid-cols-4 gap-2'>

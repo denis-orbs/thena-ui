@@ -70,7 +70,7 @@ export default {
           950: '#312D00',
         },
         error: {
-          100: '#312D00',
+          100: '#FEE8E6',
           200: '#FDD2CC',
           300: '#FBA499',
           400: '#F97766',
@@ -107,8 +107,20 @@ export default {
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
+        'progress-gradient': 'linear-gradient(90deg, #83007EB0 0.49%, #BD60BA 100%)',
+      },
+      gridTemplateColumns: {
+        'add-liquidity-layout': 'minmax(650px, 7fr) 5fr',
+      },
+      screens: {
+        sm: '640px',
+        md: '834px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1440px',
+        '3xl': '1920px',
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],
 }

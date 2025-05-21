@@ -6,9 +6,9 @@ import useSWR from 'swr'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
-import { FUSION_MULTI_CHAIN_START_TIME, V1_MULTI_CHAIN_START_TIME } from '@/constant'
+import { FUSION_MULTI_CHAIN_START_TIME, MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
@@ -45,7 +45,20 @@ const FUSION_DAY_DATAS = gql`
   }
 `
 
-const getV1ChartData = async (chainId, address, fee, skip) => {
+const WEIGHTED_DAY_DATA = gql`
+  query weightedPairCharts($address: String!) {
+    poolSnapshots(first: 1000, where: { pool_: { address: $address } }) {
+      timestamp
+      swapsCount
+      swapVolume
+      swapFees
+      liquidity
+      amounts
+    }
+  }
+`
+
+export const getV1ChartData = async (chainId, address, fee, skip) => {
   try {
     const { pairDayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
       address,
@@ -65,9 +78,9 @@ const getV1ChartData = async (chainId, address, fee, skip) => {
   }
 }
 
-const getFusionChartData = async (chainId, address, skip) => {
+export const getFusionChartData = async ({ chainId, address, version = 2, skip = 0 }) => {
   try {
-    const { poolDayDatas } = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
+    const { poolDayDatas } = await fusionClient[version][chainId].request(FUSION_DAY_DATAS, {
       address,
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
@@ -85,12 +98,73 @@ const getFusionChartData = async (chainId, address, skip) => {
   }
 }
 
-const fetchPairChartData = async (chainId, pair) => {
-  console.log('fetch pair chart data ======================')
-  if (pair.isFusion) {
-    const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
+export const getWeightedChartData = async (chainId, address, skip) => {
+  try {
+    const { poolSnapshots } = await weightedClient[chainId].request(WEIGHTED_DAY_DATA, {
+      address,
+      skip,
+    })
+
+    const data = poolSnapshots?.map(ele => ({
+      date: ele.timestamp,
+      dayVolume: Number(ele.swapVolume),
+      tvlUSD: Number(ele.liquidity),
+      dayFees: Number(ele.swapFees),
+    }))
+
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch fusion pair chart data', error)
+    return { data: [], error: true }
+  }
+}
+
+export const fetchPairChartData = async (chainId, pair) => {
+  if (pair.type === PAIR_TYPES.WEIGHTED) {
+    const { data: fusiondata = [] } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
     return fusiondata
   }
+
+  if (pair.type === PAIR_TYPES.LSD) {
+    const version = pair?.version
+    const { data: fusionData } = await fetchChartData(
+      getFusionChartData,
+      [{ chainId, address: pair?.address, version }],
+      false,
+    )
+    if (!pair?.version === 3) return fusionData
+
+    const swapfeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
+    if (!swapfeePool) return fusionData
+
+    const { data: fusionData2 = [] } = await fetchChartData(
+      getFusionChartData,
+      [{ chainId, address: swapfeePool.address, version }],
+      false,
+    )
+
+    const mergedData = []
+    const allDates = new Set([...fusionData.map(d => d.date), ...fusionData2.map(d => d.date)])
+
+    allDates.forEach(date => {
+      const data1 = fusionData.find(d => d.date === date)
+      const data2 = fusionData2.find(d => d.date === date)
+
+      if (data1 && data2) {
+        mergedData.push({
+          date,
+          dayFees: data1.dayFees + data2.dayFees,
+          dayVolume: data1.dayVolume + data2.dayVolume,
+          tvlUSD: data1.tvlUSD + data2.tvlUSD,
+        })
+      } else {
+        mergedData.push(data1 || data2)
+      }
+    })
+
+    return mergedData
+  }
+
   const { data: v1data } = await fetchChartData(getV1ChartData, [chainId, pair.address, pair.fee], false)
   return v1data
 }

@@ -1,13 +1,26 @@
 import React from 'react'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { CompTypes } from '@/constant/type'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
+import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 
-export default function TokenBadge({ className, asset, variant = CompTypes.Emphasis, ...rest }) {
+export default function TokenBadge({
+  className,
+  asset,
+  variant = CompTypes.Emphasis,
+  showChevronDownIcon = true,
+  prefix,
+  isDouble,
+  ...rest
+}) {
+  const windowSize = useWindowSize()
+  const isMobile = windowSize.width < 768
   return (
     <div
       className={cn(
@@ -32,13 +45,31 @@ export default function TokenBadge({ className, asset, variant = CompTypes.Empha
     >
       {asset ? (
         <>
-          <CircleImage src={asset.logoURI} alt='token logo' width={24} height={24} />
-          {asset.symbol}
+          {isDouble ? (
+            <IconGroup
+              className='-space-x-2'
+              classNames={{
+                image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
+              }}
+              logo1='https://cdn.thena.fi/assets/BSC.png'
+              logo2='https://cdn.thena.fi/assets/BNB.png'
+            />
+          ) : (
+            <CircleImage
+              className='h-4 w-4 outline-2 md:h-6 md:w-6'
+              src={asset.logoURI || UNKNOWN_LOGO}
+              alt='token logo'
+              width={isMobile ? 16 : 24}
+              height={isMobile ? 16 : 24}
+            />
+          )}
+          <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : asset.symbol}</span>
         </>
       ) : (
         <Skeleton className='h-6 w-6 rounded-full' />
       )}
-      <ChevronDownIcon className='h-4 w-4' />
+      {showChevronDownIcon && <ChevronDownIcon className='h-4 w-4' />}
+      {prefix && <span>{prefix}</span>}
     </div>
   )
 }

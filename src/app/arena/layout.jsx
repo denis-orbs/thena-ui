@@ -40,7 +40,7 @@ export const metadata = {
 export default function ArenaLayout({ children }) {
   return (
     <ArenaContextProviders>
-      <section className='layout-container mt-[128px] pt-0 lg:mt-[176px]'>
+      <section className='layout-container'>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
     </ArenaContextProviders>

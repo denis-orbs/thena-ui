@@ -7,7 +7,7 @@ export const Area = ({ series, xScale, yScale, xValue, yValue, fill }) =>
   useMemo(
     () => (
       <path
-        className={cn('fill-[#EA66E5] stroke-[#EA66E5]', !fill && 'opacity-50')}
+        className={cn('fill-[#C672D8] stroke-[#C672D8]', !fill && 'opacity-50')}
         d={
           area()
             .curve(curveStepAfter)

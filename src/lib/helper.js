@@ -13,12 +13,26 @@ export function getFromSessionStorage(key) {
 }
 
 export const getTokenInfo = ({ tokenAddress, assets, customAssets }) => {
-  let token = assets.find(item => item.address.toLowerCase() === tokenAddress?.toLowerCase())
+  if (!tokenAddress) return undefined
+
+  let token = assets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
   if (!token) {
-    token = customAssets.find(item => item.address.toLowerCase() === tokenAddress?.toLowerCase())
+    token = customAssets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
     if (token) {
       token.isWarning = true
     }
   }
   return token
+}
+
+export const formatDelta = (delta, locale = 'en-US') => {
+  if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
+    return '-'
+  }
+
+  return `${Number(Math.abs(delta).toFixed(2)).toLocaleString(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  })}%`
 }

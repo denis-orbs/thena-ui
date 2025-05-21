@@ -2,14 +2,14 @@ import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 
 import Box from '../box'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
-function HoverableChart({ chartData, protocolData, valueProperty, title, ChartComponent }) {
+function HoverableChart({ chartData, protocolData, valueProperty, title, ChartComponent, className }) {
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
@@ -26,6 +26,11 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
       setDateHover()
     }
   }, [protocolData, hover, valueProperty])
+
+  useEffect(() => {
+    setHover(protocolData?.[valueProperty] || undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title])
 
   const formattedData = useMemo(() => {
     if (chartData) {
@@ -79,7 +84,7 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
   )
 
   return (
-    <Box>
+    <Box className={cn(className)}>
       <div className='flex items-start justify-between'>
         <div className='flex flex-col gap-1'>
           <Paragraph>{t(title)}</Paragraph>

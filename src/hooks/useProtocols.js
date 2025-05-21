@@ -1,15 +1,21 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getBribeContract, getERC20Contract, getVoterContract } from '@/lib/contracts'
+import { getBribeContract, getERC20Contract, getGlobalFactoryContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+
+export const POOL_TYPES = {
+  Classic: 0,
+  Stable: 0,
+  'Conc Liquidity': 1,
+  Weighted: 3,
+}
 
 export const useGaugeAdd = () => {
   const [pending, setPending] = useState(false)
@@ -23,12 +29,22 @@ export const useGaugeAdd = () => {
         warnToast('Select Pair')
         return
       }
-      const voterContract = getVoterContract(chainId)
-      const res = await Promise.all([
-        readCall(voterContract, 'isWhitelisted', [pool.token0.address], chainId),
-        readCall(voterContract, 'isWhitelisted', [pool.token1.address], chainId),
-      ])
-      if (!res[0] || !res[1]) {
+      const globalFactoryContract = getGlobalFactoryContract(chainId)
+
+      let res = []
+      if (pool.type === PAIR_TYPES.WEIGHTED) {
+        res = await Promise.all(
+          pool.tokens.map(token => readCall(globalFactoryContract, 'isToken', [token.address], chainId)),
+        )
+      } else {
+        res = await Promise.all([
+          readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
+          readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
+        ])
+      }
+
+      const isWhitelisted = res.every(ele => ele)
+      if (!isWhitelisted) {
         warnToast('Tokens are not whitelisted')
         return
       }
@@ -47,17 +63,13 @@ export const useGaugeAdd = () => {
       })
 
       setPending(true)
-
-      const params = [pool.address, pool.type === PAIR_TYPES.LSD ? 1 : 0]
-      if (!(await writeTxn(key, adduuid, voterContract, 'createGauge', params))) {
+      const params = [pool.address, POOL_TYPES[pool.type]]
+      if (!(await writeTxn(key, adduuid, globalFactoryContract, 'create', params))) {
         setPending(false)
         return
       }
 
-      endTxn({
-        key,
-        final: 'Gauge Add Successful',
-      })
+      endTxn({ key, final: 'Gauge Add Successful' })
       callback()
       setPending(false)
     },
@@ -74,20 +86,23 @@ export const useBribeAdd = () => {
   const t = useTranslations()
 
   const onBribeAdd = useCallback(
-    async (pool, asset, amount, callback) => {
+    async (pool, asset, amounts, callback) => {
+      const total = Object.values(amounts).reduce((sum, curr) => sum + Number(curr), 0)
+
       const key = uuidv4()
       const approveuuid = uuidv4()
       const bribeuuid = uuidv4()
       const bribeAddress = pool.gauge.bribe
       const tokenContract = getERC20Contract(asset.address, chainId)
-      const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress])
-      const isApproved = fromWei(allowance).gte(amount)
+      const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress], chainId)
+      const amountToApprove = toWei(total, asset.decimals).minus(allowance)
+
       setPending(true)
       startTxn({
         key,
         title: 'Add Incentive',
         transactions: {
-          ...(!isApproved && {
+          ...(amountToApprove.gt(0) && {
             [approveuuid]: {
               desc: `${t('Approve')} ${asset.symbol}`,
               status: TXN_STATUS.START,
@@ -101,17 +116,20 @@ export const useBribeAdd = () => {
           },
         },
       })
-      if (!isApproved) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [bribeAddress, maxUint256]))) {
+
+      if (amountToApprove.gt(0)) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [bribeAddress, amountToApprove]))) {
           setPending(false)
           return
         }
       }
 
       const bribeContract = getBribeContract(bribeAddress, chainId)
-      const sendAmount = toWei(amount, asset.decimals).toFixed(0)
-      const params = [asset.address, sendAmount]
-      if (!(await writeTxn(key, bribeuuid, bribeContract, 'notifyRewardAmount', params))) {
+      const txHash = await writeTxn(key, bribeuuid, bribeContract, 'notifyRewardAmountForMultipleEpoch', [
+        asset.address,
+        Object.values(amounts).map(val => toWei(val, asset.decimals).toFixed(0)),
+      ])
+      if (!txHash) {
         setPending(false)
         return
       }

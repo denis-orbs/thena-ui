@@ -1,6 +1,10 @@
 import { tickToPrice } from 'thena-fusion-sdk'
-import { BNB, CurrencyAmount, JSBI, WBNB } from 'thena-sdk-core'
+import { BNB, CurrencyAmount, JSBI, Token, WBNB } from 'thena-sdk-core'
 import { parseUnits } from 'viem'
+
+import Contracts from '@/constant/contracts'
+
+WBNB[97] = new Token(97, Contracts.WBNB[97], 18, 'WBNB', 'Wrapped BNB')
 
 // try to parse a user entered amount for a given token
 export function tryParseAmount(value, currency) {
@@ -40,8 +44,8 @@ export function maxAmountSpend(currencyAmount) {
 }
 
 export function unwrappedToken(currency) {
-  if (currency.isNative) return currency
-  if (currency.equals(WBNB[currency.chainId])) return BNB.onChain(currency.chainId)
+  if (currency?.isNative) return currency
+  if (currency?.equals(WBNB[currency.chainId])) return BNB.onChain(currency.chainId)
   return currency
 }
 

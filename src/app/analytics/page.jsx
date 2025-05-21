@@ -39,113 +39,114 @@ export default function AnalyticsPage() {
   const { tokens } = useTokens()
   const t = useTranslations()
 
-  const totalStats = useMemo(
-    () =>
-      !stats
-        ? undefined
-        : networkId === ChainId.BSC
-          ? stats.find(ele => ele.type === 'bsc-total')
-          : stats.find(ele => ele.type === 'op-total'),
-    [networkId, stats],
-  )
+  const totalStats = useMemo(() => {
+    if (!stats) return undefined
+
+    if (networkId === ChainId.BSC) {
+      return stats.find(ele => ele.type === 'bsc-total')
+    }
+    return stats.find(ele => ele.type === 'op-total')
+  }, [networkId, stats])
 
   return (
-    <div className='flex flex-col gap-10'>
-      <div className='flex flex-col gap-4'>
-        <h2>{t('Analytics')}</h2>
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          <HoverableChart
-            chartData={chartData}
-            protocolData={totalStats}
-            valueProperty='tvlUSD'
-            title='TVL'
-            ChartComponent={LineChart}
-          />
-          <HoverableChart
-            chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
-            protocolData={totalStats}
-            valueProperty='volumeUSD'
-            title='Volume (24h)'
-            ChartComponent={BarChart}
-          />
+    <section className='layout'>
+      <div className='flex flex-col gap-10'>
+        <div className='flex flex-col gap-4'>
+          <h2>{t('Analytics')}</h2>
+          <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+            <HoverableChart
+              chartData={chartData}
+              protocolData={totalStats}
+              valueProperty='tvlUSD'
+              title='TVL'
+              ChartComponent={LineChart}
+            />
+            <HoverableChart
+              chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+              protocolData={totalStats}
+              valueProperty='volumeUSD'
+              title='Volume (24h)'
+              ChartComponent={BarChart}
+            />
+          </div>
+          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
+            <Box className='flex flex-col gap-2'>
+              <div className='flex items-start justify-between'>
+                {totalStats ? (
+                  <>
+                    <TextHeading className='text-2xl'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
+                    <PercentBadge value={totalStats.tvlChange} />
+                  </>
+                ) : (
+                  <>
+                    <Skeleton className='h-[32px] w-[160px]' />
+                    <Skeleton className='h-[24px] w-[80px]' />
+                  </>
+                )}
+              </div>
+              <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
+            </Box>
+            <Box className='flex flex-col gap-2'>
+              <div className='flex items-start justify-between'>
+                {totalStats ? (
+                  <>
+                    <TextHeading className='text-2xl'>${formatAmount(totalStats.volumeUSD)}</TextHeading>
+                    <PercentBadge value={totalStats.volumeChange} />
+                  </>
+                ) : (
+                  <>
+                    <Skeleton className='h-[32px] w-[160px]' />
+                    <Skeleton className='h-[24px] w-[80px]' />
+                  </>
+                )}
+              </div>
+              <Paragraph className='text-sm'>{t('Volume (24h)')}</Paragraph>
+            </Box>
+            <Box className='flex flex-col gap-2'>
+              <div className='flex items-start justify-between'>
+                {totalStats ? (
+                  <>
+                    <TextHeading className='text-2xl'>${formatAmount(totalStats.feesUSD)}</TextHeading>
+                    <PercentBadge value={totalStats.feesChange} />
+                  </>
+                ) : (
+                  <>
+                    <Skeleton className='h-[32px] w-[160px]' />
+                    <Skeleton className='h-[24px] w-[80px]' />
+                  </>
+                )}
+              </div>
+              <Paragraph className='text-sm'>{t('Fees (24h)')}</Paragraph>
+            </Box>
+          </div>
         </div>
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-          <Box className='flex flex-col gap-2'>
-            <div className='flex items-start justify-between'>
-              {totalStats ? (
-                <>
-                  <TextHeading className='text-2xl'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
-                  <PercentBadge value={totalStats.tvlChange} />
-                </>
-              ) : (
-                <>
-                  <Skeleton className='h-[32px] w-[160px]' />
-                  <Skeleton className='h-[24px] w-[80px]' />
-                </>
-              )}
-            </div>
-            <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
-          </Box>
-          <Box className='flex flex-col gap-2'>
-            <div className='flex items-start justify-between'>
-              {totalStats ? (
-                <>
-                  <TextHeading className='text-2xl'>${formatAmount(totalStats.volumeUSD)}</TextHeading>
-                  <PercentBadge value={totalStats.volumeChange} />
-                </>
-              ) : (
-                <>
-                  <Skeleton className='h-[32px] w-[160px]' />
-                  <Skeleton className='h-[24px] w-[80px]' />
-                </>
-              )}
-            </div>
-            <Paragraph className='text-sm'>{t('Volume (24h)')}</Paragraph>
-          </Box>
-          <Box className='flex flex-col gap-2'>
-            <div className='flex items-start justify-between'>
-              {totalStats ? (
-                <>
-                  <TextHeading className='text-2xl'>${formatAmount(totalStats.feesUSD)}</TextHeading>
-                  <PercentBadge value={totalStats.feesChange} />
-                </>
-              ) : (
-                <>
-                  <Skeleton className='h-[32px] w-[160px]' />
-                  <Skeleton className='h-[24px] w-[80px]' />
-                </>
-              )}
-            </div>
-            <Paragraph className='text-sm'>{t('Fees (24h)')}</Paragraph>
-          </Box>
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-center justify-between'>
+            <TextHeading>{t('Top Assets')}</TextHeading>
+            <EmphasisButton
+              onClick={() => {
+                push('/analytics/tokens')
+              }}
+            >
+              {t('View All')}
+            </EmphasisButton>
+          </div>
+          <TokensTable data={tokens} hidePagination />
+        </div>
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-center justify-between'>
+            <TextHeading>{t('Top Pairs')}</TextHeading>
+            <EmphasisButton
+              onClick={() => {
+                push('/analytics/pairs')
+              }}
+            >
+              {t('View All')}
+            </EmphasisButton>
+          </div>
+          <PairsTable data={pairs} hidePagination />
         </div>
       </div>
-      <div className='flex flex-col gap-4'>
-        <div className='flex items-center justify-between'>
-          <TextHeading>{t('Top Assets')}</TextHeading>
-          <EmphasisButton
-            onClick={() => {
-              push('/analytics/tokens')
-            }}
-          >
-            {t('View All')}
-          </EmphasisButton>
-        </div>
-        <TokensTable data={tokens} hidePagination />
-      </div>
-      <div className='flex flex-col gap-4'>
-        <div className='flex items-center justify-between'>
-          <TextHeading>{t('Top Pairs')}</TextHeading>
-          <EmphasisButton
-            onClick={() => {
-              push('/analytics/pairs')
-            }}
-          >
-            {t('View All')}
-          </EmphasisButton>
-        </div>
-        <PairsTable data={pairs} hidePagination />
-      </div>
-    </div>
+    </section>
   )
 }

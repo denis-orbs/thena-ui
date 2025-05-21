@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import { createPortal } from 'react-dom'
 
+import { cn } from '@/lib/utils'
 import { ArrowLeftIcon, CalendarIcon } from '@/svgs'
 
 import Input from '.'
@@ -32,7 +33,17 @@ function formatAMPM(date, type = 'hours') {
   return minutes
 }
 
-function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDate, maxDate, ...rest }) {
+function DateTimePickerModal({
+  onChange,
+  value,
+  isOpen,
+  closeModal,
+  title,
+  minDate,
+  maxDate,
+  disabledPast = true,
+  ...rest
+}) {
   const t = useTranslations()
   const [step, setStep] = useState(STEP.DATE)
   const [dateValue, setDateValue] = useState(value)
@@ -65,6 +76,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
             dateFormat='yyyy/MM/dd'
             minDate={minDate}
             maxDate={maxDate}
+            calendarStartDay={1}
             {...rest}
           />
         </div>
@@ -191,7 +203,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
               },
             }}
             className='bg-transparent'
-            disablePast
+            disablePast={disabledPast}
             ampmInClock
             disableIgnoringDatePartForTimeValidation
             minutesStep={1}
@@ -217,7 +229,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
         </div>
       )
     }
-  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, view, typeTime])
+  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, disabledPast, view, typeTime])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={400} title={title} fontSizeTitle='text-xl lg:text-2xl'>
@@ -261,23 +273,35 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
   )
 }
 
-export function DateTimePickerCustom({ title, selectedDate, minDate, maxDate, dateFormat, onChange, ...rest }) {
+export function DateTimePickerCustom({
+  title,
+  selectedDate,
+  minDate,
+  maxDate,
+  dateFormat,
+  onChange,
+  disabled,
+  disablePast = true,
+  ...rest
+}) {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   const onOpenModal = useCallback(() => setIsOpenModal(true), [])
-
   return (
     <>
       <div className='relative flex items-center'>
         <div
-          className='w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-[48px] text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
+          className={cn(
+            'w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-[48px] text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500',
+            disabled ? 'cursor-not-allowed' : '',
+          )}
           onClick={() => onOpenModal()}
         >
           {dayjs(selectedDate).format(dateFormat)}
         </div>
         <CalendarIcon className='absolute left-4 top-[14px] h-5 w-5' />
       </div>
-      {isOpenModal && (
+      {!disabled && isOpenModal && (
         <DateTimePickerModal
           value={selectedDate}
           isOpen={isOpenModal}
@@ -287,6 +311,7 @@ export function DateTimePickerCustom({ title, selectedDate, minDate, maxDate, da
           rest={rest}
           title={title}
           onChange={onChange}
+          disabledPast={disablePast}
         />
       )}
     </>

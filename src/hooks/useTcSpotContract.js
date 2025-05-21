@@ -542,7 +542,7 @@ export const useWithdrawDepositTC = () => {
       }
       endTxn({
         key,
-        final: 'Withdraw Successful',
+        final: 'Withdraw Successfully',
       })
       setLoading(false)
       closeTxnModal()

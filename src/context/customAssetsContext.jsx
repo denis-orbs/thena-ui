@@ -46,6 +46,7 @@ function CustomAssetsContextProvider({ children }) {
     ['custom-assets/total', networkId],
     async () => await fetchCustomAssets(networkId),
     {
+      refreshInterval: 120000,
       revalidateOnFocus: false,
     },
   )
@@ -57,7 +58,7 @@ function CustomAssetsContextProvider({ children }) {
       return data.map(ele => ({
         ...ele,
         balance: new BigNumber(ele.balance),
-        totalValue: new BigNumber(ele.balance).times(ele.price),
+        totalValue: 0,
       }))
     },
     {

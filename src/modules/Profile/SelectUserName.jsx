@@ -25,7 +25,7 @@ export function SelectUserName({ dataUpdate, setDataUpdate, userInfo }) {
       <div className='flex-2'>
         <Dropdown
           className='w-full lg:w-72'
-          listClassNames='max-h-64 overflow-y-auto w-full'
+          listClassNames='max-h-64 overflow-y-auto'
           data={userNameData}
           selected={dataUpdate.username ?? ''}
           setSelected={e => {

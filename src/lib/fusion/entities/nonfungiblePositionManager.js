@@ -1,9 +1,12 @@
 import { ADDRESS_ZERO, Position, toHex } from 'thena-fusion-sdk'
 import { CurrencyAmount, JSBI, validateAndParseAddress } from 'thena-sdk-core'
 import invariant from 'tiny-invariant'
-import { encodeFunctionData } from 'viem'
+import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
-import { algebraAbi } from '@/constant/abi/fusion'
+import { ZERO_ADDRESS } from '@/constant'
+import { nonfungiblePositionManagerV2Abi, nonfungiblePositionManagerV3Abi } from '@/constant/abi'
+import Contracts from '@/constant/contracts'
+import { getPositionManagerContract } from '@/lib/contracts'
 
 import { SelfPermit } from './selfPermit'
 
@@ -25,9 +28,9 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
-  static getCalldata(func, args) {
+  static getCalldata(func, args, version = 2) {
     return encodeFunctionData({
-      abi: algebraAbi,
+      abi: version === 2 ? nonfungiblePositionManagerV2Abi : nonfungiblePositionManagerV3Abi,
       functionName: func,
       args,
     })
@@ -40,10 +43,27 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
+  static getMintedPosition(addTxRecieve, chainId) {
+    const PM_CONTRACT = getPositionManagerContract(chainId, 3)
+    const functionSignature = 'IncreaseLiquidity(uint256,uint128,uint128,uint256,uint256,address)'
+    const targetTopic = keccak256(new TextEncoder().encode(functionSignature))
+
+    const mintedEvent = addTxRecieve.logs?.find(
+      e => getAddress(e.address) === getAddress(PM_CONTRACT.address) && e.topics[0] === targetTopic,
+    )
+
+    return decodeEventLog({
+      abi: PM_CONTRACT.abi,
+      data: mintedEvent.data,
+      topics: mintedEvent.topics,
+    })
+  }
+
   static addCallParameters(position, options) {
     invariant(JSBI.greaterThan(position.liquidity, ZERO), 'ZERO_LIQUIDITY')
 
     const calldatas = []
+    const { version = 3 } = options
 
     // get amounts
     const { amount0: amount0Desired, amount1: amount1Desired } = position.mintAmounts
@@ -57,7 +77,7 @@ export class NonfungiblePositionManager extends SelfPermit {
 
     // create pool if needed
     if (isMint(options) && options.createPool) {
-      calldatas.push(this.encodeCreate(position.pool))
+      calldatas.push(this.encodeCreate(position.pool, version))
     }
 
     // permits if necessary
@@ -68,39 +88,50 @@ export class NonfungiblePositionManager extends SelfPermit {
       calldatas.push(NonfungiblePositionManager.encodePermit(position.pool.token1, options.token1Permit))
     }
 
-    // mint
+    // MARK: CREATE NEW POSITION OR INCREASE OLD POSITION
     if (isMint(options)) {
       const recipient = validateAndParseAddress(options.recipient)
 
-      calldatas.push(
-        NonfungiblePositionManager.getCalldata('mint', [
-          {
-            token0: position.pool.token0.address,
-            token1: position.pool.token1.address,
-            tickLower: position.tickLower,
-            tickUpper: position.tickUpper,
-            amount0Desired: toHex(amount0Desired),
-            amount1Desired: toHex(amount1Desired),
-            amount0Min,
-            amount1Min,
-            recipient,
-            deadline,
-          },
-        ]),
-      )
+      const baseParams = {
+        token0: position.pool.token0.address,
+        token1: position.pool.token1.address,
+        tickLower: position.tickLower,
+        tickUpper: position.tickUpper,
+        amount0Desired: toHex(amount0Desired),
+        amount1Desired: toHex(amount1Desired),
+        amount0Min,
+        amount1Min,
+        recipient,
+        deadline,
+      }
+
+      let paramMin = baseParams
+      if (version === 2) {
+        paramMin = baseParams
+      } else if (options.isFarming) {
+        paramMin = { ...baseParams, deployer: zeroAddress }
+      } else {
+        paramMin = { ...baseParams, deployer: Contracts.pluginFactory[options.chainId] }
+      }
+
+      calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))
     } else {
       // increase
       calldatas.push(
-        NonfungiblePositionManager.getCalldata('increaseLiquidity', [
-          {
-            tokenId: toHex(options.tokenId),
-            amount0Desired: toHex(amount0Desired),
-            amount1Desired: toHex(amount1Desired),
-            amount0Min,
-            amount1Min,
-            deadline,
-          },
-        ]),
+        NonfungiblePositionManager.getCalldata(
+          'increaseLiquidity',
+          [
+            {
+              tokenId: toHex(options.tokenId),
+              amount0Desired: toHex(amount0Desired),
+              amount1Desired: toHex(amount1Desired),
+              amount0Min,
+              amount1Min,
+              deadline,
+            },
+          ],
+          version,
+        ),
       )
     }
 
@@ -208,10 +239,9 @@ export class NonfungiblePositionManager extends SelfPermit {
 
     if (options.liquidityPercentage.equalTo(ONE)) {
       if (options.burnToken) {
+        // remove 100% liquidity + isBurnToken = true
         calldatas.push(NonfungiblePositionManager.getCalldata('burn', [tokenId]))
       }
-    } else {
-      invariant(options.burnToken !== true, 'CANNOT_BURN')
     }
 
     return {
@@ -229,12 +259,13 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
-  static encodeCreate(pool) {
-    return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', [
-      pool.token0.address,
-      pool.token1.address,
-      toHex(pool.sqrtRatioX96),
-    ])
+  static encodeCreate(pool, version = 2) {
+    const param =
+      version === 2
+        ? [pool.token0.address, pool.token1.address, toHex(pool.sqrtRatioX96)]
+        : [pool.token0.address, pool.token1.address, ZERO_ADDRESS, toHex(pool.sqrtRatioX96), '']
+
+    return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', param, version)
   }
 
   static encodeCollect(options) {

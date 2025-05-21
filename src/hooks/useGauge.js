@@ -1,16 +1,25 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getGaugeContract, getVoterContract } from '@/lib/contracts'
+import { callMulti, readCall } from '@/lib/contractActions'
+import {
+  getClaimerContract,
+  getERC20Contract,
+  getFarmingCenterContract,
+  getGammaHyperVisorContract,
+  getGaugeContract,
+  getIchiVaultContract,
+  getMultiFeeDistributionContract,
+} from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
+import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useGuageStake = () => {
+export const useGaugeStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -30,6 +39,7 @@ export const useGuageStake = () => {
 
       startTxn({
         key,
+        title: 'Stake',
         desc: `${t('Stake')} LP`,
         transactions: {
           ...(!isApproved && {
@@ -72,7 +82,7 @@ export const useGuageStake = () => {
   return { onGaugeStake, pending }
 }
 
-export const useGuageUnstake = () => {
+export const useGaugeUnstake = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -118,7 +128,7 @@ export const useGuageUnstake = () => {
   return { onGaugeUnstake, pending }
 }
 
-export const useGuageHarvset = () => {
+export const useGaugeHarvest = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -160,45 +170,152 @@ export const useGuageHarvset = () => {
   return { onGaugeHarvest, pending }
 }
 
-export const useGuageAllHarvset = () => {
-  const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
-  const { startTxn, endTxn, writeTxn } = useTxn()
+export const useGaugeAllHarvest = () => {
   const t = useTranslations()
+  const { rewards } = useFarmRewards()
 
-  const onGaugeAllHarvest = useCallback(
-    async pairs => {
-      const key = uuidv4()
-      const harvestuuid = uuidv4()
+  const { chainId } = useWallet()
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
 
-      setPending(true)
+  const onGaugeAllHarvest = useCallback(async () => {
+    const key = uuidv4()
+    const harvestNewGaugeId = uuidv4()
+    const claimFarmId = uuidv4()
 
-      startTxn({
-        key,
-        title: 'Harvest Rewards',
-        transactions: {
-          [harvestuuid]: {
-            desc: `${t('Harvest Rewards')} (${pairs.length})`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
+    const { newGauge, manual, gamma, ichi } = rewards
+
+    const transactions = {}
+    if (newGauge.size > 0) {
+      transactions[harvestNewGaugeId] = {
+        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted pools`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+    }
+
+    if (manual.size > 0) {
+      transactions[claimFarmId] = {
+        desc: `${t('Harvest Rewards')} Manual pools`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+    }
+
+    if (gamma.size > 0) {
+      gamma.forEach(_pair => {
+        transactions[`gamma-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} Gamma pools`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
       })
-      const params = pairs.map(pair => pair.gauge.address)
-      const voterContract = getVoterContract(chainId)
-      if (!(await writeTxn(key, harvestuuid, voterContract, 'claimRewards', [params]))) {
+    }
+
+    if (ichi.size > 0) {
+      ichi.forEach(_pair => {
+        transactions[`ichi-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} Ichi pools`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      })
+    }
+
+    setPending(true)
+    startTxn({ key, title: 'Harvest Farmed Rewards', transactions })
+
+    if (newGauge.size > 0) {
+      const params = []
+      newGauge.forEach(pair => params.push(pair.args))
+      const claimer = getClaimerContract(chainId)
+      if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {
         setPending(false)
         return
       }
+    }
 
-      endTxn({
-        key,
-        final: 'Harvest Successful',
+    if (manual.size > 0) {
+      const farmingCenter = getFarmingCenterContract(chainId)
+      const calldata = []
+      manual.forEach(pair => {
+        calldata.push(
+          encodeFunctionData({
+            abi: farmingCenter.abi,
+            functionName: 'collectAndClaimRewards',
+            args: pair.args,
+          }),
+        )
       })
-      setPending(false)
-    },
-    [chainId, startTxn, writeTxn, endTxn, t],
-  )
+
+      const encoded = encodeFunctionData({
+        abi: farmingCenter.abi,
+        functionName: 'multicall',
+        args: [calldata],
+      })
+
+      if (!(await sendTxn(key, claimFarmId, farmingCenter.address, encoded))) {
+        setPending(false)
+        return
+      }
+    }
+
+    if (gamma.size > 0) {
+      const poolAddresses = []
+      gamma.forEach(pair => poolAddresses.push(pair.args))
+
+      const receivers = await callMulti(
+        poolAddresses.map(add => ({
+          ...getGammaHyperVisorContract(add, chainId, 3),
+          functionName: 'receiver',
+        })),
+      )
+
+      // const txs = await callMultiWithLog(
+      //   receivers.map(add => ({
+      //     ...getMultiFeeDistributionContract(add, chainId),
+      //     functionName: 'getAllRewards',
+      //   })),
+      // )
+
+      for (let i = 0; i < receivers.length; i++) {
+        const receiver = receivers[i]
+        const poolAddress = poolAddresses[i]
+        const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
+        const tx = await writeTxn(key, `gamma-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
+        if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
+    if (ichi.size > 0) {
+      const poolAddresses = []
+      ichi.forEach(pair => poolAddresses.push(pair.args))
+
+      const receivers = await callMulti(
+        poolAddresses.map(add => ({
+          ...getIchiVaultContract(add, chainId, 3),
+          functionName: 'farmingContract',
+        })),
+      )
+
+      for (let i = 0; i < receivers.length; i++) {
+        const receiver = receivers[i]
+        const poolAddress = poolAddresses[i]
+        const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
+        const tx = await writeTxn(key, `ichi-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
+        if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
+    endTxn({ key, final: 'Harvest Successful' })
+    setPending(false)
+  }, [rewards, startTxn, t, endTxn, chainId, writeTxn, sendTxn])
 
   return { onGaugeAllHarvest, pending }
 }

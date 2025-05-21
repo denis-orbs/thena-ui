@@ -1,18 +1,18 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { Info, Warning } from '@/components/alert'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import Selection from '@/components/selection'
-import Spinner from '@/components/spinner'
 import CustomTooltip from '@/components/tooltip'
-import { TextHeading } from '@/components/typography'
-import { FusionRangeType } from '@/constant'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
-import { PoolState } from '@/hooks/fusion/useFusions'
-import { unwrappedSymbol } from '@/lib/utils'
-import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
+import { cn, formatAmount } from '@/lib/utils'
+import { useAprStore } from '@/state/APR/store'
+import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
   useActivePreset,
   useRangeHopCallbacks,
@@ -21,55 +21,64 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { TransferIcon, WarningTriangleIcon } from '@/svgs'
 
-import { EnterAmounts } from './containers/EnterAmounts'
-import LiquidityChartRangeInput from './LiquidityChartRangeInput'
-import ManualAdd from './ManualAdd'
+import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
+import WarningStartingPrice from '../components/WarningStartingPrice'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
-  const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
-  const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
-  const stableAssets = useStableTokens()
-  const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
-  const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
-
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
-  )
-  const { ticksAtLimit, invertPrice } = mintInfo
+function ManualStrategy({
+  firstAsset,
+  secondAsset,
+  strategy,
+  position,
+  isEarnFees,
+  setFullRangeWarningShown,
+  fullRangeWarningShown,
+}) {
   const t = useTranslations()
+  // const { isViewDown } = useMediaQuery('down', 640)
+  // const { isViewUp } = useMediaQuery('up', 460)
+
+  // const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
+
+  const stableAssets = useStableTokens()
+  const { isReverse } = useSelector(state => state.fusion)
+
+  const currencyA = useCurrency(firstAsset?.address)
+  const currencyB = useCurrency(secondAsset?.address)
+  const [lastPrice, setLastPrice] = useState(null)
+  const [baseCurrency, quoteCurrency] = useMemo(
+    () =>
+      position
+        ? [position.baseCurrency, position.quoteCurrency]
+        : isReverse
+          ? [currencyB, currencyA]
+          : [currencyA, currencyB],
+    [currencyA, currencyB, isReverse, position],
+  )
+
+  const { APRs } = useAprStore()
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
+  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
+  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
+
+  const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
 
   const dispatch = useDispatch()
   const activePreset = useActivePreset()
   const { startPriceTypedValue } = useV3MintState()
 
-  const {
-    onFieldAInput,
-    onFieldBInput,
-    onStartPriceInput,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-  } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
     return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
   }, [baseCurrency, quoteCurrency, stableAssets])
-
-  // get value and prices at ticks
-  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
-
-  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
     useRangeHopCallbacks(
@@ -81,71 +90,16 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       mintInfo.pool,
     )
 
-  const leftPrice = useMemo(
-    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
-
-  const rightPrice = useMemo(
-    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceUpper : priceLower?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
-
   const price = useMemo(() => {
+    if (position) return position.currentPrice
     if (!mintInfo.price) return
 
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo])
-
-  const assetSelections = useMemo(
-    () => [
-      {
-        label: unwrappedSymbol(firstAsset),
-        active: !isReverse,
-        onClickHandler: () => {
-          setIsReverse(false)
-          if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
-            onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-            onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-          }
-          onFieldAInput('')
-          onFieldBInput('')
-        },
-      },
-      {
-        label: unwrappedSymbol(secondAsset),
-        active: isReverse,
-        onClickHandler: () => {
-          setIsReverse(true)
-          if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
-            onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-            onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-          }
-          onFieldAInput('')
-          onFieldBInput('')
-        },
-      },
-    ],
-    [
-      isReverse,
-      setIsReverse,
-      firstAsset,
-      secondAsset,
-      invertPrice,
-      onFieldAInput,
-      onFieldBInput,
-      onLeftRangeInput,
-      onRightRangeInput,
-      priceLower,
-      priceUpper,
-      ticksAtLimit,
-    ],
-  )
+  }, [mintInfo.invertPrice, mintInfo.price, position])
 
   const handlePresetRangeSelection = useCallback(
     preset => {
       if (!price) return
-
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
 
       if (preset && preset.type === Presets.FULL) {
@@ -157,76 +111,22 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         onRightRangeInput(preset ? String(+price * preset.max) : '')
       }
     },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
+    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, setFullRangeWarningShown, price],
   )
 
-  const currentPrice = useMemo(() => {
-    if (!mintInfo.price) return
+  // const currentPrice = useMemo(() => {
+  //   if (position) return position.currentPrice
+  //   if (!mintInfo.price) return
 
-    const _price = mintInfo.invertPrice
-      ? parseFloat(mintInfo.price.invert().toSignificant(5))
-      : parseFloat(mintInfo.price.toSignificant(5))
+  //   const _price = mintInfo.invertPrice
+  //     ? parseFloat(mintInfo.price.invert().toSignificant(5))
+  //     : parseFloat(mintInfo.price.toSignificant(5))
 
-    if (Number(_price) <= 0.0001) {
-      return '< 0.0001'
-    }
-    return `${_price}`
-  }, [mintInfo.price, mintInfo.invertPrice])
-
-  const feeString = useMemo(() => {
-    if (mintInfo.poolState === PoolState.INVALID || mintInfo.poolState === PoolState.LOADING) return <Spinner />
-
-    if (mintInfo.noLiquidity) return '0.3%'
-
-    return `${mintInfo.dynamicFee / 10000}%`
-  }, [mintInfo])
-
-  const risk = useMemo(() => {
-    const upPrice = rightPrice?.toSignificant(5)
-    const downPrice = leftPrice?.toSignificant(5)
-    if (!upPrice || !downPrice || !price) return
-
-    const upperPercent = 100 - (+price / +upPrice) * 100
-    const lowerPercent = Math.abs(100 - (+price / +downPrice) * 100)
-
-    const rangePercent = +downPrice > +price && +upPrice > 0 ? upperPercent - lowerPercent : upperPercent + lowerPercent
-
-    if (rangePercent < 7.5) {
-      return 5
-    }
-    if (rangePercent < 15) {
-      return (15 - rangePercent) / 7.5 + 4
-    }
-    if (rangePercent < 30) {
-      return (30 - rangePercent) / 15 + 3
-    }
-    if (rangePercent < 60) {
-      return (60 - rangePercent) / 30 + 2
-    }
-    if (rangePercent < 120) {
-      return (120 - rangePercent) / 60 + 1
-    }
-    return 1
-  }, [price, rightPrice, leftPrice])
-
-  const _risk = useMemo(() => {
-    const res = []
-    const split = risk?.toString().split('.')
-
-    if (!split) return
-
-    for (let i = 0; i < 10; i++) {
-      if (i < +split[0]) {
-        res.push(100)
-      } else if (i === +split[0]) {
-        res.push(parseFloat(`0.${split[1]}`) * 100)
-      } else {
-        res.push(0)
-      }
-    }
-
-    return res
-  }, [risk])
+  //   if (Number(_price) <= 0.0001) {
+  //     return '< 0.0001'
+  //   }
+  //   return `${_price}`
+  // }, [position, mintInfo.price, mintInfo.invertPrice])
 
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
@@ -242,137 +142,225 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (!startPriceTypedValue && lastPrice) {
+      onStartPriceInput(`${lastPrice}`)
+    }
+  }, [lastPrice, onStartPriceInput, startPriceTypedValue])
+
   return (
-    <div className='flex flex-col gap-4'>
-      <PresetRanges
-        mintInfo={mintInfo}
-        isStablecoinPair={isStablecoinPair}
-        activePreset={activePreset}
-        handlePresetRangeSelection={handlePresetRangeSelection}
-      />
-      {mintInfo.noLiquidity && (
-        <div className='flex flex-col gap-3'>
-          <Info className='text-sm'>{t('Initialize warning')}</Info>
-          <Info className='text-sm'>{t('Initialize warning2')}</Info>
-          <div className='flex items-center justify-between'>
-            <TextHeading className='w-1/2'>
-              {t('Starting [symbol] Price:', { symbol: baseCurrency?.symbol })}
-            </TextHeading>
-            <Input
-              classNames={{
-                input: 'w-full pr-[150px]',
-              }}
-              val={startPriceTypedValue}
-              onChange={e => onStartPriceInput(e.target.value)}
-              suffix={t('[symbolA] per [symbolB]', {
-                symbolA: quoteCurrency?.symbol,
-                symbolB: baseCurrency?.symbol,
-              })}
-            />
-          </div>
-        </div>
-      )}
-      <div className='flex items-center justify-between'>
-        <TextHeading>{t('Price Range')}</TextHeading>
-        <Selection data={assetSelections} isSmall />
-      </div>
-      <RangeSelector
-        priceLower={priceLower}
-        priceUpper={priceUpper}
-        getDecrementLower={getDecrementLower}
-        getIncrementLower={getIncrementLower}
-        getDecrementUpper={getDecrementUpper}
-        getIncrementUpper={getIncrementUpper}
-        onLeftRangeInput={onLeftRangeInput}
-        onRightRangeInput={onRightRangeInput}
-        currencyA={baseCurrency}
-        currencyB={quoteCurrency}
-        mintInfo={mintInfo}
-        disabled={!startPriceTypedValue && !mintInfo.price}
-      />
-      {activePreset === Presets.FULL && fullRangeWarningShown && (
-        <Warning className='text-sm'>{t('Full range position')}</Warning>
-      )}
-      {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
-      {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
-      {!mintInfo.noLiquidity && (
-        <div className='-mb-2 flex items-center justify-center'>
-          <TextHeading className='text-sm'>
-            {t('Current Price: [price] [symbolA] [symbolB]', {
-              price: currentPrice,
-              symbolA: unwrappedSymbol(quoteCurrency),
-              symbolB: unwrappedSymbol(baseCurrency),
-            })}
-          </TextHeading>
-        </div>
-      )}
-      {!mintInfo.noLiquidity && (
-        <div className='mt-0'>
-          <LiquidityChartRangeInput
-            currencyA={baseCurrency ?? undefined}
-            currencyB={quoteCurrency ?? undefined}
-            feeAmount={mintInfo.dynamicFee}
-            ticksAtLimit={mintInfo.ticksAtLimit}
-            price={price ? parseFloat(price) : undefined}
-            priceLower={priceLower}
-            priceUpper={priceUpper}
-            onLeftRangeInput={onLeftRangeInput}
-            onRightRangeInput={onRightRangeInput}
-          />
-        </div>
-      )}
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
-          <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
-          <div className='w-fit rounded-md bg-neutral-700 p-2'>
-            <TextHeading className='text-sm'>
-              {feeString} {t('Fee')}
-            </TextHeading>
-          </div>
-        </div>
-        <div className='flex flex-col gap-3'>
-          <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
-            <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
-            {_risk && (
-              <div className='flex items-center gap-2'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                    <div
-                      key={`risk-${i}`}
-                      className='relative h-2 bg-error-600'
-                      style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
-            <div className='mt-1 flex items-center justify-between'>
-              <TextHeading className='text-sm'>{t('Profit')}</TextHeading>
-              {_risk && (
-                <div className='flex items-center gap-2'>
-                  {[1, 2, 3, 4, 5].map((_, i) => (
-                    <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                      <div
-                        key={`risk-${i}`}
-                        className='relative h-2 bg-success-600'
-                        style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                      />
-                    </div>
-                  ))}
+    <>
+      <div className='space-y-4'>
+        {mintInfo.noLiquidity && (
+          <div className='flex flex-col gap-4'>
+            <WarningStartingPrice />
+
+            <div className='flex items-end gap-2 md:gap-8'>
+              <div className='flex w-full max-w-72 flex-col gap-1'>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='text-xs font-medium text-neutral-50 md:text-base'>
+                    {t('Initialization Price')}
+                  </Paragraph>
+                  <Paragraph className='text-base font-normal text-neutral-300'>
+                    {t('[symbolA] per [symbolB]', {
+                      symbolA: quoteCurrency?.symbol,
+                      symbolB: baseCurrency?.symbol,
+                    })}
+                  </Paragraph>
                 </div>
-              )}
+                <Input
+                  classNames={{
+                    input: 'leading-5',
+                  }}
+                  val={startPriceTypedValue}
+                  min={0}
+                  onChange={e => onStartPriceInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === '-' || e.key === '+') {
+                      e.preventDefault()
+                      return false
+                    }
+                  }}
+                />
+              </div>
+
+              <div className='flex h-[46px] items-center gap-4'>
+                <CircleImage
+                  className='size-6 outline outline-[#1C2027] md:size-9'
+                  src={quoteCurrency?.logoURI ?? UNKNOWN_LOGO}
+                  alt='quote token'
+                />
+                <EmphasisIconButton
+                  className='size-6 rounded-[4px] md:size-11 md:rounded-lg'
+                  Icon={TransferIcon}
+                  onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
+                />
+                <CircleImage
+                  className='size-6 outline outline-[#1C2027] md:size-9'
+                  src={baseCurrency?.logoURI ?? UNKNOWN_LOGO}
+                  alt='base token'
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {position && position.outOfRange ? (
+          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+            <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
+              <WarningTriangleIcon className='size-full' />
+            </div>
+            <div className='flex flex-col gap-2'>
+              <NewTextHeading className='!text-xl font-medium text-error-100'>{t('OUT OF RANGE')}</NewTextHeading>
+              <Paragraph className='text-base text-error-100'>{t('OUT OF RANGE description')}</Paragraph>
+            </div>
+          </div>
+        ) : (
+          !mintInfo.noLiquidity && (
+            <article
+              className={cn(
+                'flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:px-5 md:py-4',
+                showToggle ? '' : 'hidden',
+              )}
+            >
+              <div className='flex items-center gap-1 md:gap-3'>
+                {isEarnFees ? (
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 size-4 md:size-8',
+                    }}
+                    logo1={firstAsset?.logoURI}
+                    logo2={secondAsset?.logoURI}
+                  />
+                ) : (
+                  <CircleImage
+                    className='size-4 md:size-8'
+                    src='https://cdn.thena.fi/assets/THE.png'
+                    alt='THENA First Logo'
+                  />
+                )}
+
+                {/* <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
+                  {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
+                </NewTextSubHeading> */}
+                <div className='flex flex-col'>
+                  <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
+                    {isEarnFees ? 'Fees' : '$THE'}
+                  </NewTextSubHeading>
+                  <Paragraph className='text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
+                    {t('Earn')}
+                  </Paragraph>
+                </div>
+              </div>
+
+              <div className='flex flex-col'>
+                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
+                  ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
+                </NewTextSubHeading>
+                <Paragraph className='md:eading-5 text-xs font-medium text-neutral-300 md:text-base'>
+                  {t('TVL')}
+                </Paragraph>
+              </div>
+
+              <div className='flex flex-col justify-end'>
+                <NewTextSubHeading className='text-end text-xs font-bold text-gradient-primary-start md:text-xl md:leading-6'>
+                  {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
+                </NewTextSubHeading>
+                <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
+                  {t('Estimated APR')}
+                </Paragraph>
+              </div>
+            </article>
+          )
+        )}
       </div>
-      <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-      <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
-      <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
-        <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
-      </CustomTooltip>
-    </div>
+
+      {strategy && (
+        <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+          <div>
+            <div className='mt-0 flex flex-col xl:hidden'>
+              <ChartPriceRangeInput
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                feeAmount={mintInfo.dynamicFee}
+                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                price={price ? parseFloat(price) : undefined}
+                priceLower={position?.priceLower ?? priceLower}
+                priceUpper={position?.priceUpper ?? priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                interactive={!position}
+                showPeriod
+                handleShow
+                outOfRange={mintInfo.outOfRange}
+                invalidRange={mintInfo.invalidRange}
+                fullRangeWarningShown={fullRangeWarningShown}
+                isCreate={mintInfo.noLiquidity}
+                setLastPrice={setLastPrice}
+                idChart='mobile-chart-price-range'
+              />
+            </div>
+            {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
+              <TextSubHeading className='leading-5'>
+                {t('Current Price: [price] [symbolA] [symbolB]', {
+                  price: currentPrice,
+                  symbolA: unwrappedSymbol(quoteCurrency),
+                  symbolB: unwrappedSymbol(baseCurrency),
+                })}
+              </TextSubHeading>
+            </div> */}
+          </div>
+
+          {/* <div className='block 2xl:hidden'>
+            <LiquidityChartRangeInput
+              currencyA={baseCurrency ?? undefined}
+              currencyB={quoteCurrency ?? undefined}
+              feeAmount={mintInfo.dynamicFee}
+              ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+              price={price ? parseFloat(price) : undefined}
+              priceLower={position?.priceLower ?? priceLower}
+              priceUpper={position?.priceUpper ?? priceUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              interactive={false}
+              showZoom={false}
+            />
+          </div> */}
+
+          {!position && (
+            <RangeSelector
+              price={price ? parseFloat(price) : undefined}
+              priceLower={priceLower}
+              priceUpper={priceUpper}
+              getDecrementLower={getDecrementLower}
+              getIncrementLower={getIncrementLower}
+              getDecrementUpper={getDecrementUpper}
+              getIncrementUpper={getIncrementUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              currencyA={baseCurrency}
+              currencyB={quoteCurrency}
+              mintInfo={mintInfo}
+              disabled={!startPriceTypedValue && !mintInfo.price}
+            />
+          )}
+
+          {!position && (
+            <PresetRanges
+              mintInfo={mintInfo}
+              isStablecoinPair={isStablecoinPair}
+              activePreset={activePreset}
+              handlePresetRangeSelection={handlePresetRangeSelection}
+            />
+          )}
+
+          <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
+            <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
+          </CustomTooltip>
+        </div>
+      )}
+    </>
   )
 }
 

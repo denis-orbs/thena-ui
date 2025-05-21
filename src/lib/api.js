@@ -1,17 +1,20 @@
 import _ from 'lodash'
-import { ChainId } from 'thena-sdk-core/dist'
 
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { ZERO_VALUE } from './utils'
 
-const backendApi = 'https://api.thena.fi/api/v1'
+// TODO: Fix on prod
+// const backendApi = 'https://api.thena.fi/api'
+const backendApi = 'https://api-dev.thena.fi/api'
+
+const getApiVersion = version => (version === 3 ? 'v3' : 'v1')
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   try {
     const getTokens = async () => {
-      const response = await fetch(`${backendApi}/assets`, {
+      const response = await fetch(`${backendApi}/v1/assets`, {
         method: 'get',
       })
       return response.json()
@@ -61,7 +64,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 export const fetchCustomAssets = async networkId => {
   try {
     const getCustomTokens = async () => {
-      const response = await fetch(`${backendApi}/customAssets`, {
+      const response = await fetch(`${backendApi}/v3/customAssets/${networkId}`, {
         method: 'get',
       })
       return response.json()
@@ -85,28 +88,50 @@ export const fetchCustomAssets = async networkId => {
   }
 }
 
-export const fetchPools = params =>
-  fetch(`${backendApi}/${params[1] === ChainId.BSC ? 'fusions' : 'opfusions'}`)
+export const fetchFusionPools = async ({ networkId, version = 3, type }) => {
+  const apiVersion = getApiVersion(version)
+  let url = `${backendApi}/${apiVersion}/fusions/${networkId}`
+  if (type) url += `?type=${type}`
+
+  return fetch(url)
     .then(r => r.json())
     .then(r => r.data)
+}
 
 export const fetchStats = () =>
-  fetch(`${backendApi}/stats`)
+  fetch(`${backendApi}/v1/stats`)
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchBscPairs = () =>
-  fetch(`${backendApi}/topPairs/56`)
+export const fetchTopPairs = async ({ networkId, version = 3, type }) => {
+  const apiVersion = getApiVersion(version)
+  let url = `${backendApi}/${apiVersion}/topPairs/${networkId}`
+  if (type) url += `?type=${type}`
+
+  return fetch(url)
+    .then(r => r.json())
+    .then(r => r.data)
+}
+
+export const fetchV2SolidlyPairs = async ({ networkId }) =>
+  fetch(`${backendApi}/v1/topPairs/${networkId}?type=solidly&populate=1`)
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchOpPairs = () =>
-  fetch(`${backendApi}/topPairs/204`)
+export const fetchWeightedPools = ({ networkId }) =>
+  fetch(`${backendApi}/v3/weightedpools/${networkId}`)
+    .then(r => r.json())
+    .then(r => (Array.isArray(r.data) ? r.data : []))
+
+export const fetchTopTokens = async ({ networkId, version = 3 }) => {
+  const apiVersion = getApiVersion(version)
+  return fetch(`${backendApi}/${apiVersion}/topTokens/${networkId}`)
     .then(r => r.json())
     .then(r => r.data)
+}
 
-export const fetchTopTokens = params =>
-  fetch(`${backendApi}/topTokens/${params[1]}`)
+export const fetchVeTHETokens = (chainId, account) =>
+  fetch(`${backendApi}/v3/vethes/${chainId}/${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -114,3 +139,24 @@ export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
+
+export const fetchFusionPoolsInfos = ({ account, chainId }) => {
+  const res = fetch(`${backendApi}/v3/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
+    .then(r => r.json())
+    .then(r => r.data)
+  return res
+}
+
+export const fetchVotingHistory = async (account, veTHEId, chainId, skip = 0, limit = 10) => {
+  let url = `${backendApi}/v3/vote/history/${chainId}?address=${account?.toLowerCase()}&skip=${skip}&limit=${limit}`
+  if (veTHEId !== 'All') url += `&tokenId=${veTHEId}`
+
+  return fetch(url)
+    .then(r => r.json())
+    .then(r => r)
+}
+
+export const fetchAutomationHistory = (chainId, tokenId) =>
+  fetch(`${backendApi}/v3/vethes/automation/${chainId}/${tokenId}`)
+    .then(r => r.json())
+    .then(r => r.data)

@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core'
 
 import { UNKNOWN_LOGO } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { fetchTopTokens } from '@/lib/api'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = {
-  [ChainId.BSC]: {
+  [CHAIN_ID.BSC]: {
     data: [],
     isLoading: false,
   },
-  [ChainId.OPBNB]: {
+  [CHAIN_ID.OPBNB]: {
     data: [],
     isLoading: false,
   },
@@ -23,15 +23,23 @@ const TokensContext = createContext(initialState)
 function TokensContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { data: bscTokens, isLoading: bscLoading } = useSWR(
-    networkId === ChainId.BSC ? ['bsc top tokens api', ChainId.BSC] : null,
-    { fetcher: fetchTopTokens },
+    networkId === CHAIN_ID.BSC ? ['bsc top tokens api', CHAIN_ID.BSC] : null,
+    { fetcher: () => fetchTopTokens({ networkId }) },
     {
       refreshInterval: 300000,
     },
   )
   const { data: opTokens, isLoading: opLoading } = useSWR(
-    networkId === ChainId.OPBNB ? ['op top tokens api', ChainId.OPBNB] : null,
-    { fetcher: fetchTopTokens },
+    networkId === CHAIN_ID.OPBNB ? ['op top tokens api', CHAIN_ID.OPBNB] : null,
+    { fetcher: () => fetchTopTokens({ networkId }) },
+    {
+      refreshInterval: 60000,
+    },
+  )
+
+  const { data: testTokens, isLoading: testnetLoading } = useSWR(
+    networkId === CHAIN_ID.TEST_BSC ? ['testnet tokens api', CHAIN_ID.TEST_BSC] : null,
+    { fetcher: () => fetchTopTokens({ networkId }) },
     {
       refreshInterval: 300000,
     },
@@ -39,10 +47,11 @@ function TokensContextProvider({ children }) {
 
   const assets = useMemo(
     () => ({
-      [ChainId.BSC]: { data: bscTokens || [], isLoading: bscLoading },
-      [ChainId.OPBNB]: { data: opTokens || [], isLoading: opLoading },
+      [CHAIN_ID.BSC]: { data: bscTokens || [], isLoading: bscLoading },
+      [CHAIN_ID.OPBNB]: { data: opTokens || [], isLoading: opLoading },
+      [CHAIN_ID.TEST_BSC]: { data: testTokens || [], isLoading: testnetLoading },
     }),
-    [bscTokens, bscLoading, opTokens, opLoading],
+    [bscTokens, bscLoading, opTokens, opLoading, testTokens, testnetLoading],
   )
 
   return <TokensContext.Provider value={assets}>{children}</TokensContext.Provider>

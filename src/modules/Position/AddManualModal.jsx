@@ -129,7 +129,7 @@ export default function AddManualModal({
     return undefined
   }, [parsedAmounts, _fusion, tokenA, tokenB, tickLower, tickUpper])
 
-  const { onAlgebraIncrease, pending } = useAlgebraIncrease()
+  const { onAlgebraIncrease, pending } = useAlgebraIncrease(pool?.version ?? 3)
 
   const depositADisabled = useMemo(() => position && position.pool.tickCurrent > position.tickUpper, [position])
   const depositBDisabled = useMemo(() => position && position.pool.tickCurrent < position.tickLower, [position])

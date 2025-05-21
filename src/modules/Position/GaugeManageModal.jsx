@@ -59,9 +59,7 @@ export default function GaugeManageModal({ popup, setPopup, pair, balance, title
               warnToast(errorMsg)
               return
             }
-            onGaugeManage(pair, amount, () => {
-              setPopup(false)
-            })
+            onGaugeManage(amount)
           }}
         >
           {t(label)}

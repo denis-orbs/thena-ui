@@ -5,7 +5,7 @@ import React from 'react'
 import { NeutralBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
 
 export default function PoolTitle({ strategy }) {
   return (
@@ -19,11 +19,13 @@ export default function PoolTitle({ strategy }) {
         />
         <div className='flex flex-col gap-1'>
           <TextHeading>{strategy.symbol}</TextHeading>
-          <Paragraph className='text-xs'>{GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title}</Paragraph>
+          <Paragraph className='text-xs'>
+            {GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title?.replace('_', ' ')}
+          </Paragraph>
         </div>
       </div>
-      {GAMMA_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.title}</NeutralBadge>}
-      {strategy.title === 'ICHI' && <NeutralBadge>{strategy.allowed.symbol}</NeutralBadge>}
+      {GAMMA_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.title.replace('_', ' ')}</NeutralBadge>}
+      {ICHI_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.allowed.symbol}</NeutralBadge>}
     </div>
   )
 }

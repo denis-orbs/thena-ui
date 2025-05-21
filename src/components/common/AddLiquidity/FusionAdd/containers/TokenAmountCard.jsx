@@ -1,12 +1,13 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
+import AssetDropdown from '@/components/dropdown/AssetDropdown'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
@@ -17,12 +18,18 @@ import { LockIcon } from '@/svgs'
 
 export function TokenAmountCard({
   currency,
+  setCurrency,
+  assetsSelect,
   value,
   maxAmount,
   handleInput,
   locked = false,
   liquidityRangeType = FusionRangeType.MANUAL_RANGE,
   title,
+  showPercent = true,
+  showOutsideWarning = true,
+  isSmall = false,
+  isInvalidAmount = false,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -39,7 +46,7 @@ export function TokenAmountCard({
         liquidityRangeType,
       ) &&
       networkId &&
-      currency?.wrapped.address.toLowerCase() === WBNB[networkId].address.toLowerCase(),
+      currency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
     [liquidityRangeType, currency, networkId],
   )
 
@@ -76,71 +83,115 @@ export function TokenAmountCard({
     [maxAmount, handleInput],
   )
 
+  const inputRefer = useRef(null)
+  const onfocusInput = useCallback(() => {
+    if (inputRefer && inputRefer.current) {
+      inputRefer.current.focus()
+    }
+  }, [])
+
   return (
     <div className='w-full'>
       {locked ? (
-        <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
-          <Highlight>
-            <LockIcon className='h-4 w-4' />
-          </Highlight>
-          <Paragraph>{t('The market price is outside')}</Paragraph>
-          <Paragraph>{t('Single-asset deposit only')}</Paragraph>
-        </div>
-      ) : (
-        <div className='flex flex-col gap-2'>
-          <div className='flex items-center justify-between'>
-            <p className='font-medium text-white'>{t(title)}</p>
-            <Tabs data={percents} />
+        showOutsideWarning && (
+          <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+            <Highlight>
+              <LockIcon className='h-4 w-4' />
+            </Highlight>
+            <Paragraph>{t('The market price is outside')}</Paragraph>
+            <Paragraph>{t('Single-asset deposit only')}</Paragraph>
           </div>
-          <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+        )
+      ) : (
+        <div className='flex flex-col'>
+          <div className='flex items-center justify-between'>
+            <p className='font-medium text-white'>{title}</p>
+            {showPercent && <Tabs data={percents} />}
+          </div>
+          <div
+            className={cn(
+              'flex flex-col gap-3 self-stretch rounded-xl p-4',
+              'border border-neutral-700 hover:bg-neutral-900',
+              'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
+              isSmall && 'box-border !gap-1 !px-3 !py-2',
+              isInvalidAmount && 'border-error-600 focus-within:border-error-500',
+            )}
+            onClick={onfocusInput}
+          >
             <div className='flex items-center justify-between gap-2'>
               <input
+                ref={inputRefer}
                 type='number'
-                className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+                className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
                 placeholder='0.0'
                 value={value}
                 disabled={locked}
                 onChange={e => {
-                  handleInput(Number(e.target.value) < 0 ? '' : e.target.value)
+                  let { value: inputValue } = e.target
+                  if (inputValue === '') {
+                    handleInput('')
+                    return
+                  }
+                  if (!isNaN(Number(inputValue))) {
+                    inputValue = inputValue.replace(/^0+(?=\d)/, '')
+                  }
+                  handleInput(inputValue)
                 }}
                 min={0}
                 lang='en'
               />
-              <div
-                className={cn(
-                  'inline-flex items-center justify-center gap-2',
-                  'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                  'py-1.5 pl-1.5 pr-2',
-                )}
-              >
-                {isDouble ? (
-                  <IconGroup
-                    className='-space-x-2'
-                    classNames={{
-                      image: 'outline-2 w-6 h-6',
-                    }}
-                    logo1='https://cdn.thena.fi/assets/BSC.png'
-                    logo2='https://cdn.thena.fi/assets/BNB.png'
-                  />
-                ) : (
-                  <CircleImage alt='' className='h-6 w-6' src={logoURI} />
-                )}
-                <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency?.symbol}</span>
-              </div>
+              {setCurrency && Array.isArray(assetsSelect) ? (
+                <AssetDropdown
+                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  selected={currency}
+                  setCurrency={setCurrency}
+                  data={assetsSelect}
+                />
+              ) : (
+                <div
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2',
+                    'rounded-lg bg-[#292929] bg-opacity-50 text-sm text-neutral-200',
+                    'py-1.5 pl-1.5 pr-2',
+                    'cursor-default',
+                  )}
+                >
+                  {isDouble ? (
+                    <IconGroup
+                      className='-space-x-2'
+                      classNames={{
+                        image: 'outline-2 w-6 h-6',
+                      }}
+                      logo1='https://cdn.thena.fi/assets/BSC.png'
+                      logo2='https://cdn.thena.fi/assets/BNB.png'
+                    />
+                  ) : (
+                    <CircleImage alt='' className='h-6 w-6' src={logoURI} />
+                  )}
+                  <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency?.symbol}</span>
+                </div>
+              )}
             </div>
             <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading>
-                {t('Balance')}: {balanceString}
+              <TextSubHeading className={cn('truncate text-neutral-500', isSmall && '!text-xs')}>
+                ${formatAmount(value * price)}
+              </TextSubHeading>
+              <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && '!text-xs')}>
+                <span>
+                  {t('Balance')}: {balanceString}
+                </span>
+                <span
+                  onClick={() => handleInput(maxAmount?.toExact())}
+                  className={cn('cursor-pointer text-primary-600', maxAmount?.toExact() === '0' && 'hidden')}
+                >
+                  {t('Max')}
+                </span>
               </TextSubHeading>
             </div>
           </div>
-          {/* {errorMsg && (
-            <Alert>
-              <InfoIcon className='h-4 w-4 stroke-error-600' />
-              <p>{errorMsg}</p>
-            </Alert>
-          )} */}
+          {isInvalidAmount && (
+            <TextHeading className='text-base font-normal text-error-600'>{t('Invalid amount')}</TextHeading>
+          )}
         </div>
       )}
     </div>

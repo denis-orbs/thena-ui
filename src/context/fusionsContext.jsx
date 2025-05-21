@@ -2,34 +2,37 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { poolAbi } from '@/constant/abi/fusion'
+import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { PairsContext } from './pairsContext'
 
 const initialState = []
+const FusionsContext = createContext(initialState)
 
-const fetchFusionInfo = async (fusionPairs, chainId) => {
+const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const liquidities = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: poolAbi,
+      abi: pool.version === 2 ? poolAbi : newPoolAbi,
       functionName: 'liquidity',
       args: [],
-      chainId,
+      chainId: _chainId,
     })),
   )
   const globalStates = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: poolAbi,
+      abi: pool.version === 2 ? poolAbi : newPoolAbi,
       functionName: 'globalState',
       args: [],
-      chainId,
+      chainId: _chainId,
     })),
   )
+
   return fusionPairs.map((ele, idx) => ({
+    version: ele.version,
     address: ele.address,
     liquidity: new BigNumber(liquidities[idx]).toString(10),
     globalState: {
@@ -40,16 +43,16 @@ const fetchFusionInfo = async (fusionPairs, chainId) => {
   }))
 }
 
-const FusionsContext = createContext(initialState)
-
 function FusionsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const pairs = useContext(PairsContext)
+
   const fusionPairs = useMemo(() => {
-    const { data } = pairs[networkId]
-    if (!data.length) return []
+    const { data } = pairs
+    if (!data?.length) return []
     return data.filter(ele => ele.isFusion)
-  }, [pairs, networkId])
+  }, [pairs])
+
   const { data } = useSWR(
     fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
     () => fetchFusionInfo(fusionPairs, networkId),

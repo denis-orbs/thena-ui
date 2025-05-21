@@ -68,3 +68,23 @@ export const simulateCall = async (contract, functionName, args = [], chainId = 
 }
 
 export const signCall = async data => await signTypedData(wagmiConfig, data)
+
+const chunkArray = (array, size) => {
+  const result = []
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size))
+  }
+  return result
+}
+
+export const batchCallMulti = async (callConfigs, batchSize = 20) => {
+  const batches = chunkArray(callConfigs, batchSize)
+  const results = []
+
+  for (const batch of batches) {
+    const res = await callMulti(batch)
+    results.push(...res)
+  }
+
+  return results
+}

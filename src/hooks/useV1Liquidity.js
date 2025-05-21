@@ -14,8 +14,6 @@ import { getERC20Contract, getGaugeContract, getPairContract, getRouterContract 
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
-const overrideSlippage = 1
-
 export const useV1Add = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -23,7 +21,7 @@ export const useV1Add = () => {
   const t = useTranslations()
 
   const onV1Add = useCallback(
-    async (firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, callback) => {
+    async (firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, slippage, callback) => {
       const key = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
@@ -82,7 +80,7 @@ export const useV1Add = () => {
         }
       }
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount0 = toWei(firstAmount, firstAsset.decimals).toFixed(0)
       const sendAmount1 = toWei(secondAmount, secondAsset.decimals).toFixed(0)
       const deadlineVal = `${dayjs()
@@ -91,16 +89,13 @@ export const useV1Add = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
+      const wrappedAddress0 = firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address
+      const wrappedAddress1 = secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address
+
       const quoteRes = await readCall(
         routerContract,
         'quoteAddLiquidity',
-        [
-          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
-          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
-          isStable,
-          sendAmount0,
-          sendAmount1,
-        ],
+        [wrappedAddress0, wrappedAddress1, isStable, sendAmount0, sendAmount1],
         chainId,
       )
 
@@ -143,7 +138,14 @@ export const useV1Add = () => {
         key,
         final: 'Liquidity Add Successful',
       })
-      callback()
+
+      const poolAddress = await readCall(
+        routerContract,
+        'pairFor',
+        [wrappedAddress0, wrappedAddress1, isStable],
+        chainId,
+      )
+      callback(poolAddress?.toLowerCase())
       setPending(false)
     },
     [account, chainId, startTxn, writeTxn, endTxn, t],
@@ -159,7 +161,7 @@ export const useV1AddAndStake = () => {
   const t = useTranslations()
 
   const onV1AddAndStake = useCallback(
-    async (pair, firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, callback) => {
+    async (pair, firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, slippage, callback) => {
       const key = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
@@ -217,20 +219,30 @@ export const useV1AddAndStake = () => {
 
       setPending(true)
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [routerAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
+            routerAddress,
+            toWei(firstAmount, firstAsset.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
       }
 
       if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [routerAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve2uuid, secondContract, 'approve', [
+            routerAddress,
+            toWei(secondAmount, secondAsset.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
       }
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount0 = toWei(firstAmount, firstAsset.decimals).toFixed(0)
       const sendAmount1 = toWei(secondAmount, secondAsset.decimals).toFixed(0)
       const deadlineVal = `${dayjs()
@@ -239,16 +251,13 @@ export const useV1AddAndStake = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
+      const wrappedAddress0 = firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address
+      const wrappedAddress1 = secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address
+
       const quoteRes = await readCall(
         routerContract,
         'quoteAddLiquidity',
-        [
-          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
-          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
-          isStable,
-          sendAmount0,
-          sendAmount1,
-        ],
+        [wrappedAddress0, wrappedAddress1, isStable, sendAmount0, sendAmount1],
         chainId,
       )
 
@@ -313,7 +322,14 @@ export const useV1AddAndStake = () => {
         key,
         final: 'Liquidity add & stake successful',
       })
-      callback()
+
+      const poolAddress = await readCall(
+        routerContract,
+        'pairFor',
+        [wrappedAddress0, wrappedAddress1, isStable],
+        chainId,
+      )
+      callback(poolAddress?.toLowerCase())
       setPending(false)
     },
     [account, chainId, startTxn, writeTxn, endTxn, updateTxn, t],
@@ -371,7 +387,7 @@ export const useV1Remove = () => {
   const t = useTranslations()
 
   const onV1Remove = useCallback(
-    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, callback) => {
+    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, slippage, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const removeuuid = uuidv4()
@@ -418,7 +434,7 @@ export const useV1Remove = () => {
       }
 
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount = toWei(withdrawAmount, pair.decimals).toFixed(0)
       let sendAmount0Min = toWei(firstAmount, pair.token0.decimals).times(sendSlippage).toFixed(0)
       let sendAmount1Min = toWei(secondAmount, pair.token1.decimals).times(sendSlippage).toFixed(0)
@@ -491,4 +507,144 @@ export const useV1Remove = () => {
   )
 
   return { onV1Remove, pending }
+}
+
+export const useV1Migrate = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+
+  const migrateV1 = useCallback(
+    async ({ positionV2, strategy, callback }) => {
+      if (!positionV2 || !strategy) return
+
+      const key = uuidv4()
+      const unstakeId = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      setPending(true)
+
+      startTxn({
+        key,
+        title: 'Migrate',
+        transactions: {
+          [unstakeId]: {
+            desc: t('Unstake and Harvest'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveId]: {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [stakeId]: {
+            desc: t('Stake LP'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const gaugeContractV2 = getGaugeContract(positionV2.gauge.address, chainId)
+      if (!(await writeTxn(key, unstakeId, gaugeContractV2, 'withdrawAllAndHarvest', []))) {
+        setPending(false)
+        return
+      }
+
+      const lpContract = getERC20Contract(positionV2.address, chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, positionV2.gauge.address], chainId)
+      const balanceOf = await readCall(lpContract, 'balanceOf', [account], chainId)
+      const isApproved = fromWei(allowance).gte(balanceOf)
+
+      setPending(true)
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveId, lpContract, 'approve', [strategy.gauge.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      } else {
+        updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
+      }
+
+      setPending(true)
+      const gaugeContractV3 = getGaugeContract(strategy.gauge.address, chainId)
+      if (!(await writeTxn(key, stakeId, gaugeContractV3, 'deposit', [balanceOf]))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Migrate Successful' })
+      setPending(false)
+      callback()
+    },
+    [startTxn, t, chainId, writeTxn, account, endTxn, updateTxn],
+  )
+
+  return { migrateV1, pending }
+}
+
+export const useV1Stake = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+
+  const onV1Stake = useCallback(
+    async (pool, amount, callback) => {
+      const key = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      startTxn({
+        key,
+        title: 'Stake',
+        transactions: {
+          [approveId]: {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [stakeId]: {
+            desc: t('Stake LP'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+
+      const lpContract = getERC20Contract(pool.address, chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+      const isApproved = fromWei(allowance).gte(amount)
+
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveId, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      } else {
+        updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
+      }
+
+      const depositAmount = toWei(amount).dp(0).toString(10)
+      setPending(true)
+      const gaugeContractV3 = getGaugeContract(pool.gauge.address, chainId)
+      if (!(await writeTxn(key, stakeId, gaugeContractV3, 'deposit', [depositAmount]))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Staked' })
+      setPending(false)
+      callback()
+    },
+    [startTxn, t, chainId, writeTxn, account, endTxn, updateTxn],
+  )
+
+  return { onV1Stake, pending }
 }

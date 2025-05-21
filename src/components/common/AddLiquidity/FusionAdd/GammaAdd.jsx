@@ -5,27 +5,28 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
-import { zeroAddress } from 'viem'
 
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
-import { useCurrency } from '@/hooks/fusion/Tokens'
+import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
-import { useGammaAdd, useGammaAddAndStake } from '@/hooks/fusion/useGamma'
+import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import { ZapperIcon } from '@/svgs'
 
 import { EnterAmounts } from './containers/EnterAmounts'
+import { CommonZapperPane } from '../components/CommonZapperPane'
 
 const feeAmount = 3000
 
@@ -64,49 +65,104 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd }) {
-  const [isZapper, setIsZapper] = useState(false)
-  const baseCurrency = useCurrency(strategy.token0.address)
-  const quoteCurrency = useCurrency(strategy.token1.address)
-  const { account } = useWallet()
-  const { networkId } = useChainSettings()
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
-  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
-  const { errorMessage } = mintInfo
-  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
-  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
-  const wbnbBalance = useCurrencyBalance(WBNB[networkId])
-  const { onGammaAdd, pending } = useGammaAdd()
-  const { onGammaAddAndStake, pendingStake } = useGammaAddAndStake()
-  const dispatch = useDispatch()
-  const { data: preset } = useSWR(
-    strategy && ['gamma/info', strategy.address],
-    () => fetchGammaInfo(networkId, strategy),
-    {
-      refreshInterval: 0,
-    },
-  )
+export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack, isSmall = false }) {
   const t = useTranslations()
+
+  const [isZapper, setIsZapper] = useState(false)
+
+  const baseCurrency = useCurrency(strategy?.token0?.address)
+  const quoteCurrency = useCurrency(strategy?.token1?.address)
+
+  const asset0 = useGetAsset(strategy?.token0?.address)
+  const asset1 = useGetAsset(strategy?.token1?.address)
 
   const addSelections = useMemo(
     () => [
       {
-        label: 'Default',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Zapper',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
+  )
+
+  return (
+    <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
+      <div className='flex flex-col gap-5'>
+        {isAdd && strategy && <PoolTitle strategy={strategy} />}
+        <Selection data={addSelections} isFull isTranslation={false} />
+        {isZapper ? (
+          <CommonZapperPane
+            asset0={asset0}
+            asset1={asset1}
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+            handleBack={handleBack}
+            isSmall={isSmall}
+          />
+        ) : (
+          <ManualPane
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+            handleBack={handleBack}
+            isSmall={isSmall}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
+  const t = useTranslations()
+  const [slippage, setSlippage] = useState(0.5)
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
+
+  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
+
+  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
+  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
+  const wbnbBalance = useCurrencyBalance(WBNB[networkId])
+
+  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
+
+  const { errorMessage, errorCode } = useMemo(
+    () => ({
+      errorMessage: mintInfo.errorMessage,
+      errorCode: mintInfo.errorCode,
+    }),
+    [mintInfo.errorMessage, mintInfo.errorCode],
+  )
+
+  const { handleAddGamma, pending } = useAddGamma()
+  const dispatch = useDispatch()
+
+  const { data: preset } = useSWR(
+    strategy && ['gamma/info', strategy.address],
+    () => fetchGammaInfo(networkId, strategy),
+    {
+      refreshInterval: 0,
+    },
   )
 
   const price = useMemo(() => {
@@ -131,23 +187,6 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
     }
   }, [amountA, amountB, baseCurrency, quoteCurrency, wbnbBalance, networkId])
 
-  const onAddLiquidity = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
-      return
-    }
-
-    onGammaAdd(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, strategy, amountToWrap, amountA, amountB, onGammaAdd])
-
-  const onAddLiquidityAndStake = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
-      return
-    }
-    onGammaAddAndStake(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, amountToWrap, onGammaAddAndStake, amountA, amountB, strategy])
-
   useEffect(() => {
     if (!price) return
 
@@ -160,83 +199,82 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
     onChangeLiquidityRangeType(FusionRangeType.GAMMA_RANGE)
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, price])
 
+  const onAddLiquidity = useCallback(() => {
+    if (
+      errorCode === 3 ||
+      errorCode === 4 ||
+      errorCode === 5 ||
+      isInvalidAmount(amountA.toExact()) ||
+      isInvalidAmount(amountB.toExact())
+    ) {
+      setCheckIsInvalid(true)
+      return
+    }
+    if (errorMessage) {
+      warnToast(errorMessage, 'warn')
+      return
+    }
+    handleAddGamma({ amountA, amountB, amountToWrap, gammaPair: strategy, slippage }, onShowModalSuccess)
+  }, [amountA, amountB, amountToWrap, handleAddGamma, onShowModalSuccess, slippage, strategy, errorCode, errorMessage])
+
   return (
-    <>
-      <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-        <div className='flex flex-col gap-5'>
-          {isAdd && strategy && <PoolTitle strategy={strategy} />}
-          <Selection data={addSelections} isFull />
-          {isZapper ? (
-            <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
-          ) : (
-            <div className='flex flex-col'>
-              <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-              <div className='mt-5 flex flex-col gap-4'>
-                <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-                <div className='flex flex-col gap-3'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {unwrappedSymbol(strategy.token0)} {t('Amount')}
-                    </Paragraph>
-                    <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {unwrappedSymbol(strategy.token1)} {t('Amount')}
-                    </Paragraph>
-                    <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-                  </div>
-                </div>
-              </div>
-              <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-                <div className='flex flex-col gap-3'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-                  </div>
-                </div>
-              </div>
+    <div>
+      <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
+      <div className='flex flex-col'>
+        <EnterAmounts
+          currencyA={baseCurrency}
+          currencyB={quoteCurrency}
+          mintInfo={mintInfo}
+          isSmall={isSmall}
+          checkIsInvalid={checkIsInvalid}
+        />
+
+        {/* <div className='mt-5 flex flex-col gap-4'>
+          <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>
+                {unwrappedSymbol(strategy?.token0)} {t('Amount')}
+              </Paragraph>
+              <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
             </div>
-          )}
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>
+                {unwrappedSymbol(strategy?.token1)} {t('Amount')}
+              </Paragraph>
+              <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
+            </div>
+          </div>
         </div>
+        <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+          <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+              <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
+            </div>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+              <Paragraph>{formatAmount(strategy?.account?.gaugeBalance)} LP</Paragraph>
+            </div>
+          </div>
+        </div> */}
       </div>
-      {!isZapper && (
-        <div
-          className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
-        >
-          {account ? (
-            <>
-              <SecondaryButton
-                disabled={pending}
-                onClick={() => {
-                  onAddLiquidity()
-                }}
-                className='w-full'
-              >
-                {t('Add Liquidity')}
-              </SecondaryButton>
-              {strategy && strategy.gauge.address !== zeroAddress && (
-                <PrimaryButton
-                  disabled={pendingStake}
-                  onClick={() => {
-                    onAddLiquidityAndStake()
-                  }}
-                  className='w-full'
-                >
-                  {t('Add Liquidity & Stake')}
-                </PrimaryButton>
-              )}
-            </>
-          ) : (
-            <ConnectButton className='w-full' />
-          )}
-        </div>
-      )}
-    </>
+
+      <div className={cn('mt-8 flex w-full flex-col items-center gap-2 lg:flex-row')}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Cancel')}
+        </EmphasisButton>
+        {account ? (
+          <>
+            <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
+              {t('Deposit')}
+            </PrimaryButton>
+          </>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
+    </div>
   )
 }

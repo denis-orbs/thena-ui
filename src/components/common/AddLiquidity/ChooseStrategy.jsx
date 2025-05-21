@@ -1,69 +1,79 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
+import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
+import { zeroAddress } from 'viem'
 
-import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
-import { EmphasisButton } from '@/components/buttons/Button'
-import Highlight from '@/components/highlight'
+import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
+import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
-import Selector from '@/components/selector'
-import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, GAMMA_TYPES } from '@/constant'
-import { ichiVaultAbi } from '@/constant/abi/fusion'
-import { useFusionPairs } from '@/context/fusionsContext'
-import { usePairs } from '@/context/pairsContext'
-import { useCurrency } from '@/hooks/fusion/Tokens'
-import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
-import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
-import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
+import Toggle from '@/components/toggle'
+import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite, InfoIcon } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
+import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
-import LiquidityChartRangeInput from './FusionAdd/LiquidityChartRangeInput'
+import { fetchIchiInfo } from './FusionAdd/IchiAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
-const feeAmount = 3000
-
-const fetchIchiInfo = async (chainId, strategy) => {
-  const values = await callMulti([
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'baseLower',
-      args: [],
-      chainId,
+export const defaultSwapFees = {
+  isDefault: false,
+  address: zeroAddress,
+  tvl: new BigNumber(0),
+  totalSupply: 0,
+  lpPrice: 0,
+  type: 'Conc Liquidity',
+  gauge: {
+    apr: new BigNumber(0),
+    projectedApr: new BigNumber(0),
+    voteApr: new BigNumber(0),
+    totalSupply: 0,
+    address: zeroAddress,
+    fee: zeroAddress,
+    bribe: zeroAddress,
+    weight: new BigNumber(0),
+    weightPercent: new BigNumber(0),
+    bribes: {
+      fee: null,
+      bribe: null,
     },
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'baseUpper',
-      args: [],
-      chainId,
-    },
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'currentTick',
-      args: [],
-      chainId,
-    },
-  ])
-  const lowerValue = 1.0001 ** Number(values[0] - values[2])
-  const upperValue = 1.0001 ** Number(values[1] - values[2])
-  return {
-    type: strategy.title,
-    title: strategy.title,
-    address: strategy.address,
-    min: lowerValue,
-    max: upperValue,
-  }
+    isAlive: false,
+    tvl: new BigNumber(0),
+    bribeUsd: new BigNumber(0),
+    pooled0: new BigNumber(0),
+    pooled1: new BigNumber(0),
+  },
+  allowed: {},
+  stable: false,
+  isAutomatic: false,
+  title: 'CL_SwapFee',
+  account: {
+    walletBalance: new BigNumber(0),
+    gaugeBalance: new BigNumber(0),
+    gaugeEarned: new BigNumber(0),
+    totalLp: new BigNumber(0),
+    token0claimable: new BigNumber(0),
+    token1claimable: new BigNumber(0),
+    staked0: new BigNumber(0),
+    staked1: new BigNumber(0),
+    stakedUsd: new BigNumber(0),
+    earnedUsd: new BigNumber(0),
+    total0: new BigNumber(0),
+    total1: new BigNumber(0),
+    totalUsd: new BigNumber(0),
+  },
 }
 
 const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
@@ -72,282 +82,355 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
     preset = await fetchGammaInfo(chainId, strategy)
   } else if (strategy.title === 'DefiEdge') {
     preset = await fetchDefiedgeInfo(chainId, strategy, currentTick)
-  } else if (strategy.title === 'ICHI') {
+  } else if (ICHI_TYPES.includes(strategy.title)) {
     preset = await fetchIchiInfo(chainId, strategy, currentTick)
   }
   return preset
 }
 
 export default function ChooseStrategy({
-  pairType,
   firstAsset,
   secondAsset,
-  setCurrentStep,
-  strategy,
-  setStrategy,
+  pair,
+  mintInfo,
+  position,
   isAutomatic,
   setIsAutomatic,
-  isReverse,
-  setIsReverse,
-  isModal,
+  setFullRangeWarningShown,
+  fullRangeWarningShown,
 }) {
-  const { pairs } = usePairs()
-  const fusionPairs = useFusionPairs()
   const t = useTranslations()
-
-  const pair = useMemo(() => {
-    const found = (pairs ?? []).find(
-      ele =>
-        [ele.token0.address, ele.token1.address].includes(wrappedAddress(firstAsset)) &&
-        [ele.token0.address, ele.token1.address].includes(wrappedAddress(secondAsset)) &&
-        pairType === ele.type,
-    )
-    if (!found) return
-    const pool = (fusionPairs ?? []).find(ele => found.address.toLowerCase() === ele.address)
-    return {
-      ...found,
-      currentTick: Number(pool?.globalState.tick || 0),
-    }
-  }, [pairs, fusionPairs, firstAsset, secondAsset, pairType])
-
   const dispatch = useDispatch()
+  const searchParams = useSearchParams()
   const { networkId } = useChainSettings()
+
+  const { strategy } = useV3MintState()
+  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
+
+  const poolAddress = searchParams.get('poolAddress')
+
+  const sortedSubPools = useMemo(() => {
+    const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+  }, [pair?.subpools])
+
   const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
-    {
-      refreshInterval: 0,
-    },
+    { refreshInterval: 0 },
   )
-  const baseCurrency = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const quoteCurrency = useCurrency(secondAsset ? secondAsset.address : undefined)
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
+
+  const isEarnFees = useMemo(
+    () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
+    [position, strategy?.title],
   )
-  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
-
-  const price = useMemo(() => {
-    if (!mintInfo.price) return
-
-    return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo])
-
-  const currentPrice = useMemo(() => {
-    if (!mintInfo.price) return
-
-    const _price = mintInfo.invertPrice
-      ? parseFloat(mintInfo.price.invert().toSignificant(5))
-      : parseFloat(mintInfo.price.toSignificant(5))
-
-    if (Number(_price) <= 0.0001) {
-      return '< 0.0001'
-    }
-    return `${_price}`
-  }, [mintInfo.price, mintInfo.invertPrice])
-
-  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   useEffect(() => {
-    if (!price) return
-
     dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
-
-    onLeftRangeInput(preset ? String(+price * preset.min) : '')
-    onRightRangeInput(preset ? String(+price * preset.max) : '')
     onChangePresetRange(preset)
-    if (strategy) {
-      onChangeLiquidityRangeType(
-        GAMMA_TYPES.includes(strategy.title)
-          ? FusionRangeType.GAMMA_RANGE
-          : strategy.title === 'DefiEdge'
-            ? FusionRangeType.DEFIEDGE_RANGE
-            : FusionRangeType.ICHI_RANGE,
-      )
-    }
-  }, [
-    preset,
-    strategy,
-    dispatch,
-    onChangePresetRange,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-    price,
-  ])
+  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput])
 
-  const strategyData = useMemo(() => {
-    if (!pair || !pair.subpools.length) return null
-    return pair.subpools.map(sub => ({
-      content: (
-        <div className='flex flex-1 items-center justify-between'>
-          <div>
-            <TextHeading>{GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}</TextHeading>
-            <div className='mt-1 flex gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-              </div>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
-              </div>
-            </div>
-          </div>
-          {GAMMA_TYPES.includes(sub.title) &&
-            (strategy?.address === sub.address ? (
-              <PrimaryBadge>{sub.title}</PrimaryBadge>
-            ) : (
-              <NeutralBadge>{sub.title}</NeutralBadge>
-            ))}
-          {sub.title === 'ICHI' &&
-            (strategy?.address === sub.address ? (
-              <PrimaryBadge>
-                {sub.allowed.symbol} {t('Deposit')}
-              </PrimaryBadge>
-            ) : (
-              <NeutralBadge>
-                {sub.allowed.symbol} {t('Deposit')}
-              </NeutralBadge>
-            ))}
-        </div>
-      ),
-      active: strategy?.address === sub.address,
-      onClickHandler: () => {
-        setStrategy(sub)
-      },
-    }))
-  }, [pair, strategy, setStrategy, t])
+  useEffect(() => {
+    defaultSwapFees.token0 = firstAsset
+    defaultSwapFees.token1 = secondAsset
+    defaultSwapFees.address = zeroAddress
+  }, [firstAsset, secondAsset])
 
-  const autoSelections = useMemo(
-    () => [
-      {
-        label: 'Automatic',
-        active: isAutomatic,
-        onClickHandler: () => {
-          setIsAutomatic(true)
-          setStrategy(null)
-          dispatch(updateSelectedPreset({ preset: null }))
-          dispatch(setInitialTokenPrice({ typedValue: '' }))
-          onStartPriceInput('')
-          onLeftRangeInput('')
-          onRightRangeInput('')
-        },
-      },
-      {
-        label: 'Manual',
-        active: !isAutomatic,
-        onClickHandler: () => {
-          setIsAutomatic(false)
-          dispatch(updateSelectedPreset({ preset: null }))
-          dispatch(setInitialTokenPrice({ typedValue: '' }))
-          onStartPriceInput('')
-          onLeftRangeInput('')
-          onRightRangeInput('')
-          onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
-        },
-      },
-    ],
-    [
-      isAutomatic,
-      setIsAutomatic,
-      dispatch,
-      onLeftRangeInput,
-      onRightRangeInput,
-      onStartPriceInput,
-      onChangeLiquidityRangeType,
-      setStrategy,
-    ],
+  const setStrategy = useCallback(
+    strategyInfo => {
+      onLeftRangeInput('')
+      onRightRangeInput('')
+      dispatch(updateStrategy({ strategy: strategyInfo }))
+      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
+    },
+    [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
   )
 
-  return (
-    <>
-      <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-        <div className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Management')}</TextHeading>
-              <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
-            </div>
-            <Selection data={autoSelections} isFull />
-          </div>
-          {isAutomatic ? (
-            <div className='flex flex-col gap-5'>
-              <div className='flex flex-col gap-3'>
-                <TextHeading>{t('Strategy')}</TextHeading>
-                {strategyData ? (
-                  <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
-                ) : (
-                  <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
-                    <Highlight>
-                      <InfoCircleWhite className='h-4 w-4' />
-                    </Highlight>
-                    <div className='flex flex-col items-center gap-3'>
-                      <h2>{t('No strategy found')}</h2>
-                    </div>
-                  </div>
-                )}
+  const handleChooseStrategy = useCallback(
+    sub => {
+      if (!sub) return setStrategy(null)
+
+      const _isAutomatic = !MANUAL_TYPES.includes(sub.title)
+      setIsAutomatic(_isAutomatic)
+
+      setStrategy({
+        title: sub.title,
+        tvl: sub.tvl ? sub.tvl.toNumber() : sub.gauge?.tvl?.toNumber() ?? 0,
+        apr: sub.gauge?.apr?.toNumber() ?? 0,
+        account: {
+          totalLp: sub.account?.totalLp?.toNumber(),
+          gaugeBalance: sub.account?.gaugeBalance?.toNumber(),
+        },
+        allowed: { ...sub.allowed, balance: sub.allowed?.balance?.toNumber() },
+        token0: {
+          ...sub.token0,
+          reserve: sub.token0?.reserve?.toNumber(),
+          balance: sub.token0?.balance?.toNumber(),
+          totalValue: sub.token0?.totalValue,
+        },
+        token1: {
+          ...sub.token1,
+          reserve: sub.token1?.reserve?.toNumber(),
+          balance: sub.token1?.balance?.toNumber(),
+          totalValue: sub.token1?.totalValue,
+        },
+        address: sub.address,
+        isFarming: sub.title.includes('Farming'),
+        isAutomatic: _isAutomatic,
+        isDefault: sub.isDefault ?? true,
+        fee: sub.fee,
+        version: sub.version,
+        gauge: {
+          ...sub.gauge,
+          apr: sub.gauge?.apr?.toNumber(),
+          bribeUsd: sub.gauge?.bribeUsd?.toNumber(),
+          pooled0: sub.gauge?.pooled0?.toNumber(),
+          pooled1: sub.gauge?.pooled1?.toNumber(),
+          projectedApr: sub.gauge?.projectedApr?.toNumber(),
+          voteApr: sub.gauge?.voteApr?.toNumber(),
+          tvl: sub.gauge?.tvl?.toNumber(),
+          weight: sub.gauge?.weight?.toNumber(),
+          weightPercent: sub.gauge?.weightPercent?.toNumber(),
+          apr_list: undefined,
+        },
+      })
+    },
+    [setIsAutomatic, setStrategy],
+  )
+
+  useEffect(() => {
+    if (!poolAddress && (!firstAsset || !secondAsset)) return
+    if (strategy && strategy.isDefault) return
+
+    if (!sortedSubPools.length && !strategy) {
+      handleChooseStrategy(defaultSwapFees)
+      return
+    }
+
+    if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
+      const _strategy = sortedSubPools.at(0)
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
+    }
+  }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])
+
+  useEffect(() => {
+    setIsAutomatic(strategy?.isAutomatic ?? false)
+  }, [setIsAutomatic, strategy?.isAutomatic])
+
+  const toggleStrategyType = useCallback(
+    enable => {
+      const _strategy = sortedSubPools.find(item => {
+        if (enable) return !MANUAL_TYPES.includes(item.title)
+        return MANUAL_TYPES.includes(item.title)
+      })
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
+      setIsAutomatic(enable)
+    },
+    [handleChooseStrategy, setIsAutomatic, sortedSubPools],
+  )
+
+  const strategyAutoData = useMemo(() => {
+    const autoStrategy = sortedSubPools
+      .filter(item => !MANUAL_TYPES.includes(item.title))
+      .map(sub => ({
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading className='text-sm'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
+              <div className='mt-1 flex flex-wrap gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-xs font-medium text-neutral-300 lg:text-xs'>
+                    ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
+                  </Paragraph>
+                </div>
               </div>
-              {!mintInfo.noLiquidity && strategyData && (
-                <>
-                  <div className='-mb-2 flex items-center justify-center'>
-                    <TextHeading className='text-sm'>
-                      {t('Current Price: [price] [symbolA] [symbolB]', {
-                        price: currentPrice,
-                        symbolA: unwrappedSymbol(quoteCurrency),
-                        symbolB: unwrappedSymbol(baseCurrency),
-                      })}
-                    </TextHeading>
-                  </div>
-                  <LiquidityChartRangeInput
-                    currencyA={baseCurrency ?? undefined}
-                    currencyB={quoteCurrency ?? undefined}
-                    feeAmount={mintInfo.dynamicFee}
-                    ticksAtLimit={mintInfo.ticksAtLimit}
-                    price={price ? parseFloat(price) : undefined}
-                    priceLower={priceLower}
-                    priceUpper={priceUpper}
-                    onLeftRangeInput={onLeftRangeInput}
-                    onRightRangeInput={onRightRangeInput}
-                    interactive={false}
-                    handleShow={!!strategy}
+            </div>
+
+            <TextHeading className='text-base font-semibold text-primary-600'>
+              {formatAmount(sub.gauge.apr, true)}%
+            </TextHeading>
+
+            <div className='flex flex-wrap justify-end gap-2'>
+              {ICHI_TYPES.includes(sub.title) && (
+                <div className='flex flex-col items-center gap-1'>
+                  <CircleImage alt={sub.title} className='size-4' src={sub.allowed.logoURI} />
+                  <Paragraph className='text-xs text-neutral-400 lg:text-xs'>{t('Deposit')}</Paragraph>
+                </div>
+              )}
+              {NARROW_TYPES.includes(sub.title) && (
+                <div className='flex flex-col items-center gap-1'>
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 size-4',
+                    }}
+                    logo1={sub.token0.logoURI}
+                    logo2={sub.token1.logoURI}
                   />
-                </>
+                  <Paragraph className='text-xs text-neutral-400 lg:text-xs'>{t('Deposit')}</Paragraph>
+                </div>
               )}
             </div>
-          ) : (
-            <ManualStrategy
+          </div>
+        ),
+        active: strategy?.address === sub.address,
+        onClickHandler: () => strategy?.address !== sub.address && handleChooseStrategy(sub),
+      }))
+
+    return autoStrategy
+  }, [sortedSubPools, t, strategy?.address, handleChooseStrategy])
+
+  return (
+    <div className={cn('inline-flex w-full flex-col gap-5')}>
+      <div className='flex-[6] space-y-2'>
+        {!position && (
+          <div className='space-y-2 md:space-y-4'>
+            <StrategyTitle
+              strategyCount={strategyAutoData.length}
+              isAutomatic={isAutomatic}
+              toggleStrategyType={toggleStrategyType}
+              pair={pair}
+              handleChooseStrategy={handleChooseStrategy}
               firstAsset={firstAsset}
               secondAsset={secondAsset}
-              isReverse={isReverse}
-              setIsReverse={setIsReverse}
+              strategy={strategy}
+            />
+            {pair && (
+              <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
+                <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
+
+        {!isAutomatic && (
+          <ManualStrategy
+            firstAsset={firstAsset ?? pair?.token0}
+            secondAsset={secondAsset ?? pair?.token1}
+            strategy={strategy}
+            position={position}
+            isEarnFees={isEarnFees}
+            setFullRangeWarningShown={setFullRangeWarningShown}
+            fullRangeWarningShown={fullRangeWarningShown}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function StrategyTitle({
+  isAutomatic,
+  strategyCount,
+  toggleStrategyType,
+  pair,
+  handleChooseStrategy,
+  firstAsset,
+  secondAsset,
+  strategy,
+}) {
+  const [show, setShow] = useState(false)
+  const t = useTranslations()
+
+  const strategyType = useMemo(
+    () => [
+      {
+        label: t('Manual'),
+        active: !isAutomatic,
+        onClickHandler: () => {
+          toggleStrategyType(false)
+        },
+      },
+      {
+        label: t('Automated'),
+        active: isAutomatic,
+        onClickHandler: () => {
+          toggleStrategyType(true)
+        },
+      },
+    ],
+    [isAutomatic, toggleStrategyType, t],
+  )
+
+  const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
+  const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
+  const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
+
+  const handleChangeManualType = useCallback(() => {
+    if (strategy) {
+      const _strategy = pair?.subpools.find(item =>
+        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+      )
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
+    }
+  }, [handleChooseStrategy, pair?.subpools, strategy])
+
+  return (
+    <article>
+      <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between'>
+        <div>
+          {hasSwapFee && hasFarming && !isAutomatic && (
+            <Toggle
+              checked={!strategy?.isFarming}
+              onChange={handleChangeManualType}
+              label='Earn Fees'
+              className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
             />
           )}
         </div>
-      </div>
-      {isAutomatic && (
-        <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
-          <EmphasisButton
-            disabled={!strategy}
-            onClick={() => {
-              setCurrentStep(2)
+
+        <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
+          <Selection
+            className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
+            data={strategyType}
+            isTranslation={false}
+            classNames={{
+              items: 'md:w-1/2',
             }}
+          />
+          <i
+            onClick={() => setShow(!show)}
+            className={cn(
+              'flex cursor-pointer items-center justify-center rounded-lg',
+              'size-8 min-w-8 md:size-11 md:min-w-11',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
+            )}
           >
-            {t('Continue')}
-          </EmphasisButton>
+            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+          </i>
         </div>
-      )}
-      <CustomTooltip id='management-tooltip' className='max-w-[320px]'>
-        <div className='flex flex-col gap-2'>
-          <TextHeading className='text-sm'>{t('How to Choose a Strategy')}</TextHeading>
-          <Paragraph className='text-xs'>{t('Automatic Strategy')}</Paragraph>
-          <Paragraph className='text-xs'>{t('Manual Strategy')}</Paragraph>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 0, height: 0 }}
+        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className='overflow-hidden'
+      >
+        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
+          <Paragraph className='mb-4 block text-base'>
+            Depending on the Assets you chose, you will get different Strategies to chose on.
+          </Paragraph>
+
+          <NewTextSubHeading className='mb-2 block text-xl'>Manual Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
+            Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
+            and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
+            not earn any reward until you re-adjust your position accordingly.
+          </Paragraph>
+
+          <NewTextSubHeading className='mb-2 mt-4 block text-xl'>Automatic Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
+            If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
+            Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
+            provide liquidity, you will begin earning emissions.
+          </Paragraph>
         </div>
-      </CustomTooltip>
-    </>
+      </motion.div>
+    </article>
   )
 }
