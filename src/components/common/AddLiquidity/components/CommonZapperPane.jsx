@@ -1,5 +1,6 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -38,6 +39,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
   const { account, chainId } = useWallet()
   const [tokenDeposit, setTokenDeposit] = useState(asset0)
   const [amount, setAmount] = useState(0)
+  const [invalidAmount, setInvalidAmount] = useState(false)
   const amountIn = useDebounce(amount, 500)
 
   const { onAddLiquidity: addZapV1 } = useV1Zapper()
@@ -136,7 +138,8 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
         fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(tokenDeposit?.balance) ||
         isInvalidAmount(amountIn)
       ) {
-        warnToast('Invalid Amount')
+        setInvalidAmount(true)
+        // warnToast('Invalid Amount')
         return false
       }
 
@@ -191,6 +194,12 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
     ],
   )
 
+  useEffect(() => {
+    if (!isInvalidAmount(amount) && !BigNumber(amount).gt(tokenDeposit?.balance) && invalidAmount === true) {
+      setInvalidAmount(false)
+    }
+  }, [amount, amountIn, invalidAmount, tokenDeposit?.balance])
+
   return (
     <div className='flex flex-col gap-8'>
       <div className='relative flex w-full flex-col gap-2 md:gap-4'>
@@ -207,6 +216,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             showPercent={false}
             assetsSelect={[]}
             isSmall={isSmall}
+            isInvalidAmount={invalidAmount}
           />
           <div
             className={cn(

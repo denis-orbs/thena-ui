@@ -7,7 +7,7 @@ import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
@@ -29,6 +29,7 @@ export function TokenAmountCard({
   showPercent = true,
   showOutsideWarning = true,
   isSmall = false,
+  isInvalidAmount = false,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -113,6 +114,7 @@ export function TokenAmountCard({
               'border border-neutral-700 hover:bg-neutral-900',
               'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
               isSmall && 'box-border !gap-1 !px-3 !py-2',
+              isInvalidAmount && 'border-error-600 focus-within:border-error-500',
             )}
             onClick={onfocusInput}
           >
@@ -187,6 +189,9 @@ export function TokenAmountCard({
               </TextSubHeading>
             </div>
           </div>
+          {isInvalidAmount && (
+            <TextHeading className='text-base font-normal text-error-600'>{t('Invalid amount')}</TextHeading>
+          )}
         </div>
       )}
     </div>

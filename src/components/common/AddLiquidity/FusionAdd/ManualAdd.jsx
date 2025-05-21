@@ -32,10 +32,16 @@ export default function ManualAdd({
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
 
-  const errorMessage = useMemo(
-    () => (position ? position.errorMessage : mintInfo.errorMessage),
-    [mintInfo.errorMessage, position],
+  const { errorMessage, errorCode } = useMemo(
+    () => ({
+      errorMessage: position ? position.errorMessage : mintInfo.errorMessage,
+      errorCode: position ? position.errorCode : mintInfo.errorCode,
+    }),
+    [mintInfo.errorMessage, mintInfo.errorCode, position],
   )
+
+  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
+
   const amountA = useMemo(
     () => (position ? position.parsedAmounts?.[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_A]),
     [mintInfo.parsedAmounts, position],
@@ -75,7 +81,11 @@ export default function ManualAdd({
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
-      warnToast(errorMessage, 'warn')
+      if (errorCode === 3 || errorCode === 4 || errorCode === 5 || (position && position.errorMessage)) {
+        setCheckIsInvalid(true)
+      } else {
+        warnToast(errorMessage, 'warn')
+      }
       return
     }
 
@@ -100,6 +110,7 @@ export default function ManualAdd({
   }, [
     errorMessage,
     position,
+    errorCode,
     onAlgebraAdd,
     amountA,
     amountB,
@@ -124,6 +135,7 @@ export default function ManualAdd({
           mintInfo={mintInfo}
           position={position}
           isSmall
+          checkIsInvalid={checkIsInvalid}
         />
       </div>
 

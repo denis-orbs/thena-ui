@@ -6,7 +6,7 @@ import { useBalance, useReadContract } from 'wagmi'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
-import { TextSubHeading } from '@/components/typography'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { SELECT_TOKEN_STYLE } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
@@ -33,6 +33,7 @@ export function TokenAmountInput({
   assetsSelect,
   classNames,
   isSmall = false,
+  isInvalidAmount = false,
 }) {
   const assets = useAssets()
   const t = useTranslations()
@@ -132,6 +133,7 @@ export function TokenAmountInput({
           'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
           isSmall && 'xl:!gap-1 xl:!px-3 xl:!py-2',
+          isInvalidAmount && 'border-error-600 focus-within:border-error-500',
         )}
         onClick={onfocusInput}
         ref={wrapperSelectRef}
@@ -238,6 +240,9 @@ export function TokenAmountInput({
           </TextSubHeading>
         </div>
       </div>
+      {isInvalidAmount && (
+        <TextHeading className='text-base font-normal leading-5 text-error-600'>{t('Invalid Amount')}</TextHeading>
+      )}
       {Array.isArray(assetsSelect) && (
         <>
           {assetsSelect.length > 0 ? (

@@ -516,8 +516,8 @@ export const useWeightedPool = () => {
   const onAddLiquidityAllToken = useCallback(
     async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
       let isOutOfBalance = false
-      const handleInsufficientBalance = tokenSymbol => {
-        warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
+      const handleInsufficientBalance = () => {
+        // warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
         isOutOfBalance = true
       }
 

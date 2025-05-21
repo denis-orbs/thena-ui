@@ -78,7 +78,7 @@ function KyberZapperPane({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountIn, tokenDeposit.address, tickUpper, tickLower])
 
-  const { data, isFetching } = useGetZapInRoute({
+  const { data } = useGetZapInRoute({
     tickLower,
     tickUpper,
     poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
@@ -99,10 +99,12 @@ function KyberZapperPane({
   const addLiquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
   const _token0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
   const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
+  const [invalidAmount, setInvalidAmount] = useState(false)
 
   const handleKyberAddLiquidity = useCallback(() => {
     if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {
-      warnToast('Invalid Amount')
+      setInvalidAmount(true)
+      // warnToast('Invalid Amount')
       return false
     }
 
@@ -133,6 +135,12 @@ function KyberZapperPane({
     tokenDeposit,
   ])
 
+  useEffect(() => {
+    if (!isInvalidAmount(amountIn) && !BigNumber(amountIn).gt(tokenDeposit?.balance) && invalidAmount === true) {
+      setInvalidAmount(false)
+    }
+  }, [amountIn, invalidAmount, tokenDeposit?.balance])
+
   return (
     <div className='!mt-4 flex flex-col md:gap-4'>
       <div className='space-y-2 md:space-y-4'>
@@ -148,6 +156,7 @@ function KyberZapperPane({
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={isToken0Wbnb || isToken1Wbnb ? [asset0, asset1, BNB] : [asset0, asset1]}
+            isInvalidAmount={invalidAmount}
           />
 
           <div
@@ -211,7 +220,7 @@ function KyberZapperPane({
           {t('Cancel')}
         </EmphasisButton>
         {account ? (
-          <PrimaryButton disabled={isFetching || !data?.route} onClick={handleKyberAddLiquidity} className='w-full'>
+          <PrimaryButton onClick={handleKyberAddLiquidity} className='w-full'>
             {t('Add Liquidity')}
           </PrimaryButton>
         ) : (
