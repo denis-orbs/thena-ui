@@ -13,11 +13,11 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
+import { usePoolWithoutGauge } from '@/hooks/usePoolWithoutGauge'
 import { useGaugeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
-import { usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ChevronDownIcon } from '@/svgs'
 
 export default function GaugePage() {
@@ -28,23 +28,12 @@ export default function GaugePage() {
   const { account } = useWallet()
   const [selected, setSelected] = useState(null)
   const { onGaugeAdd, pending } = useGaugeAdd()
-  const pools = usePools()
-
+  const poolsWithoutGauge = usePoolWithoutGauge()
   const { pairs = [] } = usePairs()
-  const weightedPoolwithoutGauge = useMemo(
+
+  const weightedPoolWithoutGauge = useMemo(
     () => pairs.filter(p => p && p.type === PAIR_TYPES.WEIGHTED && p.gauge.address === zeroAddress),
     [pairs],
-  )
-
-  const poolsWithoutGauge = useMemo(
-    () =>
-      pools.filter(
-        pair =>
-          pair &&
-          pair.gauge.address === zeroAddress &&
-          (pair.type === PAIR_TYPES.LSD ? pair?.title === 'CL_Farming' : true),
-      ),
-    [pools],
   )
 
   return (
@@ -129,7 +118,7 @@ export default function GaugePage() {
         popup={isOpen}
         setPopup={setIsOpen}
         setSelected={setSelected}
-        pools={poolsWithoutGauge.concat(weightedPoolwithoutGauge)}
+        pools={poolsWithoutGauge.concat(weightedPoolWithoutGauge)}
       />
     </div>
   )

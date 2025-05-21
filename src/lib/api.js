@@ -91,7 +91,7 @@ export const fetchCustomAssets = async networkId => {
 export const fetchFusionPools = async ({ networkId, version = 3, type }) => {
   const apiVersion = getApiVersion(version)
   let url = `${backendApi}/${apiVersion}/fusions/${networkId}`
-  if (type) url += `&type=${type}`
+  if (type) url += `?type=${type}`
 
   return fetch(url)
     .then(r => r.json())
@@ -106,7 +106,7 @@ export const fetchStats = () =>
 export const fetchTopPairs = async ({ networkId, version = 3, type }) => {
   const apiVersion = getApiVersion(version)
   let url = `${backendApi}/${apiVersion}/topPairs/${networkId}`
-  if (type) url += `&type=${type}`
+  if (type) url += `?type=${type}`
 
   return fetch(url)
     .then(r => r.json())
