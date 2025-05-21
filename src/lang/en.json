@@ -106,7 +106,7 @@
   "Insights from THENA": "Insights from THENA",
   "Join THE Community": "Join THE Community",
   "Join Discord": "Join Discord",
-  "All rights reserved": "2024 THENA. All rights reserved.",
+  "All rights reserved [year]": "{year} THENA. All rights reserved.",
   "Follow us for More": "Follow us for More",
   "Market": "Market",
   "Limit": "Limit",
@@ -1567,5 +1567,12 @@
   "Migration earning rewards message": "You will still continue earning rewards until the end of this epoch but you are advised to migrate before the end of this epoch (29 May 2025 00:00 UTC) in order not to miss any farming rewards once the new epoch begins.",
   "Earn": "Earn",
   "Withdraw your THE from [veTHEID]": "Withdraw your THE from ID#{veTHEID}. If you want to relock them, you need to create a new position.",
-  "Invalid amount": "Invalid amount"
+  "Invalid amount": "Invalid amount",
+  "hours": "hours",
+  "days": "days",
+  "weeks": "weeks",
+  "months": "months",
+  "years": "years",
+  "Create Order": "Create Order",
+  "Orders": "Orders"
 }

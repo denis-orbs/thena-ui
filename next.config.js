@@ -19,6 +19,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'cdn-s3.thena.fi',
+      },
+      {
+        protocol: 'https',
         hostname: 'ipfs.io',
       },
       {
@@ -100,6 +104,11 @@ const nextConfig = {
         destination: isProd
           ? 'https://thena-image-resource.s3.amazonaws.com/:path*'
           : 'https://thena-image-resource-dev.s3.amazonaws.com/:path*',
+      },
+      {
+        source: '/s3/download/:path*',
+        destination: isProd ? 'https://cdn-s3.thena.fi/:path*' : 'https://cdn-s3.thena.fi/:path*',
+        // : 'https://thena-image-resource-dev.s3.amazonaws.com/:path*',
       },
       {
         source: '/s3/icon-checkmark/:path*',

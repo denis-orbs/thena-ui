@@ -3,13 +3,14 @@ import React, { useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { TextIconButton } from '@/components/buttons/IconButton'
+import NextImage from '@/components/image/NextImage'
 import Input from '@/components/input'
 import Modal, { ModalBody } from '@/components/modal'
 import Selection from '@/components/selection'
-import { useChainSettings, useSettings } from '@/state/settings/hooks'
+import Toggle from '@/components/toggle'
+import { LOCALES } from '@/constant'
+import { useChainSettings, useLocaleSettings, useSettings } from '@/state/settings/hooks'
 import { SettingsIcon } from '@/svgs'
-
-import { LiquidityHubSettings } from '../LiquidityHub/components'
 
 const slipageTolerance = [0.1, 0.5, 1]
 
@@ -78,6 +79,58 @@ function TxnSettings() {
         </ModalBody>
       </Modal>
     </>
+  )
+}
+
+function OrbsLogo() {
+  return (
+    <NextImage
+      className='inline h-5 w-5 object-contain'
+      alt='Orbs logo'
+      src='https://www.orbs.com/assets/img/common/logo.svg'
+    />
+  )
+}
+
+function OrbsLink({ children, href }) {
+  return (
+    <a href={href} className='font-medium text-primary-100' target='_blank' rel='noreferrer'>
+      {children}
+    </a>
+  )
+}
+
+function LiquidityHubSettings() {
+  const { liquidityHubEnabled, updateLiquidityHubEnabled } = useSettings()
+  const { locale } = useLocaleSettings()
+  const t = useTranslations()
+
+  return (
+    <div className='w-full'>
+      <div className='flex items-center justify-between space-x-1.5'>
+        <p className='text-lg font-medium'>Liquidity Hub</p>
+        <Toggle checked={liquidityHubEnabled} onChange={updateLiquidityHubEnabled} toggleId='liquidityHub' label='' />
+      </div>
+      <div className='mt-[9px] flex items-center space-x-[9px]'>
+        <p className='inline text-sm text-neutral-300'>
+          {locale === LOCALES.en ? (
+            <>
+              <OrbsLogo /> <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>, powered by{' '}
+              <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink>
+            </>
+          ) : (
+            <>
+              由 <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink> 提供支持的 <OrbsLogo />{' '}
+              <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>
+            </>
+          )}
+          {t('Provide better price')}{' '}
+          <span>
+            <OrbsLink href='https://www.orbs.com/liquidity-hub/'>{t('Learn More')}</OrbsLink>
+          </span>
+        </p>
+      </div>
+    </div>
   )
 }
 

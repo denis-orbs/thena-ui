@@ -31,6 +31,8 @@ function TokenInput({
   alowDouble = false,
   disabledSelect = false,
   isHideTrending = false,
+  className = '',
+  hiddenAssets = [],
 }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
@@ -53,7 +55,7 @@ function TokenInput({
   }, [])
 
   return (
-    <div className='flex w-full flex-col gap-3'>
+    <div className={cn('flex w-full flex-col gap-3', className)}>
       {typeof title === 'string' && <TextHeading>{title}</TextHeading>}
       <div
         className='flex cursor-text flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 focus-within:border-neutral-500 hover:bg-neutral-700'
@@ -141,6 +143,7 @@ function TokenInput({
           otherAsset={otherAsset}
           setOtherAsset={setOtherAsset}
           isHideTrending={isHideTrending}
+          hiddenAssets={hiddenAssets}
         />
       ) : (
         <SelectTokenFromList

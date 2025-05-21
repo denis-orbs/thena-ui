@@ -13,7 +13,7 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { EmphasisButton, OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
+import { OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
@@ -25,7 +25,6 @@ import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
-import { LiquidityHubSeekingBetterPriceModal } from '@/modules/LiquidityHub/components'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, InfoNeutralIcon } from '@/svgs'
@@ -64,22 +63,38 @@ function BridgeMaintainModal({ show, onClose }) {
           <Highlight className='bg-primary-600'>
             <InfoNeutralIcon className='size-5 [&>path]:stroke-neutral-100' />
           </Highlight>
-          <Paragraph className='mt-3 text-neutral-50'>
-            Bridge service will be entering maintenance mode on{' '}
-            <span className='font-bold text-primary-600'>March 19, 2025 at 10:00 AM UTC</span> to align with the BNB
-            Chain's Pascal Hard Fork upgrade. It is best advised not to use the bridge until the update is completed.
-            Thank you for your patience and understanding.
-          </Paragraph>
+          <div className='mt-3'>
+            <Paragraph className='text-neutral-50'>
+              The current Polyhedra bridge for $THE between opBNB & BNB Chain will{' '}
+              <span className='font-bold text-primary-600'>
+                stop working permanently on April 21, 2025, at 3:00 AM UTC
+              </span>{' '}
+              due to provider changes and network upgrades. Please complete any necessary $THE transfers before this
+              time. Our own bridge solution will launch by the end of April.
+            </Paragraph>
+            <div className='mt-4 flex flex-col gap-1'>
+              <Paragraph className='text-neutral-50'>
+                The official Binance bridge remains operational and can be accessed at any time to bridge other assets:
+              </Paragraph>
+              <Link
+                className='text-primary-600 hover:underline'
+                href='https://opbnb-bridge.bnbchain.org/'
+                target='_blank'
+              >
+                https://opbnb-bridge.bnbchain.org/
+              </Link>
+            </div>
+          </div>
         </div>
       </ModalBody>
       <ModalFooter className='mt-2 flex items-center justify-center gap-2 py-4'>
-        <PrimaryButton className='w-32' onClick={onClose}>
+        {/* <PrimaryButton className='w-32' onClick={onClose}>
           OK
-        </PrimaryButton>
-        <Link href='https://thena.zkbridge.com/' target='_blank'>
-          <EmphasisButton className='w-full text-neutral-100' onClick={onClose}>
-            Proceed Anyway
-          </EmphasisButton>
+        </PrimaryButton> */}
+        <Link href='https://opbnb-bridge.bnbchain.org/' target='_blank'>
+          <PrimaryButton className='w-32 text-neutral-100' onClick={onClose}>
+            OK
+          </PrimaryButton>
         </Link>
       </ModalFooter>
     </Modal>
@@ -155,13 +170,13 @@ function ChainSelect({ t }) {
       >
         {chains.map((item, idx) => {
           const element = getElement(item, idx)
-          // if (item.label === 'Bridge') {
-          //   return (
-          //     <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
-          //       {element}
-          //     </div>
-          //   )
-          // }
+          if (item.label === 'Bridge') {
+            return (
+              <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
+                {element}
+              </div>
+            )
+          }
           if (item.url) {
             return (
               <Link href={item.url} target='_blank' key={`chain-${idx}`}>
@@ -1051,7 +1066,6 @@ function Header() {
           )}
         </Modal>
         <TxnModal />
-        <LiquidityHubSeekingBetterPriceModal />
       </header>
       {/* {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>

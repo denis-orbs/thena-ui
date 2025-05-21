@@ -116,7 +116,9 @@ function Footer({ isHomePage = false }) {
             <div className='flex flex-col justify-between'>
               <div>
                 <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
-                <p className='mt-4 text-xs leading-4 text-white/50'>© {t('All rights reserved')}</p>
+                <p className='mt-4 text-xs leading-4 text-white/50'>
+                  © {t('All rights reserved [year]', { year: new Date().getFullYear() })}
+                </p>
               </div>
               <div className='mt-4 flex items-center space-x-3 lg:mt-0'>
                 {footerSocialLinks.map((item, idx) => (
