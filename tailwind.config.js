@@ -110,7 +110,7 @@ export default {
         'progress-gradient': 'linear-gradient(90deg, #83007EB0 0.49%, #BD60BA 100%)',
       },
       gridTemplateColumns: {
-        'add-liquidity-layout': 'minmax(650px, 3fr) 2fr',
+        'add-liquidity-layout': 'minmax(650px, 7fr) 5fr',
       },
       screens: {
         sm: '640px',
