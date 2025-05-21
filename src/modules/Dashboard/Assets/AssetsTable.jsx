@@ -102,27 +102,34 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
 }
 
 function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFromChart }) {
-  const renderPosition = useCallback(position => {
-    if (position.type === 'Manual') {
-      return position?.deployer === zeroAddress ? (
-        <FarmingItem position={position} />
+  const renderPosition = useCallback(
+    position => {
+      if (position.type === 'Manual') {
+        return position?.deployer === zeroAddress ? (
+          <FarmingItem position={position} isXlDown={isXlDown} />
+        ) : (
+          <ManualItem position={position} isXlDown={isXlDown} />
+        )
+      }
+
+      if (position.type === 'Weighted') {
+        if (position.notStaked) {
+          return <WeightedItem position={position} isStake={false} isXlDown={isXlDown} />
+        }
+
+        if (position.staked) {
+          return <WeightedItem position={position} isStake isXlDown={isXlDown} />
+        }
+      }
+
+      return position.staked ? (
+        <StakedItem position={position} isXlDown={isXlDown} />
       ) : (
-        <ManualItem position={position} />
+        <NotStakedItem position={position} isXlDown={isXlDown} />
       )
-    }
-
-    if (position.type === 'Weighted') {
-      if (position.notStaked) {
-        return <WeightedItem position={position} isStake={false} />
-      }
-
-      if (position.staked) {
-        return <WeightedItem position={position} isStake />
-      }
-    }
-
-    return position.staked ? <StakedItem position={position} /> : <NotStakedItem position={position} />
-  }, [])
+    },
+    [isXlDown],
+  )
 
   return !isXlDown ? (
     <tbody className='py-6'>

@@ -8,7 +8,6 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import {
   useClaimWeightedPoolFees,
   useGaugeBalance,
@@ -21,10 +20,9 @@ import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModa
 import ManageWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
 import { InfoIcon } from '@/svgs'
 
-function WeightedItem({ position, isStake }) {
+function WeightedItem({ position, isStake, isXlDown }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const { isXlDown } = useMediaQuery()
 
   const [isOpenRemove, setIsOpenRemove] = useState(false)
   const [managePopup, setManagePopup] = useState(false)

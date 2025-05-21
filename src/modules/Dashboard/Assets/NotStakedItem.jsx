@@ -17,7 +17,6 @@ import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { cn, formatAmount, fromWei, getDisplayedStrategy, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
@@ -30,10 +29,9 @@ import { InfoIcon } from '@/svgs'
 
 import Range from './Range'
 
-function NotStakedItem({ position }) {
+function NotStakedItem({ position, isXlDown }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const { isXlDown } = useMediaQuery()
 
   const [popup, setPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)

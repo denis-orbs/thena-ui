@@ -14,7 +14,6 @@ import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
@@ -26,11 +25,10 @@ import { InfoIcon } from '@/svgs'
 
 import Range from './Range'
 
-function FarmingItem({ position }) {
+function FarmingItem({ position, isXlDown }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const { isXlDown } = useMediaQuery()
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)

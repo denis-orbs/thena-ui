@@ -15,7 +15,6 @@ import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
@@ -47,11 +46,10 @@ export const fetchManualInfo = async (account, tokenId, chainId, version) => {
   return balance
 }
 
-function ManualItem({ position }) {
+function ManualItem({ position, isXlDown }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const { isXlDown } = useMediaQuery()
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)

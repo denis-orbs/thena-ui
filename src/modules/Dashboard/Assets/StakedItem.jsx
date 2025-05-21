@@ -14,7 +14,6 @@ import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
@@ -26,11 +25,10 @@ import { InfoIcon } from '@/svgs'
 
 import Range from './Range'
 
-function StakedItem({ position }) {
+function StakedItem({ position, isXlDown }) {
   const dispatch = useDispatch()
   const t = useTranslations()
   const { push } = useRouter()
-  const { isXlDown } = useMediaQuery()
 
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
