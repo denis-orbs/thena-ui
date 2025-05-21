@@ -14,14 +14,22 @@ function CreateAutomationPage({ params }) {
   const { veTHEs, isLoading } = useVeTHEsContext()
   const dispatch = useDispatch()
   const prevVeTHEIdRef = useRef(null)
+
   const veTHE = useMemo(() => veTHEs.find(the => the.id === Number(id)), [id, veTHEs])
+
   useEffect(() => {
     if (isLoading) return
     if (veTHE) {
+      const votes = (veTHE.votes ?? []).map(vote => ({
+        ...vote,
+        weight: vote.weight?.toNumber(),
+        weightPercent: vote.weightPercent?.toNumber(),
+      }))
       dispatch(
         setSelectedVeTHE({
           veTHESelected: {
             ...veTHE,
+            votes,
             amount: veTHE.amount.toString(),
             rebase_amount: veTHE.rebase_amount.toString(),
             voting_amount: veTHE.voting_amount.toString(),
@@ -57,6 +65,7 @@ function CreateAutomationPage({ params }) {
       }
     }
   }, [dispatch, id, isLoading, veTHE])
+
   return (
     <LayoutWithBackButton backUrl='/dashboard/lock'>
       <div className='container mx-auto'>

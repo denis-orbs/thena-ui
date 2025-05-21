@@ -1,8 +1,10 @@
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { useBalance } from 'wagmi'
 
 import Modal from '@/components/modal'
+import { SWAP_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
@@ -20,10 +22,13 @@ function SwapModal({
   setOpen,
   disabledChangeOutputCurrency = false,
 }) {
+  const searchParams = useSearchParams()
+
   const [inputCurrency, setInputCurrency] = useState(inputCurrencyParam)
   const [outputCurrency, setOutputCurrency] = useState(outputCurrencyParam)
   const [fromAsset, setFromAsset] = useState(null)
   const [toAsset, setToAsset] = useState(null)
+  const [swapType, setSwapType] = useState(searchParams.get('swapType') || SWAP_TYPES.SWAP)
 
   const { networkId } = useChainSettings()
   const assets = useAssets()
@@ -135,6 +140,8 @@ function SwapModal({
             setInputCurrency={setInputCurrency}
             setOutputCurrency={setOutputCurrency}
             disabledChangeOutputCurrency={disabledChangeOutputCurrency}
+            setSwapType={setSwapType}
+            swapType={swapType}
           />
         )}
         {networkId === ChainId.OPBNB && (
