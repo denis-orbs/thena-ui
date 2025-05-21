@@ -10,7 +10,7 @@ const xAccessor = d => d.activeLiquidity
 const yAccessor = d => d.price0
 
 export default function ActivePriceRangeChart({
-  id = 'activeChartRangeInput',
+  id,
   data: { series, current, min, max },
   styles,
   dimensions: { width, height, padding, contentWidth, axisLabelPaneWidth },

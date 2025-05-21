@@ -70,6 +70,7 @@ export default function ChartPriceRangeInput({
   setLastPrice = () => {},
   isCreate = false,
   height = 300,
+  idChart = 'chart-price-range',
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
@@ -466,6 +467,7 @@ export default function ChartPriceRangeInput({
                           isFullRange={isFullRange}
                           setCurrentHover={setCurrentHover}
                           currentHover={currentHover}
+                          id={idChart}
                           // setIsFlipped={setIsFlipped}
                           // container={zoomRef.current}
                           // triggerScroll={triggerScroll}

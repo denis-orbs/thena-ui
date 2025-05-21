@@ -172,9 +172,9 @@ function Updater() {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
           }
 
-          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0.address.toLowerCase())
-          const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion.token1.address.toLowerCase())
-          const allowed = assets.find(ele => ele.address.toLowerCase() === fusion.allowed?.address.toLowerCase())
+          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0?.address?.toLowerCase())
+          const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion?.token1?.address?.toLowerCase())
+          const allowed = assets.find(ele => ele.address.toLowerCase() === fusion?.allowed?.address?.toLowerCase())
           const token0 = {
             address: asset0?.address || fusion.token0.address,
             symbol: asset0?.symbol || 'UNKNOWN',

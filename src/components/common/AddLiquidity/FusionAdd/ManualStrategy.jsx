@@ -298,6 +298,7 @@ function ManualStrategy({
                 fullRangeWarningShown={fullRangeWarningShown}
                 isCreate={mintInfo.noLiquidity}
                 setLastPrice={setLastPrice}
+                idChart='mobile-chart-price-range'
               />
             </div>
             {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
