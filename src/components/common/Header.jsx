@@ -13,10 +13,17 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
+import MigrationV3Modal from '@/app/arena/MigrationV3Modal'
 import { OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import {
+  LOCALES,
+  NotShowBannerV3,
+  NotShowDiscoverArenaModal,
+  NotShowWarningMigrateV3Modal,
+  ThenaAuthToken,
+} from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -1132,6 +1139,8 @@ function Header() {
           showLearnMore
         />
       )}
+
+      {pathname === '/pools' && <MigrationV3Modal keyOpen={NotShowWarningMigrateV3Modal} />}
 
       {/* {(pathname.startsWith('/pools') || pathname.startsWith('/analytics')) && (
         <DiscoverModal
