@@ -73,27 +73,32 @@ function TokenModal({
       result.push(customToken)
     }
 
-    // Sort tokens - first match tokens list order, then sort alphabetically
     return result
       .filter(asset => !hiddenAssets.includes(asset.address))
       .sort((a, b) => {
-        const tokensList = tokens ?? []
-        const aIndex = tokensList.findIndex(token => token.address.toLowerCase() === a.address.toLowerCase())
-        const bIndex = tokensList.findIndex(token => token.address.toLowerCase() === b.address.toLowerCase())
+        const aTV = a.totalValue || 0
+        const bTV = b.totalValue || 0
 
-        // If both tokens are in the tokens list, maintain their order
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex
+        // if totalValue != 0 then sort by totalValue descending
+        if (aTV !== 0 || bTV !== 0) {
+          return bTV - aTV
         }
 
-        // If only one token is in the tokens list, prioritize it
-        if (aIndex !== -1) return -1
-        if (bIndex !== -1) return 1
+        // if totalValue === 0 then sort by match + alphabet
+        const aSymbol = a.symbol.toLowerCase()
+        const bSymbol = b.symbol.toLowerCase()
 
-        // If neither token is in the tokens list, sort alphabetically by symbol
-        return a.symbol.toLowerCase().localeCompare(b.symbol.toLowerCase())
+        if (search) {
+          const aStarts = aSymbol.startsWith(search.toLowerCase())
+          const bStarts = bSymbol.startsWith(search.toLowerCase())
+
+          if (aStarts && !bStarts) return -1
+          if (!aStarts && bStarts) return 1
+        }
+
+        return aSymbol.localeCompare(bSymbol)
       })
-  }, [baseAssets, customToken, hiddenAssets, localTokens, search, tokens])
+  }, [baseAssets, customToken, hiddenAssets, localTokens, search])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
@@ -158,6 +163,9 @@ function TokenModal({
           setVal={setSearchText}
           placeholder='Search by Name, Symbol or Address'
           autoFocus
+          classNames={{
+            trailingIcon: 'cursor-pointer pointer-events-auto',
+          }}
         />
         {trendingTokens.length > 0 && !isHideTrending && (
           <>
