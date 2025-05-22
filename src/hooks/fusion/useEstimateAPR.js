@@ -33,8 +33,8 @@ const getFusionFeesData = async ({ chainId, pool }) => {
         date: moment().subtract(7, 'days').unix(), // last 7 day
       },
     )
-
-    const avgPoolDayFees = poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolDayDatas.length
+    const avgPoolDayFees =
+      poolDayDatas.length > 0 ? poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolDayDatas.length : 0
     const annualPoolFees = avgPoolDayFees * 365
     return annualPoolFees
   } catch (error) {
@@ -202,6 +202,11 @@ export const useEstimateAPR = ({
       min: 0.95,
       max: 1.05,
       title: Presets.RISK,
+    },
+    {
+      min: 0.984,
+      max: 1.016,
+      title: Presets.STABLE,
     },
     {
       title: 'current',

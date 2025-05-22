@@ -6,7 +6,7 @@ import Dashboard from '@/modules/Dashboard'
 
 function DashboardPage() {
   return (
-    <div className='layout-top mx-0 w-full'>
+    <div className='layout-dashboard mx-0 w-full'>
       <Dashboard />
     </div>
   )

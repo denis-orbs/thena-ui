@@ -104,14 +104,23 @@
 
   body.has-v3-banner .layout,
   body.has-v3-banner .layout-top {
-    @apply mt-[170px] lg:mt-[146px];
+    @apply mt-[64px] md:mt-0;
+  }
+
+  .layout-dashboard {
+    @apply mt-[64px] md:mt-[92px];
+  }
+
+  body.has-v3-banner .layout-dashboard {
+    @apply lg:mt-0;
   }
 
   body.has-v3-banner .layout-container {
     @apply mt-[244px] lg:mt-[230px];
   }
-  body.has-v3-banner .layout-add-liquidity {
-    @apply mt-[148px] lg:mt-[156px];
+
+  body.has-v3-banner {
+    @apply mt-[116px] md:mt-[146px];
   }
 }
 

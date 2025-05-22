@@ -190,7 +190,7 @@ function PairStrategy({ pair }) {
         strategyType === 'manual' ? MANUAL_TYPES.includes(item.title) : !MANUAL_TYPES.includes(item.title),
       )
       handleChooseStrategy(_strategy ?? defaultSwapFees)
-      push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=1`)
+      push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
     },
     [handleChooseStrategy, pair.address, push, sortedSubPools],
   )
@@ -260,8 +260,6 @@ function PairStrategy({ pair }) {
         </div>
 
         <div className='flex flex-col gap-4'>
-          <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
-
           <div className='flex flex-col gap-2 lg:gap-8'>
             <ChartPriceRangeInput
               currencyA={baseCurrency ?? undefined}
@@ -280,6 +278,7 @@ function PairStrategy({ pair }) {
               }}
               handleShow
               isCreate={false}
+              label='Liquidity range'
             />
 
             <div className='mt-11 md:mt-4'>

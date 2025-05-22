@@ -344,10 +344,10 @@ function V3Banner({ onClose }) {
   return (
     <div
       id='v3-banner'
-      className='fixed left-0 top-0 z-[100] flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
+      className='fixed left-0 top-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
     >
-      <div className='flex flex-1 flex-col items-center justify-center gap-2 md:flex-row'>
-        <span className='font-semibold'>🔥 THENA V3,3 is Launched!</span>
+      <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
+        <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
         <span className='text-center font-normal'>
           Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.
         </span>
@@ -408,6 +408,7 @@ function Header() {
   )
   const handleCloseV3Banner = () => {
     localStorage.setItem(NotShowBannerV3, 'true')
+    window.dispatchEvent(new Event('local-storage-changed'))
     setShowBannerMigrate(false)
   }
 
@@ -973,28 +974,19 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            {!pathname.includes('/add-liquidity') ? (
-              <>
-                <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
-                  <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
-                  {prices.THE > 0 ? (
-                    <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
-                  ) : (
-                    <Skeleton className='h-5 w-10' />
-                  )}
-                </div>
-                <ChainSelect t={t} />
-                {/* <LanguageSelect /> */}
-                <OutlinedButton
-                  className='hidden 2xl:flex'
-                  onClick={() => window.open('https://alpha.thena.fi', '_blank')}
-                >
-                  {t('Enter ALPHA')}
-                </OutlinedButton>
-              </>
-            ) : (
-              <></>
-            )}
+            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
+              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+              {prices.THE > 0 ? (
+                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+              ) : (
+                <Skeleton className='h-5 w-10' />
+              )}
+            </div>
+            <ChainSelect t={t} />
+            {/* <LanguageSelect /> */}
+            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+              {t('Enter ALPHA')}
+            </OutlinedButton>
             {!isSmallScreen() && <ConnectButton className='flex' />}
             {!pathname.includes('/add-liquidity') || width < 1024 ? (
               <>
