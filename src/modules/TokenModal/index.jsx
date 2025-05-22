@@ -163,6 +163,9 @@ function TokenModal({
           setVal={setSearchText}
           placeholder='Search by Name, Symbol or Address'
           autoFocus
+          classNames={{
+            trailingIcon: 'cursor-pointer pointer-events-auto',
+          }}
         />
         {trendingTokens.length > 0 && !isHideTrending && (
           <>
