@@ -87,8 +87,8 @@ function PieChart({ tokens, colors, showTotalPercent = true, className }) {
       {
         data: data.map(item => Math.round(item.value)),
         backgroundColor: data.map(item => item.color),
-        borderColor: data.map(item => item.color),
-        borderWidth: 1,
+        borderColor: '#281B2E',
+        borderWidth: 2,
         borderRadius: data.length === 1 ? 0 : 4,
         spacing: data.length === 1 ? 0 : 2,
         hoverOffset: 15,
