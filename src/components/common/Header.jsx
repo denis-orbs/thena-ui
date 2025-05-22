@@ -966,28 +966,19 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            {!pathname.includes('/add-liquidity') ? (
-              <>
-                <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
-                  <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
-                  {prices.THE > 0 ? (
-                    <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
-                  ) : (
-                    <Skeleton className='h-5 w-10' />
-                  )}
-                </div>
-                <ChainSelect t={t} />
-                {/* <LanguageSelect /> */}
-                <OutlinedButton
-                  className='hidden 2xl:flex'
-                  onClick={() => window.open('https://alpha.thena.fi', '_blank')}
-                >
-                  {t('Enter ALPHA')}
-                </OutlinedButton>
-              </>
-            ) : (
-              <></>
-            )}
+            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
+              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+              {prices.THE > 0 ? (
+                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+              ) : (
+                <Skeleton className='h-5 w-10' />
+              )}
+            </div>
+            <ChainSelect t={t} />
+            {/* <LanguageSelect /> */}
+            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+              {t('Enter ALPHA')}
+            </OutlinedButton>
             {!isSmallScreen() && <ConnectButton className='flex' />}
             {!pathname.includes('/add-liquidity') || width < 1024 ? (
               <>

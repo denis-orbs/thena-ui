@@ -1565,5 +1565,6 @@
   "Migration earning rewards message": "You will still continue earning rewards until the end of this epoch but you are advised to migrate before the end of this epoch (29 May 2025 00:00 UTC) in order not to miss any farming rewards once the new epoch begins.",
   "Earn": "Earn",
   "Withdraw your THE from [veTHEID]": "Withdraw your THE from ID#{veTHEID}. If you want to relock them, you need to create a new position.",
-  "Invalid amount": "Invalid amount"
+  "Invalid amount": "Invalid amount",
+  "Liquidity range": "Liquidity range"
 }
