@@ -26,6 +26,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
         {
           type: Presets.STABLE,
           title: 'Stable',
+          percent: '±1.6%',
           min: 0.984,
           max: 1.016,
           risk: PresetProfits.VERY_LOW,
@@ -81,7 +82,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
             <Paragraph className='font-medium text-neutral-50 lg:text-sm'>
               APR: {formatAmount(APRs?.[range.type])}%
             </Paragraph>
-            <div className='flex items-center'>
+            <div className='flex items-center gap-4'>
               <Paragraph className='text-xs lg:text-xs'>{t(range.title)}</Paragraph>
               {range.percent ? (
                 <div className='flex items-center gap-1'>

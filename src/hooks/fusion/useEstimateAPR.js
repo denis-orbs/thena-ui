@@ -204,6 +204,11 @@ export const useEstimateAPR = ({
       title: Presets.RISK,
     },
     {
+      min: 0.984,
+      max: 1.016,
+      title: Presets.STABLE,
+    },
+    {
       title: 'current',
     },
   ].map(({ min, max, title }) => {
