@@ -337,9 +337,9 @@ function V3Banner({ onClose }) {
   return (
     <div
       id='v3-banner'
-      className='fixed left-0 top-0 z-[100] flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
+      className='fixed left-0 top-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
     >
-      <div className='flex flex-1 flex-col items-center justify-center gap-2 md:flex-row'>
+      <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
         <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
         <span className='text-center font-normal'>
           Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.

@@ -112,7 +112,7 @@
   }
 
   body.has-v3-banner .layout-dashboard {
-    @apply mt-[30px] lg:mt-0;
+    @apply lg:mt-0;
   }
 
   body.has-v3-banner .layout-container {

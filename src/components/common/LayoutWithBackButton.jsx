@@ -27,7 +27,13 @@ function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }
   }, [])
 
   return (
-    <div className={cn(showBannerMigrate && 'max-md:mt-8', !showBannerMigrate && 'mt-[64px] lg:mt-[92px]')}>
+    <div
+      className={cn(
+        'flex flex-col',
+        showBannerMigrate && 'max-md:mt-8',
+        !showBannerMigrate && 'mt-[64px] lg:mt-[92px]',
+      )}
+    >
       {!hiddenBackButton && (
         <div className='hidden 2xl:block'>
           <TextButton
