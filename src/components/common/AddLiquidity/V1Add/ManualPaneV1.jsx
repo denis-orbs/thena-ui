@@ -96,8 +96,8 @@ export function ManualPaneV1({
     if (
       isInvalidAmount(firstAmount) ||
       isInvalidAmount(secondAmount) ||
-      firstAsset.balance.lt(firstAmount) ||
-      secondAsset.balance.lt(secondAmount)
+      firstAsset?.balance?.lt(firstAmount) ||
+      secondAsset?.balance?.lt(secondAmount)
     ) {
       // warnToast(errorMsg, 'warn')
       setCheckIsInvalid(true)
@@ -123,8 +123,8 @@ export function ManualPaneV1({
     if (
       isInvalidAmount(firstAmount) ||
       isInvalidAmount(secondAmount) ||
-      firstAsset.balance.lt(firstAmount) ||
-      secondAsset.balance.lt(secondAmount)
+      firstAsset?.balance?.lt(firstAmount) ||
+      secondAsset?.balance?.lt(secondAmount)
     ) {
       // warnToast(errorMsg, 'warn')
       setCheckIsInvalid(true)
@@ -151,13 +151,13 @@ export function ManualPaneV1({
     if (
       !isInvalidAmount(firstAmount) &&
       !isInvalidAmount(secondAmount) &&
-      !firstAsset.balance.lt(firstAmount) &&
-      !secondAsset.balance.lt(secondAmount) &&
+      !firstAsset?.balance?.lt(firstAmount) &&
+      !secondAsset?.balance?.lt(secondAmount) &&
       checkIsInvalid
     ) {
       setCheckIsInvalid(false)
     }
-  }, [checkIsInvalid, firstAmount, firstAsset.balance, secondAmount, secondAsset.balance])
+  }, [checkIsInvalid, firstAmount, firstAsset?.balance, secondAmount, secondAsset?.balance])
 
   return (
     <>

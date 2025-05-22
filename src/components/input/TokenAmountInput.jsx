@@ -7,7 +7,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { SELECT_TOKEN_STYLE } from '@/constant'
+import { SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
@@ -72,19 +72,19 @@ export function TokenAmountInput({
     () => [
       {
         label: '10%',
-        onClickHandler: () => onAmountChange(max.times(0.1).dp(asset.decimals).toString(10)),
+        onClickHandler: () => onAmountChange(max.times(0.1).dp(asset?.decimals).toString(10)),
       },
       {
         label: '25%',
-        onClickHandler: () => onAmountChange(max.times(0.25).dp(asset.decimals).toString(10)),
+        onClickHandler: () => onAmountChange(max.times(0.25).dp(asset?.decimals).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => onAmountChange(max.times(0.5).dp(asset.decimals).toString(10)),
+        onClickHandler: () => onAmountChange(max.times(0.5).dp(asset?.decimals).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => onAmountChange(max.dp(asset.decimals).toString(10)),
+        onClickHandler: () => onAmountChange(max.dp(asset?.decimals).toString(10)),
       },
     ],
     [asset, max, onAmountChange],
@@ -213,14 +213,14 @@ export function TokenAmountInput({
                   logo2='https://cdn.thena.fi/assets/BNB.png'
                 />
               ) : (
-                <CircleImage alt='thena' className='h-4 w-4 md:h-6 md:w-6' src={asset.logoURI ?? ''} />
+                <CircleImage alt='thena' className='h-4 w-4 md:h-6 md:w-6' src={asset?.logoURI ?? UNKNOWN_LOGO} />
               )}
               <span className='text-nowrap text-xs md:text-sm'>
-                {`${maxBalance ? 'BNB + WBNB' : asset.symbol} ${weight ? `(${weight}%)` : ''}`}
+                {`${maxBalance ? 'BNB + WBNB' : asset?.symbol} ${weight ? `(${weight}%)` : ''}`}
               </span>
             </div>
           ) : (
-            <Skeleton className='h-6 w-10' />
+            <Skeleton className='h-6 w-24' />
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
@@ -232,7 +232,7 @@ export function TokenAmountInput({
               {t('Balance')}: {formatAmount(max)}
             </span>
             <span
-              onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
+              onClick={() => onAmountChange(max.dp(asset?.decimals).toString(10))}
               className={cn('cursor-pointer text-primary-600 hover:text-primary-400', max?.eq(0) && 'hidden')}
             >
               {t('Max')}
