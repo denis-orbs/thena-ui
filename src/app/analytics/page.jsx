@@ -12,6 +12,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
@@ -49,7 +50,10 @@ export default function AnalyticsPage() {
   }, [networkId, stats])
 
   return (
-    <section className='layout'>
+    <LayoutWithBackButton
+      hiddenBackButton
+      className='!pt-6 xl:mx-12 2xl:mx-auto 2xl:w-[1344px] 3xl:w-[1464px] 3xl:!pt-8'
+    >
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <h2>{t('Analytics')}</h2>
@@ -147,6 +151,6 @@ export default function AnalyticsPage() {
           <PairsTable data={pairs} hidePagination />
         </div>
       </div>
-    </section>
+    </LayoutWithBackButton>
   )
 }
