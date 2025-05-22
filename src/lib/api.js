@@ -6,8 +6,7 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 import { ZERO_VALUE } from './utils'
 
 // TODO: Fix on prod
-// const backendApi = 'https://api.thena.fi/api'
-const backendApi = 'https://api-dev.thena.fi/api'
+const backendApi = 'https://api.thena.fi/api'
 
 const getApiVersion = version => (version === 3 ? 'v3' : 'v1')
 
