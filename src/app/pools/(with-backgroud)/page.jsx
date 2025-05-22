@@ -729,6 +729,7 @@ export default function PoolsPage() {
               pools={newListingsPool}
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
+              back={1}
             />
           )}
 
@@ -739,6 +740,7 @@ export default function PoolsPage() {
               pools={hotPools}
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
+              back={1}
             />
           )}
           <Table

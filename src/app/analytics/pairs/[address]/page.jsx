@@ -91,9 +91,9 @@ export default function PairDetailPage({ params }) {
             className='w-full md:w-fit'
             onClick={() => {
               if (pair.type !== PAIR_TYPES.WEIGHTED) {
-                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}`)
+                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
               } else {
-                push(`/pools/add-liquidity/weighted/${pair.address}`)
+                push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)
               }
             }}
           >

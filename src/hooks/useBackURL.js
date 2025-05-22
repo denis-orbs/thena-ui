@@ -26,7 +26,10 @@ export const useBackURL = type => {
 
     if (back === 3) return '/analytics'
 
-    if (back === 4) return '/analytics/pairs'
+    if (back === 4) {
+      if (poolAddress) return `/analytics/pairs/${poolAddress}?back=3`
+      return '/analytics/pairs'
+    }
 
     if (back === 5) return '/analytics/tokens'
 

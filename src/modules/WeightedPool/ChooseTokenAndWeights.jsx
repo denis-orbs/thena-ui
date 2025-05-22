@@ -215,7 +215,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     if (!checkAllWeightingHigherThanZero) {
       errorMessages.push({
         title: 'Total Weights do not higher than 0.01',
-        desc: t('All tokens in a pool must have a weighting higher than 0.01'),
+        desc: t('All tokens in a pool must have a weighting higher than'),
       })
     }
 

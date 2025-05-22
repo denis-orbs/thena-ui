@@ -1201,7 +1201,7 @@
   "Choose Tokens Weights": "Choose Tokens Weights",
   "THENA Weighted Pool": "THENA Weighted Pool",
   "You must add two tokens at least to create a weighted pool": "You must add two tokens at least to create a weighted pool.",
-  "All tokens in a pool must have a weighting higher than 0.01": "All tokens in a pool must have a weighting higher than 0.01.",
+  "All tokens in a pool must have a weighting higher than": "All tokens in a pool must have a weighting higher than 0.01.",
   "We recommend you to provide new pools [maxDeposit]": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is {maxDeposit}.",
   "All tokens in a pool must have a weighting higher than zero": "All tokens in a pool must have a weighting higher than zero. Either remove or replace or set it above 0.01%.",
   "Set Pool Fees": "Set Pool Fees",
