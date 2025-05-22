@@ -128,10 +128,10 @@ function LiquidityAPRChart({
               ? '#281B2E'
               : COLORS[i % COLORS.length],
         ),
-        borderWidth: 0,
+        borderWidth: 1,
+        borderColor: '#1A121E',
         radius: '78%',
         cutout: '65%',
-        spacing: liquidityData.length === 1 ? 0 : 1,
       },
       {
         label: 'APR',
@@ -139,8 +139,8 @@ function LiquidityAPRChart({
         backgroundColor: aprData.map((d, i) =>
           d.label === 'Others' ? OTHER_COLOR : d.label === 'None' ? '#281B2E' : COLORS[i % COLORS.length],
         ),
-        borderWidth: 0,
-        spacing: aprData.length === 1 ? 0 : 1,
+        borderWidth: 1,
+        borderColor: '#1A121E',
         radius: '100%',
         cutout: '85%',
       },

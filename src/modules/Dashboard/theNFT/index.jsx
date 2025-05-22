@@ -170,13 +170,6 @@ function TheNFT() {
                 </>
               ) : (
                 <>
-                  <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
-                    <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
-                      {t('Learn more')}
-                      <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
-                    </EmphasisButton>
-                  </Link>
-
                   {isOriginal && !isInvalidAmount(claimable) ? (
                     <EmphasisButton
                       disabled={pendingClaim}
@@ -193,6 +186,12 @@ function TheNFT() {
                       </EmphasisButton>
                     </Link>
                   )}
+                  <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
+                    <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
+                      {t('Learn more')}
+                      <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
+                    </EmphasisButton>
+                  </Link>
                 </>
               )}
             </div>
