@@ -89,8 +89,8 @@ function TokenModal({
         const bSymbol = b.symbol.toLowerCase()
 
         if (search) {
-          const aStarts = aSymbol.startsWith(search)
-          const bStarts = bSymbol.startsWith(search)
+          const aStarts = aSymbol.startsWith(search.toLowerCase())
+          const bStarts = bSymbol.startsWith(search.toLowerCase())
 
           if (aStarts && !bStarts) return -1
           if (!aStarts && bStarts) return 1
