@@ -24,6 +24,12 @@ export const useBackURL = type => {
   const backUrl = useMemo(() => {
     if (back === 2) return '/dashboard'
 
+    if (back === 3) return '/analytics'
+
+    if (back === 4) return '/analytics/pairs'
+
+    if (back === 5) return '/analytics/tokens'
+
     if (type === PAIR_TYPES.WEIGHTED) {
       if (address) {
         if (back === 1) return '/pools'

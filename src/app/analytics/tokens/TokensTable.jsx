@@ -42,7 +42,7 @@ const sortOptions = [
   },
 ]
 
-export default function TokensTable({ data, hidePagination = false }) {
+export default function TokensTable({ data, hidePagination = false, backUrlNumber }) {
   const [sort, setSort] = useState(sortOptions[3])
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
@@ -92,7 +92,7 @@ export default function TokensTable({ data, hidePagination = false }) {
         volume: <Paragraph>${formatAmount(item.volume)}</Paragraph>,
         liquidity: <Paragraph>${formatAmount(item.liquidity)}</Paragraph>,
         onRowClick: () => {
-          push(`/analytics/tokens/${item.address}`)
+          push(`/analytics/tokens/${item.address}?back=${backUrlNumber}`)
         },
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps

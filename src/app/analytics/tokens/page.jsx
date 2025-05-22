@@ -37,7 +37,7 @@ export default function AnalyticsTokensPage() {
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl='/analytics'>
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <h2>{t('Top Movers')}</h2>
@@ -61,7 +61,7 @@ export default function AnalyticsTokensPage() {
             <TextHeading className='text-xl'>{t('Assets')}</TextHeading>
             <SearchInput val={searchText} setVal={setSearchText} />
           </div>
-          <TokensTable data={filteredTokens} />
+          <TokensTable backUrlNumber={5} data={filteredTokens} />
         </div>
       </div>
     </LayoutWithBackButton>

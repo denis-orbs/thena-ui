@@ -129,26 +129,26 @@ export default function AnalyticsPage() {
             <TextHeading>{t('Top Assets')}</TextHeading>
             <EmphasisButton
               onClick={() => {
-                push('/analytics/tokens')
+                push('/analytics/tokens?back=3')
               }}
             >
               {t('View All')}
             </EmphasisButton>
           </div>
-          <TokensTable data={tokens} hidePagination />
+          <TokensTable backUrlNumber={3} data={tokens} hidePagination />
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <TextHeading>{t('Top Pairs')}</TextHeading>
             <EmphasisButton
               onClick={() => {
-                push('/analytics/pairs')
+                push('/analytics/pairs?back=3')
               }}
             >
               {t('View All')}
             </EmphasisButton>
           </div>
-          <PairsTable data={pairs} hidePagination />
+          <PairsTable backUrlNumber={3} data={pairs} hidePagination />
         </div>
       </div>
     </LayoutWithBackButton>

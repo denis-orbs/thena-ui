@@ -26,14 +26,14 @@ export default function AnalyticsPairsPage() {
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl='/analytics'>
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <TextHeading className='text-xl'>{t('Pairs')}</TextHeading>
             <SearchInput val={searchText} setVal={setSearchText} placeholder='Search' />
           </div>
-          <PairsTable data={filteredPairs} />
+          <PairsTable backUrlNumber={4} data={filteredPairs} />
         </div>
       </div>
     </LayoutWithBackButton>
