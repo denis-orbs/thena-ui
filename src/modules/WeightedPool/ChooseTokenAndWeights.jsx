@@ -104,8 +104,10 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
         <div
           className={cn(
             'fex-row flex min-h-11 w-[calc(100%-52px)] items-center rounded-lg border border-neutral-700 hover:bg-neutral-800',
-            'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
-            checkError && token.weight < 0.01 && 'border-error-600',
+            'transition-all duration-200 ease-in-out',
+            'hover:border-neutral-500 hover:ring-1 hover:ring-neutral-500',
+            'focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500',
+            checkError && token.weight < 0.01 && 'border-error-600 ring-error-600',
           )}
         >
           <div
@@ -137,7 +139,7 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
               }
               handleUpdateWeightToken(value)
             }}
-            placeholder='Enter weight'
+            placeholder='0'
             suffix='%'
           />
         </div>
