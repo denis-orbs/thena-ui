@@ -14,6 +14,8 @@ export const useFarmRewards = create()(set => ({
     ichi: new Map(),
     gamma: new Map(),
     manual: new Map(),
+    manualV2: new Map(),
+    manualV3: new Map(),
     classic: new Map(),
     stable: new Map(),
     weighted: new Map(),

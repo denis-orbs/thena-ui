@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -280,12 +280,12 @@ function FarmingItem({ position, isXlDown }) {
           {t('Remove')}
         </EmphasisButton>
 
-        <TextButton
+        <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
-        </TextButton>
+        </EmphasisButton>
 
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {

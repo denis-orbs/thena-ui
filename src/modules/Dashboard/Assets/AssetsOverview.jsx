@@ -75,7 +75,7 @@ function AssetsOverview({
         addFees({
           amount: [reward0.amount, reward1.amount],
           symbol: pos.symbol,
-          type: 'manual',
+          type: pos.version === 2 ? 'manualV2' : 'manualV3',
           args: [account, pos.tokenId, pos.version],
           key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
         })

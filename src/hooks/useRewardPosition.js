@@ -33,9 +33,11 @@ export const useRewardPosition = () => {
     const key = uuidv4()
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
+    const claimFeesV2Id = uuidv4()
+    const claimFeesV3Id = uuidv4()
 
     const { newGauge, manual, gamma, ichi, ichiSingleSided } = rewards
-    const { classic: classicFees, stable: stableFees, manual: manualFees } = fees
+    const { classic: classicFees, stable: stableFees, manualV2: manualFeesV2, manualV3: manualFeesV3 } = fees
 
     const transactions = {}
     if (newGauge.size > 0) {
@@ -104,14 +106,20 @@ export const useRewardPosition = () => {
       })
     }
 
-    if (manualFees.size > 0) {
-      manualFees.forEach(_pair => {
-        transactions[`manual-fees-${_pair.args}`] = {
-          desc: `${t('Claim Fees')} ${_pair.symbol} Manual Pool #${_pair.args[1]}`,
-          status: TXN_STATUS.START,
-          hash: null,
-        }
-      })
+    if (manualFeesV2.size > 0) {
+      transactions[claimFeesV2Id] = {
+        desc: `${t('Claim Fees')} Manual Pools V2`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+    }
+
+    if (manualFeesV3.size > 0) {
+      transactions[claimFeesV3Id] = {
+        desc: `${t('Claim Fees')} Manual Pools V3`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
     }
 
     setPending(true)
@@ -240,25 +248,67 @@ export const useRewardPosition = () => {
       }
     }
 
-    if (manualFees.size > 0) {
-      const manualFeesArr = [...manualFees]
+    if (manualFeesV2.size > 0) {
+      const manualFeesArr = [...manualFeesV2]
+      const callDatas = []
+      const positionManger = getPositionManagerContract(chainId, 2)
+
       for (let i = 0; i < manualFeesArr.length; i++) {
         const pair = manualFeesArr[i][1]
 
         const [feeValue0, feeValue1] = pair.amount
-        const [account, tokenId, version] = pair.args
-        const positionManger = getPositionManagerContract(chainId, version)
-        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
+        const [account, tokenId] = pair.args
+        const { calldata } = NonfungiblePositionManager.collectCallParameters({
           tokenId,
           expectedCurrencyOwed0: feeValue0,
           expectedCurrencyOwed1: feeValue1,
           recipient: account,
         })
 
-        if (!(await sendTxn(key, `manual-fees-${pair.args}`, positionManger.address, calldata, value))) {
-          setPending(false)
-          return
-        }
+        callDatas.push(calldata)
+      }
+
+      const encoded = encodeFunctionData({
+        abi: positionManger.abi,
+        functionName: 'multicall',
+        args: [callDatas],
+      })
+
+      if (!(await sendTxn(key, claimFeesV2Id, positionManger.address, encoded))) {
+        setPending(false)
+        return
+      }
+    }
+
+    if (manualFeesV3.size > 0) {
+      const manualFeesArr = [...manualFeesV3]
+      const callDatas = []
+      const positionManger = getPositionManagerContract(chainId, 3)
+
+      for (let i = 0; i < manualFeesArr.length; i++) {
+        const pair = manualFeesArr[i][1]
+
+        const [feeValue0, feeValue1] = pair.amount
+        const [account, tokenId] = pair.args
+        const { calldata } = NonfungiblePositionManager.collectCallParameters({
+          tokenId,
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        })
+
+        callDatas.push(calldata)
+      }
+
+      const encoded = encodeFunctionData({
+        abi: positionManger.abi,
+        functionName: 'multicall',
+        args: [callDatas],
+      })
+
+      if (!(await sendTxn(key, claimFeesV3Id, positionManger.address, encoded))) {
+        setPending(false)
+        return
       }
     }
 
