@@ -21,7 +21,7 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { TransferIcon, WarningTriangleIcon } from '@/svgs'
+import { TransferIcon, WarningTriangleYellowIcon } from '@/svgs'
 
 import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
 import { PresetRanges } from '../components/PresetRange'
@@ -206,13 +206,13 @@ function ManualStrategy({
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+          <div className={cn('flex gap-4 rounded-lg border border-warn-900 bg-warn-950 px-5 py-4')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-              <WarningTriangleIcon className='size-full' />
+              <WarningTriangleYellowIcon className='size-full stroke-warn-600' />
             </div>
-            <div className='flex flex-col gap-2'>
-              <NewTextHeading className='!text-xl font-medium text-error-100'>{t('OUT OF RANGE')}</NewTextHeading>
-              <Paragraph className='text-base text-error-100'>{t('OUT OF RANGE description')}</Paragraph>
+            <div className='flex flex-col gap-1'>
+              <NewTextHeading className='!text-xl font-medium text-warn-100'>{t('OUT OF RANGE')}</NewTextHeading>
+              <Paragraph className='!text-base leading-5 text-warn-100'>{t('OUT OF RANGE description')}</Paragraph>
             </div>
           </div>
         ) : (

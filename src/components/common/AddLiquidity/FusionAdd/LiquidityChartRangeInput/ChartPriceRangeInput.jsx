@@ -398,9 +398,9 @@ export default function ChartPriceRangeInput({
           </div>
         </div>
       </div>
-      {isFullRange && fullRangeWarningShown && <Warning className='mt-4 text-sm'>{t('Full range position')}</Warning>}
-      {outOfRange && <Warning className='mt-4 text-sm'>{t('Out range warning')}</Warning>}
-      {invalidRange && <Warning className='mt-4 text-sm'>{t('Invalid range warning')}</Warning>}
+      {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
+      {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
+      {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
       <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
         <div className='relative flex h-[235px] w-full items-center justify-center'>
           {isUninitialized ? (
@@ -457,8 +457,12 @@ export default function ChartPriceRangeInput({
                           styles={{
                             area: { selection: '#BD60BA80' },
                             brush: { handle: { south: '#F199EE', north: '#F199EE' } },
+                            disabled: {
+                              handle: { south: '#35243D', north: '#35243D' },
+                              line: { south: '#35243D', north: '#35243D' },
+                            },
                           }}
-                          interactive
+                          interactive={interactive}
                           brushLabels={brushLabelValue}
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}

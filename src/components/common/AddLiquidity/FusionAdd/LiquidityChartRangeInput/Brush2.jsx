@@ -44,6 +44,7 @@ export const Brush2 = ({
   isFullRange,
   padding,
   container,
+  disableColor,
   setLiveLocalBrushExtent = () => {},
   setCurrentHover = () => {},
 }) => {
@@ -65,7 +66,7 @@ export const Brush2 = ({
   }, [localBrushExtent, setLiveLocalBrushExtent])
 
   useEffect(() => {
-    if (!brushRef.current || brushInProgress || !interactive) return
+    if (!brushRef.current || brushInProgress) return
 
     const normalizedExtent = normalizeExtent(brushExtent)
     const scaledExtent = toYScale(normalizedExtent, yScale)
@@ -78,10 +79,12 @@ export const Brush2 = ({
       .handleSize(50)
       .filter(() => interactive)
       .filter(event => {
+        if (!interactive) return false
         const { target } = event
         return target.classList.contains('selection') || target.classList.contains('handle')
       })
       .on('brush', event => {
+        if (!interactive) return
         const { selection } = event
         setBrushInProgress(true)
         select(brushRef.current).selectAll('.handle').attr('cursor', 'ns-resize')
@@ -93,6 +96,7 @@ export const Brush2 = ({
         setLocalBrushExtent(priceExtent)
       })
       .on('end', event => {
+        if (!interactive) return
         const { selection, mode } = event
         if (!selection) {
           setLocalBrushExtent(null)
@@ -107,7 +111,9 @@ export const Brush2 = ({
         select(brushRef.current).selectAll('.handle').style('cursor', 'pointer')
       })
 
-    select(brushRef.current).selectAll('.handle').attr('cursor', 'pointer')
+    select(brushRef.current)
+      .selectAll('.handle')
+      .attr('cursor', interactive ? 'pointer' : 'default')
     brushBehavior.current(select(brushRef.current))
 
     if (
@@ -119,15 +125,23 @@ export const Brush2 = ({
       select(brushRef.current).transition().call(brushBehavior.current.move, scaledExtent)
     }
 
-    select(brushRef.current).selectAll('.overlay').attr('cursor', 'default')
+    select(brushRef.current)
+      .selectAll('.overlay')
+      .attr('cursor', 'default')
+      .attr('pointer-events', interactive ? 'all' : 'none')
+
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
       .attr('fill-opacity', '1')
       .attr('fill', `url(#${id}-gradient-selection)`)
-      .attr('cursor', 'grab')
+      .attr('cursor', interactive ? 'grab' : 'default')
+      .attr('pointer-events', interactive ? 'all' : 'none')
 
     const brushSelection = select(brushRef.current)
+    brushSelection.selectAll('.handle--n').attr('pointer-events', interactive ? 'all' : 'none')
+    brushSelection.selectAll('.handle--s').attr('pointer-events', interactive ? 'all' : 'none')
+
     const handleNorth = brushSelection.selectAll('.handle--n')
     const handleSouth = brushSelection.selectAll('.handle--s')
 
@@ -154,11 +168,11 @@ export const Brush2 = ({
 
   // respond to yScale changes only
   useEffect(() => {
-    if (!brushRef.current || !brushBehavior.current) return
+    if (!brushRef.current || !brushBehavior.current || !interactive) return
     const extent = toYScale(brushExtent, yScale)
     if (isNaN(extent[0]) || isNaN(extent[1])) return
     brushBehavior.current.move(select(brushRef.current), normalizeExtent(toYScale(brushExtent, yScale)))
-  }, [brushExtent, yScale])
+  }, [brushExtent, interactive, yScale])
 
   const normalizedBrushExtent = normalizeExtent(localBrushExtent ?? brushExtent)
 
@@ -215,7 +229,12 @@ export const Brush2 = ({
         </defs>
 
         {/* will host the d3 brush */}
-        <g ref={brushRef} clipPath={`url(#${id}-brush-clip)`} />
+        <g
+          ref={brushRef}
+          clipPath={`url(#${id}-brush-clip)`}
+          pointerEvents={interactive ? 'all' : 'none'}
+          style={{ cursor: interactive ? 'default' : 'not-allowed' }}
+        />
 
         {/* custom brush handles */}
         {normalizedBrushExtent && (
@@ -226,35 +245,51 @@ export const Brush2 = ({
                   flipNorthHandle ? -1 : 1
                 })`}
                 cursor={interactive ? 'ns-resize' : 'default'}
-                pointerEvents='none'
+                pointerEvents={interactive ? 'all' : 'none'}
+                style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
               >
                 <path
-                  color={southHandleColor}
-                  stroke={southHandleColor}
+                  color={interactive ? southHandleColor : disableColor.line.south}
+                  stroke={interactive ? southHandleColor : disableColor.line.south}
                   strokeWidth={2}
-                  opacity={1}
+                  opacity={interactive ? 0.85 : 1}
                   d={brushHandlePathV2(width)}
                 />
-                <g pointerEvents='none' opacity={0.85}>
-                  <rect x='0' y='-36' width='128' height='36' rx='10' fill='#F199EE' />
-                  <rect x='0' y='-18' width='128' height='18' fill='#F199EE' />
-
-                  <g transform='translate(16, -26)' pointerEvents='none'>
-                    <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                        stroke='#2C002A'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                  </g>
+                <g pointerEvents='none' opacity={interactive ? 0.85 : 1}>
+                  {' '}
+                  <rect
+                    x='0'
+                    y='-36'
+                    width='128'
+                    height='36'
+                    rx='10'
+                    fill={interactive ? southHandleColor : disableColor.handle.south}
+                  />
+                  <rect
+                    x='0'
+                    y='-18'
+                    width='128'
+                    height='18'
+                    fill={interactive ? southHandleColor : disableColor.handle.south}
+                  />
+                  {interactive && (
+                    <g transform='translate(16, -26)' pointerEvents='none'>
+                      <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                        <path
+                          d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                          stroke='#2C002A'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                    </g>
+                  )}
                   <text
                     className='font-archia font-semibold'
-                    x='80'
+                    x={interactive ? '80' : '60'}
                     y='-12'
-                    fill='#2C002A'
+                    fill={interactive ? '#2C002A' : '#B3ABB7'}
                     fontSize='20'
                     textAnchor='middle'
                     pointerEvents='none'
@@ -272,36 +307,53 @@ export const Brush2 = ({
               <g
                 transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${flipSouthHandle ? -1 : 1})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
-                pointerEvents='none'
+                pointerEvents={interactive ? 'all' : 'none'}
+                style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
               >
                 <g>
                   <path
-                    color={southHandleColor}
-                    stroke={southHandleColor}
+                    color={interactive ? southHandleColor : disableColor.line.south}
+                    stroke={interactive ? southHandleColor : disableColor.line.south}
                     strokeWidth={2}
-                    opacity={1}
+                    opacity={interactive ? 0.85 : 1}
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
-                  <g pointerEvents='none' opacity={0.85}>
-                    <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
-                    <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
-                    <g transform='translate(16, 9)' pointerEvents='none'>
-                      <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                        <path
-                          d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                          stroke='#2C002A'
-                          strokeWidth='2'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                        />
-                      </svg>
-                    </g>
+                  <g pointerEvents='none' opacity={interactive ? 0.85 : 1}>
+                    {' '}
+                    <rect
+                      x='0'
+                      y='0'
+                      width='128'
+                      height='36'
+                      rx='10'
+                      fill={interactive ? southHandleColor : disableColor.handle.south}
+                    />
+                    <rect
+                      x='0'
+                      y='0'
+                      width='128'
+                      height='18'
+                      fill={interactive ? southHandleColor : disableColor.handle.south}
+                    />
+                    {interactive && (
+                      <g transform='translate(16, 9)' pointerEvents='none'>
+                        <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                          <path
+                            d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                            stroke='#2C002A'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          />
+                        </svg>
+                      </g>
+                    )}
                     <text
                       className='font-archia font-semibold'
-                      x='80'
+                      x={interactive ? '80' : '60'}
                       y='23'
-                      fill='#2C002A'
+                      fill={interactive ? '#2C002A' : '#B3ABB7'}
                       fontSize='20'
                       textAnchor='middle'
                       pointerEvents='none'
@@ -317,7 +369,7 @@ export const Brush2 = ({
             ) : null}
 
             {(showNorthArrow || isFullRange) && (
-              <g transform='translate(18, -7) scale(1,-1)'>
+              <g transform='translate(18, -10) scale(1,-1)'>
                 <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M11 1.5L6 6.5L1 1.5'
@@ -342,8 +394,11 @@ export const Brush2 = ({
                 </text>
               </g>
             )}
+            {isFullRange && (
+              <rect x='0' y='0' width={width} height={height} fill={`url(#${id}-gradient-selection)`} opacity={0.8} />
+            )}
             {(showSouthArrow || isFullRange) && (
-              <g transform={`translate(18, ${height + 7}) `}>
+              <g transform={`translate(18, ${height + 10}) `}>
                 <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M11 1.5L6 6.5L1 1.5'
@@ -373,24 +428,26 @@ export const Brush2 = ({
       </>
     ),
     [
-      id,
+      padding,
+      showNorthArrow,
+      isFullRange,
       width,
       height,
+      showSouthArrow,
+      id,
       normalizedBrushExtent,
-      padding,
       northHandleInView,
-      isFullRange,
       yScale,
       flipNorthHandle,
       interactive,
       southHandleColor,
+      disableColor.line.south,
+      disableColor.handle.south,
       brushLabelValue,
       localBrushExtent,
       southHandleInView,
       flipSouthHandle,
-      showNorthArrow,
       northHandleColor,
-      showSouthArrow,
     ],
   )
 }
