@@ -10,9 +10,10 @@ import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
 import { newPoolAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
+import { useCopyText } from '@/hooks/useCopyText'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { LinkExternalPrimaryIcon } from '@/svgs'
+import { CheckIcon, CopyArenaIcon, LinkExternalPrimaryIcon } from '@/svgs'
 
 export function PoolAttributesCL({ strategy, pool }) {
   const isAutomatic = !MANUAL_TYPES.includes(strategy.title)
@@ -20,6 +21,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { networkId } = useChainSettings()
   const { locale } = useLocaleSettings()
+  const { onCopy, copied } = useCopyText()
 
   const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
 
@@ -194,10 +196,16 @@ export function PoolAttributesCL({ strategy, pool }) {
           <div className='col-span-4 text-neutral-50'>
             <div
               onClick={() => goScan(networkId, strategy.address)}
-              className='item-center flex cursor-pointer gap-1 text-primary-500'
+              className='item-center flex cursor-pointer items-center gap-1 text-primary-500'
             >
               <span>{formatAddress(strategy.address)}</span>
               <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+              <div
+                onClick={e => onCopy(e, strategy.address, 'poolAddress-cl')}
+                className='h-5 w-5 cursor-pointer stroke-neutral-200'
+              >
+                {copied === 'poolAddress-cl' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+              </div>
             </div>
           </div>
         </div>
@@ -317,6 +325,7 @@ export function NormalPoolAttributes({ pool }) {
 
   const { networkId } = useChainSettings()
   const { locale } = useLocaleSettings()
+  const { onCopy, copied } = useCopyText()
 
   const createdAt = useMemo(() => {
     const date = new Date(pool.createdAt)
@@ -405,9 +414,15 @@ export function NormalPoolAttributes({ pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
           <div className='col-span-4 text-primary-500'>
-            <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
+            <div onClick={() => goScan(networkId, pool?.address)} className='flex cursor-pointer items-center gap-1'>
               <span>{formatAddress(pool?.address)}</span>
               <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+              <div
+                onClick={e => onCopy(e, pool?.address, 'poolAddress-normal')}
+                className='h-5 w-5 cursor-pointer stroke-neutral-200'
+              >
+                {copied === 'poolAddress-normal' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+              </div>
             </div>
           </div>
         </div>
