@@ -332,16 +332,17 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 
   const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
-  const farmApr = tvl
-    ? rewardPerSecond
-        .times(farmRatio)
-        .times(86400 * 365)
-        .div(tvl)
-        .times(100)
-    : BigNumber(0)
+  const farmApr =
+    Number(tvl) > 0
+      ? rewardPerSecond
+          .times(farmRatio)
+          .times(86400 * 365)
+          .div(tvl)
+          .times(100)
+      : BigNumber(0)
 
-  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
-  const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
+  const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+  const feeAPR = Number(tvl) > 0 ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
   return farmApr.plus(feeAPR)
 }
 
@@ -390,16 +391,17 @@ export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl,
   const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
 
   const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
-  const farmApr = tvl
-    ? rewardPerSecond
-        .times(farmRatio)
-        .times(86400 * 365)
-        .div(tvl)
-        .times(100)
-    : BigNumber(0)
+  const farmApr =
+    Number(tvl) > 0
+      ? rewardPerSecond
+          .times(farmRatio)
+          .times(86400 * 365)
+          .div(tvl)
+          .times(100)
+      : BigNumber(0)
 
-  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
-  const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
+  const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+  const feeAPR = Number(tvl) > 0 ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
   return farmApr.plus(feeAPR)
 }
 

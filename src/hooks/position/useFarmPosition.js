@@ -194,8 +194,8 @@ export const useFarmPositions = positions => {
               .times(100)
           : ZERO_VALUE
 
-        const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
-        const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : ZERO_VALUE
+        const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
+        const feeAPR = Number(tvl) > 0 ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : ZERO_VALUE
 
         return farmApr.plus(feeAPR)
       })()

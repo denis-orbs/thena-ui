@@ -155,7 +155,7 @@ export const useManualPositions = positions => {
 
         const totalLiquidity = fusion?.liquidity
         const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
-        const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
+        const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
         const feeAPR = tvl.gt(0)
           ? feeRatio
               .times(annualPoolFees)
