@@ -90,6 +90,9 @@ function NewListings({
         if (titleSub === 'Correlated_Farming') {
           return ['Gamma Correlated', '']
         }
+        if (titleSub === 'CL_Stable_Farming') {
+          return ['Gamma Stable', '']
+        }
         return ['Gamma Narrow', titleSub.replace('_', ' ')]
       }
 
@@ -103,10 +106,6 @@ function NewListings({
         }
 
         return ['CL: Earn Fees', '']
-      }
-
-      if (titleSub === 'CL_Stable_Farming') {
-        return ['Gamma Stable', '']
       }
     }
 

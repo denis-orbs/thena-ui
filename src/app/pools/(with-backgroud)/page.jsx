@@ -115,6 +115,9 @@ export default function PoolsPage() {
         if (title === 'Correlated_Farming') {
           return ['Gamma Correlated', '']
         }
+        if (title === 'CL_Stable_Farming') {
+          return ['Gamma Stable', '']
+        }
         return ['Gamma Narrow', title.replace('_', ' ')]
       }
 
@@ -128,10 +131,6 @@ export default function PoolsPage() {
         }
 
         return ['CL: Earn Fees', '']
-      }
-
-      if (title === 'CL_Stable_Farming') {
-        return ['Gamma Stable', '']
       }
     }
 
