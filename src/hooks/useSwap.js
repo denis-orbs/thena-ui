@@ -42,7 +42,7 @@ export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outpu
     userAddr: getAddress(account || zeroAddress),
     slippageLimitPercent: slippage,
     referralCode: 121015208,
-    sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
+    sourceWhitelist: ['Wrapped BNB', 'THENA Stable', 'THENA Volatile', 'THENA Fusion'],
     pathVizImage: true,
     disableRFQs: true,
     compact: true,

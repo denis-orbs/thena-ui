@@ -1075,7 +1075,7 @@ function Header() {
         <div
           className={cn(
             'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
-            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+            showBannerMigrate && 'top-[180px] lg:top-[146px]',
           )}
         >
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
@@ -1102,7 +1102,7 @@ function Header() {
         <div
           className={cn(
             'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
-            showBannerMigrate && 'top-[170px] lg:top-[146px]',
+            showBannerMigrate && 'top-[180px] lg:top-[146px]',
           )}
         >
           <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>

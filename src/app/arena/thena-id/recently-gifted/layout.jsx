@@ -23,5 +23,5 @@ export const metadata = {
 }
 
 export default function RecentlyGiftedLayout({ children }) {
-  return <section className='lg:layout-container pt-0'>{children}</section>
+  return <section className='pt-0'>{children}</section>
 }

@@ -26,5 +26,5 @@ export const metadata = {
 }
 
 export default function ThenaIdLayout({ children }) {
-  return <section className='lg:layout-container pt-0'>{children}</section>
+  return <section className='pt-0'>{children}</section>
 }

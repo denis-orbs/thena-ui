@@ -95,11 +95,11 @@
   }
 
   .layout-container {
-    @apply mx-4 mt-[128px] max-w-[1440px] pb-[150px] pt-0 lg:mx-[40px] lg:mt-[176px] lg:pb-20 lg:pt-10 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1440px];
+    @apply mx-4 mt-[128px] max-w-[1440px] pb-[150px] pt-0 lg:mx-[40px] lg:mt-[176px] lg:pb-20 lg:pt-10 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1344px];
   }
 
   .layout-menu-container {
-    @apply mx-4 max-w-[1440px] lg:mx-[40px] xl:mx-[120px] 2xl:mx-auto 2xl:w-[1440px];
+    @apply mx-4 max-w-[1440px] lg:mx-[40px] xl:mx-[120px] 2xl:mx-auto 2xl:w-[1344px];
   }
 
   body.has-v3-banner .layout,
@@ -116,7 +116,7 @@
   }
 
   body.has-v3-banner .layout-container {
-    @apply mt-[244px] lg:mt-[230px];
+    @apply mt-[128px] md:mt-[84px];
   }
 
   body.has-v3-banner {
