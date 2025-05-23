@@ -212,13 +212,10 @@ export default function PoolsPage() {
       ? res
       : res &&
           res.filter(item => {
-            const withSpace = item?.symbol?.replace('/', ' ') || ''
-            const withComma = item?.symbol?.replace('/', ',') || ''
-            return (
-              item?.symbol?.toLowerCase().includes(searchText.toLowerCase()) ||
-              withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
-              withComma.toLowerCase().includes(searchText.toLowerCase())
-            )
+            const symbol = item?.symbol?.toLowerCase() || ''
+            const tokens = symbol.split('/')
+            const searchTerms = searchText.toLowerCase().split(/[\s/,]+/)
+            return searchTerms.every(term => tokens.some(token => token.includes(term)))
           })
   }, [isInactive, filter, strategy, searchText, pairs, vaults])
 

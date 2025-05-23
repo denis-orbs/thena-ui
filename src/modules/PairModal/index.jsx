@@ -17,7 +17,7 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
     if (!searchText) return pools
     const searchTerms = searchText
       .toLowerCase()
-      .split(/[\s/]+/)
+      .split(/[\s/,]+/)
       .map(term => term.trim())
 
     return pools.filter(pool => {
