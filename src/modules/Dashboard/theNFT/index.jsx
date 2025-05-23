@@ -186,7 +186,11 @@ function TheNFT() {
                       </EmphasisButton>
                     </Link>
                   )}
-                  <Link className='w-full' href='https://docs.thena.fi/thena/thenft-collection' target='_blank'>
+                  <Link
+                    className='w-full'
+                    href='https://docs.thena.fi/thena/the-tokenomics/tokens-the-vethe-thenft#thenft-erc-721-founders-token-in-the-form-of-an-nft-non-fungible-token'
+                    target='_blank'
+                  >
                     <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
                       {t('Learn more')}
                       <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
