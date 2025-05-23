@@ -107,16 +107,18 @@ export const useRewardPosition = () => {
     }
 
     if (manualFeesV2.size > 0) {
+      const pairsString = [...manualFeesV2].map(_pair => `${_pair[1].symbol}#${_pair[1].args[1]}`).join(', ')
       transactions[claimFeesV2Id] = {
-        desc: `${t('Claim Fees')} Manual Pools V2`,
+        desc: `${t('Claim Fees')} Manual Pools V2 (${pairsString})`,
         status: TXN_STATUS.START,
         hash: null,
       }
     }
 
     if (manualFeesV3.size > 0) {
+      const pairsString = [...manualFeesV3].map(_pair => `${_pair[1].symbol}#${_pair[1].args[1]}`).join(', ')
       transactions[claimFeesV3Id] = {
-        desc: `${t('Claim Fees')} Manual Pools V3`,
+        desc: `${t('Claim Fees')} Manual Pools V3 (${pairsString})`,
         status: TXN_STATUS.START,
         hash: null,
       }
