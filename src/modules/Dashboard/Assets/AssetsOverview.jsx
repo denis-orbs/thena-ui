@@ -257,13 +257,13 @@ function AssetsOverview({
   }, [t])
 
   return (
-    <div className='space-y-6'>
-      <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
+    <div className='space-y-6 md:px-4'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2'>
         <div className='flex flex-col gap-4'>
           <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
             {t('Total Value Provided')}
           </NewTextHeading>
-          <NewParagraph className='space-x-4 text-4xl max-md:text-primary-300 md:text-4xl'>
+          <NewParagraph className='space-x-4 text-3xl max-md:text-center max-md:text-primary-300 md:text-4xl'>
             <span>${formatAmount(totalProvided)}</span>
             <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </NewParagraph>
@@ -286,7 +286,7 @@ function AssetsOverview({
           <LiquidityAPRChart
             data={filteredPositions}
             currentHoverTableRow={currentHoverTableRow}
-            className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]'
+            className='h-[163px] w-[163px] md:h-[276px] md:w-[276px]'
             isHoverFromChart={isHoverFromChart}
             setIsHoverFromChart={setIsHoverFromChart}
           />

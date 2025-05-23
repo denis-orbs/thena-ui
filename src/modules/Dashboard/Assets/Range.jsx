@@ -51,7 +51,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
           <div className='flex w-full justify-between'>
             <TextSubHeading className='text-base text-neutral-300'>
               {tickLowerPercent > 1e9
-                ? '>1B'
+                ? '>1B%'
                 : `${tickLowerPercent < 0 ? '-' : ''} ${formatAmount(
                     tickLowerPercent < 0 ? tickLowerPercent * -1 : tickLowerPercent,
                     true,
@@ -59,7 +59,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
             </TextSubHeading>
             <TextSubHeading className='text-base text-neutral-300'>
               {tickUpperPercent > 1e9
-                ? '>1B'
+                ? '>1B%'
                 : `${tickUpperPercent < 0 ? '-' : ''} ${formatAmount(
                     tickUpperPercent < 0 ? tickUpperPercent * -1 : tickUpperPercent,
                     true,

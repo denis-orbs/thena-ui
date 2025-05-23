@@ -200,7 +200,7 @@ function VotingChart({ data = [], className }) {
   }
 
   return (
-    <div className={cn('relative h-[200px] w-[200px]', className)}>
+    <div className={cn('relative h-[224px] w-[224px]', className)}>
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-1 text-center'>
         {renderCenterContent()}
       </div>

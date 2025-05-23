@@ -63,7 +63,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
         {columns.map((column, idx) => (
           <th
             className={cn(
-              'gap-1 px-2 py-4',
+              'gap-1 px-2 py-4 first:pl-4 last:pr-4',
               !column.disabled && 'cursor-pointer',
               column.width,
               column.justify,
