@@ -10,7 +10,7 @@ function MintPage() {
   const t = useTranslations()
 
   return (
-    <div className='mt-6'>
+    <div>
       <div className='mt-6'>
         <h2>{t('THENA ID')}</h2>
       </div>

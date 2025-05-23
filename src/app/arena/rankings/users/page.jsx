@@ -10,7 +10,7 @@ function UserRankingPage() {
 
   return (
     <div>
-      <h2 className='mb-10 mt-10'>{t('User Rankings')}</h2>
+      <h2 className='mb-10'>{t('User Rankings')}</h2>
       <TopUser />
     </div>
   )

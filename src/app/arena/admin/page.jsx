@@ -41,7 +41,7 @@ function AdminPage() {
   }, [account, isLoading, router, userInfo])
 
   return (
-    <div className='mt-8 flex flex-col gap-8'>
+    <div className='flex flex-col gap-8'>
       <TopBar userInfo={userInfo} isLoading={isLoading} />
       <VerifiedUser
         userInfo={userInfo}

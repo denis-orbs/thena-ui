@@ -38,7 +38,7 @@ export function AchievementWrapLayout({ children }) {
   }, [searchText])
 
   return (
-    <div className='mt-6 space-y-10'>
+    <div className='space-y-10'>
       <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
         <div className='rounded-lg bg-neutral-900 p-1 '>
           <Tabs data={subTabs} itemClassName='text-sm' />
