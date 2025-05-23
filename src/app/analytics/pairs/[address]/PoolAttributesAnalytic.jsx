@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
-import { useTokenColor } from '@/hooks/useTokenColor'
+import { THENACOLORS } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import { TargetIcon } from '@/svgs'
@@ -18,14 +18,6 @@ function TokenAnalytics({ pair }) {
         tokens.length === 2 && 'md:grid-cols-2',
       )}
     >
-      <div className='hidden bg-primary-300' />
-      <div className='hidden bg-primary-400' />
-      <div className='hidden bg-primary-500' />
-      <div className='hidden bg-primary-600' />
-      <div className='hidden bg-primary-700' />
-      <div className='hidden bg-primary-800' />
-      <div className='hidden bg-primary-900' />
-      <div className='hidden bg-primary-950' />
       {(tokens || []).map((token, index) => (
         <div className='space-y-4 rounded-md bg-neutral-900 p-4' key={token.address}>
           <div className='flex justify-between gap-2'>
@@ -48,16 +40,13 @@ function TokenAnalytics({ pair }) {
             <div className='relative h-9 w-full overflow-hidden rounded-lg bg-neutral-800'>
               {/* Progress fill */}
               <div
-                className={cn(
-                  'h-full',
-                  `bg-primary-${300 + index * 100 - (index === 7 ? 50 : 0)}`,
-                  !parseFloat(token.reserve) && 'bg-transparent',
-                )}
+                className={cn('h-full', !parseFloat(token.reserve) && 'bg-transparent')}
                 style={{
                   width:
                     (parseFloat(token.reserve) * token.price * 100) / pair.tvlUSD < 1
                       ? '1px'
                       : `${(parseFloat(token.reserve) * token.price * 100) / pair.tvlUSD}%`,
+                  backgroundColor: THENACOLORS[index],
                 }}
               />
               <div className='absolute bottom-0 top-0 h-full'>
@@ -80,17 +69,6 @@ function TokenAnalytics({ pair }) {
 
 function PoolAttributesAnalytic({ pair }) {
   const { tokens } = pair
-  const [colors, setColors] = useState([])
-  const { renderBackgroundColors } = useTokenColor()
-
-  useEffect(() => {
-    renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
-      result => {
-        setColors(result)
-      },
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokens.length, renderBackgroundColors])
 
   const t = useTranslations()
   return (
@@ -103,7 +81,7 @@ function PoolAttributesAnalytic({ pair }) {
             <TextHeading>${formatAmount(pair.tvlUSD)}</TextHeading>
           </div>
           <div className='relative'>
-            <PieChart tokens={tokens} colors={colors} showTotalPercent={false} className='h-full' />
+            <PieChart tokens={tokens} showTotalPercent={false} className='h-full' />
             <div className='absolute left-[50%] top-[50%] h-[72px] w-[132px] translate-x-[-50%] translate-y-[-50%] p-5 text-center'>
               <TextHeading>{`${t('Pool Fees')} ${formatAmount(pair.fee)}%`}</TextHeading>
             </div>

@@ -56,7 +56,6 @@ function AddLiquidityWeighted({ pool }) {
   const [isCheckError, setIsCheckError] = useState(false)
 
   const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
-
   const isLaptop = useMemo(() => windowSize.width > 1024, [windowSize.width])
 
   const toggleDepositType = useMemo(
@@ -297,24 +296,23 @@ function AddLiquidityWeighted({ pool }) {
             {depositType === DEPOSIT_TYPE.ALL && (
               <div
                 className={cn(
-                  'grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3',
+                  'grid grid-cols-1 gap-2 lg:grid-cols-2',
                   (tokensData || []).length <= 2 && 'xl:grid-cols-2',
                 )}
               >
                 {(tokensData || []).map((token, idx) => (
-                  <div className='flex flex-col gap-2'>
-                    <InputTokenMemo
-                      key={token?.address}
-                      token={token}
-                      autoFocus={idx === 0}
-                      amount={token.amount}
-                      onAmountChange={value => handleAmountChange(value, token)}
-                      alowDouble
-                      weight={token.weight}
-                      isCheckError={isCheckError}
-                      isSmall
-                    />
-                  </div>
+                  <InputTokenMemo
+                    key={`${token?.address}_${idx}`}
+                    token={token}
+                    autoFocus={idx === 0}
+                    amount={token.amount}
+                    onAmountChange={value => handleAmountChange(value, token)}
+                    alowDouble
+                    weight={token.weight}
+                    isCheckError={isCheckError}
+                    isSmall
+                    showTitle={false}
+                  />
                 ))}
               </div>
             )}
@@ -334,6 +332,7 @@ function AddLiquidityWeighted({ pool }) {
                     (isDouble ? balance.lt(amountDeposit) : Number(amountDeposit) > Number(tokenDeposit.balance))) &&
                   isCheckError
                 }
+                isSmall
               />
             )}
           </div>

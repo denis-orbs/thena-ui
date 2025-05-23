@@ -142,7 +142,10 @@ export function TokenAmountInput({
           <input
             ref={inputRefer}
             type='number'
-            className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className={cn(
+              'w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400',
+              isSmall && '!text-sm',
+            )}
             placeholder='0.0'
             value={amount ?? ''}
             onChange={e => {

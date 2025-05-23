@@ -733,3 +733,5 @@ export const NotShowDiscoverPoolsAnalyticsModal = 'not-show-discover-pools-analy
 export const HASH = {
   TRANSFER: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
 }
+
+export const THENACOLORS = ['#F199EE', '#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F', '#580055', '#32002F']

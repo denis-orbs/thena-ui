@@ -52,7 +52,7 @@ export function PairBasicInfo({ pair }) {
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             {computedPair?.apr ?? '0%'}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base'>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
             {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
           </Paragraph>
         </div>
@@ -60,7 +60,9 @@ export function PairBasicInfo({ pair }) {
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base'>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
+            {t('Volume (24h)')}
+          </Paragraph>
         </div>
 
         <motion.div
@@ -74,13 +76,15 @@ export function PairBasicInfo({ pair }) {
               <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
                 ${formatAmount(pair?.dayFees)}
               </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500 md:text-base'>{t('Fees (24h)')}</Paragraph>
+              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
+                {t('Fees (24h)')}
+              </Paragraph>
             </div>
             <div className='flex flex-col gap-2 md:gap-1'>
               <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
                 ${formatAmount(computedPair?.tvlUSD)}
               </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500 md:text-base'>{t('TVL')}</Paragraph>
+              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
             </div>
           </div>
         </motion.div>
@@ -89,14 +93,14 @@ export function PairBasicInfo({ pair }) {
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(pair?.dayFees)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('Fees (24h)')}</Paragraph>
         </div>
 
         <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(computedPair?.tvlUSD)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base'>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
         </div>
       </Box>
 
