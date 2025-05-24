@@ -34,6 +34,7 @@ function NewListings({
   isCollapse = true,
   size = 'default',
   back,
+  tableBasic = false,
 }) {
   const t = useTranslations()
   const { push } = useRouter()
@@ -367,7 +368,6 @@ function NewListings({
           <EmphasisButton
             className={cn(
               '!h-8 w-full p-2 text-xs lg:w-fit lg:text-sm',
-              size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
               size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!h-9 lg:w-fit',
             )}
             onClick={e => {
@@ -387,9 +387,7 @@ function NewListings({
             >
               {t('Deposit')}
             </Paragraph>
-            <CoinsStackedIcon
-              className={cn('hidden size-4', size === 'small' && pool.type === PAIR_TYPES.WEIGHTED && 'max-md:block')}
-            />
+            <CoinsStackedIcon className={cn('hidden size-4', size === 'small' && 'max-md:block')} />
           </EmphasisButton>
         </div>
       ),
@@ -435,6 +433,7 @@ function NewListings({
               cellItemLabel: classNames?.cellItemLabel,
               tableContainer: classNames?.tableContainer,
             }}
+            tableBasic={tableBasic}
           />
         </Collapse>
       ) : (
@@ -445,6 +444,7 @@ function NewListings({
           setSort={setSort}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          tableBasic={tableBasic}
         />
       )}
     </>

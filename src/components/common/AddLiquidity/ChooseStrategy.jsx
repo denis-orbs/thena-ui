@@ -98,6 +98,7 @@ export default function ChooseStrategy({
   setIsAutomatic,
   setFullRangeWarningShown,
   fullRangeWarningShown,
+  setLastPrice,
 }) {
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -284,7 +285,7 @@ export default function ChooseStrategy({
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-2'>
+      <div className='flex-[6]'>
         {!position && (
           <div className='space-y-2 md:space-y-4'>
             <StrategyTitle
@@ -297,15 +298,18 @@ export default function ChooseStrategy({
               secondAsset={secondAsset}
               strategy={strategy}
             />
-            {pair && (
-              <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
-                <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-              </div>
-            )}
+
+            <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
+              <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+            </div>
           </div>
         )}
 
-        {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
+        {strategyAutoData && isAutomatic && (
+          <div className='max-xl:mt-4'>
+            <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />
+          </div>
+        )}
 
         {!isAutomatic && (
           <ManualStrategy
@@ -316,6 +320,7 @@ export default function ChooseStrategy({
             isEarnFees={isEarnFees}
             setFullRangeWarningShown={setFullRangeWarningShown}
             fullRangeWarningShown={fullRangeWarningShown}
+            setLastPrice={setLastPrice}
           />
         )}
       </div>
@@ -359,6 +364,7 @@ function StrategyTitle({
   const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
   const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
+  const hasToggle = useMemo(() => hasSwapFee && hasFarming && !isAutomatic, [hasFarming, hasSwapFee, isAutomatic])
 
   const handleChangeManualType = useCallback(() => {
     if (strategy) {
@@ -370,17 +376,20 @@ function StrategyTitle({
   }, [handleChooseStrategy, pair?.subpools, strategy])
 
   return (
-    <article>
-      <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between'>
-        <div>
-          {hasSwapFee && hasFarming && !isAutomatic && (
-            <Toggle
-              checked={!strategy?.isFarming}
-              onChange={handleChangeManualType}
-              label='Earn Fees'
-              className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
-            />
-          )}
+    <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>
+      <div
+        className={cn(
+          'flex flex-col items-start gap-2.5 max-xl:mt-4 md:flex-row md:items-center md:justify-between',
+          !hasToggle && 'md:justify-end xl:mb-2',
+        )}
+      >
+        <div className={cn(!hasToggle && 'hidden')}>
+          <Toggle
+            checked={!strategy?.isFarming}
+            onChange={handleChangeManualType}
+            label='Earn Fees'
+            className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
+          />
         </div>
 
         <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>

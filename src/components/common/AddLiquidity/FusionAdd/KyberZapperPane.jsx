@@ -216,7 +216,7 @@ function KyberZapperPane({
       </div>
 
       <div className='flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row'>
-        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+        <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>
         {account ? (

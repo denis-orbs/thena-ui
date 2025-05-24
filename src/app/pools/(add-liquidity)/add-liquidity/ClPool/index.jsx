@@ -31,7 +31,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { isMdDown, isXlDown, is2XlDown } = useMediaQuery()
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
-  const { strategy } = useV3MintState()
+  const { strategy, startPriceTypedValue } = useV3MintState()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
@@ -61,14 +61,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
   const [isAutomatic, setIsAutomatic] = useState(false)
   const [show, setShow] = useState(false)
-  // const [lastPrice, setLastPrice] = useState(null)
+  const [lastPrice, setLastPrice] = useState(null)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
   useEffect(() => {
     setBaseCurrency(firstCurrency)
     setQuoteCurrency(secondCurrency)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReverse])
+  }, [firstCurrency, isReverse, secondCurrency])
 
   const isBaseBNB = useMemo(
     () => baseCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
@@ -89,7 +88,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
-  const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const currentPrice = useMemo(() => {
     if (position) {
@@ -109,6 +108,21 @@ function AddLiquidityClPool({ pool, handleBack }) {
     return [704, 221]
   }, [isMdDown, isXlDown, is2XlDown])
 
+  useEffect(() => {
+    setIsAutomatic(strategy?.isAutomatic ?? false)
+  }, [strategy?.isAutomatic])
+
+  useEffect(() => {
+    if (!pair) setShow(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(pair)])
+
+  useEffect(() => {
+    if (!startPriceTypedValue && lastPrice) {
+      onStartPriceInput(`${lastPrice}`)
+    }
+  }, [lastPrice, onStartPriceInput, startPriceTypedValue])
+
   return (
     <>
       <div className='flex flex-col'>
@@ -116,17 +130,15 @@ function AddLiquidityClPool({ pool, handleBack }) {
           <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
           <NewTextHeading className='xl:text-[40px] xl:leading-[48px]'> {t('Add Liquidity')}</NewTextHeading>
         </div>
-        {/* <div className='grid w-full grid-cols-2 flex-row items-center gap-4 max-xl:hidden'>
-
-        </div> */}
       </div>
       <section className='grid w-full grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-8'>
         <div id='LEFT-BLOCK' className='col-span-1 w-full'>
-          <div className='mb-4 flex h-11 items-end'>
+          <div className='flex h-11 items-end max-xl:hidden xl:mb-4'>
             <NewTextSubHeading className='block text-2xl'>
               {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
             </NewTextSubHeading>
           </div>
+
           <ChooseStrategy
             firstAsset={firstAsset}
             secondAsset={secondAsset}
@@ -137,6 +149,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
             setIsAutomatic={setIsAutomatic}
             setFullRangeWarningShown={setFullRangeWarningShown}
             fullRangeWarningShown={fullRangeWarningShown}
+            setLastPrice={setLastPrice}
           />
 
           {strategy?.isAutomatic && isXlDown && (
@@ -168,49 +181,50 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block h-full')}>
-          {pair ? (
-            <div className='mb-4 mt-0 flex w-full flex-col items-end max-xl:hidden'>
-              <div className='flex w-fit items-center gap-2'>
-                <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
-                  <TextHeading className='!text-xl !font-medium xl:text-neutral-500'>
-                    {t('Pool Attributes')}
-                  </TextHeading>
-                </Box>
+          <div className='mb-4 mt-0 flex w-full flex-col items-end max-xl:hidden'>
+            <div className='flex w-fit items-center gap-2'>
+              <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
+                <TextHeading className='!text-xl !font-medium xl:text-neutral-500'>{t('Pool Attributes')}</TextHeading>
+              </Box>
 
-                <div className='flex items-center'>
-                  <i
-                    onClick={() => setShow(!show)}
-                    className={cn(
-                      'flex cursor-pointer items-center justify-center rounded-lg',
-                      'size-8 min-w-8 md:size-11 md:min-w-11',
-                      show ? 'bg-neutral-600' : 'bg-neutral-900',
-                    )}
-                  >
-                    <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
-                  </i>
-                </div>
-              </div>
-              <motion.div
-                initial={{ opacity: 0, y: 0, height: 0 }}
-                animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className='w-full overflow-hidden'
-              >
-                <div className='mt-2 w-full'>
-                  {pair?.type === PAIR_TYPES.LSD ? (
-                    <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-                  ) : (
-                    <>{pair && <NormalPoolAttributes pool={pair} />}</>
+              <div className='flex items-center'>
+                <i
+                  onClick={() => setShow(!show)}
+                  className={cn(
+                    'flex cursor-pointer items-center justify-center rounded-lg',
+                    'size-8 min-w-8 md:size-11 md:min-w-11',
+                    show ? 'bg-neutral-600' : 'bg-neutral-900',
                   )}
-                </div>
-              </motion.div>
+                >
+                  <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+                </i>
+              </div>
             </div>
-          ) : (
-            <div className='mb-4 flex h-max flex-col gap-3 rounded-md bg-neutral-800 px-3 py-2'>
-              <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
-              <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
-            </div>
-          )}
+            <motion.div
+              initial={{ opacity: 0, y: 0, height: 0 }}
+              animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='w-full overflow-hidden'
+            >
+              <div className='mt-2 w-full xl:mt-4'>
+                {pair ? (
+                  <>
+                    {pair?.type === PAIR_TYPES.LSD ? (
+                      <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+                    ) : (
+                      <>{pair && <NormalPoolAttributes pool={pair} />}</>
+                    )}
+                  </>
+                ) : (
+                  <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
+                    <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
+                    <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
           <div className='hidden flex-[4] flex-col gap-2 md:gap-4 xl:flex'>
             {/* <PoolDescriptionSection pairType={strategy?.title} /> */}
             {!isAutomatic && (
@@ -231,10 +245,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 invalidRange={mintInfo.invalidRange}
                 fullRangeWarningShown={fullRangeWarningShown}
                 isCreate={mintInfo.noLiquidity}
-                setLastPrice={() => {}}
+                setLastPrice={setLastPrice}
                 height={203}
+                label='Your Range against the Price'
               />
             )}
+
             {strategy?.isAutomatic && (
               <AutomaticLiquidityChart
                 label='Liquidity Range'

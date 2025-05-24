@@ -278,7 +278,7 @@ function PairStrategy({ pair }) {
               }}
               handleShow
               isCreate={false}
-              label='Liquidity range'
+              label='Your Range against the Price'
             />
 
             <div className='mt-11 md:mt-4'>

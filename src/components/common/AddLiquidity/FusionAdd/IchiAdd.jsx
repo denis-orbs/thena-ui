@@ -119,7 +119,7 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
       </div>
 
       <div className={cn('mt-4 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
-        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+        <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>
         {account ? (

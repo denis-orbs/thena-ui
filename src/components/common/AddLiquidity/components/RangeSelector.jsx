@@ -134,7 +134,7 @@ export function RangeSelector({
   mintInfo,
 }) {
   const dispatch = useDispatch()
-  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(mintInfo?.noLiquidity)
+  const { onFieldAInput, onFieldBInput, onStartPriceInput } = useV3MintActionHandlers(mintInfo?.noLiquidity)
   const { isReverse } = useSelector(state => state.fusion)
 
   const tokenA = (currencyA ?? undefined)?.wrapped
@@ -157,6 +157,7 @@ export function RangeSelector({
     dispatch(updateIsReverse({ isReverse: !isReverse }))
     onFieldAInput('')
     onFieldBInput('')
+    onStartPriceInput('')
   }
 
   const brushLabelValue = useCallback(
@@ -191,7 +192,7 @@ export function RangeSelector({
       />
 
       <button
-        className='flex h-fit w-full items-center justify-center self-end rounded-lg bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit'
+        className='flex h-fit w-full items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}

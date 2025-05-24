@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
-import { useActivePreset } from '@/state/fusion/hooks'
+import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
@@ -76,8 +76,9 @@ export default function ChartPriceRangeInput({
   const activePreset = useActivePreset()
   const t = useTranslations()
   const zoomRef = useRef(null)
-  const { isReverse } = useSelector(state => state.fusion)
   const windowSize = useWindowSize()
+  const { startPriceTypedValue } = useV3MintState()
+  const { isReverse } = useSelector(state => state.fusion)
 
   const [zoomFactor, setZoomFactor] = useState(1)
   const [boundaryPrices, setBoundaryPrices] = useState()
@@ -97,20 +98,15 @@ export default function ChartPriceRangeInput({
     [currencyA, currencyB],
   )
 
-  const [baseCurrency, quoteCurrency] = useMemo(
-    () => (isReverse ? [currencyB, currencyA] : [currencyA, currencyB]),
-    [isReverse, currencyB, currencyA],
-  )
-
   const {
     data: pairPrices = [],
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address,
-    token1Address: isReverse ? quoteCurrency?.wrapped?.address : baseCurrency?.wrapped?.address,
+    token0Address: currencyB?.wrapped?.address,
+    token1Address: currencyA?.wrapped?.address,
     timeWindow,
-    currentSwapPrice: { [isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address]: price },
+    currentSwapPrice: { [currencyB?.wrapped?.address]: price },
   })
 
   const brushDomain = useMemo(() => {
@@ -365,10 +361,10 @@ export default function ChartPriceRangeInput({
   }, [enableScroll, minVisiblePrice, scrollIncrement])
 
   useEffect(() => {
-    if (pairPrices && pairPrices.length > 0) {
+    if (!startPriceTypedValue && pairPrices?.length > 0) {
       setLastPrice(pairPrices[pairPrices.length - 1]?.value)
     }
-  }, [pairPrices, setLastPrice])
+  }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
   return (
     <div className='flex flex-col'>

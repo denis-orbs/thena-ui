@@ -87,7 +87,7 @@ function StakedItem({ position, isXlDown }) {
         totalLp: position?.account?.totalLp?.toNumber(),
         gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
       },
-      allowed: position?.allowed,
+      allowed: position?.allowed ? { ...position.allowed, balance: position.allowed.balance?.toNumber() } : {},
       token0: {
         ...position?.token0,
         reserve: position?.token0?.reserve?.toNumber(),
