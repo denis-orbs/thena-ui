@@ -31,7 +31,7 @@ function Dashboard() {
       <div
         className={cn(
           'absolute right-10 z-10 h-[120px] w-full max-md:right-0 md:h-[856px]',
-          'bg-[url(/images/bg-dashboard.svg)] bg-contain bg-right-top bg-no-repeat max-md:bg-primary-950 max-md:bg-cover 3xl:bg-cover',
+          'bg-[url(/images/bg-dashboard.svg)] bg-contain bg-right-top bg-no-repeat max-md:bg-primary-950 max-md:bg-cover 3xl:bg-cover 4xl:bg-center 5xl:bg-center',
         )}
       />
       <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-right-top max-md:hidden md:h-[262px]' />
