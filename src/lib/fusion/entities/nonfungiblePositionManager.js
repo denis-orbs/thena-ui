@@ -1,5 +1,5 @@
-import { ADDRESS_ZERO, Position, toHex } from 'thena-fusion-sdk'
 import { CurrencyAmount, JSBI, validateAndParseAddress } from 'thena-sdk-core'
+import { ADDRESS_ZERO, Position, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 

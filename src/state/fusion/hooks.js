@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useSWR from 'swr'
+import { CurrencyAmount, JSBI, Price, Rounding, WBNB } from 'thena-sdk-core'
 import {
   encodeSqrtRatioX96,
   nearestUsableTick,
@@ -10,8 +11,7 @@ import {
   TICK_SPACING,
   TickMath,
   tickToPrice,
-} from 'thena-fusion-sdk'
-import { CurrencyAmount, JSBI, Price, Rounding, WBNB } from 'thena-sdk-core'
+} from 'thenafi-fusion-sdk'
 import { formatUnits, parseUnits } from 'viem'
 
 import { FusionRangeType } from '@/constant'

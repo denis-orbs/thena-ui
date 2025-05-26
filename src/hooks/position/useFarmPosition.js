@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
+import { Position } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 
 import Contracts from '@/constant/contracts'

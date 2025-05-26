@@ -1,5 +1,5 @@
-import { encodeRouteToPath, toHex } from 'thena-fusion-sdk'
 import { CurrencyAmount, TradeType, validateAndParseAddress } from 'thena-sdk-core'
+import { encodeRouteToPath, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { encodeFunctionData, zeroAddress } from 'viem'
 
