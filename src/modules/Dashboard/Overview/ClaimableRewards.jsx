@@ -122,7 +122,7 @@ function ClaimableRewards({ setClaimableRewards }) {
   return (
     totalRewards > 0 && (
       <>
-        <Box className='flex h-full flex-col justify-between gap-4 bg-cover bg-no-repeat !p-4 max-lg:bg-[url("/images/claim-reward-mobile-bg.png")]'>
+        <Box className='flex h-full flex-col justify-between gap-4 bg-cover bg-no-repeat !p-4'>
           <NewTextHeading className='text-xl md:text-xl'>{t('Claimable Rewards')}</NewTextHeading>
           <div className='flex h-[124px] flex-col justify-center gap-2 md:h-[224px] md:gap-4 md:py-[18px]'>
             <div className='flex max-h-[52px] flex-1 items-center gap-2'>
