@@ -162,7 +162,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
   const fee = Number(globalStates?.[2]) || poolInfo?.[2]?.result
   const tickSpacing = Number(poolInfo?.[3]?.result)
 
-  if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
+  if (!token0 || !token1 || !fee || !price || !liquidity || !tickSpacing) return [PoolState.NOT_EXISTS, null]
   return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing), poolAddress]
 }
 
