@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { useMemo, useRef } from 'react'
 import useSWR from 'swr'
-import { computePoolAddress, Pool } from 'thena-fusion-sdk'
+import { computePoolAddress, Pool } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
@@ -83,15 +83,15 @@ export function useFusions(poolKeys, version) {
           const found = fusionPairs?.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
           if (!found) return [PoolState.NOT_EXISTS, null]
 
-          const { globalState, liquidity } = found
-          if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+          const { globalState, liquidity, tickSpacing } = found
+          if (!globalState || !liquidity || !tickSpacing) return [PoolState.NOT_EXISTS, null]
 
           if (!globalState.price || Number(globalState.price) === 0) return [PoolState.NOT_EXISTS, null]
 
           try {
             return [
               PoolState.EXISTS,
-              new Pool(token0, token1, globalState.fee, globalState.price, liquidity, globalState.tick),
+              new Pool(token0, token1, globalState.fee, globalState.price, liquidity, globalState.tick, tickSpacing),
             ]
           } catch (error) {
             console.log('error :>> ', error)
@@ -148,6 +148,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
       { ...poolContract, functionName: 'liquidity' },
       { ...poolContract, functionName: 'globalState' },
       { ...poolContract, functionName: 'fee' },
+      { ...poolContract, functionName: 'tickSpacing' },
     ],
     query: {
       enabled: !!poolAddress,
@@ -159,11 +160,13 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
   const price = new BigNumber(globalStates?.[0]).toString(10)
   const tick = Number(globalStates?.[1]) ?? 0
   const fee = Number(globalStates?.[2]) || poolInfo?.[2]?.result
+  const tickSpacing = Number(poolInfo?.[3]?.result)
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
-  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]
+  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing), poolAddress]
 }
 
+// @dev: deprecated
 export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarmingPool = false }) => {
   const wTokenA = currencyA?.wrapped
   const wTokenB = currencyB?.wrapped
@@ -223,6 +226,7 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
     { ...poolContract, functionName: 'liquidity' },
     { ...poolContract, functionName: 'globalState' },
     { ...poolContract, functionName: 'fee' },
+    { ...poolContract, functionName: 'tickSpacing' },
   ])
 
   const liquidity = new BigNumber(poolInfo?.[0]).toString(10)
@@ -230,9 +234,11 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
   const price = new BigNumber(globalStates?.[0]).toString(10)
   const tick = Number(globalStates?.[1]) ?? 0
   const fee = Number(globalStates?.[2]) || poolInfo?.[2]
+  const tickSpacing = Number(poolInfo?.[3])
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
-  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]
+
+  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing), poolAddress]
 }
 
 const getTokens = (pool, chainId, getAsset) => {
@@ -253,21 +259,25 @@ const getMultiFusionState = async (contracts, pools, poolAddressList, chainId, g
   const liquidities = await callMulti(contracts.map(contract => ({ ...contract, functionName: 'liquidity' })))
   const globalStates = await callMulti(contracts.map(contract => ({ ...contract, functionName: 'globalState' })))
   const fees = await callMulti(contracts.map(contract => ({ ...contract, functionName: 'fee' })))
+  const tickspaces = await callMulti(contracts.map(contract => ({ ...contract, functionName: 'tickSpacing' })))
+
   const fusionStates = poolAddressList.map((poolAddress, index) => {
     const liquidity = new BigNumber(liquidities[index]).toString(10)
     const globalState = globalStates[index]
-    const fee = Number(globalState?.[2]) || Number(fees[index])
+    const tickSpacing = tickspaces[index]
 
+    const fee = Number(globalState?.[2]) || Number(fees[index])
     const price = new BigNumber(globalState?.[0]).toString(10)
     const tick = Number(globalState?.[1]) ?? 0
 
     const [token0, token1] = getTokens(pools[index], chainId, getAsset)
 
-    if (!token0 || !token1 || !fee || !price || !liquidity) {
+    if (!token0 || !token1 || !fee || !price || !liquidity || !tickSpacing) {
       return [PoolState.NOT_EXISTS, null, poolAddress]
     }
 
-    return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]
+    const pool = new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing)
+    return [PoolState.EXISTS, pool, poolAddress]
   })
 
   return fusionStates

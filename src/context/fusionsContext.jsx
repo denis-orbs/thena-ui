@@ -31,6 +31,16 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
     })),
   )
 
+  const tickSpacings = await callMulti(
+    fusionPairs.map(pool => ({
+      address: pool.address,
+      abi: pool.version === 2 ? poolAbi : newPoolAbi,
+      functionName: 'tickSpacing',
+      args: [],
+      chainId: _chainId,
+    })),
+  )
+
   return fusionPairs.map((ele, idx) => ({
     version: ele.version,
     address: ele.address,
@@ -40,6 +50,7 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
       tick: Number(globalStates[idx][1]),
       fee: Number(globalStates[idx][2]),
     },
+    tickSpacing: Number(tickSpacings[idx]),
   }))
 }
 
