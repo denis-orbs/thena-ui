@@ -542,7 +542,7 @@ export const useIchiManageV3 = () => {
         return
       }
 
-      if (!amountToApprove.gt(0)) {
+      if (amountToApprove.gt(0)) {
         if (!(await writeTxn(key, approveId, vaultContract, 'approve', [farmingAddress, maxUint256]))) {
           setPending(false)
           return
@@ -553,7 +553,7 @@ export const useIchiManageV3 = () => {
 
       // Stake LP
       const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
-      if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [lpBalance, account]))) {
+      if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [toWei(amount).toFixed(0), account]))) {
         setPending(false)
         return
       }
