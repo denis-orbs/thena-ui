@@ -120,7 +120,7 @@ export default function CreateWeightedPoolPage() {
       (tokensSelected || []).map(token => ({
         token,
         lock: false,
-        weight: 0,
+        weight: null,
       })),
     )
   }, [tokensSelected])

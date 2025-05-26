@@ -125,6 +125,7 @@ export default function ActivePriceRangeChart({
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
               southHandleColor={styles.brush.handle.south}
+              disableColor={styles.disabled}
               setIsOutOfView={setIsOutOfView}
               isFullRange={isFullRange}
               setCurrentHover={setCurrentHover}

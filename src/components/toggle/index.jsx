@@ -9,7 +9,7 @@ function Toggle({ className, onChange, toggleId, label, checked, disabled = fals
   const t = useTranslations()
 
   return (
-    <div className={cn('flex items-center gap-2.5', className)}>
+    <div className={cn('flex items-center gap-2.5 max-md:mt-2', className)}>
       <label htmlFor={toggleId} className='relative inline-flex cursor-pointer items-center'>
         <input
           onChange={onChange}

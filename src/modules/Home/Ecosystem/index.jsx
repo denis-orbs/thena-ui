@@ -29,7 +29,7 @@ const partnerLogos = [
 const auditLogos = [
   { url: '/images/home/ecosystem/audits/openzeppelin.svg' },
   { url: '/images/home/ecosystem/audits/peckshield.svg' },
-  { url: '/images/home/ecosystem/audits/Hacken.png', icon: 'hacken' },
+  { url: '/images/home/ecosystem/audits/Hacken.png', icon: 'hacken', width: 'w-[152px]' },
 ]
 const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
 const communityLogos = [
@@ -115,6 +115,7 @@ function Ecosystem() {
                   logo.url.endsWith('Algebra.png') ? 'h-[47px] w-[188px]' : '',
                   logo.url.endsWith('EtherFi.png') ? 'h-[56px] w-[114px]' : '',
                   logo.link ? 'cursor-pointer' : '',
+                  logo.width,
                 )}
                 src={logo.url}
                 alt={`Logo ${index + 1}`}

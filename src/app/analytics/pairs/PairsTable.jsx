@@ -50,7 +50,7 @@ const sortOptions = [
   },
 ]
 
-export default function PairsTable({ data, hidePagination = false }) {
+export default function PairsTable({ data, hidePagination = false, backUrlNumber }) {
   const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
@@ -123,7 +123,7 @@ export default function PairsTable({ data, hidePagination = false }) {
         dayFees: <Paragraph>${formatAmount(item.dayFees)}</Paragraph>,
         weekFees: <Paragraph>${formatAmount(item.weekFees)}</Paragraph>,
         onRowClick: () => {
-          push(`/analytics/pairs/${item.address}`)
+          push(`/analytics/pairs/${item.address}?back=${backUrlNumber}`)
         },
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps

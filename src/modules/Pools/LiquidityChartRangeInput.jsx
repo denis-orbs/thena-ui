@@ -1,10 +1,11 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 import { batch } from 'react-redux'
 
 import { Chart } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/Chart'
 import { useDensityChartData } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/hooks'
 import Spinner from '@/components/spinner'
-import { TextHeading } from '@/components/typography'
+import { NewTextHeading, TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 
@@ -13,6 +14,17 @@ const ZOOM_LEVEL = {
   initialMax: 1.05,
   min: 0.00001,
   max: 20,
+}
+
+function ChartEmptyContent({ children, label, height, t }) {
+  return (
+    <div className='flex w-full flex-col'>
+      {label && <NewTextHeading className='items-start text-base md:text-xl'>{t(label)}</NewTextHeading>}
+      <div className='flex items-center justify-center' style={{ height: `${height}px` }}>
+        {children}
+      </div>
+    </div>
+  )
 }
 
 export const DEFAULT_LOCALE = 'en-US'
@@ -47,7 +59,12 @@ export default function LiquidityChartRangeInput({
   width = 576,
   height = 221,
 }) {
-  const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+  const t = useTranslations()
+
+  const isSorted = useMemo(
+    () => currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped),
+    [currencyA, currencyB],
+  )
 
   const { isLoading, error, formattedData } = useDensityChartData({
     currencyA,
@@ -117,13 +134,21 @@ export default function LiquidityChartRangeInput({
   return (
     <div className={cn('flex w-full items-center justify-center overflow-hidden', `min-h-[${height}px]`)}>
       {isUninitialized ? (
-        <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
+        <ChartEmptyContent t={t} label={label} height={height}>
+          <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
+        </ChartEmptyContent>
       ) : isLoading ? (
-        <Spinner />
+        <ChartEmptyContent t={t} label={label} height={height}>
+          <Spinner />
+        </ChartEmptyContent>
       ) : error ? (
-        <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
+        <ChartEmptyContent t={t} label={label} height={height}>
+          <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
+        </ChartEmptyContent>
       ) : !formattedData || formattedData.length === 0 || !price ? (
-        <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
+        <ChartEmptyContent t={t} label={label} height={height}>
+          <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
+        </ChartEmptyContent>
       ) : (
         <div className='relative w-full'>
           <Chart

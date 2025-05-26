@@ -18,16 +18,18 @@ import { useChainSettings } from '@/state/settings/hooks'
 function SwapModal({
   inputCurrency: inputCurrencyParam,
   outputCurrency: outputCurrencyParam,
+  toAsset: toAssetFixed = null,
   open,
   setOpen,
   disabledChangeOutputCurrency = false,
+  onSwapSuccess = () => {},
 }) {
   const searchParams = useSearchParams()
 
   const [inputCurrency, setInputCurrency] = useState(inputCurrencyParam)
   const [outputCurrency, setOutputCurrency] = useState(outputCurrencyParam)
   const [fromAsset, setFromAsset] = useState(null)
-  const [toAsset, setToAsset] = useState(null)
+  const [toAsset, setToAsset] = useState(toAssetFixed)
   const [swapType, setSwapType] = useState(searchParams.get('swapType') || SWAP_TYPES.SWAP)
 
   const { networkId } = useChainSettings()
@@ -63,15 +65,15 @@ function SwapModal({
       ? assetList.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
       : null
 
-    const toCurrency = outputCurrency
-      ? assetList.find(asset => asset.address.toLowerCase() === outputCurrency.toLowerCase())
-      : null
+    const toCurrency =
+      toAssetFixed ||
+      (outputCurrency ? assetList.find(asset => asset.address.toLowerCase() === outputCurrency.toLowerCase()) : null)
 
     return {
       from: fromCurrency,
       to: toCurrency,
     }
-  }, [assets, localTokens, inputCurrency, outputCurrency])
+  }, [assets, localTokens, inputCurrency, outputCurrency, toAssetFixed])
 
   const isWrap = useMemo(() => {
     if (
@@ -142,6 +144,7 @@ function SwapModal({
             disabledChangeOutputCurrency={disabledChangeOutputCurrency}
             setSwapType={setSwapType}
             swapType={swapType}
+            onSwapSuccess={onSwapSuccess}
           />
         )}
         {networkId === ChainId.OPBNB && (
@@ -156,6 +159,7 @@ function SwapModal({
             onWrap={onWrap}
             onUnwrap={onUnwrap}
             wrapPending={wrapPending}
+            onSwapSuccess={onSwapSuccess}
           />
         )}
       </div>

@@ -44,23 +44,25 @@ export function PairBasicInfo({ pair }) {
     <div className='flex justify-between gap-2'>
       <Box
         className={cn(
-          'w-full justify-between gap-x-4 !py-3 px-4 max-md:grid max-md:grid-cols-2 md:flex',
+          'w-full justify-between gap-x-4 border border-neutral-600 !py-3 px-4 max-md:grid max-md:grid-cols-2 md:flex',
           !isMdDown && 'gap-y-4',
         )}
       >
-        <div className='flex flex-col gap-2 md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+        <div className='flex flex-col gap-2 md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             {computedPair?.apr ?? '0%'}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
             {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
           </Paragraph>
         </div>
-        <div className='flex flex-col gap-2 md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+        <div className='flex flex-col gap-2 md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
+            {t('Volume (24h)')}
+          </Paragraph>
         </div>
 
         <motion.div
@@ -70,33 +72,35 @@ export function PairBasicInfo({ pair }) {
           className='col-span-2 overflow-hidden bg-neutral-900 md:hidden'
         >
           <div className={cn('mt-4 grid grid-cols-2 gap-4')}>
-            <div className='flex flex-col gap-2 md:gap-3'>
-              <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+            <div className='flex flex-col gap-2 md:gap-1'>
+              <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
                 ${formatAmount(pair?.dayFees)}
               </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
+                {t('Fees (24h)')}
+              </Paragraph>
             </div>
-            <div className='flex flex-col gap-2 md:gap-3'>
-              <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+            <div className='flex flex-col gap-2 md:gap-1'>
+              <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
                 ${formatAmount(computedPair?.tvlUSD)}
               </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
             </div>
           </div>
         </motion.div>
 
-        <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+        <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(pair?.dayFees)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('Fees (24h)')}</Paragraph>
         </div>
 
-        <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-3xl'>
+        <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
             ${formatAmount(computedPair?.tvlUSD)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
         </div>
       </Box>
 

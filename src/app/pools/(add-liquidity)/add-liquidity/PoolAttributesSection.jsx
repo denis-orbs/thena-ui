@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Box from '@/components/box'
-import { NewTextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
@@ -12,6 +12,11 @@ import { InfoIcon } from '@/svgs'
 export function PoolAttributesSection({ strategy, pair, className }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    if (!pair) setShow(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(pair)])
 
   return (
     <div className='flex w-full flex-col'>
@@ -49,11 +54,20 @@ export function PoolAttributesSection({ strategy, pair, className }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className='mt-2 w-full'>
-          {pair?.type === PAIR_TYPES.LSD ? (
-            <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+        <div className='mt-2 w-full xl:mt-4'>
+          {pair ? (
+            <>
+              {pair?.type === PAIR_TYPES.LSD ? (
+                <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+              ) : (
+                <>{pair && <NormalPoolAttributes pool={pair} />}</>
+              )}
+            </>
           ) : (
-            <>{pair && <NormalPoolAttributes pool={pair} />}</>
+            <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
+              <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
+              <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+            </div>
           )}
         </div>
       </motion.div>

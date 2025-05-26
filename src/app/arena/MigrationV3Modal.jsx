@@ -44,7 +44,7 @@ function MigrationV3Modal({ keyOpen, title = '', titleStyle, showHeadModal = tru
     >
       <ModalBody className='relative lg:py-[80px]'>
         <div className='he mx-auto flex  min-h-[274px] flex-col items-center gap-3 text-center lg:w-[744px]'>
-          <TextHeading className='font-archia text-4xl text-neutral-50'>Thena is migrating from V2 to V3</TextHeading>
+          <TextHeading className='font-archia text-4xl text-neutral-50'>THENA is migrating from V2 to V3</TextHeading>
           <TextSubHeading className='flex flex-col gap-2 text-[16px] text-neutral-300 lg:text-[18px]'>
             <span>
               For the current epoch (May 22nd to May 29th), V2 gauges are still active and emissions continue as usual.

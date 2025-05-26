@@ -293,6 +293,9 @@ export const getDisplayedStrategy = (strategy, version = 3) => {
   const str = strategy.replace(/_(Farming|SwapFee)$/, '').replace('_', ' ')
 
   if (GAMMA_TYPES.includes(strategy)) {
+    if (strategy === 'CL_Stable_Farming') {
+      return 'Gamma Stable'
+    }
     return `Gamma ${str}`
   }
 

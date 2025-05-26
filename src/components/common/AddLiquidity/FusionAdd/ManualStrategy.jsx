@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -21,7 +21,7 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { TransferIcon, WarningTriangleIcon } from '@/svgs'
+import { TransferIcon, WarningTriangleYellowIcon } from '@/svgs'
 
 import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
 import { PresetRanges } from '../components/PresetRange'
@@ -38,19 +38,19 @@ function ManualStrategy({
   isEarnFees,
   setFullRangeWarningShown,
   fullRangeWarningShown,
+  setLastPrice = () => {},
 }) {
+  const dispatch = useDispatch()
   const t = useTranslations()
-  // const { isViewDown } = useMediaQuery('down', 640)
-  // const { isViewUp } = useMediaQuery('up', 460)
-
-  // const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
-
-  const stableAssets = useStableTokens()
   const { isReverse } = useSelector(state => state.fusion)
 
+  const stableAssets = useStableTokens()
+  const { startPriceTypedValue } = useV3MintState()
+  const activePreset = useActivePreset()
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
-  const [lastPrice, setLastPrice] = useState(null)
+  const { APRs } = useAprStore()
+
   const [baseCurrency, quoteCurrency] = useMemo(
     () =>
       position
@@ -61,16 +61,12 @@ function ManualStrategy({
     [currencyA, currencyB, isReverse, position],
   )
 
-  const { APRs } = useAprStore()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
+
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
-
-  const dispatch = useDispatch()
-  const activePreset = useActivePreset()
-  const { startPriceTypedValue } = useV3MintState()
 
   const { onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
@@ -114,20 +110,6 @@ function ManualStrategy({
     [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, setFullRangeWarningShown, price],
   )
 
-  // const currentPrice = useMemo(() => {
-  //   if (position) return position.currentPrice
-  //   if (!mintInfo.price) return
-
-  //   const _price = mintInfo.invertPrice
-  //     ? parseFloat(mintInfo.price.invert().toSignificant(5))
-  //     : parseFloat(mintInfo.price.toSignificant(5))
-
-  //   if (Number(_price) <= 0.0001) {
-  //     return '< 0.0001'
-  //   }
-  //   return `${_price}`
-  // }, [position, mintInfo.price, mintInfo.invertPrice])
-
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
     dispatch(setInitialTokenPrice({ typedValue: '' }))
@@ -142,12 +124,6 @@ function ManualStrategy({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    if (!startPriceTypedValue && lastPrice) {
-      onStartPriceInput(`${lastPrice}`)
-    }
-  }, [lastPrice, onStartPriceInput, startPriceTypedValue])
-
   return (
     <>
       <div className='space-y-4'>
@@ -155,7 +131,7 @@ function ManualStrategy({
           <div className='flex flex-col gap-4'>
             <WarningStartingPrice />
 
-            <div className='flex items-end gap-2 md:gap-8'>
+            <div className='flex items-end justify-between gap-2 md:gap-8'>
               <div className='flex w-full max-w-72 flex-col gap-1'>
                 <div className='flex items-center justify-between'>
                   <Paragraph className='text-xs font-medium text-neutral-50 md:text-base'>
@@ -193,7 +169,10 @@ function ManualStrategy({
                 <EmphasisIconButton
                   className='size-6 rounded-[4px] md:size-11 md:rounded-lg'
                   Icon={TransferIcon}
-                  onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
+                  onClick={() => {
+                    resetState()
+                    dispatch(updateIsReverse({ isReverse: !isReverse }))
+                  }}
                 />
                 <CircleImage
                   className='size-6 outline outline-[#1C2027] md:size-9'
@@ -206,20 +185,20 @@ function ManualStrategy({
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+          <div className={cn('flex gap-4 rounded-lg border border-warn-900 bg-warn-950 px-5 py-4')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-              <WarningTriangleIcon className='size-full' />
+              <WarningTriangleYellowIcon className='size-full stroke-warn-600' />
             </div>
-            <div className='flex flex-col gap-2'>
-              <NewTextHeading className='!text-xl font-medium text-error-100'>{t('OUT OF RANGE')}</NewTextHeading>
-              <Paragraph className='text-base text-error-100'>{t('OUT OF RANGE description')}</Paragraph>
+            <div className='flex flex-col gap-1'>
+              <NewTextHeading className='!text-xl font-medium text-warn-100'>{t('OUT OF RANGE')}</NewTextHeading>
+              <Paragraph className='!text-base leading-5 text-warn-100'>{t('OUT OF RANGE description')}</Paragraph>
             </div>
           </div>
         ) : (
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:px-5 md:py-4',
+                'mt-4 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -279,7 +258,7 @@ function ManualStrategy({
       {strategy && (
         <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
-            <div className='mt-0 flex flex-col xl:hidden'>
+            <div className='mt-4 flex flex-col xl:hidden'>
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
@@ -301,32 +280,7 @@ function ManualStrategy({
                 idChart='mobile-chart-price-range'
               />
             </div>
-            {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
-              <TextSubHeading className='leading-5'>
-                {t('Current Price: [price] [symbolA] [symbolB]', {
-                  price: currentPrice,
-                  symbolA: unwrappedSymbol(quoteCurrency),
-                  symbolB: unwrappedSymbol(baseCurrency),
-                })}
-              </TextSubHeading>
-            </div> */}
           </div>
-
-          {/* <div className='block 2xl:hidden'>
-            <LiquidityChartRangeInput
-              currencyA={baseCurrency ?? undefined}
-              currencyB={quoteCurrency ?? undefined}
-              feeAmount={mintInfo.dynamicFee}
-              ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-              price={price ? parseFloat(price) : undefined}
-              priceLower={position?.priceLower ?? priceLower}
-              priceUpper={position?.priceUpper ?? priceUpper}
-              onLeftRangeInput={onLeftRangeInput}
-              onRightRangeInput={onRightRangeInput}
-              interactive={false}
-              showZoom={false}
-            />
-          </div> */}
 
           {!position && (
             <RangeSelector

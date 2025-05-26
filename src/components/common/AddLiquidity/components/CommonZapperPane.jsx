@@ -304,7 +304,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
-          <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
             {t('Cancel')}
           </EmphasisButton>
 

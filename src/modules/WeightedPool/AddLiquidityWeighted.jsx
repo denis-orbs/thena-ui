@@ -18,7 +18,6 @@ import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { useTokenColor } from '@/hooks/useTokenColor'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
@@ -39,7 +38,6 @@ function AddLiquidityWeighted({ pool }) {
   const debounceTimeout = useRef(null)
   const windowSize = useWindowSize()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
-  const { renderBackgroundColors } = useTokenColor()
   const {
     onAddLiquiditySingleToken,
     onAddLiquidityAllToken,
@@ -51,7 +49,6 @@ function AddLiquidityWeighted({ pool }) {
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.ALL)
   const [slippage, setSlippage] = useState(0.5)
   const [amountDeposit, setAmountDeposit] = useState('')
-  const [colors, setColors] = useState([])
   const [tokensData, setTokensData] = useState([])
   const [tokenDeposit, setTokenDeposit] = useState(null)
   const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
@@ -59,7 +56,6 @@ function AddLiquidityWeighted({ pool }) {
   const [isCheckError, setIsCheckError] = useState(false)
 
   const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
-
   const isLaptop = useMemo(() => windowSize.width > 1024, [windowSize.width])
 
   const toggleDepositType = useMemo(
@@ -213,15 +209,6 @@ function AddLiquidityWeighted({ pool }) {
   }, [calcMinBPT])
 
   useEffect(() => {
-    renderBackgroundColors(
-      (pool?.tokens || []).map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/')),
-    ).then(result => {
-      setColors(result)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool?.tokens?.length, renderBackgroundColors])
-
-  useEffect(() => {
     const poolTokens = pool?.tokens || []
 
     setTokensData(tokens => {
@@ -247,8 +234,8 @@ function AddLiquidityWeighted({ pool }) {
       <div className='space-y-2'>
         <div className='flex flex-row gap-4 lg:gap-8'>
           <GroupIconTokens
-            height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
-            width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 48}
+            height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
+            width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
             tokens={pool?.tokens || []}
             classNames={{
               images: 'size-6 lg:size-10 xl:size-[64px]',
@@ -257,8 +244,9 @@ function AddLiquidityWeighted({ pool }) {
           <NewTextHeading
             style={{
               lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
-              fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
+              fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 36}px`,
             }}
+            className='whitespace-normal text-wrap break-all'
           >
             {pool?.symbol}
           </NewTextHeading>
@@ -284,12 +272,12 @@ function AddLiquidityWeighted({ pool }) {
             className='overflow-hidden'
           >
             <div className='mt-4 block w-full bg-neutral-900 xl:hidden'>
-              <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
+              <LiquidityPoolInfo pool={pool} isMobile />
             </div>
           </motion.div>
         </div>
       </div>
-      <div className='grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-8'>
+      <div className='grid gap-4 max-xl:grid-cols-1 xl:grid-cols-add-liquidity-layout'>
         <div className='w-full space-y-4'>
           <div className='flex h-11 flex-col justify-end max-xl:hidden'>
             <NewTextSubHeading className='!text-2xl'>{t('Weighted')}</NewTextSubHeading>
@@ -308,23 +296,23 @@ function AddLiquidityWeighted({ pool }) {
             {depositType === DEPOSIT_TYPE.ALL && (
               <div
                 className={cn(
-                  'grid grid-cols-1 gap-4 lg:grid-cols-2 3xl:grid-cols-3',
-                  (tokensData || []).length <= 2 && '3xl:grid-cols-2',
+                  'grid grid-cols-1 gap-2 lg:grid-cols-2',
+                  (tokensData || []).length <= 2 && 'xl:grid-cols-2',
                 )}
               >
                 {(tokensData || []).map((token, idx) => (
-                  <div className='flex flex-col gap-2'>
-                    <InputTokenMemo
-                      key={token?.address}
-                      token={token}
-                      autoFocus={idx === 0}
-                      amount={token.amount}
-                      onAmountChange={value => handleAmountChange(value, token)}
-                      alowDouble
-                      weight={token.weight}
-                      isCheckError={isCheckError}
-                    />
-                  </div>
+                  <InputTokenMemo
+                    key={`${token?.address}_${idx}`}
+                    token={token}
+                    autoFocus={idx === 0}
+                    amount={token.amount}
+                    onAmountChange={value => handleAmountChange(value, token)}
+                    alowDouble
+                    weight={token.weight}
+                    isCheckError={isCheckError}
+                    isSmall
+                    showTitle={false}
+                  />
                 ))}
               </div>
             )}
@@ -344,6 +332,7 @@ function AddLiquidityWeighted({ pool }) {
                     (isDouble ? balance.lt(amountDeposit) : Number(amountDeposit) > Number(tokenDeposit.balance))) &&
                   isCheckError
                 }
+                isSmall
               />
             )}
           </div>
@@ -384,7 +373,7 @@ function AddLiquidityWeighted({ pool }) {
         </div>
         <div className='hidden w-full space-y-4 xl:block'>
           <PoolAttributesSection pair={pool} />
-          <LiquidityPoolInfo pool={pool} colors={colors} />
+          <LiquidityPoolInfo pool={pool} />
         </div>
       </div>
     </div>

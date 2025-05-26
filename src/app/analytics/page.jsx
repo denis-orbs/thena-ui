@@ -12,6 +12,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
@@ -49,7 +50,10 @@ export default function AnalyticsPage() {
   }, [networkId, stats])
 
   return (
-    <section className='layout'>
+    <LayoutWithBackButton
+      hiddenBackButton
+      className='!pt-6 xl:mx-12 2xl:mx-auto 2xl:w-[1344px] 3xl:w-[1464px] 3xl:!pt-8'
+    >
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <h2>{t('Analytics')}</h2>
@@ -125,28 +129,28 @@ export default function AnalyticsPage() {
             <TextHeading>{t('Top Assets')}</TextHeading>
             <EmphasisButton
               onClick={() => {
-                push('/analytics/tokens')
+                push('/analytics/tokens?back=3')
               }}
             >
               {t('View All')}
             </EmphasisButton>
           </div>
-          <TokensTable data={tokens} hidePagination />
+          <TokensTable backUrlNumber={3} data={tokens} hidePagination />
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <TextHeading>{t('Top Pairs')}</TextHeading>
             <EmphasisButton
               onClick={() => {
-                push('/analytics/pairs')
+                push('/analytics/pairs?back=3')
               }}
             >
               {t('View All')}
             </EmphasisButton>
           </div>
-          <PairsTable data={pairs} hidePagination />
+          <PairsTable backUrlNumber={3} data={pairs} hidePagination />
         </div>
       </div>
-    </section>
+    </LayoutWithBackButton>
   )
 }

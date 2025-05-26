@@ -10,9 +10,10 @@ import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
 import { newPoolAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
+import { useCopyText } from '@/hooks/useCopyText'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { LinkExternalPrimaryIcon } from '@/svgs'
+import { CheckIcon, CopyArenaIcon, LinkExternalPrimaryIcon } from '@/svgs'
 
 export function PoolAttributesCL({ strategy, pool }) {
   const isAutomatic = !MANUAL_TYPES.includes(strategy.title)
@@ -20,6 +21,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { networkId } = useChainSettings()
   const { locale } = useLocaleSettings()
+  const { onCopy, copied } = useCopyText()
 
   const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
 
@@ -98,215 +100,223 @@ export function PoolAttributesCL({ strategy, pool }) {
   )
 
   return (
-    <div className='rounded-lg border border-dashed border-primary-500'>
-      <div className='space-y-4 rounded-lg bg-primary-950 p-4 text-[14px] font-normal leading-5'>
-        {/* Pool Name */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
-          <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
-        </div>
-
-        {/* Pool Symbol */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Symbol')}:</div>
-          <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
-        </div>
-
-        {/* Pool Type */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Type')}:</div>
-          <div className='col-span-4 flex items-center gap-1 text-neutral-50'>
-            <Link
-              className='flex items-center gap-1 text-primary-500'
-              target='_blank'
-              href='https://github.com/cryptoalgebra/Algebra/tree/integral-v1.2'
-            >
-              {t('Type attribute CL pool')}
-              <div className='item-center flex cursor-pointer gap-1'>
-                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-              </div>
-            </Link>
-          </div>
-        </div>
-        {isAutomatic && (
-          <>
-            {/* Strategy Provider */}
-            <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-50'>{t('Strategy Provider')}:</div>
-              <Link
-                target='_blank'
-                href={linkDocsStrategy[0]}
-                className='col-span-4 flex items-center gap-1 text-primary-500'
-              >
-                <span>
-                  {ICHI_TYPES.includes(strategy.title)
-                    ? 'Ichi'
-                    : NARROW_TYPES.includes(strategy.title)
-                      ? 'Gamma'
-                      : 'Unknown'}
-                </span>
-                <div className='item-center flex cursor-pointer gap-1'>
-                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-                </div>
-              </Link>
-            </div>
-
-            {/* Strategy Type */}
-            <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-50'>{t('Strategy Type')}:</div>
-              <Link
-                target='_blank'
-                href={linkDocsStrategy[1]}
-                className='col-span-4 flex items-center gap-1 text-primary-500'
-              >
-                <span>
-                  {ICHI_TYPES.includes(strategy.title)
-                    ? 'Single deposit'
-                    : NARROW_TYPES.includes(strategy.title)
-                      ? 'Narrow'
-                      : 'Unknown'}
-                </span>
-                <div className='item-center flex cursor-pointer gap-1'>
-                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-                </div>
-              </Link>
-            </div>
-          </>
-        )}
-
-        {/* Pool Deployer */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Pool Deployer')}:</div>
-          <div className='col-span-4 text-neutral-50'>
-            <div
-              onClick={() => goScan(networkId, poolDeployer)}
-              className='item-center flex cursor-pointer gap-1 text-primary-500'
-            >
-              <span>{formatAddress(poolDeployer)}</span>
-              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-            </div>
-          </div>
-        </div>
-
-        {/* Pool Address */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
-          <div className='col-span-4 text-neutral-50'>
-            <div
-              onClick={() => goScan(networkId, strategy.address)}
-              className='item-center flex cursor-pointer gap-1 text-primary-500'
-            >
-              <span>{formatAddress(strategy.address)}</span>
-              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-            </div>
-          </div>
-        </div>
-
-        {/* Pool Plugin */}
-        {Boolean(pool.plugInAddress) && (
+    <div className='rounded-lg xl:bg-neutral-900 xl:p-4'>
+      <div className='rounded-lg border border-dashed border-primary-500'>
+        <div className='space-y-4 rounded-lg bg-primary-950 p-4 text-[14px] font-normal leading-5'>
+          {/* Pool Name */}
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-50'>{t('Pool Plugin')}:</div>
+            <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
+            <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
+          </div>
+
+          {/* Pool Symbol */}
+          <div className='grid grid-cols-7'>
+            <div className='col-span-3 text-neutral-50'>{t('Symbol')}:</div>
+            <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
+          </div>
+
+          {/* Pool Type */}
+          <div className='grid grid-cols-7'>
+            <div className='col-span-3 text-neutral-50'>{t('Type')}:</div>
+            <div className='col-span-4 flex items-center gap-1 text-neutral-50'>
+              <Link
+                className='flex items-center gap-1 text-primary-500'
+                target='_blank'
+                href='https://github.com/cryptoalgebra/Algebra/tree/integral-v1.2'
+              >
+                {t('Type attribute CL pool')}
+                <div className='item-center flex cursor-pointer gap-1'>
+                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                </div>
+              </Link>
+            </div>
+          </div>
+          {isAutomatic && (
+            <>
+              {/* Strategy Provider */}
+              <div className='grid grid-cols-7'>
+                <div className='col-span-3 text-neutral-50'>{t('Strategy Provider')}:</div>
+                <Link
+                  target='_blank'
+                  href={linkDocsStrategy[0]}
+                  className='col-span-4 flex items-center gap-1 text-primary-500'
+                >
+                  <span>
+                    {ICHI_TYPES.includes(strategy.title)
+                      ? 'Ichi'
+                      : NARROW_TYPES.includes(strategy.title)
+                        ? 'Gamma'
+                        : 'Unknown'}
+                  </span>
+                  <div className='item-center flex cursor-pointer gap-1'>
+                    <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                  </div>
+                </Link>
+              </div>
+
+              {/* Strategy Type */}
+              <div className='grid grid-cols-7'>
+                <div className='col-span-3 text-neutral-50'>{t('Strategy Type')}:</div>
+                <Link
+                  target='_blank'
+                  href={linkDocsStrategy[1]}
+                  className='col-span-4 flex items-center gap-1 text-primary-500'
+                >
+                  <span>
+                    {ICHI_TYPES.includes(strategy.title)
+                      ? 'Single deposit'
+                      : NARROW_TYPES.includes(strategy.title)
+                        ? 'Narrow'
+                        : 'Unknown'}
+                  </span>
+                  <div className='item-center flex cursor-pointer gap-1'>
+                    <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                  </div>
+                </Link>
+              </div>
+            </>
+          )}
+
+          {/* Pool Deployer */}
+          <div className='grid grid-cols-7'>
+            <div className='col-span-3 text-neutral-50'>{t('Pool Deployer')}:</div>
             <div className='col-span-4 text-neutral-50'>
               <div
-                onClick={() => goScan(networkId, pool.plugInAddress)}
-                className='item-center flex cursor-pointer gap-1'
+                onClick={() => goScan(networkId, poolDeployer)}
+                className='item-center flex cursor-pointer gap-1 text-primary-500'
               >
-                <span>{pool.plugInAddress}</span>
+                <span>{formatAddress(poolDeployer)}</span>
                 <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
               </div>
             </div>
           </div>
-        )}
 
-        {/* Swap fees */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Swap fees')}:</div>
-          <div className='col-span-4 text-neutral-50'>
-            <span className='mr-1'>{strategy.title === 'CL_SwapFee' ? strategy?.fee : pool?.fee}%</span>
-            <span className={cn(plugInAddress && 'hidden')}>({t('editable by governance')})</span>
-
-            <Link
-              target='_blank'
-              className={cn(
-                'hidden text-primary-500',
-                plugInAddress && plugInAddress !== zeroAddress && 'inline-block',
-              )}
-              href={
-                feeType
-                  ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
-                  : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
-              }
-            >
-              {feeType ? '(Sliding)' : '(Adaptive)'}
-            </Link>
-          </div>
-        </div>
-
-        {strategy?.title === 'CL_SwapFee' && (
-          <>
-            <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-50'>{t('User Earnings')}:</div>
-              <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: userEarnFeePercent })}</div>
-            </div>
-
-            <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-50'>{t('Treasury Earnings')}:</div>
-              <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: treasuryFeePercent })}</div>
-            </div>
-          </>
-        )}
-
-        {/* Pool Access Control Roles */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-50'>{t('Pool Access Control Roles')}:</div>
-          <div className='col-span-4 text-neutral-50'>
-            <ul className='flex flex-col gap-1'>
-              <li>Pool Administrator:</li>
-              {poolAdministrators.map(addr => (
-                <div key={addr} className='flex flex-col'>
-                  <li>
-                    <Link
-                      className='flex items-center gap-1 text-primary-500'
-                      href={`${SCAN_URLS[networkId]}/address/${addr}`}
-                      target='_blank'
-                    >
-                      {formatAddress(addr)}
-                      <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-                    </Link>
-                  </li>
-                </div>
-              ))}
-            </ul>
-
-            <ul className='flex flex-col gap-1'>
-              <li>Plugin Administrator:</li>
-              {pluginAdministrators.map(addr => (
-                <div key={addr} className='flex'>
-                  <li>
-                    <Link
-                      className='flex items-center gap-1 text-primary-500'
-                      href={`${SCAN_URLS[networkId]}/address/${addr}`}
-                      target='_blank'
-                    >
-                      {formatAddress(addr)}
-                      <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
-                    </Link>
-                  </li>
-                </div>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Creation date */}
-        {createdAt ? (
+          {/* Pool Address */}
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-50'>{t('Creation date')}:</div>
-            <div className='col-span-4 text-neutral-50'>{createdAt}</div>
+            <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
+            <div className='col-span-4 text-neutral-50'>
+              <div
+                onClick={() => goScan(networkId, strategy.address)}
+                className='item-center flex cursor-pointer items-center gap-1 text-primary-500'
+              >
+                <span>{formatAddress(strategy.address)}</span>
+                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                <div
+                  onClick={e => onCopy(e, strategy.address, 'poolAddress-cl')}
+                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                >
+                  {copied === 'poolAddress-cl' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <></>
-        )}
+
+          {/* Pool Plugin */}
+          {Boolean(pool.plugInAddress) && (
+            <div className='grid grid-cols-7'>
+              <div className='col-span-3 text-neutral-50'>{t('Pool Plugin')}:</div>
+              <div className='col-span-4 text-neutral-50'>
+                <div
+                  onClick={() => goScan(networkId, pool.plugInAddress)}
+                  className='item-center flex cursor-pointer gap-1'
+                >
+                  <span>{pool.plugInAddress}</span>
+                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Swap fees */}
+          <div className='grid grid-cols-7'>
+            <div className='col-span-3 text-neutral-50'>{t('Swap fees')}:</div>
+            <div className='col-span-4 text-neutral-50'>
+              <span className='mr-1'>{strategy.title === 'CL_SwapFee' ? strategy?.fee : pool?.fee}%</span>
+              <span className={cn(plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+
+              <Link
+                target='_blank'
+                className={cn(
+                  'hidden text-primary-500',
+                  plugInAddress && plugInAddress !== zeroAddress && 'inline-block',
+                )}
+                href={
+                  feeType
+                    ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
+                    : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
+                }
+              >
+                {feeType ? '(Sliding)' : '(Adaptive)'}
+              </Link>
+            </div>
+          </div>
+
+          {strategy?.title === 'CL_SwapFee' && (
+            <>
+              <div className='grid grid-cols-7'>
+                <div className='col-span-3 text-neutral-50'>{t('User Earnings')}:</div>
+                <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: userEarnFeePercent })}</div>
+              </div>
+
+              <div className='grid grid-cols-7'>
+                <div className='col-span-3 text-neutral-50'>{t('Treasury Earnings')}:</div>
+                <div className='col-span-4 text-neutral-50'>{t('[fee] % (of fees)', { fee: treasuryFeePercent })}</div>
+              </div>
+            </>
+          )}
+
+          {/* Pool Access Control Roles */}
+          <div className='grid grid-cols-7'>
+            <div className='col-span-3 text-neutral-50'>{t('Pool Access Control Roles')}:</div>
+            <div className='col-span-4 text-neutral-50'>
+              <ul className='flex flex-col gap-1'>
+                <li>Pool Administrator:</li>
+                {poolAdministrators.map(addr => (
+                  <div key={addr} className='flex flex-col'>
+                    <li>
+                      <Link
+                        className='flex items-center gap-1 text-primary-500'
+                        href={`${SCAN_URLS[networkId]}/address/${addr}`}
+                        target='_blank'
+                      >
+                        {formatAddress(addr)}
+                        <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                      </Link>
+                    </li>
+                  </div>
+                ))}
+              </ul>
+
+              <ul className='flex flex-col gap-1'>
+                <li>Plugin Administrator:</li>
+                {pluginAdministrators.map(addr => (
+                  <div key={addr} className='flex'>
+                    <li>
+                      <Link
+                        className='flex items-center gap-1 text-primary-500'
+                        href={`${SCAN_URLS[networkId]}/address/${addr}`}
+                        target='_blank'
+                      >
+                        {formatAddress(addr)}
+                        <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                      </Link>
+                    </li>
+                  </div>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Creation date */}
+          {createdAt ? (
+            <div className='grid grid-cols-7'>
+              <div className='col-span-3 text-neutral-50'>{t('Creation date')}:</div>
+              <div className='col-span-4 text-neutral-50'>{createdAt}</div>
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -317,6 +327,7 @@ export function NormalPoolAttributes({ pool }) {
 
   const { networkId } = useChainSettings()
   const { locale } = useLocaleSettings()
+  const { onCopy, copied } = useCopyText()
 
   const createdAt = useMemo(() => {
     const date = new Date(pool.createdAt)
@@ -335,7 +346,7 @@ export function NormalPoolAttributes({ pool }) {
   }, [locale, pool.createdAt])
 
   return (
-    <div>
+    <div className='rounded-lg xl:bg-neutral-900 xl:p-4'>
       <div className='flex flex-col gap-2 rounded-lg border border-dashed border-primary-600 bg-primary-950 p-4 text-xs lg:text-sm'>
         {/* Pool name */}
         <div className='grid grid-cols-7'>
@@ -405,9 +416,15 @@ export function NormalPoolAttributes({ pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
           <div className='col-span-4 text-primary-500'>
-            <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
+            <div onClick={() => goScan(networkId, pool?.address)} className='flex cursor-pointer items-center gap-1'>
               <span>{formatAddress(pool?.address)}</span>
               <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+              <div
+                onClick={e => onCopy(e, pool?.address, 'poolAddress-normal')}
+                className='h-5 w-5 cursor-pointer stroke-neutral-200'
+              >
+                {copied === 'poolAddress-normal' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+              </div>
             </div>
           </div>
         </div>

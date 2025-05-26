@@ -33,6 +33,8 @@ function NewListings({
   defaultShow = false,
   isCollapse = true,
   size = 'default',
+  back,
+  tableBasic = false,
 }) {
   const t = useTranslations()
   const { push } = useRouter()
@@ -89,6 +91,9 @@ function NewListings({
         if (titleSub === 'Correlated_Farming') {
           return ['Gamma Correlated', '']
         }
+        if (titleSub === 'CL_Stable_Farming') {
+          return ['Gamma Stable', '']
+        }
         return ['Gamma Narrow', titleSub.replace('_', ' ')]
       }
 
@@ -102,10 +107,6 @@ function NewListings({
         }
 
         return ['CL: Earn Fees', '']
-      }
-
-      if (titleSub === 'CL_Stable_Farming') {
-        return ['Gamma Stable', '']
       }
     }
 
@@ -357,23 +358,28 @@ function NewListings({
             className={cn('!size-8 p-2', size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!size-9 lg:w-fit')}
             classNames='[&>path]:group-hover:stroke-neutral-100 !size-4'
             Icon={BarChartIcon}
-            onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+            onClick={() => {
+              let url = `/analytics/pairs/${pool?.address}`
+              if (back) url += `?back=${back}`
+              push(url)
+            }}
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
             className={cn(
               '!h-8 w-full p-2 text-xs lg:w-fit lg:text-sm',
-              size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
               size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!h-9 lg:w-fit',
             )}
             onClick={e => {
               e.stopPropagation()
               e.preventDefault()
-              push(
+
+              let url =
                 pool.type === PAIR_TYPES.WEIGHTED
                   ? `/pools/add-liquidity/weighted/${pool.address}`
-                  : `/pools/add-liquidity?step=3&poolAddress=${pool.address}`,
-              )
+                  : `/pools/add-liquidity?step=3&poolAddress=${pool.address}`
+              if (back) url += pool.type === PAIR_TYPES.WEIGHTED ? `?back=${back}` : `&back=${back}`
+              push(url)
             }}
           >
             <Paragraph
@@ -381,18 +387,19 @@ function NewListings({
             >
               {t('Deposit')}
             </Paragraph>
-            <CoinsStackedIcon
-              className={cn('hidden size-4', size === 'small' && pool.type === PAIR_TYPES.WEIGHTED && 'max-md:block')}
-            />
+            <CoinsStackedIcon className={cn('hidden size-4', size === 'small' && 'max-md:block')} />
           </EmphasisButton>
         </div>
       ),
       className: cn('items-center', classNames?.rowItem),
       onRowClick: () => {
-        push(`/analytics/pairs/${pool.address}`)
+        let url = `/analytics/pairs/${pool?.address}`
+        if (back) url += `?back=${back}`
+        push(url)
       },
     }))
   }, [
+    back,
     classNames?.rowItem,
     getDisplayedTitleAndSubTitle,
     id,
@@ -426,6 +433,7 @@ function NewListings({
               cellItemLabel: classNames?.cellItemLabel,
               tableContainer: classNames?.tableContainer,
             }}
+            tableBasic={tableBasic}
           />
         </Collapse>
       ) : (
@@ -436,6 +444,7 @@ function NewListings({
           setSort={setSort}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          tableBasic={tableBasic}
         />
       )}
     </>

@@ -115,6 +115,9 @@ export default function PoolsPage() {
         if (title === 'Correlated_Farming') {
           return ['Gamma Correlated', '']
         }
+        if (title === 'CL_Stable_Farming') {
+          return ['Gamma Stable', '']
+        }
         return ['Gamma Narrow', title.replace('_', ' ')]
       }
 
@@ -128,10 +131,6 @@ export default function PoolsPage() {
         }
 
         return ['CL: Earn Fees', '']
-      }
-
-      if (title === 'CL_Stable_Farming') {
-        return ['Gamma Stable', '']
       }
     }
 
@@ -213,13 +212,10 @@ export default function PoolsPage() {
       ? res
       : res &&
           res.filter(item => {
-            const withSpace = item?.symbol?.replace('/', ' ') || ''
-            const withComma = item?.symbol?.replace('/', ',') || ''
-            return (
-              item?.symbol?.toLowerCase().includes(searchText.toLowerCase()) ||
-              withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
-              withComma.toLowerCase().includes(searchText.toLowerCase())
-            )
+            const symbol = item?.symbol?.toLowerCase() || ''
+            const tokens = symbol.split('/')
+            const searchTerms = searchText.toLowerCase().split(/[\s/,]+/)
+            return searchTerms.every(term => tokens.some(token => token.includes(term)))
           })
   }, [isInactive, filter, strategy, searchText, pairs, vaults])
 
@@ -494,7 +490,7 @@ export default function PoolsPage() {
               onClick={e => {
                 e.stopPropagation()
                 e.preventDefault()
-                push(`/analytics/pairs/${pool?.address}`)
+                push(`/analytics/pairs/${pool?.address}?back=1`)
               }}
               data-tooltip-id='analytics-tooltip'
             />
@@ -729,6 +725,7 @@ export default function PoolsPage() {
               pools={newListingsPool}
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
+              back={1}
             />
           )}
 
@@ -739,6 +736,7 @@ export default function PoolsPage() {
               pools={hotPools}
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
+              back={1}
             />
           )}
           <Table

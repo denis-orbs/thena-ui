@@ -280,7 +280,7 @@ export default function LockPage() {
           <NotConnected />
         )}
         <div ref={scrollRef}>
-          <p className='mb-10 text-3xl font-semibold'>{t('How it Works')}?</p>
+          <p className='mb-10 text-3xl font-semibold'>{t('How it Works')}</p>
           <div className='flex flex-col justify-between md:flex-row'>
             <HowItWorksItem
               icon={LockIcon}

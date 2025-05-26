@@ -1,5 +1,5 @@
-import { encodeSqrtRatioX96, nearestUsableTick, priceToClosestTick, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { JSBI, Price } from 'thena-sdk-core'
+import { encodeSqrtRatioX96, nearestUsableTick, priceToClosestTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 export function tryParsePrice(baseToken, quoteToken, value) {
   if (!baseToken || !quoteToken || !value) {

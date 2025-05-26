@@ -34,6 +34,7 @@ export function TokenAmountInput({
   classNames,
   isSmall = false,
   isInvalidAmount = false,
+  isSwapChainLink = false,
 }) {
   const assets = useAssets()
   const t = useTranslations()
@@ -142,7 +143,10 @@ export function TokenAmountInput({
           <input
             ref={inputRefer}
             type='number'
-            className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className={cn(
+              'w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400',
+              isSmall && '!text-sm',
+            )}
             placeholder='0.0'
             value={amount ?? ''}
             onChange={e => {
@@ -181,7 +185,7 @@ export function TokenAmountInput({
                   dropdownAlign='right'
                   optionWidth={optionWidth}
                   style={SELECT_TOKEN_STYLE.BADGE}
-                  allowDouble={Boolean(maxBalance)}
+                  allowDouble={Boolean(maxBalance) && !isSwapChainLink}
                   assetOptions={assetsSelect}
                   classNames={{ dropdown: '2xl:grid-cols-2' }}
                 />
@@ -203,7 +207,7 @@ export function TokenAmountInput({
                 'cursor-default',
               )}
             >
-              {maxBalance ? (
+              {maxBalance && !isSwapChainLink ? (
                 <IconGroup
                   className='-space-x-2'
                   classNames={{

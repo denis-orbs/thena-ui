@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
+import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 
 import { simulateCall } from '@/lib/contractActions'
@@ -155,7 +155,7 @@ export const useManualPositions = positions => {
 
         const totalLiquidity = fusion?.liquidity
         const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
-        const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
+        const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
         const feeAPR = tvl.gt(0)
           ? feeRatio
               .times(annualPoolFees)

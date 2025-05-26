@@ -168,8 +168,8 @@ export default function WeightedTransactionTable({ pair }) {
         isDesc: true,
       },
       ...pair.tokens.map(t => ({
-        label: t.symbol,
-        value: t.symbol,
+        label: t.symbol === 'BNB' ? 'WBNB' : t.symbol,
+        value: t.symbol === 'BNB' ? 'WBNB' : t.symbol,
         width: 'lg:w-[16%]',
         notTranslate: true,
         isDesc: true,

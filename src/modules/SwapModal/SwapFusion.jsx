@@ -37,6 +37,7 @@ export default function SwapFusion({
   setInputCurrency,
   setOutputCurrency,
   disabledChangeOutputCurrency,
+  onSwapSuccess = () => {},
 }) {
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
   const [isWarning, setIsWarning] = useState(false)
@@ -217,6 +218,7 @@ export default function SwapFusion({
             />
             <EmphasisIconButton
               className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              disabled={disabledChangeOutputCurrency}
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 setInputCurrency(toAsset.address)
@@ -284,7 +286,10 @@ export default function SwapFusion({
               } else if (isUnwrap) {
                 onUnwrap(parsedAmount?.toExact())
               } else {
-                swapCallback(mutateAssets)
+                swapCallback(() => {
+                  mutateAssets()
+                  onSwapSuccess()
+                })
               }
             }}
           >

@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
-import { useActivePreset } from '@/state/fusion/hooks'
+import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
@@ -71,12 +71,14 @@ export default function ChartPriceRangeInput({
   isCreate = false,
   height = 300,
   idChart = 'chart-price-range',
+  label = 'Liquidity range',
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
   const zoomRef = useRef(null)
-  const { isReverse } = useSelector(state => state.fusion)
   const windowSize = useWindowSize()
+  const { startPriceTypedValue } = useV3MintState()
+  const { isReverse } = useSelector(state => state.fusion)
 
   const [zoomFactor, setZoomFactor] = useState(1)
   const [boundaryPrices, setBoundaryPrices] = useState()
@@ -96,20 +98,15 @@ export default function ChartPriceRangeInput({
     [currencyA, currencyB],
   )
 
-  const [baseCurrency, quoteCurrency] = useMemo(
-    () => (isReverse ? [currencyB, currencyA] : [currencyA, currencyB]),
-    [isReverse, currencyB, currencyA],
-  )
-
   const {
     data: pairPrices = [],
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address,
-    token1Address: isReverse ? quoteCurrency?.wrapped?.address : baseCurrency?.wrapped?.address,
+    token0Address: currencyB?.wrapped?.address,
+    token1Address: currencyA?.wrapped?.address,
     timeWindow,
-    currentSwapPrice: { [isReverse ? baseCurrency?.wrapped?.address : quoteCurrency?.wrapped?.address]: price },
+    currentSwapPrice: { [currencyB?.wrapped?.address]: price },
   })
 
   const brushDomain = useMemo(() => {
@@ -364,15 +361,15 @@ export default function ChartPriceRangeInput({
   }, [enableScroll, minVisiblePrice, scrollIncrement])
 
   useEffect(() => {
-    if (pairPrices && pairPrices.length > 0) {
+    if (!startPriceTypedValue && pairPrices?.length > 0) {
       setLastPrice(pairPrices[pairPrices.length - 1]?.value)
     }
-  }, [pairPrices, setLastPrice])
+  }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className='text-base md:text-xl'>{t('Your Range against the Price')}</NewTextHeading>
+        <NewTextHeading className='text-base md:text-xl'>{t(label ?? 'Your Range against the Price')}</NewTextHeading>
         <div className='flex items-center gap-4 max-md:justify-between'>
           {showPeriod && <Tabs data={periods} />}
           <div className='flex gap-1'>
@@ -397,9 +394,9 @@ export default function ChartPriceRangeInput({
           </div>
         </div>
       </div>
-      {isFullRange && fullRangeWarningShown && <Warning className='mt-4 text-sm'>{t('Full range position')}</Warning>}
-      {outOfRange && <Warning className='mt-4 text-sm'>{t('Out range warning')}</Warning>}
-      {invalidRange && <Warning className='mt-4 text-sm'>{t('Invalid range warning')}</Warning>}
+      {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
+      {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
+      {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
       <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
         <div className='relative flex h-[235px] w-full items-center justify-center'>
           {isUninitialized ? (
@@ -456,8 +453,12 @@ export default function ChartPriceRangeInput({
                           styles={{
                             area: { selection: '#BD60BA80' },
                             brush: { handle: { south: '#F199EE', north: '#F199EE' } },
+                            disabled: {
+                              handle: { south: '#35243D', north: '#35243D' },
+                              line: { south: '#35243D', north: '#35243D' },
+                            },
                           }}
-                          interactive
+                          interactive={interactive}
                           brushLabels={brushLabelValue}
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}

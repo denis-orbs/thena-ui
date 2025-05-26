@@ -4,6 +4,7 @@ import { Doughnut } from 'react-chartjs-2'
 
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { PAIR_TYPES } from '@/constant'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
@@ -55,6 +56,8 @@ function getSecondsRelativeToThursdayUTC() {
 }
 
 function VotingChart({ data = [], className }) {
+  const { isMdDown } = useMediaQuery()
+
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const chartRef = useRef(null)
   const originalColors = useRef([])
@@ -102,7 +105,7 @@ function VotingChart({ data = [], className }) {
   ]
 
   // Generate background colors for pools
-  const poolColors = pools.map((pool, i) => (pool.label === 'Not voted' ? '#281B2E' : COLORS[i % COLORS.length]))
+  const poolColors = pools.map((pool, i) => (pool?.label === 'Not voted' ? '#281B2E' : COLORS[i % COLORS.length]))
 
   // Generate background colors for time
   const timeColors = timeData.map((_, i) => (i === 0 ? '#580055' : untilNextEpoch <= 120 ? '#F51C00' : '#281B2E'))
@@ -115,10 +118,10 @@ function VotingChart({ data = [], className }) {
               label: 'vote',
               data: pools.map(d => d.value),
               backgroundColor: poolColors,
-              borderWidth: 0,
-              spacing: pools.length === 1 ? 0 : 2,
+              borderWidth: pools.length === 1 ? 0 : isMdDown ? 1 : 2,
+              borderColor: '#1A121E',
               radius: '100%',
-              cutout: '87%',
+              cutout: isMdDown ? '87%' : '78%',
             }
           : {
               label: 'time',
@@ -126,7 +129,7 @@ function VotingChart({ data = [], className }) {
               backgroundColor: timeColors,
               borderWidth: 0,
               radius: '100%',
-              cutout: '87%',
+              cutout: isMdDown ? '87%' : '78%',
             },
       ],
     ],
@@ -176,7 +179,7 @@ function VotingChart({ data = [], className }) {
 
     return (
       <>
-        <div className='mb-2 h-8'>{isHoveringValid && pool.logo}</div>
+        <div className='mb-2 h-8'>{isHoveringValid && pool?.logo}</div>
 
         <div
           className={cn(
@@ -186,21 +189,21 @@ function VotingChart({ data = [], className }) {
         >
           {pools.length > 0
             ? isHoveringValid
-              ? `$${formatAmount(pool.rewards, true)}`
+              ? `$${formatAmount(pool?.rewards, true)}`
               : `$${formatAmount(expectedRewards, true)}`
             : 'NOT VOTED'}
         </div>
 
         <div className='flex min-h-[40px] flex-col text-sm text-neutral-500'>
           <span>{pools.length > 0 && 'Expected Rewards'}</span>
-          <span>{pools.length > 0 && isHoveringValid ? `${formatAmount(pool.weightPercent)}% vote power` : ''}</span>
+          <span>{pools.length > 0 && isHoveringValid ? `${formatAmount(pool?.weightPercent)}% vote power` : ''}</span>
         </div>
       </>
     )
   }
 
   return (
-    <div className={cn('relative h-[200px] w-[200px]', className)}>
+    <div className={cn('relative h-[224px] w-[224px]', className)}>
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-1 text-center'>
         {renderCenterContent()}
       </div>

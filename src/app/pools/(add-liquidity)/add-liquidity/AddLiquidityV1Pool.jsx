@@ -64,22 +64,41 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
           </NewTextHeading>
         </div>
       </div>
-      <div className='mb-4 flex items-center justify-between xl:hidden'>
-        <NewTextSubHeading className='text-xl md:text-2xl 2xl:text-3xl'>
-          {t((pair?.type || pairType) === PAIR_TYPES.STABLE ? 'Stable' : 'Classic')}
-        </NewTextSubHeading>
-        <div className='flex items-center'>
-          <i
-            onClick={() => setShowReserve(show => !show)}
-            className={cn(
-              'flex cursor-pointer items-center justify-center rounded-lg',
-              'size-8 min-w-8 md:size-11 md:min-w-11',
-              showReserve ? 'bg-neutral-600' : 'bg-neutral-900',
-            )}
-          >
-            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
-          </i>
+      <div className='mb-2 flex flex-col items-center justify-between xl:mb-4 xl:hidden'>
+        <div className='flex w-full flex-row justify-between gap-2'>
+          <NewTextSubHeading className='text-xl md:text-2xl 2xl:text-3xl'>
+            {t((pair?.type || pairType) === PAIR_TYPES.STABLE ? 'Stable' : 'Classic')}
+          </NewTextSubHeading>
+          <div className='flex flex-col items-center'>
+            <i
+              onClick={() => setShowReserve(show => !show)}
+              className={cn(
+                'flex cursor-pointer items-center justify-center rounded-lg',
+                'size-8 min-w-8 md:size-11 md:min-w-11',
+                showReserve ? 'bg-neutral-600' : 'bg-neutral-900',
+              )}
+            >
+              <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+            </i>
+          </div>
         </div>
+        {!pool && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={showReserve ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='overflow-hidden'
+          >
+            <div className='mt-2 h-max flex-col gap-2 rounded-md bg-neutral-800 p-4'>
+              <div>
+                <NewTextSubHeading className='font-archia !text-xl'>{t('New Deposit')}</NewTextSubHeading>
+              </div>
+              <div>
+                <Paragraph className='text-neutral-400'>{t('New Deposit description')}</Paragraph>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       <div className='grid grid-cols-1 xl:grid-cols-2 xl:gap-8'>

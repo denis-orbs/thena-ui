@@ -63,7 +63,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
         {columns.map((column, idx) => (
           <th
             className={cn(
-              'gap-1 px-2 py-4',
+              'gap-1 px-2 py-4 first:pl-4 last:pr-4',
               !column.disabled && 'cursor-pointer',
               column.width,
               column.justify,
@@ -189,13 +189,10 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
       ? positions
       : positions &&
         positions.filter(item => {
-          const withSpace = item.symbol.replace('/', ' ')
-          const withComma = item.symbol.replace('/', ',')
-          return (
-            item.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
-            withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
-            withComma.toLowerCase().includes(searchText.toLowerCase())
-          )
+          const symbol = item?.symbol?.toLowerCase() || ''
+          const tokens = symbol.split('/')
+          const searchTerms = searchText.toLowerCase().split(/[\s/,]+/)
+          return searchTerms.every(term => tokens.some(token => token.includes(term)))
         })
 
     const desc = sort.isDesc ? -1 : 1

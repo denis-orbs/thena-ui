@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { useCallback, useMemo, useState } from 'react'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
+import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
 import { useManuals } from '@/context/manualsContext'

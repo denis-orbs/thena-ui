@@ -43,7 +43,7 @@ function UserAssets({ setPositionRewards }) {
           )}
         >
           {positions.length > 0 ? (
-            <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent max-md:px-4 md:px-9 md:pb-11'>
+            <div className='space-y-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent md:pb-2 md:pt-8'>
               <AssetsOverview
                 isHoverFromChart={isHoverFromChart}
                 setIsHoverFromChart={setIsHoverFromChart}

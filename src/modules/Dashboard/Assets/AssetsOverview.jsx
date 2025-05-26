@@ -11,7 +11,7 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { getStrategy } from '@/state/pools/hooks'
-import { WarningTriangleIcon } from '@/svgs'
+import { WarningTriangleYellowIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
@@ -75,7 +75,7 @@ function AssetsOverview({
         addFees({
           amount: [reward0.amount, reward1.amount],
           symbol: pos.symbol,
-          type: 'manual',
+          type: pos.version === 2 ? 'manualV2' : 'manualV3',
           args: [account, pos.tokenId, pos.version],
           key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
         })
@@ -211,7 +211,7 @@ function AssetsOverview({
 
     if (currentTime >= startTime && currentTime <= endTime) {
       return (
-        <Paragraph className='flex flex-col text-base text-error-100'>
+        <Paragraph className='flex flex-col text-base text-warn-100'>
           {t('Migration earning rewards message')}
         </Paragraph>
       )
@@ -220,14 +220,14 @@ function AssetsOverview({
     if (currentTime > endTime) {
       return (
         <div className='flex flex-col gap-2'>
-          <TextHeading className='text-xl font-medium text-error-100'>{t('Migrate your Positions')}</TextHeading>
-          <Paragraph className='flex text-base text-error-100'>{t('Migrate desc')}</Paragraph>
+          <TextHeading className='text-xl font-medium text-warn-100'>{t('Migrate your Positions')}</TextHeading>
+          <Paragraph className='flex text-base text-warn-100'>{t('Migrate desc')}</Paragraph>
         </div>
       )
     }
 
     return (
-      <p className='text-base text-error-100'>
+      <p className='text-base text-warn-100'>
         {t.rich('Simulate migration warning message', {
           // eslint-disable-next-line react/no-unstable-nested-components
           discord: chunks => (
@@ -257,13 +257,13 @@ function AssetsOverview({
   }, [t])
 
   return (
-    <div className='space-y-6'>
-      <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
+    <div className='space-y-6 md:px-4'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2'>
         <div className='flex flex-col gap-4'>
           <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
             {t('Total Value Provided')}
           </NewTextHeading>
-          <NewParagraph className='space-x-4 text-4xl max-md:text-primary-300 md:text-4xl'>
+          <NewParagraph className='space-x-4 text-3xl max-md:text-center max-md:text-primary-300 md:text-4xl'>
             <span>${formatAmount(totalProvided)}</span>
             <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </NewParagraph>
@@ -286,7 +286,7 @@ function AssetsOverview({
           <LiquidityAPRChart
             data={filteredPositions}
             currentHoverTableRow={currentHoverTableRow}
-            className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]'
+            className='h-[163px] w-[163px] md:h-[276px] md:w-[276px]'
             isHoverFromChart={isHoverFromChart}
             setIsHoverFromChart={setIsHoverFromChart}
           />
@@ -294,9 +294,9 @@ function AssetsOverview({
       </div>
 
       {migratePositions.length > 0 && (
-        <div className={cn('flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+        <div className={cn('flex items-center gap-4 rounded-lg border border-warn-900 bg-warn-950 px-5 py-4')}>
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-            <WarningTriangleIcon className='size-full' />
+            <WarningTriangleYellowIcon className='size-full' />
           </div>
           {migrationMessageWarning}
         </div>

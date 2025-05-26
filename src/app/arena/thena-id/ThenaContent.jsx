@@ -294,4 +294,4 @@ function ThenaContent() {
   )
 }
 
-export default ThenaContent
+export default React.forwardRef(ThenaContent)

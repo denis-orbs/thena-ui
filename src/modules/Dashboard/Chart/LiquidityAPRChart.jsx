@@ -119,6 +119,17 @@ function LiquidityAPRChart({
   const chartData = {
     datasets: [
       {
+        label: 'APR',
+        data: aprData.map(d => d.value),
+        backgroundColor: aprData.map((d, i) =>
+          d.label === 'Others' ? OTHER_COLOR : d.label === 'None' ? '#281B2E' : COLORS[i % COLORS.length],
+        ),
+        borderWidth: 1,
+        borderColor: '#1A121E',
+        radius: '100%',
+        cutout: '82%',
+      },
+      {
         label: 'depositLiquidity',
         data: liquidityData.map(d => d.value),
         backgroundColor: liquidityData.map((_, i) =>
@@ -128,21 +139,10 @@ function LiquidityAPRChart({
               ? '#281B2E'
               : COLORS[i % COLORS.length],
         ),
-        borderWidth: 0,
-        radius: '78%',
-        cutout: '65%',
-        spacing: liquidityData.length === 1 ? 0 : 1,
-      },
-      {
-        label: 'APR',
-        data: aprData.map(d => d.value),
-        backgroundColor: aprData.map((d, i) =>
-          d.label === 'Others' ? OTHER_COLOR : d.label === 'None' ? '#281B2E' : COLORS[i % COLORS.length],
-        ),
-        borderWidth: 0,
-        spacing: aprData.length === 1 ? 0 : 1,
+        borderWidth: 1,
+        borderColor: '#1A121E',
         radius: '100%',
-        cutout: '85%',
+        cutout: '68%',
       },
     ],
   }
@@ -250,22 +250,26 @@ function LiquidityAPRChart({
       const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue?.label : aprValue?.label
 
       return (
-        <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center text-center md:top-[78px] md:justify-start md:gap-2'>
-          <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
-          <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>
+        <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center text-center md:top-[74px] md:justify-start md:gap-2'>
+          <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl md:leading-6'>
+            {t('APR')}
+          </div>
+          <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-[40px] md:leading-[40px]'>
             {aprValue?.label === 'None' ? '0' : formatAmount(aprValue?.value, true)}%
           </NewTextHeading>
-          <NewTextHeading className='text-sm text-primary-300 md:text-xl'>
-            ${liquidityValue?.label === 'None' ? '0' : formatAmount(liquidityValue?.value, true)}
-          </NewTextHeading>
-          <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
+          <div className='flex flex-col'>
+            <NewTextHeading className='text-sm text-primary-300 md:text-xl md:leading-6'>
+              ${liquidityValue?.label === 'None' ? '0' : formatAmount(liquidityValue?.value, true)}
+            </NewTextHeading>
+            <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
+          </div>
         </div>
       )
     }
 
     return data.length > 0 ? (
-      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center md:top-[110px] md:justify-start'>
-        <NewTextHeading className='text-xl font-semibold !leading-[48px] text-primary-600 md:text-4xl'>
+      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center md:top-[106px] md:justify-start'>
+        <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-[40px] md:leading-[40px]'>
           {formatAmount(avgApr, true)}%
         </NewTextHeading>
         <div className='text-xl font-semibold uppercase !leading-6 text-primary-300 max-md:hidden'>Average APR</div>

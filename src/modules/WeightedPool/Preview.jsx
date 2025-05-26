@@ -1,12 +1,12 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { useTokenColor } from '@/hooks/useTokenColor'
+import { THENACOLORS } from '@/constant'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, toWei, wrappedAddress } from '@/lib/utils'
@@ -22,9 +22,6 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
 
   const [showModalSuccess, setShowModalSuccess] = useState(false)
   const [poolAddress, setPoolAddress] = useState()
-
-  const [colors, setColors] = useState([])
-  const { renderBackgroundColors } = useTokenColor()
 
   const tokens = useMemo(
     () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
@@ -44,68 +41,54 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     })
   }, [fees, onCreateWeightedPool, poolName, tokens])
 
-  useEffect(() => {
-    renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
-      result => {
-        setColors(result)
-      },
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokens.length, renderBackgroundColors])
-
   const windowSize = useWindowSize()
   const isMobile = windowSize.width < 768
 
   return (
-    <div className='space-y-4 lg:space-y-8'>
-      <NewTextSubHeading>{t('Overview')}</NewTextSubHeading>
+    <div className='max-xl:space-y-4'>
+      <NewTextSubHeading className='xl:hidden'>{t('Overview')}</NewTextSubHeading>
 
-      <Box className='w-full space-y-4 !p-4 max-xl:rounded-none xl:space-y-8'>
+      <Box className='w-full space-y-4 p-4 max-xl:rounded-none xl:px-[42px] xl:py-8'>
+        <NewTextSubHeading className='!text-4xl text-neutral-500 max-xl:hidden'>{t('Overview')}</NewTextSubHeading>
         <div className='flex gap-4'>
-          <div className='flex w-full flex-col gap-4 max-xl:w-full xl:max-w-[264px] xl:flex-row'>
-            <div className='flex flex-row items-center gap-4 xl:flex-col xl:gap-2'>
+          <div className='flex w-full flex-col gap-4 max-xl:w-full xl:flex-row'>
+            <div className='flex flex-row gap-4 xl:gap-2'>
               <GroupIconTokens
-                height={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
-                width={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
+                height={tokens?.length > 4 ? (isMobile ? 16 : 32) : 32}
+                width={tokens?.length > 4 ? (isMobile ? 16 : 32) : 32}
                 tokens={tokens}
               />
-              <Paragraph className='hidden w-fit text-xs font-medium lg:text-sm xl:block xl:text-base'>
-                {t('Weighted Pool')}
-              </Paragraph>
-              <TextHeading className='flex-wrap font-archia text-xl font-semibold xl:hidden'>{poolName}</TextHeading>
+              <TextHeading className='flex-wrap font-archia text-xl font-semibold xl:text-3xl'>{poolName}</TextHeading>
             </div>
-
-            <div className='flex flex-row items-center max-xl:w-full max-xl:justify-between xl:flex-col xl:gap-2 xl:pl-4'>
-              <div>
-                <TextHeading className='font-archia text-xl font-semibold lg:text-3xl xl:text-2xl'>
-                  $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
-                </TextHeading>
-              </div>
-              <div className='flex gap-3'>
-                <CoinsHandIcon className='h-5 w-5' />
-                <Paragraph className='text-base'>{`Fees ${fees} %`}</Paragraph>
-              </div>
-            </div>
-          </div>
-
-          <div className='hidden xl:block'>
-            <NewTextSubHeading className='font-archia text-3xl font-semibold xl:text-[40px] xl:leading-[48px]'>
-              {poolName}
-            </NewTextSubHeading>
           </div>
         </div>
 
-        <div className='flex flex-col gap-4 xl:flex-row'>
-          <div className='w-full xl:max-w-[264px]'>
-            <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
+        <div className='flex flex-col items-center gap-4 xl:flex-row xl:gap-12'>
+          <div className='flex flex-row items-center max-xl:w-full max-xl:justify-between xl:min-w-[203px] xl:flex-col xl:gap-8 xl:pl-4'>
+            <div className='flex flex-row justify-between gap-4 max-xl:w-full xl:flex-col xl:items-center'>
+              <TextHeading className='text-lg font-medium max-xl:hidden'>{t('Weighted Pool')}</TextHeading>
+              <TextHeading className='font-archia text-xl font-semibold leading-6 xl:text-3xl'>
+                $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
+              </TextHeading>
+              <div className='flex gap-3'>
+                <CoinsHandIcon className='h-5 w-5' />
+                <Paragraph className='!text-base !leading-5'>{`Fees ${fees} %`}</Paragraph>
+              </div>
+            </div>
+            <PrimaryButton disabled={pending} onClick={onCreate} className='w-full max-xl:hidden'>
+              {t('Deposit')}
+            </PrimaryButton>
           </div>
-          <div className='w-full'>
-            <PoolOverviewTable tokens={tokens} colors={colors} />
+          <div className='order-3 w-full xl:order-2'>
+            <PoolOverviewTable tokens={tokens} colors={THENACOLORS} />
+          </div>
+          <div className='order-2 w-full xl:order-3 xl:max-w-[264px]'>
+            <PieChart tokens={tokens} showTotalPercent={false} />
           </div>
         </div>
       </Box>
 
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 xl:hidden'>
         <EmphasisButton className='hidden w-full max-lg:block' onClick={() => setCurrentStep(2)}>
           {t('Cancel')}
         </EmphasisButton>

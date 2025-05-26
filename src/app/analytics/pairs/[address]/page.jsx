@@ -13,6 +13,7 @@ import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
+import { useBackURL } from '@/hooks/useBackURL'
 import { goScan } from '@/lib/utils'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -35,13 +36,14 @@ export default function PairDetailPage({ params }) {
   )
 
   const { push } = useRouter()
+  const backUrl = useBackURL()
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl={backUrl}>
       <div className='flex flex-col gap-4 lg:gap-16'>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end'>
@@ -67,7 +69,7 @@ export default function PairDetailPage({ params }) {
                 />
               )}
               <div className='flex items-end gap-4 py-2.5'>
-                <NewTextHeading>{pair.symbol}</NewTextHeading>
+                <NewTextHeading className='whitespace-normal text-wrap break-all'>{pair.symbol}</NewTextHeading>
                 <LinkExternalIcon
                   className='mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
                   onClick={() => goScan(networkId, pair.address)}
@@ -89,9 +91,9 @@ export default function PairDetailPage({ params }) {
             className='w-full md:w-fit'
             onClick={() => {
               if (pair.type !== PAIR_TYPES.WEIGHTED) {
-                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}`)
+                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
               } else {
-                push(`/pools/add-liquidity/weighted/${pair.address}`)
+                push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)
               }
             }}
           >

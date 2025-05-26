@@ -55,6 +55,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
           value: 'action',
           width: pairType === PAIR_TYPES.WEIGHTED ? 'lg:w-[100px] w-[90px]' : 'lg:w-[100px] w-[50px]',
           disabled: true,
+          className: 'items-end',
         },
       ]
     }
@@ -114,6 +115,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
             }}
             sortOptions={sortOptions}
             size='small'
+            tableBasic={isLgDown}
           />
         </div>
       ) : (

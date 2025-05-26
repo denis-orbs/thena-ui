@@ -285,7 +285,12 @@ function Table({
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
                           <TableCell
-                            className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify, classNames?.cellItem)}
+                            className={cn(
+                              'flex flex-col text-nowrap lg:flex-row',
+                              cell.justify,
+                              classNames?.cellItem,
+                              cell?.className,
+                            )}
                           >
                             {defaultHead[cell.value]}
                           </TableCell>
@@ -309,6 +314,7 @@ function Table({
                                     'flex flex-col text-nowrap lg:flex-row',
                                     cell.justify,
                                     classNames?.cellItem,
+                                    cell?.className,
                                   )}
                                 >
                                   {ele[cell.value]}
@@ -335,6 +341,7 @@ function Table({
                                   'flex flex-col text-nowrap lg:flex-row',
                                   cell.justify,
                                   classNames?.cellItem,
+                                  cell?.className,
                                 )}
                               >
                                 {ele[cell.value]}
@@ -350,7 +357,12 @@ function Table({
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
                           <TableCell
-                            className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify, classNames?.cellItem)}
+                            className={cn(
+                              'flex flex-col text-nowrap lg:flex-row',
+                              cell.justify,
+                              classNames?.cellItem,
+                              cell?.className,
+                            )}
                           >
                             {summary[cell.value]}
                           </TableCell>
@@ -442,6 +454,7 @@ function Table({
                           cell.width,
                           !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
                           classNames?.cellItem,
+                          cell?.className,
                         )}
                         key={`${cell.value}-${cellIdx}`}
                       >

@@ -104,7 +104,7 @@ export function ProfilePage({ address }) {
   }
 
   return (
-    <div className='mt-10 space-y-10'>
+    <div className='space-y-10'>
       <UserInfo userInfo={userInfo} following={following} followers={followers} />
       <UserCompletedAchievements userId={userInfo.id} />
       {userInfo && userInfo.usernameNfts?.length > 0 && <UserThenaIds thenaIds={userInfo.usernameNfts} />}

@@ -18,7 +18,7 @@ import { useEpochTimer } from '@/hooks/useGeneral'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { ExternalIcon } from '@/svgs'
 
@@ -129,12 +129,12 @@ function Voting() {
 
   return (
     <>
-      <Box className='flex h-full flex-col justify-between gap-2 !p-4'>
+      <Box className={cn('flex h-full flex-col justify-between gap-2 !p-4', !veTHEs.length && 'gap-4')}>
         {veTHEs.length > 0 ? (
           <>
             <div className='flex justify-between gap-2'>
               <div className='flex flex-col'>
-                <TextHeading className='font-archia text-xl font-semibold'>
+                <TextHeading className='font-archia text-xl font-semibold leading-6'>
                   {t('Voting for [value]', { value: formatAmount(totalRewards) })}
                 </TextHeading>
                 <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
@@ -156,7 +156,7 @@ function Voting() {
 
             <div className='fex flex-col'>
               <div className='flex items-center justify-center'>
-                <VotingChart className='h-[260px] w-[260px]' data={userPools} />
+                <VotingChart data={userPools} />
               </div>
             </div>
 
@@ -185,16 +185,20 @@ function Voting() {
               <NewTextHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextHeading>
             </div>
             <div className='flex flex-col gap-4'>
-              <div className='flex flex-col gap-2.5 text-center'>
+              <div className='flex flex-col gap-[9px] text-center'>
                 <Paragraph className='text-neutral-500'>{t('Empty Voting')}</Paragraph>
-                <NewTextHeading className='flex justify-center gap-1.5 text-xl md:text-xl'>
-                  <span className='text-primary-300'>{t('Next distribution in')}</span>
-                  <span className='text-primary-600'>{timeDisplay}</span>
+                <NewTextHeading className='flex justify-center gap-1.5 text-xl leading-6 md:text-xl'>
+                  <span className='leading-6 text-primary-300'>{t('Next distribution in')}</span>
+                  <span className='leading-6 text-primary-600'>{timeDisplay}</span>
                 </NewTextHeading>
               </div>
               <div className='flex flex-col gap-2'>
-                <Link className='w-full' href='https://docs.thena.fi/thena/the-tokenomics/vethe-guide' target='_blank'>
-                  <TextButton className='w-full'>
+                <Link
+                  className='h-11 w-full max-md:h-8'
+                  href='https://docs.thena.fi/thena/the-tokenomics/vethe-guide'
+                  target='_blank'
+                >
+                  <TextButton className='h-11 w-full max-md:h-8'>
                     <Paragraph>Learn about voting</Paragraph>
                     <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                   </TextButton>

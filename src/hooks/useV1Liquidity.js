@@ -556,7 +556,7 @@ export const useV1Migrate = () => {
       }
 
       const lpContract = getERC20Contract(positionV2.address, chainId)
-      const allowance = await readCall(lpContract, 'allowance', [account, positionV2.gauge.address], chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, strategy.gauge.address], chainId)
       const balanceOf = await readCall(lpContract, 'balanceOf', [account], chainId)
       const isApproved = fromWei(allowance).gte(balanceOf)
 

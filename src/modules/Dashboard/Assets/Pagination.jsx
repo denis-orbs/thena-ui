@@ -26,7 +26,7 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
 
 function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, setItemsPerPage }) {
   return (
-    <div className='mb-1 flex flex-row items-center justify-between'>
+    <div className='flex flex-row items-center justify-between px-2.5 py-3.5'>
       <Dropdown
         className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
         classNames={{ trailingIcon: 'right-4', input: 'pr-12 text-right' }}

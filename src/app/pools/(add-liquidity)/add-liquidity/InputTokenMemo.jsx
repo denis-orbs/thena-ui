@@ -14,6 +14,7 @@ function InputTokenMemo({
   weight,
   isCheckError,
   showTitle = true,
+  isSmall = false,
 }) {
   const { balance, isDouble } = useTokenBalance(token, alowDouble)
   const t = useTranslations()
@@ -39,6 +40,7 @@ function InputTokenMemo({
       title={showTitle ? `${t('Pool Weight')} ${weight}%` : ''}
       classNames={{ title: 'text-neutral-500 text-xs' }}
       isInvalidAmount={invalid}
+      isSmall={isSmall}
     />
   )
 }
