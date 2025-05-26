@@ -29,7 +29,7 @@ export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' 
 
   const token0Percent = useMemo(() => {
     const token0InUsd = token0Amount.times(pool.token0.price)
-    return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
+    return Number(depositValueUSD) > 0 ? token0InUsd.div(depositValueUSD).times(100).toFixed(2) : 0
   }, [depositValueUSD, token0Amount, pool])
 
   const otherToken = useMemo(() => {
