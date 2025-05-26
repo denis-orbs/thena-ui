@@ -1,5 +1,5 @@
-import { tickToPrice } from 'thena-fusion-sdk'
 import { JSBI } from 'thena-sdk-core'
+import { tickToPrice } from 'thenafi-fusion-sdk'
 
 const PRICE_FIXED_DIGITS = 8
 

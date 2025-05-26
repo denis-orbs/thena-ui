@@ -1,4 +1,4 @@
-import { toHex } from 'thena-fusion-sdk'
+import { toHex } from 'thenafi-fusion-sdk'
 import { encodeFunctionData } from 'viem'
 
 import { selfPermitAbi } from '@/constant/abi/fusion'

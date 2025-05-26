@@ -1,5 +1,5 @@
-import { tickToPrice } from 'thena-fusion-sdk'
 import { BNB, CurrencyAmount, JSBI, Token, WBNB } from 'thena-sdk-core'
+import { tickToPrice } from 'thenafi-fusion-sdk'
 import { parseUnits } from 'viem'
 
 import Contracts from '@/constant/contracts'

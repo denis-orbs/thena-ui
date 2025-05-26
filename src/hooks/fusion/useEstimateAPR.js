@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
+import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 

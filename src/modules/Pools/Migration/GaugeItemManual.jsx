@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
-import { nearestUsableTick, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { maxUint128 } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'

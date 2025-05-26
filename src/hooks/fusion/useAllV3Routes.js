@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Route } from 'thena-fusion-sdk'
+import { Route } from 'thenafi-fusion-sdk'
 
 import { useChainSettings } from '@/state/settings/hooks'
 

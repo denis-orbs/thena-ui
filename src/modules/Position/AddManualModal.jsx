@@ -2,8 +2,8 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
+import { Position } from 'thenafi-fusion-sdk'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'

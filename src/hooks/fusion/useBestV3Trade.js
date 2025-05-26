@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { encodeRouteToPath, Trade } from 'thena-fusion-sdk'
 import { CurrencyAmount, TradeType } from 'thena-sdk-core'
+import { encodeRouteToPath, Trade } from 'thenafi-fusion-sdk'
 
 import { fusionQuoterAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
+import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { maxUint128 } from 'viem'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'

@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { TICK_SPACING, tickToPrice } from 'thena-fusion-sdk'
 import { JSBI } from 'thena-sdk-core'
+import { TICK_SPACING, tickToPrice } from 'thenafi-fusion-sdk'
 
 import computeSurroundingTicks from '@/lib/fusion/computeSurroundingTicks'
 import { fusionClient } from '@/lib/graphql'
