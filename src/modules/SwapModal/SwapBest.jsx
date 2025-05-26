@@ -36,6 +36,7 @@ export default function SwapBest({
   setInputCurrency,
   setOutputCurrency,
   disabledChangeOutputCurrency = false,
+  onSwapSuccess = () => {},
 }) {
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
@@ -175,6 +176,7 @@ export default function SwapBest({
       onTradeSuccess({ quote, bestTrade, isTradeLH, fromAmount })
       setFromAmount('')
       mutateAssets()
+      onSwapSuccess()
     }
 
     const swapWithLH = async quote =>
@@ -197,22 +199,24 @@ export default function SwapBest({
     } else {
       await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
     }
+    onSwapSuccess()
   }, [
     fromAsset,
     toAsset,
-    bestTrade,
+    isFallbackLH,
+    tradeLH?.quote,
+    compareWithLHCallback,
     handleTaxTokenSwap,
     fromAmount,
     slippage,
     deadline,
     mutateAssets,
+    onSwapSuccess,
+    onTradeSuccess,
+    bestTrade,
+    onSwapLH,
     onOdosSwap,
     toAmount,
-    compareWithLHCallback,
-    onSwapLH,
-    isFallbackLH,
-    tradeLH,
-    onTradeSuccess,
   ])
 
   const btnMsg = useMemo(() => {
@@ -310,6 +314,7 @@ export default function SwapBest({
             <EmphasisIconButton
               className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
+              disabled={disabledChangeOutputCurrency}
               onClick={() => {
                 setInputCurrency(toAsset.address)
                 setOutputCurrency(fromAsset.address)

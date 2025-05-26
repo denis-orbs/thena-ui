@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
@@ -24,6 +24,9 @@ function RegisterAutomation({
   setMinFunds = () => {},
   updateRegistration = () => {},
 }) {
+  const t = useTranslations()
+  const minRef = useRef(null)
+  const { chainLinkData, refetch: refetchChainLINKData } = useChainLINKData()
   const { minimumFunds: minFunds } = useGetMinimumFunds(
     contractData?.veTHEId,
     convertBooleansToHex(
@@ -34,17 +37,12 @@ function RegisterAutomation({
     (contractData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )
 
-  const minRef = useRef(null)
-
   useEffect(() => {
     if (!minRef.current || !minRef.current.eq(minFunds)) {
       setMinFunds(minFunds)
       minRef.current = minFunds
     }
   }, [minFunds, setMinFunds])
-
-  const t = useTranslations()
-  const { chainLinkData } = useChainLINKData()
 
   useEffect(() => {
     if (!chainLINK && (chainLinkData || []).length > 0) {
@@ -55,6 +53,14 @@ function RegisterAutomation({
     }
   }, [chainLINK, chainLinkData, updateRegistration])
 
+  const selectedChainLINK = useMemo(
+    () => ({
+      ...chainLINK,
+      balance: chainLinkData?.find(item => item.address === chainLINK?.address)?.balance ?? chainLINK?.balance,
+    }),
+    [chainLINK, chainLinkData],
+  )
+
   return (
     <div className='space-y-4'>
       <div className='flex flex-row justify-between'>
@@ -64,7 +70,11 @@ function RegisterAutomation({
           <CircleImage alt='LINK logo' className='h-4 w-4' src={chainLINK?.logoURI || UNKNOWN_LOGO} />
         </div>
       </div>
-      <WarningLINKBalance contract={contractData} chainLINK={chainLINK} />
+      <WarningLINKBalance
+        contract={contractData}
+        chainLINK={selectedChainLINK}
+        refetchChainLINKData={refetchChainLINKData}
+      />
       <div className='flex flex-col gap-2'>
         <div className='flex flex-row justify-between'>
           <TextHeading>{t('Add Funds')}</TextHeading>
@@ -76,7 +86,9 @@ function RegisterAutomation({
             data => updateRegistration({ ...data, balance: data.balance.toNumber() }, UPDATE_REGISTRATION.CHAINLINK)
             // eslint-disable-next-line react/jsx-curly-newline
           }
-          asset={chainLINK}
+          asset={selectedChainLINK}
+          maxBalance={selectedChainLINK?.balance}
+          isSwapChainLink
           autoFocus
           onAmountChange={value => updateRegistration(value, UPDATE_REGISTRATION.CHAINLINK_AMOUNT)}
           showPercent={false}

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { ErrorButton } from '@/components/buttons/Button'
 import { Paragraph } from '@/components/typography'
@@ -8,7 +8,7 @@ import { convertBooleansToHex, formatAmount } from '@/lib/utils'
 import SwapModal from '@/modules/SwapModal'
 import { InfoIcon } from '@/svgs'
 
-function WarningLINKBalance({ contract, chainLINK }) {
+function WarningLINKBalance({ contract, chainLINK, refetchChainLINKData }) {
   const t = useTranslations()
   const [openSwapModal, setOpenSwapModal] = useState(false)
   const { minimumFunds: minFunds } = useGetMinimumFunds(
@@ -20,6 +20,7 @@ function WarningLINKBalance({ contract, chainLINK }) {
     ),
     (contract?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )
+
   return (
     <>
       {chainLINK && minFunds?.gt(chainLINK?.balance) && (
@@ -36,8 +37,9 @@ function WarningLINKBalance({ contract, chainLINK }) {
           <SwapModal
             open={openSwapModal}
             setOpen={setOpenSwapModal}
+            onSwapSuccess={refetchChainLINKData}
             inputCurrency='BNB'
-            outputCurrency='0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd'
+            toAsset={chainLINK}
             disabledChangeOutputCurrency
           />
         </div>
