@@ -143,11 +143,11 @@ export default function SwapBest({
     bestTrade,
     liquidityHubFailed,
   )
-  const quotePending = isFallbackLH
-    ? quotePendingLH
-    : isEnabledTradeLH
-      ? quotePendingLH || bestTradePending
-      : bestTradePending
+
+  const quotePending = useMemo(
+    () => (isFallbackLH ? quotePendingLH : isEnabledTradeLH ? quotePendingLH || bestTradePending : bestTradePending),
+    [isFallbackLH, quotePendingLH, isEnabledTradeLH, bestTradePending],
+  )
 
   const onRefreshQuotes = useCallback(() => {
     if (isFallbackLH) {
@@ -502,7 +502,7 @@ export default function SwapBest({
             <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
             <TextButton
               className='text-xs'
-              iconClassName='lg:h-4 lg:w-4'
+              iconClassName={cn('lg:h-4 lg:w-4', quotePending && 'animate-spin')}
               onClick={onRefreshQuotes}
               LeadingIcon={RefreshIcon}
             >

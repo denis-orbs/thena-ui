@@ -49,8 +49,8 @@ export default createReducer(initialState, builder =>
       ...state,
       locale: payload,
     }))
-    .addCase(updateLiquidityHubEnabled, state => ({
+    .addCase(updateLiquidityHubEnabled, (state, { payload }) => ({
       ...state,
-      liquidityHubEnabled: !state.liquidityHubEnabled,
+      liquidityHubEnabled: typeof payload === 'boolean' ? payload : !state.liquidityHubEnabled,
     })),
 )

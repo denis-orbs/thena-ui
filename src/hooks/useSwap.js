@@ -74,20 +74,14 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
   const inputToken = getAddress(fromAsset?.address === 'BNB' ? zeroAddress : fromAsset?.address ?? zeroAddress)
   const outputToken = getAddress(toAsset?.address === 'BNB' ? zeroAddress : toAsset?.address ?? zeroAddress)
 
-  const res = useSWR(
-    fromAsset &&
-      toAsset &&
-      networkId === ChainId.BSC &&
-      !isInvalidAmount(fromAmount) && [
-        'useBestQuoteSwap',
-        account,
-        fromAsset?.address,
-        toAsset?.address,
-        fromAmount,
-        slippage,
-      ],
-    async () =>
-      await fetchOdosQuote({
+  const {
+    data,
+    isFetching,
+    refetch: mutate,
+  } = useQuery({
+    queryKey: ['useBestQuoteSwap', account, fromAsset?.address, toAsset?.address, fromAmount, slippage],
+    queryFn: async () =>
+      fetchOdosQuote({
         inputAmount,
         networkId,
         inputToken,
@@ -95,11 +89,12 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         account,
         slippage,
       }),
-    {
-      refreshInterval: 30000,
-    },
-  )
-  return res
+    refetchInterval: 60000,
+    enabled: Boolean(fromAsset && toAsset && networkId === ChainId.BSC && !isInvalidAmount(fromAmount)),
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching, mutate }
 }
 
 export async function simulateOdosSwap(account, quotePathId, onError) {

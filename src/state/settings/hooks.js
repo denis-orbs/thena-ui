@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 import { useAccount, useSwitchChain } from 'wagmi'
 
-import { LOCALES } from '@/constant'
+import { LOCALES, ThenaLiquidityHubEnabledKey } from '@/constant'
 
 import {
   closeWallet,
@@ -30,9 +30,30 @@ export const useWalletModal = () => {
   return { isWalletOpen, openWalletModal, closeWalletModal }
 }
 
+const getFromLocalStorage = (key, defaultValue = true) => {
+  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return defaultValue
+
+  try {
+    const value = window.localStorage.getItem(key)
+    if (value === null) return defaultValue
+    return value === 'true'
+  } catch (err) {
+    console.error('Cannot access localStorage:', err)
+    return defaultValue
+  }
+}
+
 export const useSettings = () => {
   const { slippage, deadline, liquidityHubEnabled } = useSelector(state => state.settings)
   const dispatch = useDispatch()
+
+  // Load liquidityHubEnabled from localStorage on initial render
+  useEffect(() => {
+    const storedBool = getFromLocalStorage(ThenaLiquidityHubEnabledKey, liquidityHubEnabled)
+    if (storedBool !== liquidityHubEnabled) {
+      dispatch(updateLiquidityHubEnabled(storedBool))
+    }
+  }, [dispatch, liquidityHubEnabled])
 
   const _updateSlippage = useCallback(
     val => {
@@ -49,8 +70,12 @@ export const useSettings = () => {
   )
 
   const _updateLiquidityHubEnabled = useCallback(() => {
+    const newValue = !liquidityHubEnabled
     dispatch(updateLiquidityHubEnabled())
-  }, [dispatch])
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ThenaLiquidityHubEnabledKey, newValue.toString())
+    }
+  }, [dispatch, liquidityHubEnabled])
 
   return {
     slippage,

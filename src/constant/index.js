@@ -730,6 +730,8 @@ export const NotShowDiscoverArenaModal = 'not-show-discover-arena-modal'
 export const NotShowWarningMigrateV3Modal = 'not-show-warning-migrate-v3-modal'
 export const NotShowBannerV3 = 'not-show-banner-v3'
 export const NotShowDiscoverPoolsAnalyticsModal = 'not-show-discover-pools-analytics-modal'
+export const ThenaLiquidityHubEnabledKey = 'thena-liquidity-hub-enabled'
+
 export const HASH = {
   TRANSFER: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
 }
