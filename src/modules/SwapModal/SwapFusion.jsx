@@ -37,6 +37,7 @@ export default function SwapFusion({
   setInputCurrency,
   setOutputCurrency,
   disabledChangeOutputCurrency,
+  onSwapSuccess = () => {},
 }) {
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
   const [isWarning, setIsWarning] = useState(false)
@@ -284,7 +285,10 @@ export default function SwapFusion({
               } else if (isUnwrap) {
                 onUnwrap(parsedAmount?.toExact())
               } else {
-                swapCallback(mutateAssets)
+                swapCallback(() => {
+                  mutateAssets()
+                  onSwapSuccess()
+                })
               }
             }}
           >

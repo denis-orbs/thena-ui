@@ -44,7 +44,8 @@ function RegisterAutomation({
   }, [minFunds, setMinFunds])
 
   const t = useTranslations()
-  const { chainLinkData } = useChainLINKData()
+  const { chainLinkData, refetch: refetchChainLINKData } = useChainLINKData()
+  console.log(chainLinkData)
 
   useEffect(() => {
     if (!chainLINK && (chainLinkData || []).length > 0) {
@@ -64,7 +65,7 @@ function RegisterAutomation({
           <CircleImage alt='LINK logo' className='h-4 w-4' src={chainLINK?.logoURI || UNKNOWN_LOGO} />
         </div>
       </div>
-      <WarningLINKBalance contract={contractData} chainLINK={chainLINK} />
+      <WarningLINKBalance contract={contractData} chainLINK={chainLINK} refetchChainLINKData={refetchChainLINKData} />
       <div className='flex flex-col gap-2'>
         <div className='flex flex-row justify-between'>
           <TextHeading>{t('Add Funds')}</TextHeading>
@@ -73,7 +74,10 @@ function RegisterAutomation({
           type='number'
           amount={chainLINKAmount}
           setAsset={
-            data => updateRegistration({ ...data, balance: data.balance.toNumber() }, UPDATE_REGISTRATION.CHAINLINK)
+            data => {
+              console.log({ ...data, balance: data.balance.toNumber() })
+              updateRegistration({ ...data, balance: data.balance.toNumber() }, UPDATE_REGISTRATION.CHAINLINK)
+            }
             // eslint-disable-next-line react/jsx-curly-newline
           }
           asset={chainLINK}
