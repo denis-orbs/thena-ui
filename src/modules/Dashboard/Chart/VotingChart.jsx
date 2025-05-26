@@ -4,6 +4,7 @@ import { Doughnut } from 'react-chartjs-2'
 
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { PAIR_TYPES } from '@/constant'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
@@ -55,6 +56,8 @@ function getSecondsRelativeToThursdayUTC() {
 }
 
 function VotingChart({ data = [], className }) {
+  const { isMdDown } = useMediaQuery()
+
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const chartRef = useRef(null)
   const originalColors = useRef([])
@@ -115,10 +118,10 @@ function VotingChart({ data = [], className }) {
               label: 'vote',
               data: pools.map(d => d.value),
               backgroundColor: poolColors,
-              borderWidth: pools.length === 1 ? 0 : 1,
+              borderWidth: pools.length === 1 ? 0 : isMdDown ? 1 : 2,
               borderColor: '#1A121E',
               radius: '100%',
-              cutout: '87%',
+              cutout: isMdDown ? '87%' : '78%',
             }
           : {
               label: 'time',
@@ -126,7 +129,7 @@ function VotingChart({ data = [], className }) {
               backgroundColor: timeColors,
               borderWidth: 0,
               radius: '100%',
-              cutout: '86%',
+              cutout: isMdDown ? '87%' : '78%',
             },
       ],
     ],
