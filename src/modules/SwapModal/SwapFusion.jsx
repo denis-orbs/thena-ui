@@ -218,6 +218,7 @@ export default function SwapFusion({
             />
             <EmphasisIconButton
               className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              disabled={disabledChangeOutputCurrency}
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 setInputCurrency(toAsset.address)

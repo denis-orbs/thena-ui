@@ -176,6 +176,7 @@ export default function SwapBest({
       onTradeSuccess({ quote, bestTrade, isTradeLH, fromAmount })
       setFromAmount('')
       mutateAssets()
+      onSwapSuccess()
     }
 
     const swapWithLH = async quote =>
