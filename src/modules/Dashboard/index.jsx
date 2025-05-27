@@ -34,8 +34,7 @@ function Dashboard() {
           'bg-[url(/images/bg-dashboard.svg)] bg-contain bg-right-top bg-no-repeat max-md:bg-primary-950 max-md:bg-cover 3xl:bg-cover 4xl:bg-center 5xl:bg-center',
         )}
       />
-      <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-right-top max-md:hidden md:h-[262px]' />
-
+      <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-right-top opacity-50 max-md:hidden md:h-[262px]' />
       <HeaderRewards totalUsd={totalUsd} account={account} />
 
       <div className='z-40 flex max-w-[1184px] flex-col gap-4 rounded-xl md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px]'>
