@@ -134,8 +134,8 @@ function StakedItem({ position, isXlDown }) {
   const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
 
   const renderTokenValue = useMemo(() => {
-    const token0Value = position?.account?.staked0?.toNumber()
-    const token1Value = position?.account?.staked1?.toNumber()
+    const token0Value = isSwapFee ? position?.account?.total0?.toNumber() : position?.account?.staked0?.toNumber()
+    const token1Value = isSwapFee ? position?.account?.total1?.toNumber() : position?.account?.staked1?.toNumber()
 
     const hasInvalidAmounts = isInvalidAmount(token0Value) && isInvalidAmount(token1Value)
     if (hasInvalidAmounts) return null
@@ -146,7 +146,16 @@ function StakedItem({ position, isXlDown }) {
         {!isInvalidAmount(token1Value) && <p>{`${formatAmount(token1Value)} ${getDisplayName(position.token1)}`}</p>}
       </>
     )
-  }, [getDisplayName, position?.account?.staked0, position?.account?.staked1, position.token0, position.token1])
+  }, [
+    getDisplayName,
+    isSwapFee,
+    position?.account?.staked0,
+    position?.account?.staked1,
+    position?.account?.total0,
+    position?.account?.total1,
+    position.token0,
+    position.token1,
+  ])
 
   const pairCell = useMemo(
     () => (
