@@ -6,6 +6,10 @@ export function tryParsePrice(baseToken, quoteToken, value) {
     return undefined
   }
 
+  value = Number(value)
+    .toFixed(18)
+    .replace(/\.?0+$/, '')
+
   if (!value.match(/^\d*\.?\d+$/)) {
     return undefined
   }
@@ -48,5 +52,6 @@ export function tryParseTick(baseToken, quoteToken, feeAmount, value) {
     tick = priceToClosestTick(price)
   }
 
+  // TODO: CHECK
   return nearestUsableTick(tick, TICK_SPACING)
 }
