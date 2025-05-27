@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Divider from '@/components/divider'
 import { NewTextHeading, Paragraph } from '@/components/typography'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 
 const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
@@ -13,6 +14,7 @@ const spacing = 2
 function VotingPowerChart({ data, extendVotingPower }) {
   const t = useTranslations()
   const [selectedVethe, setSelectedVethe] = useState(null)
+  const { isXlDown } = useMediaQuery()
 
   const chartData = useMemo(() => {
     if (data.length > 5) {
@@ -32,17 +34,21 @@ function VotingPowerChart({ data, extendVotingPower }) {
         max: totalMax,
         color: '#FCE6FB',
       })
-
       return res
     }
 
-    return data.map((veTHE, index) => ({
+    const res = data.map((veTHE, index) => ({
       id: veTHE.id,
       value: veTHE.voting_amount.toNumber(),
       max: veTHE.amount.toNumber(),
       color: COLORS[index],
     }))
-  }, [data])
+    if (!(isXlDown && data.length < 5)) {
+      res.unshift(null)
+    }
+
+    return res
+  }, [data, isXlDown])
 
   const strokeWidth = useMemo(() => baseStrokeWidth + (chartData.length - 1) * 2, [chartData.length])
 
@@ -107,9 +113,10 @@ function VotingPowerChart({ data, extendVotingPower }) {
   return (
     <div className='relative' style={{ width: '100%', height: '100%' }}>
       <svg width='100%' height='100%' viewBox={`0 0 ${center * 2} ${center}`} preserveAspectRatio='xMidYMid meet'>
-        {chartData.map((seg, index) => (
-          <React.Fragment key={index}>{describeArc(seg, index)}</React.Fragment>
-        ))}
+        {chartData.map((seg, index) => {
+          if (!seg) return null
+          return <React.Fragment key={index}>{describeArc(seg, index)}</React.Fragment>
+        })}
       </svg>
 
       <Divider className='my-1 h-[2px] bg-neutral-700' />
