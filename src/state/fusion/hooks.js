@@ -285,7 +285,7 @@ export const useV3DerivedMintInfo = (
     if (tokenA && tokenB && feeAmount && price && !invalidPrice) {
       const currentTick = priceToClosestTick(price)
       const currentSqrt = TickMath.getSqrtRatioAtTick(currentTick)
-      return new Pool(tokenA, tokenB, feeAmount, currentSqrt, JSBI.BigInt(0), currentTick, [])
+      return new Pool(tokenA, tokenB, feeAmount, currentSqrt, JSBI.BigInt(0), currentTick, TICK_SPACING, [])
     }
     return undefined
   }, [feeAmount, invalidPrice, price, tokenA, tokenB])
