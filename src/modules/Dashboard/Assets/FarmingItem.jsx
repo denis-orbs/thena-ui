@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -281,23 +281,6 @@ function FarmingItem({ position, isXlDown }) {
         </EmphasisButton>
 
         <EmphasisButton
-          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
-          onClick={() => setClaimPopup(true)}
-        >
-          {t('Claim')}
-        </EmphasisButton>
-
-        <EmphasisButton
-          className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
-            hidden: hideButton.earn,
-          })}
-          disabled={position?.isFarming || isEnterFarmLoading}
-          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
-        >
-          {t('Earn $THE')}
-        </EmphasisButton>
-
-        <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
             hidden: hideButton.burn,
           })}
@@ -310,6 +293,23 @@ function FarmingItem({ position, isXlDown }) {
         <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
           {t('Add')}
         </EmphasisButton>
+
+        <EmphasisButton
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
+          onClick={() => setClaimPopup(true)}
+        >
+          {t('Claim')}
+        </EmphasisButton>
+
+        <PrimaryButton
+          className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
+            hidden: hideButton.earn,
+          })}
+          disabled={position?.isFarming || isEnterFarmLoading}
+          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
+        >
+          {t('Earn $THE')}
+        </PrimaryButton>
       </div>
     ),
     [

@@ -324,12 +324,6 @@ function NotStakedItem({ position, isXlDown }) {
           'grid grid-cols-3': !migrationOptions && isSingleSided,
         })}
       >
-        {(!migrationOptions || isSingleSided) && (
-          <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-            {t('Stake')}
-          </EmphasisButton>
-        )}
-
         {isV1Pool ? (
           <>
             <EmphasisButton
@@ -372,6 +366,12 @@ function NotStakedItem({ position, isXlDown }) {
               </PrimaryButton>
             )}
           </>
+        )}
+
+        {(!migrationOptions || isSingleSided) && (
+          <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+            {t('Stake')}
+          </PrimaryButton>
         )}
       </div>
     ),
