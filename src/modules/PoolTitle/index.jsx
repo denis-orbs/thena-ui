@@ -6,6 +6,7 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
+import { getDisplayedStrategy } from '@/lib/utils'
 
 export default function PoolTitle({ strategy }) {
   return (
@@ -19,9 +20,7 @@ export default function PoolTitle({ strategy }) {
         />
         <div className='flex flex-col gap-1'>
           <TextHeading>{strategy.symbol}</TextHeading>
-          <Paragraph className='text-xs'>
-            {GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title?.replace('_', ' ')}
-          </Paragraph>
+          <Paragraph className='text-xs'>{getDisplayedStrategy(strategy.title, strategy.version)}</Paragraph>
         </div>
       </div>
       {GAMMA_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.title.replace('_', ' ')}</NeutralBadge>}

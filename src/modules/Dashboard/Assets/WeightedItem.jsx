@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -175,21 +175,6 @@ function WeightedItem({ position, isStake, isXlDown }) {
         ) : (
           <>
             <EmphasisButton
-              disabled={stakePending || position.gauge.address === zeroAddress}
-              className='h-11 flex-1 px-1'
-              onClick={() => setPopupStake(true)}
-              data-tooltip-id={`stake-position-${position.address}`}
-            >
-              {t('Stake')}
-            </EmphasisButton>
-
-            {position.gauge.address === zeroAddress && (
-              <CustomTooltip id={`stake-position-${position.address}`} className='max-w-[500px]'>
-                {t('This pool has no Gauge')}
-              </CustomTooltip>
-            )}
-
-            <EmphasisButton
               disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
               onClick={onClaim}
               className='h-11 flex-1 px-1'
@@ -200,6 +185,21 @@ function WeightedItem({ position, isStake, isXlDown }) {
             <EmphasisButton className='h-11 flex-1 px-1' onClick={() => setManagePopup(true)}>
               {t('Manage')}
             </EmphasisButton>
+
+            <PrimaryButton
+              disabled={stakePending || position.gauge.address === zeroAddress}
+              className='h-11 flex-1 px-1'
+              onClick={() => setPopupStake(true)}
+              data-tooltip-id={`stake-position-${position.address}`}
+            >
+              {t('Stake')}
+            </PrimaryButton>
+
+            {position.gauge.address === zeroAddress && (
+              <CustomTooltip id={`stake-position-${position.address}`} className='max-w-[500px]'>
+                {t('This pool has no Gauge')}
+              </CustomTooltip>
+            )}
           </>
         )}
       </div>

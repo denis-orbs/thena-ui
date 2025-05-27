@@ -27,25 +27,25 @@ const columns = [
   {
     label: 'Range',
     value: 'range',
-    width: 'xl:w-[260px] 2xl:w-[284px]',
+    width: 'xl:w-[260px]',
     disabled: true,
   },
   {
     label: 'My APR',
     value: 'apr',
-    maxWidth: 'xl:max-w-[100px]',
+    maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'My Value',
     value: 'value',
-    maxWidth: 'xl:max-w-[100px]',
+    maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'Rewards',
     value: 'rewards',
-    maxWidth: 'xl:max-w-[100px]',
+    maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {

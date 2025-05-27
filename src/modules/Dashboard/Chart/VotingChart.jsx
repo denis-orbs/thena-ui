@@ -121,7 +121,7 @@ function VotingChart({ data = [], className }) {
               borderWidth: pools.length === 1 ? 0 : isMdDown ? 1 : 2,
               borderColor: '#1A121E',
               radius: '100%',
-              cutout: isMdDown ? '87%' : '78%',
+              cutout: isMdDown ? '87%' : '82%',
             }
           : {
               label: 'time',
@@ -129,7 +129,7 @@ function VotingChart({ data = [], className }) {
               backgroundColor: timeColors,
               borderWidth: 0,
               radius: '100%',
-              cutout: isMdDown ? '87%' : '78%',
+              cutout: isMdDown ? '87%' : '82%',
             },
       ],
     ],
