@@ -33,18 +33,21 @@ const columns = [
   {
     label: 'My APR',
     value: 'apr',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'My Value',
     value: 'value',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'Rewards',
     value: 'rewards',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
@@ -83,15 +86,17 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
               <NewSearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             ) : (
               <div className='flex items-center gap-2'>
-                <TextHeading className='text-base 2xl:text-lg'>{column.label}</TextHeading>
-                {sort.value === column.value && !column.disabled && (
-                  <ArrowDownIcon
-                    className={cn(
-                      'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
-                      sort.isDesc ? 'rotate-0' : 'rotate-180',
-                    )}
-                  />
-                )}
+                <TextHeading className='text-base 2xl:text-[17px]'>{column.label}</TextHeading>
+                <div className='size-4'>
+                  {sort.value === column.value && !column.disabled && (
+                    <ArrowDownIcon
+                      className={cn(
+                        'transfrom size-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                        sort.isDesc ? 'rotate-0' : 'rotate-180',
+                      )}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </th>

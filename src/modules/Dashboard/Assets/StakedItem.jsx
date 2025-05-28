@@ -171,14 +171,16 @@ function StakedItem({ position, isXlDown }) {
           tokens={[position.token0, position.token1]}
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
+          <Link href={`/analytics/pairs/${position.address}?back=2`}>
+            <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
+          </Link>
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             {getDisplayedStrategy(position.title, position.version)}
           </Paragraph>
         </div>
       </div>
     ),
-    [position.token0, position.token1, position.symbol, position.title, position.version],
+    [position.token0, position.token1, position.symbol, position.title, position.version, position.address],
   )
 
   const rangeCell = useMemo(
@@ -309,7 +311,7 @@ function StakedItem({ position, isXlDown }) {
         actions = (
           <>
             <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-              {t('Remove')}
+              {t('Unstake')}
             </EmphasisButton>
             <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}

@@ -132,21 +132,12 @@ const getTransactionType = (event, symbol0, symbol1, t, tokens, isWeighted = fal
         })
       }
 
-      return tokens.reduce(
-        (str, tk, index) => str + tk.symbol + (index < tokens.length - 1 ? ` ${t('And')} ` : ''),
-        `${t('Add')} `,
-      )
+      return t('Addition')
 
     case TXN_TYPE.REMOVE:
-      return t('Remove [symbolA] and [symbolB]', {
-        symbolA: formattedS0,
-        symbolB: formattedS1,
-      })
+      return t('Removal')
     case TXN_TYPE.SWAP:
-      return t('Swap [symbolA] for [symbolB]', {
-        symbolA: formattedS0,
-        symbolB: formattedS1,
-      })
+      return t('Swap')
     default:
       return ''
   }
@@ -263,7 +254,7 @@ export default function WeightedTransactionTable({ pair }) {
         ...(item.tokens || []).reduce((acc, token) => {
           acc[token.symbol] = (
             <Paragraph>
-              {formatAmount(token.amount)} {token.symbol}
+              {formatAmount(Number(token.amount) < 0 ? token.amount * -1 : token.amount)} {token.symbol}
             </Paragraph>
           )
           return acc

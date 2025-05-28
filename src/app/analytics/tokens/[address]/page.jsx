@@ -1,10 +1,11 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Box from '@/components/box'
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import CircleImage from '@/components/image/CircleImage'
@@ -12,6 +13,7 @@ import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { SCAN_URLS } from '@/constant'
 import { useTokens } from '@/context/tokensContext'
+import { useBackURL } from '@/hooks/useBackURL'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon } from '@/svgs'
@@ -24,6 +26,8 @@ export default function TokenDetailPage({ params }) {
   const { networkId } = useChainSettings()
   const { tokens, isLoading } = useTokens()
   const t = useTranslations()
+  const { push } = useRouter()
+  const backUrl = useBackURL()
 
   const token = useMemo(
     () => (tokens ? tokens.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
@@ -39,7 +43,7 @@ export default function TokenDetailPage({ params }) {
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl={backUrl}>
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-4'>
@@ -72,8 +76,13 @@ export default function TokenDetailPage({ params }) {
                     window.open(`${SCAN_URLS[networkId]}/address/${token.address}`, '_blank')
                   }}
                 />
-                <SecondaryButton>{t('Add Liquidity')}</SecondaryButton>
-                <PrimaryButton>{t('Swap')}</PrimaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    push(`/swap?inputCurrency=BNB&outputCurrency=${token.address}&swapType=1`)
+                  }}
+                >
+                  {t('Swap')}
+                </PrimaryButton>
               </div>
             </div>
           </div>

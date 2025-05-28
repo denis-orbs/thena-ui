@@ -349,14 +349,28 @@ function V3Banner({ onClose }) {
       <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
         <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
         <span className='text-center font-normal'>
-          Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.
+          {new Date() >= new Date('2025-05-29')
+            ? 'Migrate your liquidity now to continue earning rewards.'
+            : 'Migrate your liquidity now to continue earning rewards.'}
         </span>
-        <TertiaryButton
-          className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
-          onClick={() => push('/dashboard')}
-        >
-          Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
-        </TertiaryButton>
+        <div className='flex'>
+          <TertiaryButton
+            className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
+            onClick={() => push('/dashboard')}
+          >
+            Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
+          </TertiaryButton>
+          {new Date() >= new Date('2025-05-29') && (
+            <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
+              <TertiaryButton
+                className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
+                onClick={() => push('/dashboard')}
+              >
+                Learn More <ArrowRightIcon className='ml-1 h-4 w-4' />
+              </TertiaryButton>
+            </Link>
+          )}
+        </div>
       </div>
       <button
         onClick={onClose}
@@ -1050,7 +1064,16 @@ function Header() {
                     }}
                   >
                     <p className='font-medium text-neutral-200'>{menu.label}</p>
-                    {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
+                    {menu.sub && (
+                      <ArrowRightIcon
+                        onClick={e => {
+                          e.stopPropagation()
+                          e.preventDefault()
+                          setSelected(menu)
+                        }}
+                        className='h-4 w-4'
+                      />
+                    )}
                   </div>
                 ))}
               </div>

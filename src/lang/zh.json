@@ -1566,5 +1566,7 @@
   "Earn": "Earn",
   "Withdraw your THE from [veTHEID]": "Withdraw your THE from ID#{veTHEID}. If you want to relock them, you need to create a new position.",
   "Invalid amount": "Invalid amount",
-  "Liquidity range": "Liquidity range"
+  "Liquidity range": "Liquidity range",
+  "Removal": "Removal",
+  "Addition": "Addition"
 }
