@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
@@ -87,14 +88,16 @@ function WeightedItem({ position, isStake, isXlDown }) {
           tokens={position.tokens}
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
+          <Link href={`/analytics/pairs/${position.address}?back=2`}>
+            <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
+          </Link>
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             Weighted
           </Paragraph>
         </div>
       </div>
     ),
-    [position.tokens, position.symbol],
+    [position.tokens, position.symbol, position.address],
   )
 
   const rangeCell = useMemo(() => <div className='w-full text-center'>{isStake ? 'Stake' : 'UnStake'}</div>, [isStake])
