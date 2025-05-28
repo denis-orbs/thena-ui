@@ -51,9 +51,9 @@ const FUSION_PAIRS = gql`
   }
 `
 
-const getFusionPairData = async (chainId, address) => {
+const getFusionPairData = async (chainId, address, version = 2) => {
   try {
-    const { pools } = await fusionClient[chainId].request(FUSION_PAIRS, {
+    const { pools } = await fusionClient[version][chainId].request(FUSION_PAIRS, {
       address,
     })
     const data = pools.map(ele => ele.id)
@@ -67,8 +67,9 @@ const getFusionPairData = async (chainId, address) => {
 const fetchTokenPairsData = async (chainId, token) => {
   console.log('fetch token pair data ======================')
   const { data: fusiondata } = await getFusionPairData(chainId, token.address)
+  const { data: fusiondatav3 } = await getFusionPairData(chainId, token.address, 3)
   const { data: v1data } = await getV1PairData(chainId, token.address)
-  return (fusiondata ?? []).concat(v1data ?? [])
+  return (fusiondata ?? []).concat(fusiondatav3 ?? []).concat(v1data ?? [])
 }
 
 export default function TokenPairs({ token }) {
