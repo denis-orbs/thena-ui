@@ -1050,7 +1050,16 @@ function Header() {
                     }}
                   >
                     <p className='font-medium text-neutral-200'>{menu.label}</p>
-                    {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
+                    {menu.sub && (
+                      <ArrowRightIcon
+                        onClick={e => {
+                          e.stopPropagation()
+                          e.preventDefault()
+                          setSelected(menu)
+                        }}
+                        className='h-4 w-4'
+                      />
+                    )}
                   </div>
                 ))}
               </div>
