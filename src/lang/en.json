@@ -1576,5 +1576,7 @@
   "years": "years",
   "Create Order": "Create Order",
   "Orders": "Orders",
-  "Liquidity range": "Liquidity range"
+  "Liquidity range": "Liquidity range",
+  "Removal": "Removal",
+  "Addition": "Addition"
 }
