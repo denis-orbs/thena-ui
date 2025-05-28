@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
@@ -160,16 +161,18 @@ function FarmingItem({ position, isXlDown }) {
           tokens={[asset0, asset1]}
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
-            {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
-          </NewTextSubHeading>
+          <Link href={`/analytics/pairs/${poolInfo?.address}?back=2`}>
+            <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
+              {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
+            </NewTextSubHeading>
+          </Link>
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
     ),
-    [asset0, asset1, tokenId, _fusion?.fee, t],
+    [asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.address],
   )
 
   const rangeCell = useMemo(
