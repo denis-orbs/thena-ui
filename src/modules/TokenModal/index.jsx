@@ -62,11 +62,13 @@ function TokenModal({
     const tokenList = localTokens.concat(baseAssets)
 
     const result = search
-      ? tokenList.filter(
-          asset =>
-            asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
-            asset.address.toLowerCase().includes(search.toLowerCase()),
-        )
+      ? tokenList.filter(asset => {
+          let res = asset.symbol.toLowerCase().includes(search.toLowerCase())
+          if (isAddress(search)) {
+            res = res || asset.address.toLowerCase().includes(search.toLowerCase())
+          }
+          return res
+        })
       : tokenList
 
     if (result.length === 0 && customToken) {

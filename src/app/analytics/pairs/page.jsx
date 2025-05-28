@@ -16,11 +16,26 @@ export default function AnalyticsPairsPage() {
   const { pairs, isLoading } = usePairs()
   const t = useTranslations()
 
-  const filteredPairs = useMemo(
-    () => (pairs ? pairs.filter(pair => (pair.symbol || '').toLowerCase().includes(searchText.toLowerCase())) : []),
-    [pairs, searchText],
-  )
+  const filteredPairs = useMemo(() => {
+    if (!searchText) return pairs
+    const searchTerms = searchText
+      .toLowerCase()
+      .split(/[\s/,]+/)
+      .map(term => term.trim())
 
+    return pairs.filter(pool => {
+      const poolSymbols = (pool.symbol || '').toLowerCase().split('/')
+
+      if (searchTerms.length === 2 && poolSymbols.length === 2) {
+        return (
+          (poolSymbols[0].includes(searchTerms[0]) && poolSymbols[1].includes(searchTerms[1])) ||
+          (poolSymbols[0].includes(searchTerms[1]) && poolSymbols[1].includes(searchTerms[0]))
+        )
+      }
+
+      return pool.symbol.toLowerCase().includes(searchText.toLowerCase())
+    })
+  }, [pairs, searchText])
   if (isLoading || !pairs) {
     return <Loading />
   }
