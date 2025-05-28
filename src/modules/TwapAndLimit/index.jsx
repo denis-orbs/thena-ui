@@ -1,5 +1,6 @@
 'use client'
 
+/* THENA Dev */
 /* eslint-disable simple-import-sort/imports */
 import React, { createContext, useContext, useEffect, useMemo } from 'react'
 import BN from 'bignumber.js'
@@ -102,10 +103,14 @@ function LimitPrice() {
   return (
     <div className='twap-limit-panel'>
       <div className='twap-limit-panel-header'>
-        <p>When 1</p>
-        <CircleImage src={tokens.topToken?.logoUrl} alt='token logo' width={24} height={24} />
-        <p> {tokens.topToken?.symbol} is worth</p>
+        <div className='twap-limit-panel-header-left'>
+          <p>When 1</p>
+          <CircleImage src={tokens.topToken?.logoUrl} alt='token logo' width={24} height={24} />
+          <p> {tokens.topToken?.symbol} is worth</p>
+        </div>
+        <TextIconButton onClick={onInvert} className='twap-limit-panel-invert-button' Icon={SwitchHorizontalV2Icon} />
       </div>
+
       <div className='twap-limit-panel-input-container'>
         <TokenInput
           className='twap-limit-panel-input'
@@ -119,7 +124,6 @@ function LimitPrice() {
           autoFocus
         />
         <Widget.LimitPrice.PercentSelector />
-        <TextIconButton onClick={onInvert} className='twap-limit-panel-invert-button' Icon={SwitchHorizontalV2Icon} />
       </div>
     </div>
   )
