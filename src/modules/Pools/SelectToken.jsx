@@ -272,57 +272,59 @@ function SelectToken({
           />
         )}
         {/* Dropdown */}
-        {!isDisabled && open && (
-          <div
-            ref={dropdownRef}
-            className={cn(
-              'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
-              'rounded-xl border border-neutral-900 bg-neutral-900 p-2 shadow-lg',
-              'visible top-full opacity-100',
-              dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
-              listClassNames,
-            )}
-            style={{
-              width: optionWidth ? `${optionWidth}px` : '100%',
+        <div
+          ref={dropdownRef}
+          className={cn(
+            'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
+            'rounded-xl border border-neutral-900 bg-neutral-900 p-2 shadow-lg',
+            'visible top-full opacity-100',
+            dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
+            listClassNames,
+            !isDisabled && open ? 'visible opacity-100' : 'invisible opacity-0',
+          )}
+          style={{
+            width: optionWidth ? `${optionWidth}px` : '100%',
+          }}
+        >
+          <SearchInput
+            onClick={e => {
+              e.preventDefault()
+              e.stopPropagation()
+              e.target.focus()
             }}
+            setVal={setSearchText}
+            val={searchText}
+            className='mb-3 mr-2 2xl:mr-3'
+            classNames={{
+              trailingIcon: 'cursor-pointer pointer-events-auto',
+            }}
+          />
+          <div
+            className={cn(
+              'scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400',
+              'grid max-h-[400px] gap-3 overflow-y-auto pr-2 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3',
+              Number(displayedAssets?.length) === 2 && '2xl:grid-cols-2',
+              classNames?.dropdown,
+            )}
           >
-            <SearchInput
-              onClick={e => {
-                e.preventDefault()
-                e.stopPropagation()
-                e.target.focus()
-              }}
-              setVal={setSearchText}
-              val={searchText}
-              className='mb-3 mr-2 2xl:mr-3'
-            />
-            <div
-              className={cn(
-                'scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400',
-                'grid max-h-[400px] gap-3 overflow-y-auto pr-2 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3',
-                Number(displayedAssets?.length) === 2 && '2xl:grid-cols-2',
-                classNames?.dropdown,
-              )}
-            >
-              {displayedAssets?.map((item, index) => (
-                <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>
-                  <ItemToken
-                    item={item}
-                    setPopup={data => setOpen(data)}
-                    selectedAsset={selectedAsset}
-                    setSelectedAsset={asset => {
-                      setSelectedAsset(asset)
-                      setOpen(false)
-                    }}
-                    otherAsset={otherAsset}
-                    setOtherAsset={() => {}}
-                    className='bg-neutral-800 px-3 py-5 hover:bg-neutral-600'
-                  />
-                </div>
-              ))}
-            </div>
+            {displayedAssets?.map((item, index) => (
+              <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>
+                <ItemToken
+                  item={item}
+                  setPopup={data => setOpen(data)}
+                  selectedAsset={selectedAsset}
+                  setSelectedAsset={asset => {
+                    setSelectedAsset(asset)
+                    setOpen(false)
+                  }}
+                  otherAsset={otherAsset}
+                  setOtherAsset={() => {}}
+                  className='bg-neutral-800 px-3 py-5 hover:bg-neutral-600'
+                />
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
       {isError && (
         <p className='mb-2 mt-1 flex gap-1 text-error-500'>
