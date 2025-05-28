@@ -244,7 +244,7 @@ function ManualStrategy({
 
               <div className='flex flex-col justify-end'>
                 <NewTextSubHeading className='text-end text-xs font-bold text-gradient-primary-start md:text-xl md:leading-6'>
-                  {formatAmount(APRs?.current?.isZero() ? strategy?.apr : APRs?.current)}%
+                  {formatAmount(APRs?.current && APRs?.current?.isZero() ? strategy?.apr : APRs?.current)}%
                 </NewTextSubHeading>
                 <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
                   {t('Estimated APR')}
