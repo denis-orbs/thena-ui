@@ -351,7 +351,7 @@ function V3Banner({ onClose }) {
         <span className='text-center font-normal'>
           {new Date() >= new Date('2025-05-29')
             ? 'Migrate your liquidity now to continue earning rewards.'
-            : 'Migrate your liquidity now to continue earning rewards.'}
+            : 'Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.'}
         </span>
         <div className='flex'>
           <TertiaryButton
