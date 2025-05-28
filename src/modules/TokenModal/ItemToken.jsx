@@ -35,6 +35,11 @@ export function ItemToken({
     tk.isFromStorage = true
 
     addLocalToken(tk)
+
+    // Automatically select the token after adding it
+    setSelectedAsset(tk)
+    onAssetSelect()
+    setPopup(false)
   }
 
   const { balance } = token
