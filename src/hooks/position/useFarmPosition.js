@@ -185,7 +185,8 @@ export const useFarmPositions = positions => {
         const totalLiquidity = fusion?.liquidity
         const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
 
-        const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
+        const farmRatio =
+          Number(totalLiquidityInFarm) > 0 ? BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm) : ZERO_VALUE
         const farmApr = tvl.gt(0)
           ? rewardPerSecond
               .times(farmRatio)

@@ -21,13 +21,13 @@ const columns = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'xl:w-[240px] 2xl:w-[260px] 3xl:w-[280px]',
+    width: 'xl:w-[240px]',
     isDesc: true,
   },
   {
     label: 'Range',
     value: 'range',
-    minWidth: 'xl:min-w-[260px]',
+    width: 'xl:w-[260px]',
     disabled: true,
   },
   {
@@ -54,7 +54,7 @@ const columns = [
   {
     label: '',
     value: 'search',
-    width: 'xl:w-[300px] 2xl:w-[381px]',
+    width: 'xl:w-[300px] 2xl:w-[320px]',
     disabled: true,
   },
 ]
@@ -86,7 +86,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
               <NewSearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             ) : (
               <div className='flex items-center gap-2'>
-                <TextHeading className='text-base 2xl:text-lg'>{column.label}</TextHeading>
+                <TextHeading className='text-base 2xl:text-[17px]'>{column.label}</TextHeading>
                 <div className='size-4'>
                   {sort.value === column.value && !column.disabled && (
                     <ArrowDownIcon

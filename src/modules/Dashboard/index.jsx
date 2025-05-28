@@ -40,7 +40,7 @@ function Dashboard() {
       <div
         className={cn(
           'z-40 flex flex-col gap-4 rounded-xl md:mx-8 md:mb-12 lg:mx-12 xl:mx-auto 2xl:mb-[180px]',
-          'xl:w-[1184px] 2xl:w-[1312px] 3xl:w-[1440px]',
+          'xl:w-[1184px]',
         )}
       >
         {account && <UserAssets setPositionRewards={setPositionRewards} />}
