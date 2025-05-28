@@ -134,32 +134,38 @@ export const fetchPairChartData = async (chainId, pair) => {
     )
     if (!pair?.version === 3) return fusionData
 
-    const swapfeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
-    if (!swapfeePool) return fusionData
+    const swapFeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
+    if (!swapFeePool) return fusionData
 
-    const { data: fusionData2 = [] } = await fetchChartData(
+    const { data: fusionDataV2 = [] } = await fetchChartData(
       getFusionChartData,
-      [{ chainId, address: swapfeePool.address, version }],
+      [{ chainId, address: pair.address, version: 2 }],
+      false,
+    )
+    const { data: fusionFeeData = [] } = await fetchChartData(
+      getFusionChartData,
+      [{ chainId, address: swapFeePool.address, version }],
       false,
     )
 
     const mergedData = []
-    const allDates = new Set([...fusionData.map(d => d.date), ...fusionData2.map(d => d.date)])
+    const allDates = new Set([
+      ...fusionData.map(d => d.date),
+      ...fusionFeeData.map(d => d.date),
+      ...fusionDataV2.map(d => d.date),
+    ])
 
     allDates.forEach(date => {
       const data1 = fusionData.find(d => d.date === date)
-      const data2 = fusionData2.find(d => d.date === date)
+      const data2 = fusionFeeData.find(d => d.date === date)
+      const data3 = fusionDataV2.find(d => d.date === date)
 
-      if (data1 && data2) {
-        mergedData.push({
-          date,
-          dayFees: data1.dayFees + data2.dayFees,
-          dayVolume: data1.dayVolume + data2.dayVolume,
-          tvlUSD: data1.tvlUSD + data2.tvlUSD,
-        })
-      } else {
-        mergedData.push(data1 || data2)
-      }
+      mergedData.push({
+        date,
+        dayFees: (data1?.dayFees ?? 0) + (data2?.dayFees ?? 0) + (data3?.dayFees ?? 0),
+        dayVolume: (data1?.dayVolume ?? 0) + (data2?.dayVolume ?? 0) + (data3?.dayVolume ?? 0),
+        tvlUSD: (data1?.tvlUSD ?? 0) + (data2?.tvlUSD ?? 0) + (data3?.tvlUSD ?? 0),
+      })
     })
 
     return mergedData
