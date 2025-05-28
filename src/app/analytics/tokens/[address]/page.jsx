@@ -13,6 +13,7 @@ import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { SCAN_URLS } from '@/constant'
 import { useTokens } from '@/context/tokensContext'
+import { useBackURL } from '@/hooks/useBackURL'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon } from '@/svgs'
@@ -26,6 +27,7 @@ export default function TokenDetailPage({ params }) {
   const { tokens, isLoading } = useTokens()
   const t = useTranslations()
   const { push } = useRouter()
+  const backUrl = useBackURL()
 
   const token = useMemo(
     () => (tokens ? tokens.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
@@ -41,7 +43,7 @@ export default function TokenDetailPage({ params }) {
   }
 
   return (
-    <LayoutWithBackButton>
+    <LayoutWithBackButton backUrl={backUrl}>
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-4'>
