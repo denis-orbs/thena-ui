@@ -74,6 +74,7 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
 }
 
 const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, isFarming }) => {
+  if (tvl.isZero()) return BigNumber(0)
   const ratio = BigNumber(positionLiquidity).div(BigNumber(poolLiquidity))
 
   if (isFarming) {
@@ -100,6 +101,7 @@ export const useEstimateAPR = ({
   token1,
   amount1 = 0,
   isFarming = true,
+  estimatedLiquidity = 0,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const currency0 = useGetAsset(token0?.address)
@@ -151,7 +153,7 @@ export const useEstimateAPR = ({
   if (!tickLower || !tickUpper || !pool) return {}
   if (tickUpper <= tickLower) return {}
 
-  let _amount0 =
+  const _amount0 =
     typeof amount0 === 'object'
       ? BigNumber(amount0)
       : toWei(
@@ -160,7 +162,7 @@ export const useEstimateAPR = ({
             .toString(),
           currency0?.decimals ?? 18,
         )
-  let _amount1 =
+  const _amount1 =
     typeof amount1 === 'object'
       ? BigNumber(amount1)
       : toWei(
@@ -169,14 +171,6 @@ export const useEstimateAPR = ({
             .toString(),
           currency1?.decimals ?? 18,
         )
-  if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
-    _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
-    _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
-  } else if (_amount0?.isZero() && token0 && !token1) {
-    _amount0 = currency0?.price ? toWei(200 / currency0.price, currency0.decimals) : BigNumber(0)
-  } else if (_amount1?.isZero() && token1 && !token0) {
-    _amount1 = currency1?.price ? toWei(200 / currency1.price, currency1.decimals) : BigNumber(0)
-  }
 
   const poolPrice = pool?._token0Price.toSignificant(5)
   const _token0 = pool.token0
@@ -236,24 +230,8 @@ export const useEstimateAPR = ({
         amount1: _token1 === currency1.address ? Math.round(_amount1.toNumber()) : Math.round(_amount0.toNumber()),
         useFullPrecision: true,
       })
-    } else if (token0 && !token1) {
-      _position = Position.fromAmount0({
-        pool,
-        tickLower: _tickLower,
-        tickUpper: _tickUpper,
-        amount0: Math.round(_amount0.toNumber()),
-        useFullPrecision: true,
-      })
-    } else if (!token0 && token1) {
-      _position = Position.fromAmount1({
-        pool,
-        tickLower: _tickLower,
-        tickUpper: _tickUpper,
-        amount1: Math.round(_amount1.toNumber()),
-        useFullPrecision: true,
-      })
     } else {
-      _position = null
+      _position = { liquidity: estimatedLiquidity }
     }
     return {
       title,

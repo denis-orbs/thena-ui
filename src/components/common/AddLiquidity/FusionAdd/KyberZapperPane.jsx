@@ -61,23 +61,6 @@ function KyberZapperPane({
 
   const [slippage, setSlippage] = useState(0.5)
 
-  const estimateAPR = useEstimateAPR({
-    pool: mintInfo.pool,
-    poolAddress: mintInfo.poolAddress,
-    tickUpper,
-    tickLower,
-    token0: (tokenDeposit.address === 'BNB' && isToken0Wbnb) || tokenDeposit.address === asset0.address ? asset0 : null,
-    token1: (tokenDeposit.address === 'BNB' && isToken1Wbnb) || tokenDeposit.address === asset1.address ? asset1 : null,
-    amount0: Number(amountIn),
-    amount1: Number(amountIn),
-    isFarming: strategy?.title === MANUAL_TYPES[0],
-  })
-
-  useEffect(() => {
-    setAPRs(estimateAPR)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountIn, tokenDeposit.address, tickUpper, tickLower])
-
   const { data } = useGetZapInRoute({
     tickLower,
     tickUpper,
@@ -100,6 +83,23 @@ function KyberZapperPane({
   const _token0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
   const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
   const [invalidAmount, setInvalidAmount] = useState(false)
+
+  const estimateAPR = useEstimateAPR({
+    pool: mintInfo.pool,
+    poolAddress: mintInfo.poolAddress,
+    tickUpper,
+    tickLower,
+    token0: (tokenDeposit.address === 'BNB' && isToken0Wbnb) || tokenDeposit.address === asset0.address ? asset0 : null,
+    token1: (tokenDeposit.address === 'BNB' && isToken1Wbnb) || tokenDeposit.address === asset1.address ? asset1 : null,
+    amount0: Number(amountIn),
+    amount1: Number(amountIn),
+    isFarming: strategy?.title === MANUAL_TYPES[0],
+    estimatedLiquidity: liquidityAdded,
+  })
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liquidityAdded])
 
   const handleKyberAddLiquidity = useCallback(() => {
     if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {

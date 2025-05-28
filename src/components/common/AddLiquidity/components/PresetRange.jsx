@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { Paragraph } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
@@ -15,6 +15,16 @@ const PresetProfits = {
   HIGH: 'HIGH',
 }
 
+const stableRanges = {
+  type: Presets.STABLE,
+  title: 'Stable',
+  percent: '±1.6%',
+  min: 0.984,
+  max: 1.016,
+  risk: PresetProfits.VERY_LOW,
+  profit: PresetProfits.HIGH,
+}
+
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { APRs } = useAprStore()
@@ -22,17 +32,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
-      return [
-        {
-          type: Presets.STABLE,
-          title: 'Stable',
-          percent: '±1.6%',
-          min: 0.984,
-          max: 1.016,
-          risk: PresetProfits.VERY_LOW,
-          profit: PresetProfits.HIGH,
-        },
-      ]
+      return [stableRanges]
     }
 
     return [
@@ -103,6 +103,13 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       })),
     [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
+
+  useEffect(() => {
+    if (isStablecoinPair && !activePreset) {
+      handlePresetRangeSelection(stableRanges)
+      onChangePresetRange(stableRanges)
+    }
+  }, [isStablecoinPair, activePreset, handlePresetRangeSelection, onChangePresetRange])
 
   return (
     <div
