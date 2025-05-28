@@ -37,7 +37,12 @@ function Dashboard() {
       <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-right-top opacity-50 max-md:hidden md:h-[262px]' />
       <HeaderRewards totalUsd={totalUsd} account={account} />
 
-      <div className='z-40 flex max-w-[1184px] flex-col gap-4 rounded-xl md:mx-8 md:mb-12 lg:mx-12 2xl:mx-auto 2xl:mb-[180px]'>
+      <div
+        className={cn(
+          'z-40 flex flex-col gap-4 rounded-xl md:mx-8 md:mb-12 lg:mx-12 xl:mx-auto 2xl:mb-[180px]',
+          'xl:w-[1184px] 2xl:w-[1312px] 3xl:w-[1440px]',
+        )}
+      >
         {account && <UserAssets setPositionRewards={setPositionRewards} />}
 
         <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
