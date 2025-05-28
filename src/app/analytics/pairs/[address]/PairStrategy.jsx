@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
@@ -23,14 +23,12 @@ import {
   useRangeHopCallbacks,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
-  useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { ArrowRightIcon } from '@/svgs'
 
 function PairStrategy({ pair }) {
   const dispatch = useDispatch()
-  const pathname = usePathname()
   const { push } = useRouter()
   const t = useTranslations()
 
@@ -44,7 +42,6 @@ function PairStrategy({ pair }) {
   const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   )
-  const { strategy } = useV3MintState()
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
@@ -196,18 +193,8 @@ function PairStrategy({ pair }) {
   )
 
   useEffect(() => {
-    if (strategy && strategy.isDefault) return
-
-    if (!sortedSubPools.length && !strategy) {
-      handleChooseStrategy(defaultSwapFees)
-      return
-    }
-
-    if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
-      const _strategy = sortedSubPools.at(0)
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
-    }
-  }, [handleChooseStrategy, sortedSubPools, strategy, pathname])
+    handleChooseStrategy(null)
+  }, [handleChooseStrategy])
 
   return (
     <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
