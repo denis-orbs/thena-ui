@@ -58,11 +58,11 @@ export const useAlgebraAdd = () => {
         const secondContract = !quoteCurrency.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
         if (!baseCurrency.isNative && !depositADisabled) {
           const allowance = await readCall(firstContract, 'allowance', [account, positionManger.address], chainId)
-          isFirstApproved = fromWei(allowance, baseCurrency.decimals).gte(amountA.toExact(), baseCurrency.decimals)
+          isFirstApproved = fromWei(allowance, baseCurrency.decimals).gte(amountA.toExact())
         }
         if (!quoteCurrency.isNative && !depositBDisabled) {
           const allowance = await readCall(secondContract, 'allowance', [account, positionManger.address], chainId)
-          isSecondApproved = fromWei(allowance, quoteCurrency.decimals).gte(amountB.toExact(), quoteCurrency.decimals)
+          isSecondApproved = fromWei(allowance, quoteCurrency.decimals).gte(amountB.toExact())
         }
 
         const transactions = {}
