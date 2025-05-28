@@ -21,37 +21,40 @@ const columns = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'xl:w-[240px]',
+    width: 'xl:w-[240px] 2xl:w-[260px] 3xl:w-[280px]',
     isDesc: true,
   },
   {
     label: 'Range',
     value: 'range',
-    width: 'xl:w-[260px]',
+    minWidth: 'xl:min-w-[260px]',
     disabled: true,
   },
   {
     label: 'My APR',
     value: 'apr',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'My Value',
     value: 'value',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: 'Rewards',
     value: 'rewards',
+    width: 'xl:w-[120px]',
     maxWidth: 'xl:max-w-[120px]',
     isDesc: true,
   },
   {
     label: '',
     value: 'search',
-    width: 'xl:w-[300px] 2xl:w-[320px]',
+    width: 'xl:w-[300px] 2xl:w-[381px]',
     disabled: true,
   },
 ]
@@ -84,14 +87,16 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
             ) : (
               <div className='flex items-center gap-2'>
                 <TextHeading className='text-base 2xl:text-lg'>{column.label}</TextHeading>
-                {sort.value === column.value && !column.disabled && (
-                  <ArrowDownIcon
-                    className={cn(
-                      'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
-                      sort.isDesc ? 'rotate-0' : 'rotate-180',
-                    )}
-                  />
-                )}
+                <div className='size-4'>
+                  {sort.value === column.value && !column.disabled && (
+                    <ArrowDownIcon
+                      className={cn(
+                        'transfrom size-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                        sort.isDesc ? 'rotate-0' : 'rotate-180',
+                      )}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </th>
