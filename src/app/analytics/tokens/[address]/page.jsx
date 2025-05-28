@@ -1,10 +1,11 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Box from '@/components/box'
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import CircleImage from '@/components/image/CircleImage'
@@ -24,6 +25,7 @@ export default function TokenDetailPage({ params }) {
   const { networkId } = useChainSettings()
   const { tokens, isLoading } = useTokens()
   const t = useTranslations()
+  const { push } = useRouter()
 
   const token = useMemo(
     () => (tokens ? tokens.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
@@ -72,8 +74,13 @@ export default function TokenDetailPage({ params }) {
                     window.open(`${SCAN_URLS[networkId]}/address/${token.address}`, '_blank')
                   }}
                 />
-                <SecondaryButton>{t('Add Liquidity')}</SecondaryButton>
-                <PrimaryButton>{t('Swap')}</PrimaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    push(`/swap?inputCurrency=BNB&outputCurrency=${token.address}&swapType=1`)
+                  }}
+                >
+                  {t('Swap')}
+                </PrimaryButton>
               </div>
             </div>
           </div>
