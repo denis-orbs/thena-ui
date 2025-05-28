@@ -78,6 +78,14 @@ function TokenModal({
     return result
       .filter(asset => !hiddenAssets.includes(asset.address))
       .sort((a, b) => {
+        const aSymbol = a.symbol.toLowerCase()
+        const bSymbol = b.symbol.toLowerCase()
+        if (aSymbol === search.toLowerCase()) {
+          return -1
+        }
+        if (bSymbol === search.toLowerCase()) {
+          return 1
+        }
         const aTV = a.totalValue || 0
         const bTV = b.totalValue || 0
 
@@ -87,8 +95,6 @@ function TokenModal({
         }
 
         // if totalValue === 0 then sort by match + alphabet
-        const aSymbol = a.symbol.toLowerCase()
-        const bSymbol = b.symbol.toLowerCase()
 
         if (search) {
           const aStarts = aSymbol.startsWith(search.toLowerCase())
