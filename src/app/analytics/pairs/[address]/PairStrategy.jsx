@@ -211,11 +211,8 @@ function PairStrategy({ pair }) {
   }, [pair])
 
   useEffect(() => {
-    setStrategy({
-      ...bestManualPool,
-      isFarming: bestManualPool?.title === MANUAL_TYPES[0],
-    })
-  }, [bestManualPool, setStrategy])
+    handleChooseStrategy(bestManualPool)
+  }, [bestManualPool, handleChooseStrategy])
 
   const { strategy, pool, poolAddress } = mintInfo
 
@@ -226,14 +223,16 @@ function PairStrategy({ pair }) {
     token1: quoteCurrency,
     isFarming: strategy?.isFarming,
   })
+
   useEffect(() => {
     setAPRs(estimateAPR)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(estimateAPR), setAPRs])
 
   useEffect(() => {
-    handleChooseStrategy(null)
-  }, [handleChooseStrategy])
+    const _strategy = sortedSubPools.find(item => MANUAL_TYPES.includes(item.title))
+    handleChooseStrategy(_strategy ?? defaultSwapFees)
+  }, [handleChooseStrategy, sortedSubPools])
 
   return (
     <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>

@@ -96,10 +96,11 @@ function KyberZapperPane({
     isFarming: strategy?.title === MANUAL_TYPES[0],
     estimatedLiquidity: liquidityAdded,
   })
+
   useEffect(() => {
     setAPRs(estimateAPR)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liquidityAdded])
+  }, [JSON.stringify(estimateAPR), liquidityAdded])
 
   const handleKyberAddLiquidity = useCallback(() => {
     if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {

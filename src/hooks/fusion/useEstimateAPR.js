@@ -191,6 +191,12 @@ export const useEstimateAPR = ({
   if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
     _amount0 = currency0?.price ? toWei(50 / currency0.price, currency0.decimals) : BigNumber(0)
     _amount1 = currency1?.price ? toWei(50 / currency1.price, currency1.decimals) : BigNumber(0)
+  } else if (!estimatedLiquidity) {
+    if (_amount0?.isZero() && token0 && !token1) {
+      _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
+    } else if (_amount1?.isZero() && token1 && !token0) {
+      _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
+    }
   }
 
   const presetPositions = [
@@ -250,6 +256,26 @@ export const useEstimateAPR = ({
           tickUpper: _tickUpper,
           amount0: isRevert ? Math.round(_amount0.toNumber()) : Math.round(_amount1.toNumber()),
           amount1: isRevert ? Math.round(_amount1.toNumber()) : Math.round(_amount0.toNumber()),
+          useFullPrecision: true,
+        })
+      }
+    } else if (!estimatedLiquidity) {
+      if (title === 'current') {
+        _position = { liquidity: 0 }
+      } else if (token0 && !token1) {
+        _position = Position.fromAmount0({
+          pool,
+          tickLower: _tickLower,
+          tickUpper: _tickUpper,
+          amount0: Math.round(_amount0.toNumber()),
+          useFullPrecision: true,
+        })
+      } else if (!token0 && token1) {
+        _position = Position.fromAmount1({
+          pool,
+          tickLower: _tickLower,
+          tickUpper: _tickUpper,
+          amount1: Math.round(_amount1.toNumber()),
           useFullPrecision: true,
         })
       }

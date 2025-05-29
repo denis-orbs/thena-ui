@@ -1,6 +1,5 @@
 'use client'
 
-import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -16,7 +15,7 @@ import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -31,48 +30,48 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 export const defaultSwapFees = {
   isDefault: false,
   address: zeroAddress,
-  tvl: new BigNumber(0),
+  tvl: ZERO_VALUE,
   totalSupply: 0,
   lpPrice: 0,
   type: 'Conc Liquidity',
   gauge: {
-    apr: new BigNumber(0),
-    projectedApr: new BigNumber(0),
-    voteApr: new BigNumber(0),
+    apr: ZERO_VALUE,
+    projectedApr: ZERO_VALUE,
+    voteApr: ZERO_VALUE,
     totalSupply: 0,
     address: zeroAddress,
     fee: zeroAddress,
     bribe: zeroAddress,
-    weight: new BigNumber(0),
-    weightPercent: new BigNumber(0),
+    weight: ZERO_VALUE,
+    weightPercent: ZERO_VALUE,
     bribes: {
       fee: null,
       bribe: null,
     },
     isAlive: false,
-    tvl: new BigNumber(0),
-    bribeUsd: new BigNumber(0),
-    pooled0: new BigNumber(0),
-    pooled1: new BigNumber(0),
+    tvl: ZERO_VALUE,
+    bribeUsd: ZERO_VALUE,
+    pooled0: ZERO_VALUE,
+    pooled1: ZERO_VALUE,
   },
   allowed: {},
   stable: false,
   isAutomatic: false,
   title: 'CL_SwapFee',
   account: {
-    walletBalance: new BigNumber(0),
-    gaugeBalance: new BigNumber(0),
-    gaugeEarned: new BigNumber(0),
-    totalLp: new BigNumber(0),
-    token0claimable: new BigNumber(0),
-    token1claimable: new BigNumber(0),
-    staked0: new BigNumber(0),
-    staked1: new BigNumber(0),
-    stakedUsd: new BigNumber(0),
-    earnedUsd: new BigNumber(0),
-    total0: new BigNumber(0),
-    total1: new BigNumber(0),
-    totalUsd: new BigNumber(0),
+    walletBalance: ZERO_VALUE,
+    gaugeBalance: ZERO_VALUE,
+    gaugeEarned: ZERO_VALUE,
+    totalLp: ZERO_VALUE,
+    token0claimable: ZERO_VALUE,
+    token1claimable: ZERO_VALUE,
+    staked0: ZERO_VALUE,
+    staked1: ZERO_VALUE,
+    stakedUsd: ZERO_VALUE,
+    earnedUsd: ZERO_VALUE,
+    total0: ZERO_VALUE,
+    total1: ZERO_VALUE,
+    totalUsd: ZERO_VALUE,
   },
 }
 
