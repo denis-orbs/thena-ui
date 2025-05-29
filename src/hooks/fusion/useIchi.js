@@ -698,8 +698,8 @@ export const useMigrationIchi = () => {
       }, {})
 
       // MARK: APPROVE + SWAP BY ODOS
-      const amountApprovedToSwap = BigNumber(transferAmounts[swapToken.address]).gte(allowanceSwap, swapToken.decimals)
-      if (amountApprovedToSwap.gt(0)) {
+      const isApproved = BigNumber(allowanceSwap).gte(transferAmounts[swapToken.address])
+      if (!isApproved) {
         const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, maxUint256])
         if (!tx) {
           setPending(false)
@@ -710,6 +710,7 @@ export const useMigrationIchi = () => {
         setPending(false)
       }
 
+      updateTxn({ key, uuid: swapId, status: TXN_STATUS.PENDING, hash: null })
       const quote = await fetchOdosQuote({
         inputAmount: transferAmounts[swapToken.address].toString(),
         inputToken: swapToken.address,
@@ -747,9 +748,9 @@ export const useMigrationIchi = () => {
 
       const tokenContract = getERC20Contract(depositToken.address, networkId)
       const allowance = await readCall(tokenContract, 'allowance', [account, depositGuardContract.address], networkId)
-      const amountStakeToApprove = BigNumber(depositAmount).gte(allowance)
+      const isStakeToApproved = BigNumber(allowance).gte(depositAmount)
 
-      if (amountStakeToApprove.gt(0)) {
+      if (!isStakeToApproved) {
         if (!(await writeTxn(key, approveId, tokenContract, 'approve', [depositGuardContract.address, maxUint256]))) {
           setPending(false)
           return
