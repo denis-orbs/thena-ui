@@ -198,7 +198,7 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'mt-4 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:px-5 md:py-4',
+                'mt-4 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium md:mt-2 md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >

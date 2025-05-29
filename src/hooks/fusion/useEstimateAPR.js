@@ -10,7 +10,7 @@ import { useReadContracts } from 'wagmi'
 import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
 import { Presets } from '@/state/fusion/reducer'
 import { tryParseTick } from '@/state/fusion/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -74,8 +74,8 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
 }
 
 const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, isFarming }) => {
-  if (tvl.isZero()) return BigNumber(0)
-  const ratio = BigNumber(positionLiquidity).div(BigNumber(poolLiquidity))
+  if (tvl.isZero()) return ZERO_VALUE
+  const ratio = Number(poolLiquidity) > 0 ? BigNumber(positionLiquidity).div(BigNumber(poolLiquidity)) : ZERO_VALUE
 
   if (isFarming) {
     return reward
