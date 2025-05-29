@@ -28,6 +28,8 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { ArrowRightIcon } from '@/svgs'
 
+const feeAmount = 3000
+
 function PairStrategy({ pair }) {
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -39,7 +41,7 @@ function PairStrategy({ pair }) {
   const baseCurrency = useCurrency(pair?.token0?.address)
   const quoteCurrency = useCurrency(pair?.token1?.address)
 
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 1000, baseCurrency, undefined)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   )
