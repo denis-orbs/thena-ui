@@ -161,7 +161,7 @@ function FarmingItem({ position, isXlDown }) {
           tokens={[asset0, asset1]}
         />
         <div className='flex justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <Link href={`/analytics/pairs/${poolInfo?.address}?back=2`}>
+          <Link href={`/analytics/pairs/${poolInfo?.basePool}?back=2`}>
             <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </NewTextSubHeading>
@@ -172,7 +172,7 @@ function FarmingItem({ position, isXlDown }) {
         </div>
       </div>
     ),
-    [asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.address],
+    [asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.basePool],
   )
 
   const rangeCell = useMemo(
@@ -293,15 +293,15 @@ function FarmingItem({ position, isXlDown }) {
           {t('Burn')}
         </EmphasisButton>
 
-        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-          {t('Add')}
-        </EmphasisButton>
-
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
+        </EmphasisButton>
+
+        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+          {t('Add')}
         </EmphasisButton>
 
         <PrimaryButton

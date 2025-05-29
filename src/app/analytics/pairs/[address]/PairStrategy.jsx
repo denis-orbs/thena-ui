@@ -15,6 +15,7 @@ import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
@@ -27,18 +28,20 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { ArrowRightIcon } from '@/svgs'
 
+const feeAmount = 3000
+
 function PairStrategy({ pair }) {
+  const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const t = useTranslations()
+  const { setAPRs } = useAprStore()
 
   const stableAssets = useStableTokens()
   const activePreset = useActivePreset()
-  const { APRs } = useAprStore()
   const baseCurrency = useCurrency(pair?.token0?.address)
   const quoteCurrency = useCurrency(pair?.token1?.address)
 
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 1000, baseCurrency, undefined)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   )
@@ -192,9 +195,44 @@ function PairStrategy({ pair }) {
     [handleChooseStrategy, pair.address, push, sortedSubPools],
   )
 
+  const aprs = useMemo(() => {
+    if (!pair?.subpools) return []
+    return pair.subpools
+      .filter(sub => MANUAL_TYPES.includes(sub.title))
+      .map(sub => sub.gauge.apr.toNumber())
+      .sort((a, b) => a - b)
+  }, [pair])
+
+  const bestManualPool = useMemo(() => {
+    if (!pair?.subpools) return null
+    return pair.subpools
+      .filter(sub => MANUAL_TYPES.includes(sub.title))
+      .sort((a, b) => b.gauge.apr.toNumber() - a.gauge.apr.toNumber())[0]
+  }, [pair])
+
   useEffect(() => {
-    handleChooseStrategy(null)
-  }, [handleChooseStrategy])
+    handleChooseStrategy(bestManualPool)
+  }, [bestManualPool, handleChooseStrategy])
+
+  const { strategy, pool, poolAddress } = mintInfo
+
+  const estimateAPR = useEstimateAPR({
+    pool,
+    poolAddress: poolAddress?.toLowerCase(),
+    token0: baseCurrency,
+    token1: quoteCurrency,
+    isFarming: strategy?.isFarming,
+  })
+
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(estimateAPR), setAPRs])
+
+  useEffect(() => {
+    const _strategy = sortedSubPools.find(item => MANUAL_TYPES.includes(item.title))
+    handleChooseStrategy(_strategy ?? defaultSwapFees)
+  }, [handleChooseStrategy, sortedSubPools])
 
   return (
     <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
@@ -241,7 +279,10 @@ function PairStrategy({ pair }) {
               {t('Estimated APR')}
             </Paragraph>
             <NewTextSubHeading className='text-base text-primary-600 lg:text-3xl'>
-              {formatAmount(APRs.current)}%
+              {/* display like: 23% OR 23 ~ 30% */}
+              {aprs.length === 0 && '0%'}
+              {aprs.length === 1 && `${formatAmount(aprs.at(0), true)}%`}
+              {aprs.length >= 2 && `${formatAmount(aprs.at(0), true)} ~ ${formatAmount(aprs.at(-1), true)}%`}
             </NewTextSubHeading>
           </div>
         </div>

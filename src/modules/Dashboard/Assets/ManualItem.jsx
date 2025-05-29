@@ -183,18 +183,24 @@ function ManualItem({ position, isXlDown }) {
           tokens={[token0, token1]}
         />
         <div className='flex flex-row justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <Link href={`/analytics/pairs/${poolInfo?.address}?back=2`}>
+          {version === 2 ? (
             <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </NewTextSubHeading>
-          </Link>
+          ) : (
+            <Link href={`/analytics/pairs/${poolInfo?.basePool}?back=2`}>
+              <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
+                {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
+              </NewTextSubHeading>
+            </Link>
+          )}
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
     ),
-    [token0, token1, asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.address],
+    [token0, token1, asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.basePool, version],
   )
 
   const rangeCell = useMemo(
@@ -290,15 +296,15 @@ function ManualItem({ position, isXlDown }) {
 
         {version === 3 && (
           <>
-            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-              {t('Add')}
-            </EmphasisButton>
             <EmphasisButton
               className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
               disabled={feesInUsd.isZero()}
               onClick={() => setClaimPopup(true)}
             >
               {t('Claim')}
+            </EmphasisButton>
+            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+              {t('Add')}
             </EmphasisButton>
           </>
         )}

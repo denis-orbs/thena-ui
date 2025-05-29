@@ -91,6 +91,18 @@ const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, is
     .div(tvl)
 }
 
+/**
+ * @param {import('thenafi-fusion-sdk').Pool} pool
+ * @param {string} poolAddress
+ * @param {number} tickUpper
+ * @param {number} tickLower
+ * @param {import('thena-sdk-core').Token} token0
+ * @param {number} amount0
+ * @param {import('thena-sdk-core').Token} token1
+ * @param {number} amount1
+ * @param {boolean} isFarming
+ * @param {number} estimatedLiquidity
+ */
 export const useEstimateAPR = ({
   pool,
   poolAddress,
@@ -150,10 +162,9 @@ export const useEstimateAPR = ({
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
-  if (!tickLower || !tickUpper || !pool) return {}
-  if (tickUpper <= tickLower) return {}
+  if (!pool) return {}
 
-  const _amount0 =
+  let _amount0 =
     typeof amount0 === 'object'
       ? BigNumber(amount0)
       : toWei(
@@ -162,7 +173,7 @@ export const useEstimateAPR = ({
             .toString(),
           currency0?.decimals ?? 18,
         )
-  const _amount1 =
+  let _amount1 =
     typeof amount1 === 'object'
       ? BigNumber(amount1)
       : toWei(
@@ -172,9 +183,21 @@ export const useEstimateAPR = ({
           currency1?.decimals ?? 18,
         )
 
-  const poolPrice = pool?._token0Price.toSignificant(5)
+  const poolPrice = pool?._token0Price?.toSignificant(5)
   const _token0 = pool.token0
   const _token1 = pool.token1
+
+  // In case, user do not enters amount0 and amount1
+  if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
+    _amount0 = currency0?.price ? toWei(50 / currency0.price, currency0.decimals) : BigNumber(0)
+    _amount1 = currency1?.price ? toWei(50 / currency1.price, currency1.decimals) : BigNumber(0)
+  } else if (!estimatedLiquidity) {
+    if (_amount0?.isZero() && token0 && !token1) {
+      _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
+    } else if (_amount1?.isZero() && token1 && !token0) {
+      _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
+    }
+  }
 
   const presetPositions = [
     {
@@ -222,14 +245,40 @@ export const useEstimateAPR = ({
 
     let _position = null
     if (token0 && token1) {
-      _position = Position.fromAmounts({
-        pool,
-        tickLower: _tickLower,
-        tickUpper: _tickUpper,
-        amount0: _token0 === currency0.address ? Math.round(_amount0.toNumber()) : Math.round(_amount1.toNumber()),
-        amount1: _token1 === currency1.address ? Math.round(_amount1.toNumber()) : Math.round(_amount0.toNumber()),
-        useFullPrecision: true,
-      })
+      if (!_tickUpper || !_tickLower || _tickUpper <= _tickLower) _position = { liquidity: 0 }
+      else if (title === 'current' && !amount0 && !amount1) {
+        _position = { liquidity: 0 }
+      } else {
+        const isRevert = _token0.address.toLowerCase() === currency0.address.toLowerCase()
+        _position = Position.fromAmounts({
+          pool,
+          tickLower: _tickLower,
+          tickUpper: _tickUpper,
+          amount0: isRevert ? Math.round(_amount0.toNumber()) : Math.round(_amount1.toNumber()),
+          amount1: isRevert ? Math.round(_amount1.toNumber()) : Math.round(_amount0.toNumber()),
+          useFullPrecision: true,
+        })
+      }
+    } else if (!estimatedLiquidity) {
+      if (title === 'current') {
+        _position = { liquidity: 0 }
+      } else if (token0 && !token1) {
+        _position = Position.fromAmount0({
+          pool,
+          tickLower: _tickLower,
+          tickUpper: _tickUpper,
+          amount0: Math.round(_amount0.toNumber()),
+          useFullPrecision: true,
+        })
+      } else if (!token0 && token1) {
+        _position = Position.fromAmount1({
+          pool,
+          tickLower: _tickLower,
+          tickUpper: _tickUpper,
+          amount1: Math.round(_amount1.toNumber()),
+          useFullPrecision: true,
+        })
+      }
     } else {
       _position = { liquidity: estimatedLiquidity }
     }
