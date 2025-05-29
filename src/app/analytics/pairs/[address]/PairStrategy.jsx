@@ -15,7 +15,9 @@ import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import {
   useActivePreset,
@@ -27,17 +29,10 @@ import { Presets } from '@/state/fusion/reducer'
 import { ArrowRightIcon } from '@/svgs'
 
 function PairStrategy({ pair }) {
-  const aprs = useMemo(() => {
-    if (!pair?.subpools) return []
-    return pair.subpools
-      .filter(sub => MANUAL_TYPES.includes(sub.title))
-      .map(sub => sub.gauge.apr.toNumber())
-      .sort((a, b) => a - b)
-  }, [pair])
-
+  const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
-  const t = useTranslations()
+  const { setAPRs } = useAprStore()
 
   const stableAssets = useStableTokens()
   const activePreset = useActivePreset()
@@ -197,6 +192,42 @@ function PairStrategy({ pair }) {
     },
     [handleChooseStrategy, pair.address, push, sortedSubPools],
   )
+
+  const aprs = useMemo(() => {
+    if (!pair?.subpools) return []
+    return pair.subpools
+      .filter(sub => MANUAL_TYPES.includes(sub.title))
+      .map(sub => sub.gauge.apr.toNumber())
+      .sort((a, b) => a - b)
+  }, [pair])
+
+  const bestManualPool = useMemo(() => {
+    if (!pair?.subpools) return null
+    return pair.subpools
+      .filter(sub => MANUAL_TYPES.includes(sub.title))
+      .sort((a, b) => b.gauge.apr.toNumber() - a.gauge.apr.toNumber())[0]
+  }, [pair])
+
+  useEffect(() => {
+    setStrategy({
+      ...bestManualPool,
+      isFarming: bestManualPool?.title === MANUAL_TYPES[0],
+    })
+  }, [bestManualPool, setStrategy])
+
+  const { strategy, pool, poolAddress } = mintInfo
+
+  const estimateAPR = useEstimateAPR({
+    pool,
+    poolAddress: poolAddress?.toLowerCase(),
+    token0: baseCurrency,
+    token1: quoteCurrency,
+    isFarming: strategy?.isFarming,
+  })
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(estimateAPR), setAPRs])
 
   useEffect(() => {
     handleChooseStrategy(null)
