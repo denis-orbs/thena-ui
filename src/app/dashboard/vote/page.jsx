@@ -471,7 +471,7 @@ export default function VotePage() {
     <LayoutWithBackButton backUrl='/dashboard'>
       <div className='flex flex-col gap-4'>
         <h2>{t('Vote')}</h2>
-        <div className='flex flex-col gap-10'>
+        <div className='flex flex-col gap-10 max-lg:pb-[136px]'>
           <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
