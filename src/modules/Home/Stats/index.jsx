@@ -89,7 +89,7 @@ function Stats() {
     <>
       <HomeImage
         alt='wave'
-        src='/images/home/stats/wave.png'
+        src='/images/home/stats/wave.webp'
         className='absolute -mt-6 w-full backdrop-blur-[20px] lg:-mt-[180px]'
       />
       <div className='relative z-40 mx-auto max-w-[1152px] px-10 pt-[150px] xl:px-0 xl:pt-[260px]'>
