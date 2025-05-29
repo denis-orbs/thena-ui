@@ -139,15 +139,24 @@ export default function PoolsPage() {
 
   const filteredPools = useMemo(() => {
     let final
+    const pairFilteredSubpools = pairs.map(ele => {
+      let { subpools } = ele
+      if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(ele.type)) {
+        subpools = ele.subpools.filter(
+          sub => [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(sub.type) && sub.version === 3,
+        )
+      }
+      return { ...ele, subpools }
+    })
     if (isInactive) {
-      final = pairs.filter(ele => {
+      final = pairFilteredSubpools.filter(ele => {
         if (ele.type === PAIR_TYPES.WEIGHTED) {
           return isInvalidAmount(ele.aprNumber)
         }
         return !ele.highApr
       })
     } else {
-      final = pairs.filter(ele => {
+      final = pairFilteredSubpools.filter(ele => {
         if (ele.type === PAIR_TYPES.WEIGHTED) {
           return !isInvalidAmount(ele.aprNumber)
         }

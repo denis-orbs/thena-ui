@@ -40,6 +40,7 @@ function AssetsOverview({
         v1FeesPos.push(pos)
       } else if (
         isOldVersion &&
+        pos.title !== ICHI_SINGLE_SIDED &&
         ((isV1Pool && pos.staked) || Number(pos.fiatValueOfLiquidity) > 0 || Number(pos.liquidity) > 0)
       ) {
         migratePos.push(pos)
