@@ -245,10 +245,10 @@ export default function VotePage() {
   )
 
   const voteCastedPercentage = useMemo(() => {
-    const totalVotes = sortedPools.reduce((prev, pool) => prev + Number(pool?.gauge?.weight ?? 0), 0)
+    const totalVotes = userPools.reduce((prev, pool) => prev + Number(pool?.gauge?.weight ?? 0), 0)
     const totalSupply = fromWei(totalVotesSupply, 18).toNumber()
     return totalSupply ? (totalVotes / fromWei(totalVotesSupply, 18).toNumber()) * 100 : 0
-  }, [sortedPools, totalVotesSupply])
+  }, [userPools, totalVotesSupply])
 
   const finalPools = useMemo(
     () =>
