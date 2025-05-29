@@ -16,7 +16,6 @@ import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typograp
 import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
-import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import {
   useActivePreset,
@@ -28,13 +27,20 @@ import { Presets } from '@/state/fusion/reducer'
 import { ArrowRightIcon } from '@/svgs'
 
 function PairStrategy({ pair }) {
+  const aprs = useMemo(() => {
+    if (!pair?.subpools) return []
+    return pair.subpools
+      .filter(sub => MANUAL_TYPES.includes(sub.title))
+      .map(sub => sub.gauge.apr.toNumber())
+      .sort((a, b) => a - b)
+  }, [pair])
+
   const dispatch = useDispatch()
   const { push } = useRouter()
   const t = useTranslations()
 
   const stableAssets = useStableTokens()
   const activePreset = useActivePreset()
-  const { APRs } = useAprStore()
   const baseCurrency = useCurrency(pair?.token0?.address)
   const quoteCurrency = useCurrency(pair?.token1?.address)
 
@@ -241,7 +247,10 @@ function PairStrategy({ pair }) {
               {t('Estimated APR')}
             </Paragraph>
             <NewTextSubHeading className='text-base text-primary-600 lg:text-3xl'>
-              {formatAmount(APRs.current)}%
+              {/* display like: 23% OR 23 ~ 30% */}
+              {aprs.length === 0 && '0%'}
+              {aprs.length === 1 && `${formatAmount(aprs.at(0), true)}%`}
+              {aprs.length >= 2 && `${formatAmount(aprs.at(0), true)} ~ ${formatAmount(aprs.at(-1), true)}%`}
             </NewTextSubHeading>
           </div>
         </div>
