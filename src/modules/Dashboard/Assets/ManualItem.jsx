@@ -183,18 +183,24 @@ function ManualItem({ position, isXlDown }) {
           tokens={[token0, token1]}
         />
         <div className='flex flex-row justify-between max-xl:w-full max-xl:items-center xl:flex-col'>
-          <Link href={`/analytics/pairs/${poolInfo?.address}?back=2`}>
+          {version === 2 ? (
             <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </NewTextSubHeading>
-          </Link>
+          ) : (
+            <Link href={`/analytics/pairs/${poolInfo?.basePool}?back=2`}>
+              <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
+                {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
+              </NewTextSubHeading>
+            </Link>
+          )}
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
     ),
-    [token0, token1, asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.address],
+    [token0, token1, asset0, asset1, tokenId, _fusion?.fee, t, poolInfo?.basePool, version],
   )
 
   const rangeCell = useMemo(
