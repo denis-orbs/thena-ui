@@ -72,7 +72,8 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
       normalizedDerivedPairData && normalizedDerivedPairData?.length > 0 && hasSwapPrice
         ? [...normalizedDerivedPairData, { time: new Date(), value: currentSwapPrice[token0Address] }]
         : normalizedDerivedPairData,
-    [currentSwapPrice, hasSwapPrice, normalizedDerivedPairData, token0Address],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(currentSwapPrice), hasSwapPrice, normalizedDerivedPairData, token0Address],
   )
 
   return {

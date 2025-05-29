@@ -82,10 +82,10 @@ function RangePart({
       </TextSubHeading>
 
       <div className='flex items-center justify-between rounded-xl border border-neutral-700 px-3 py-2'>
-        <div className='flex flex-col gap-1.5 p-0'>
+        <div className='flex flex-col gap-1.5 p-0 max-md:w-[calc(100%-80px)]'>
           <input
             type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='w-full border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base'
+            className='truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base'
             placeholder='0.0'
             value={localTokenValue}
             onChange={e => {
@@ -97,7 +97,7 @@ function RangePart({
             disabled={disabled || locked}
             onFocus={e => e.target.select()}
           />
-          <Paragraph className='!text-[10px] !leading-4 text-neutral-300'>{description}</Paragraph>
+          <Paragraph className='truncate !text-[10px] !leading-4 text-neutral-300 md:max-w-52'>{description}</Paragraph>
         </div>
         <div className='flex gap-4 md:flex-col md:gap-1'>
           <OutlineIconButton
