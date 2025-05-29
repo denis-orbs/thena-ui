@@ -362,10 +362,7 @@ function V3Banner({ onClose }) {
           </TertiaryButton>
           {new Date() >= new Date('2025-05-29') && (
             <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
-              <TertiaryButton
-                className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
-                onClick={() => push('/dashboard')}
-              >
+              <TertiaryButton className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'>
                 Learn More <ArrowRightIcon className='ml-1 h-4 w-4' />
               </TertiaryButton>
             </Link>
