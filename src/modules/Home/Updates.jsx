@@ -107,10 +107,10 @@ function Updates() {
               ))}
             </Swiper>
             <div className='absolute bottom-0 z-10 hidden w-full justify-between px-4 lg:flex'>
-              <div className='custom-swiper-button-prev hover:border-opacity-85 inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1'>
+              <div className='custom-swiper-button-prev inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-[#007aff]/85'>
                 <ArrowBackwardIcon className='size-5 [&>path]:stroke-[#007aff]' />
               </div>
-              <div className='custom-swiper-button-next hover:border-opacity-85 inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1'>
+              <div className='custom-swiper-button-next inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-[#007aff]/85'>
                 <ArrowForwardSmallIcon className='size-5 [&>path]:stroke-[#007aff]' />
               </div>
             </div>

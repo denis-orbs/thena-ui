@@ -325,7 +325,7 @@ export function LeaderBoard({
         setCurrentPage={setCurrentPage}
         tableBasic
         hightLightById={account?.toLowerCase() ?? undefined}
-        bgHightLight='bg-white bg-opacity-5'
+        bgHightLight='bg-white/5'
         defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
       />
     </div>

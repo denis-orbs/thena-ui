@@ -260,9 +260,7 @@ function PairStrategy({ pair }) {
       </div>
 
       <div className='flex w-full flex-col gap-8 2xl:w-[75%]'>
-        <div
-          className={cn('bg-primary-950 bg-opacity-50 flex items-center justify-between gap-2 rounded-xl p-4 lg:px-6')}
-        >
+        <div className={cn('bg-primary-950/50 flex items-center justify-between gap-2 rounded-xl p-4 lg:px-6')}>
           <div className='flex items-center gap-4 lg:gap-8'>
             <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
               Manual Strategy

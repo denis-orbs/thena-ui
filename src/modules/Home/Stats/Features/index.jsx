@@ -93,7 +93,7 @@ export function Features() {
 
         <div
           id='feature-wrapper'
-          className='bg-landing-page-gradient group relative flex w-full items-center justify-between gap-x-12 overflow-hidden rounded-3xl p-10 xl:gap-x-[115px] xl:p-20'
+          className='bg-landing-page-gradient group relative flex w-full items-center justify-between gap-x-12 overflow-hidden rounded-3xl border-4 border-red-500 p-10 xl:gap-x-[115px] xl:p-20'
         >
           <div className='relative z-10 w-full max-w-[400px] flex-1'>
             <motion.div
@@ -113,7 +113,7 @@ export function Features() {
               animate={{ opacity: 1, filter: 'blur(0px)' }}
               transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
               key={`${feature}-desc`}
-              className='mt-4 leading-6 text-white/[0.35]'
+              className='mt-4 leading-6 text-white/35'
             >
               {t(featuresInfo[feature].description)}
             </motion.p>
@@ -147,11 +147,11 @@ export function Features() {
                 key={feature}
                 className='absolute right-0 h-[600px] w-4/6 opacity-0 transition-opacity duration-600 group-hover:opacity-100'
               />
-              <div className='bg-opacity-[35%] absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
+              <div className='absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
             </>
           )}
-          <div className='bg-opacity-[35%] absolute top-0 left-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
-          <div className='bg-opacity-[35%] absolute right-0 bottom-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
+          <div className='absolute top-0 left-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
+          <div className='absolute right-0 bottom-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
         </div>
       </div>
 

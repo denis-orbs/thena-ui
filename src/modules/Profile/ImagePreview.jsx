@@ -6,12 +6,7 @@ import { LogoFooterIcon, LogoIcon } from '@/svgs'
 
 function BoxShow({ value, title, className }) {
   return (
-    <div
-      className={cn(
-        'bg-opacity-5 flex h-[128px] w-[222px] flex-col justify-center gap-1 rounded-xl bg-white p-5',
-        className,
-      )}
-    >
+    <div className={cn('flex h-[128px] w-[222px] flex-col justify-center gap-1 rounded-xl bg-white/5 p-5', className)}>
       <TextHeading className='text-center text-[24px] leading-[28px]'>{value}</TextHeading>
       <TextSubHeading className='text-center text-sm text-neutral-300'>{title}</TextSubHeading>
     </div>

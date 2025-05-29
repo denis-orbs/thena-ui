@@ -6,7 +6,7 @@ import { PrimaryIconButton } from '@/components/buttons/IconButton'
 export function HowItWorksItem({ icon, title, description }) {
   return (
     <div className='flex flex-col items-center justify-start p-4 text-center font-medium md:max-w-[330px] md:flex-1 xl:p-6'>
-      <div className='border-opacity-5 bg-opacity-5 mb-3 rounded-xl border border-white bg-white p-1.5'>
+      <div className='mb-3 rounded-xl border border-white/5 bg-white/5 p-1.5'>
         {typeof icon === 'function' ? (
           <PrimaryIconButton Icon={icon} className='pointer-events-none lg:size-9' />
         ) : (

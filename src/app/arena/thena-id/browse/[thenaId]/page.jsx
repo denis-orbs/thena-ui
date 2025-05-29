@@ -233,7 +233,7 @@ function ThenaIdPage() {
 
   return (
     <div>
-      <div className='bg-opacity-20 sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+      <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
         <TextButton className='pl-0' onClick={() => router.back()} LeadingIcon={ArrowLeftIcon}>
           {t('Back')}
         </TextButton>

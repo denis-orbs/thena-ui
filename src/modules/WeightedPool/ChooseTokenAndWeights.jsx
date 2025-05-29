@@ -112,7 +112,7 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
         >
           <div
             data-tooltip-id={`${token.token.address}-token`}
-            className='bg-opacity-50 ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] py-[6px] pr-2 pl-[6px]'
+            className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980]/50 py-[6px] pr-2 pl-[6px]'
           >
             <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
             <Paragraph className='text-sm text-neutral-200'>

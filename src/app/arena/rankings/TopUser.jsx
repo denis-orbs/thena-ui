@@ -407,7 +407,7 @@ function TopUser() {
             onlySortDesc
             enabledRedirectOnClickPagination
             hightLightById={account?.toLowerCase()}
-            bgHightLight='bg-white bg-opacity-5'
+            bgHightLight='bg-white/5'
             loading={isLoading}
             pageSize={pageSize}
             totalItems={topUsers?.pagination?.totalCount || 0}

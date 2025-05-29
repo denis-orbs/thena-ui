@@ -142,7 +142,7 @@ export function TokenAmountCard({
               />
               {setCurrency && Array.isArray(assetsSelect) ? (
                 <AssetDropdown
-                  className='hover-dont-change-bg [&>#info]:!bg-opacity-50 hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]!'
+                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]/50!'
                   selected={currency}
                   setCurrency={setCurrency}
                   data={assetsSelect}
@@ -151,7 +151,7 @@ export function TokenAmountCard({
                 <div
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
-                    'bg-opacity-50 rounded-lg bg-[#292929] text-sm text-neutral-200',
+                    'rounded-lg bg-[#292929]/50 text-sm text-neutral-200',
                     'py-1.5 pr-2 pl-1.5',
                     'cursor-default',
                   )}

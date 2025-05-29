@@ -123,7 +123,7 @@ export function IntroductionIllustration() {
   return (
     <div ref={scope} className='grid max-w-[500px] min-w-[60vw] grid-cols-12 grid-rows-12 lg:min-w-auto'>
       <FeatureCard className='relative col-start-1 col-end-11 row-start-1 row-end-8 h-fit overflow-hidden bg-[#0c0911] before:duration-500 group-hover:before:opacity-100 after:bg-[linear-gradient(129.41deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_38.31%)] lg:before:opacity-0'>
-        <div className='bg-opacity-[45%] absolute top-0 -right-10 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600 blur-[220px] filter lg:block' />
+        <div className='absolute top-0 -right-10 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600/45 blur-[220px] filter lg:block' />
         <div className='absolute top-4 left-4 flex w-fit items-center gap-2 rounded-full bg-[#201424] p-1 pr-1.5 md:p-2 md:pr-3'>
           <div className='flex items-center gap-1'>
             <BNB className='h-4 w-4 md:h-5 md:w-5' width={20} height={20} />
@@ -134,7 +134,7 @@ export function IntroductionIllustration() {
         <Image src='/images/home/stats/graph.png' className='h-full w-full' alt='graph' width={351} height={190} />
       </FeatureCard>
       <FeatureCard className='relative col-start-4 col-end-13 row-start-5 row-end-13 h-fit min-w-[240px] overflow-hidden bg-black/25 bg-[linear-gradient(0deg,rgba(0,0,0,0.25),rgba(0,0,0,0.25))] backdrop-blur-3xl before:bg-[linear-gradient(188.68deg,rgba(220,1,212,0.45)_5.6%,rgba(206,79,198,0)_92.91%)] before:duration-500 group-hover:before:opacity-100 after:bg-[linear-gradient(129.41deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_38.31%)] lg:before:opacity-0'>
-        <div className='bg-opacity-[45%] absolute top-0 right-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600 blur-[220px] filter lg:block' />
+        <div className='absolute top-0 right-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600/45 blur-[220px] filter lg:block' />
         <div className='relative flex flex-col space-y-1.5'>
           <MotionSwapableCoin
             id='swappable-coin-1'

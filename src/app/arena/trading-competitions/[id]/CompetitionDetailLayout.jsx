@@ -295,7 +295,7 @@ function CompetitionDetailLayout({ children, params }) {
               )}
               <div className='grid grid-cols-12 gap-4 lg:gap-12'>
                 <div className='col-span-12 lg:col-span-7'>
-                  <div className='bg-opacity-20 sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+                  <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
                     <Link href={`/arena${queryParams}`}>
                       <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
                         {t('Back')}

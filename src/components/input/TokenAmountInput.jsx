@@ -191,7 +191,7 @@ export function TokenAmountInput({
                 />
               ) : (
                 <AssetDropdown
-                  className='hover-dont-change-bg [&>#info]:!bg-opacity-50 hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]!'
+                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]/50!'
                   selected={asset}
                   setSelected={setAsset}
                   data={data}

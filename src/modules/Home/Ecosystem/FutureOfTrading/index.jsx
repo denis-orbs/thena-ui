@@ -94,7 +94,7 @@ export function FutureOfTrading() {
       </div>
 
       <div className='relative mt-7 flex h-full w-full max-w-[652px] items-center justify-center xl:mt-0'>
-        <div className='stats-blob bg-opacity-[0.45] absolute h-[300px] w-[400px] rounded-full blur-[264px] filter' />
+        <div className='stats-blob absolute h-[300px] w-[400px] rounded-full blur-[264px] filter' />
         <div className='w-full px-5 xl:px-0'>
           <div className='w-full rounded-[28px] border border-white/[0.06] bg-[rgba(56,47,65,0.06)] p-4 backdrop-blur-[20px]'>
             <div className='relative min-h-[682px] w-full overflow-hidden rounded-2xl border border-[#221222] bg-[rgba(10,5,11,0.7)] lg:min-h-[735px]'>

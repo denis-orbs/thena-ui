@@ -158,7 +158,7 @@ function Time({ data, setData }) {
                     handleParticipants(data.maxParticipants - 1)
                   }}
                   disabled={data.maxParticipants <= TC_PARTICIPANTS.MIN}
-                  className='bg-opacity-[0.05] disabled:bg-opacity-[0.02] flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white disabled:cursor-not-allowed'
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white/5 disabled:cursor-not-allowed disabled:bg-white/[0.02]'
                   type='button'
                   aria-label='minus-participants'
                 >
@@ -169,7 +169,7 @@ function Time({ data, setData }) {
                     handleParticipants(data.maxParticipants + 1)
                   }}
                   disabled={data.maxParticipants >= TC_PARTICIPANTS.MAX}
-                  className='bg-opacity-[0.05] disabled:bg-opacity-[0.02] flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white disabled:cursor-not-allowed'
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white/5 disabled:cursor-not-allowed disabled:bg-white/[0.02]'
                   type='button'
                   aria-label='plus-participants'
                 >

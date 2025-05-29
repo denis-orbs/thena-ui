@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 function Badge({ className, children, childrenClassName }) {
   return (
     <div className={cn('rounded-full text-xs lg:text-sm', className)}>
-      <div className={cn('bg-opacity-50 rounded-full bg-[#292929] px-2 py-0.5 lg:px-3 lg:py-1', childrenClassName)}>
+      <div className={cn('rounded-full bg-[#292929]/50 px-2 py-0.5 lg:px-3 lg:py-1', childrenClassName)}>
         {children}
       </div>
     </div>

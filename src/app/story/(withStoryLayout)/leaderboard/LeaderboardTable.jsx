@@ -282,7 +282,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
         setSort={setSort}
         tableBasic
         hightLightById={userInfo.id}
-        bgHightLight='bg-white bg-opacity-5'
+        bgHightLight='bg-white/5'
         loading={loadingParticipants || loadingParticipantsByChapter}
         pageSize={10}
         defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}

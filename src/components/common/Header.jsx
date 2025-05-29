@@ -883,7 +883,7 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'bg-opacity-20 fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start backdrop-blur-2xl md:h-[92px]',
+          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start backdrop-blur-2xl md:h-[92px]',
           showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >

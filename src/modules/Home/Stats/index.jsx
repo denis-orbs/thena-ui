@@ -97,7 +97,7 @@ function Stats() {
         <div className='flex flex-col justify-center space-y-10 pt-12 pb-20 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-[136px] lg:py-14'>
           {statsData.map((item, idx) => (
             <div key={idx} className='flex items-start space-x-5'>
-              <div className='border-opacity-10 bg-opacity-[0.04] relative flex h-12 w-12 flex-col items-center justify-center rounded-xl border border-white bg-white p-1.5 lg:h-14 lg:w-14 lg:p-2'>
+              <div className='relative flex h-12 w-12 flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1.5 lg:h-14 lg:w-14 lg:p-2'>
                 <div className='shadow-box flex h-9 w-9 flex-col items-center justify-center rounded-lg bg-[#DF0ED5] lg:h-10 lg:w-10'>
                   <HomeImage className='w-fit' alt='icon' src={item.svg} />
                 </div>
