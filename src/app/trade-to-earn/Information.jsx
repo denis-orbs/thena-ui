@@ -45,13 +45,13 @@ function Information({ userDailyVolume, userTotalVolume }) {
     <div className='mb-8 grid grid-cols-2 gap-6 lg:grid-cols-3'>
       {array1.map((item, index) => (
         <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
-          <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
+          <TextHeading className='max-w-full text-xl break-all lg:text-2xl'>{item.value}</TextHeading>
           <TextSubHeading>{t(item.label)}</TextSubHeading>
         </Box>
       ))}
       {array2.map((item, index) => (
         <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
-          <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
+          <TextHeading className='max-w-full text-xl break-all lg:text-2xl'>{item.value}</TextHeading>
           <TextSubHeading>{t(item.label)}</TextSubHeading>
         </Box>
       ))}

@@ -56,7 +56,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
             src={Avatar}
             className={cn(
               'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-              dataUpdate.avatar === null ? 'border-4 border-primary-600' : '',
+              dataUpdate.avatar === null ? 'border-primary-600 border-4' : '',
             )}
             onClick={() => onSelectAvatar(null)}
             width={100}
@@ -69,7 +69,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
             src={avatar}
             className={cn(
               'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-              dataUpdate.avatar === avatar ? 'border-4 border-primary-600' : '',
+              dataUpdate.avatar === avatar ? 'border-primary-600 border-4' : '',
             )}
             onClick={() => onSelectAvatar(avatar)}
             width={100}
@@ -83,7 +83,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
               src={thenianNfts?.meatadata?.image}
               className={cn(
                 'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-                dataUpdate.avatar === thenianNfts?.meatadata?.image ? 'border-4 border-primary-600' : '',
+                dataUpdate.avatar === thenianNfts?.meatadata?.image ? 'border-primary-600 border-4' : '',
               )}
               width={100}
               height={100}

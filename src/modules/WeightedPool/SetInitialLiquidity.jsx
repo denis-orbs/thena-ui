@@ -163,7 +163,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
               weight={item.weight}
             />
             {item.isError && checkError && (
-              <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+              <p className='text-error-500 mt-1 mb-2 flex gap-1'>
                 <WarningTriangleIcon className='h-5 w-5' />
                 <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>
               </p>
@@ -171,7 +171,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           </div>
         ))}
       </div>
-      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 py-2 pl-3 pr-2 lg:p-8'>
+      <div className='border-primary-800 bg-primary-950 flex flex-col gap-2 rounded-xl border py-2 pr-2 pl-3 lg:p-8'>
         <div className='flex flex-row items-center justify-between'>
           <div className='flex items-center gap-2 lg:gap-4'>
             <ScalesPrimaryIcon className='size-4 lg:size-8' />
@@ -182,7 +182,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
                 {available === total ? (
                   <span onClick={handleMaxTotal}>{t('Maxed')}</span>
                 ) : (
-                  <span className='cursor-pointer text-primary-600 hover:text-primary-500' onClick={handleMaxTotal}>
+                  <span className='text-primary-600 hover:text-primary-500 cursor-pointer' onClick={handleMaxTotal}>
                     {t('Max')}
                   </span>
                 )}
@@ -191,7 +191,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           </div>
           {totalWhenOptimize !== total && (
             <TertiaryButton
-              className='h-8 max-w-fit cursor-pointer text-xs text-primary-600 md:h-11 md:text-base'
+              className='text-primary-600 h-8 max-w-fit cursor-pointer text-xs md:h-11 md:text-base'
               onClick={handleOptimizeTotal}
             >
               {t('Optimize')}

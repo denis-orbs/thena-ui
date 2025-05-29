@@ -36,7 +36,7 @@ export function WarningDeposit({ amount, competition }) {
 
   if (minPairs && Number(minPairs.min_acceptable_quote_value) + COEFFICIENT > Number(amount) + deposited) {
     return (
-      <Paragraph className='ml-1 text-sm text-error-500'>
+      <Paragraph className='text-error-500 ml-1 text-sm'>
         {t('This Deposit Is Not Enough To Trade', { min: minPairs.min_acceptable_quote_value + COEFFICIENT })}
       </Paragraph>
     )

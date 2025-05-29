@@ -25,10 +25,10 @@ export default function TokenBadge({
     <div
       className={cn(
         'inline-flex cursor-pointer items-center justify-center gap-2 self-stretch',
-        'outline outline-2 outline-offset-4 outline-transparent',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
         'rounded-full text-sm text-neutral-200 transition-all duration-150 ease-out',
-        'active:bg-neutral-600 active:outline-focus',
-        'py-1.5 pl-1.5 pr-2',
+        'active:outline-focus active:bg-neutral-600',
+        'py-1.5 pr-2 pl-1.5',
         variant === CompTypes.Primary && [
           'bg-primary-600 text-primary-100',
           'hover:bg-primary-700 hover:text-primary-200',

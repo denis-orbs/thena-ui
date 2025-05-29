@@ -181,10 +181,10 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block h-full')}>
-          <div className='mb-4 mt-0 flex w-full flex-col items-end max-xl:hidden'>
+          <div className='mt-0 mb-4 flex w-full flex-col items-end max-xl:hidden'>
             <div className='flex w-fit items-center gap-2'>
-              <Box className={cn('flex rounded-lg bg-neutral-900 !py-1.5 !pl-4')}>
-                <TextHeading className='!text-xl !font-medium xl:text-neutral-500'>{t('Pool Attributes')}</TextHeading>
+              <Box className={cn('flex rounded-lg bg-neutral-900 py-1.5! pl-4!')}>
+                <TextHeading className='text-xl! font-medium! xl:text-neutral-500'>{t('Pool Attributes')}</TextHeading>
               </Box>
 
               <div className='flex items-center'>
@@ -217,15 +217,15 @@ function AddLiquidityClPool({ pool, handleBack }) {
                   </>
                 ) : (
                   <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
-                    <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
-                    <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+                    <NewTextHeading className='text-xl!'>{t('New Deposit')}</NewTextHeading>
+                    <Paragraph className='leading-5 font-medium'>{t('New Deposit CL description')}</Paragraph>
                   </div>
                 )}
               </div>
             </motion.div>
           </div>
 
-          <div className='hidden flex-[4] flex-col gap-2 md:gap-4 xl:flex'>
+          <div className='hidden flex-4 flex-col gap-2 md:gap-4 xl:flex'>
             {/* <PoolDescriptionSection pairType={strategy?.title} /> */}
             {!isAutomatic && (
               <ChartPriceRangeInput

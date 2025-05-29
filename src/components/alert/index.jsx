@@ -6,7 +6,7 @@ export function Info({ children, className }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-4 rounded-xl border border-primary-800 bg-primary-950 p-2 pl-3 text-primary-100',
+        'border-primary-800 bg-primary-950 text-primary-100 flex items-center gap-4 rounded-xl border p-2 pl-3',
         className,
       )}
     >
@@ -19,7 +19,7 @@ export function Warning({ children, className }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-4 rounded-xl border border-warn-900 bg-warn-950 p-2 pl-3 text-warn-100',
+        'border-warn-900 bg-warn-950 text-warn-100 flex items-center gap-4 rounded-xl border p-2 pl-3',
         className,
       )}
     >
@@ -32,7 +32,7 @@ export function Alert({ children, className }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-4 rounded-xl border border-error-800 bg-error-950 p-2 pl-3 text-rose',
+        'border-error-800 bg-error-950 text-rose flex items-center gap-4 rounded-xl border p-2 pl-3',
         className,
       )}
     >

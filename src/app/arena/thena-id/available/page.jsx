@@ -240,7 +240,7 @@ function AvailablePage() {
               <Image
                 alt='token'
                 src={`${USDTAsset.logoURI ?? ''}`}
-                className='flex-shrink-0'
+                className='shrink-0'
                 width={24}
                 height={24}
                 loading='lazy'

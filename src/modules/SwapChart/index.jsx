@@ -112,7 +112,7 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
               <IconGroup
                 className='-space-x-1.5'
                 classNames={{
-                  image: 'outline-[2px] w-6 h-6',
+                  image: 'outline-2 w-6 h-6',
                 }}
                 logo1={asset1.logoURI}
                 logo2={asset0.logoURI}

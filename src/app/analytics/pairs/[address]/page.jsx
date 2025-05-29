@@ -69,7 +69,7 @@ export default function PairDetailPage({ params }) {
                 />
               )}
               <div className='flex items-end gap-4 py-2.5'>
-                <NewTextHeading className='whitespace-normal text-wrap break-all'>{pair.symbol}</NewTextHeading>
+                <NewTextHeading className='text-wrap break-all whitespace-normal'>{pair.symbol}</NewTextHeading>
                 <LinkExternalIcon
                   className='mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
                   onClick={() => goScan(networkId, pair.address)}

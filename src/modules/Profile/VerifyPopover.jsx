@@ -31,7 +31,7 @@ export function VerifyPopover({ verifyImage, verifiedAt, disablePopover = false 
       onClickOutside={() => setIsPopoverOpen(false)}
       padding={3}
       content={
-        <div className='max-w-80 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow'>
+        <div className='max-w-80 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow-sm'>
           <TextHeading className='mb-2 text-lg'>{t('Verified Profile')}</TextHeading>
           <div className='mt-4 flex gap-4'>
             <div className='h-5 w-5'>

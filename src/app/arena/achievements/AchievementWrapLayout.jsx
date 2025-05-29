@@ -40,7 +40,7 @@ export function AchievementWrapLayout({ children }) {
   return (
     <div className='space-y-10'>
       <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-        <div className='rounded-lg bg-neutral-900 p-1 '>
+        <div className='rounded-lg bg-neutral-900 p-1'>
           <Tabs data={subTabs} itemClassName='text-sm' />
         </div>
         <div className='flex gap-4'>

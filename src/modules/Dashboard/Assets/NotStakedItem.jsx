@@ -387,12 +387,12 @@ function NotStakedItem({ position, isXlDown }) {
     <>
       {!isXlDown ? (
         <>
-          <td className='rounded-l-md !pl-4'>{pairCell}</td>
+          <td className='rounded-l-md pl-4!'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td className='rounded-r-md !pr-4'>{actionCell}</td>
+          <td className='rounded-r-md pr-4!'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

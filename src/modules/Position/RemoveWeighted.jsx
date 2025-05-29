@@ -192,11 +192,11 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
                   extendNumber={(pool?.tokens?.length || 2) - 2}
                 />
                 <div className='flex items-center gap-2 lg:max-w-[90%]'>
-                  <div className='flex w-full flex-wrap items-center gap-1 '>
+                  <div className='flex w-full flex-wrap items-center gap-1'>
                     {(pool?.tokens || []).map(token => (
                       <div className='flex items-center gap-1' key={token?.address}>
-                        <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                        <span className='text-sm font-medium leading-5 text-neutral-300 '>{token?.weight}%</span>
+                        <span className='text-[16px] leading-5 font-medium'>{token?.symbol}</span>
+                        <span className='text-sm leading-5 font-medium text-neutral-300'>{token?.weight}%</span>
                       </div>
                     ))}
                   </div>
@@ -250,18 +250,18 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
           </div>
           {impact >= 10 && (
             <Alert>
-              <InfoIcon className='h-4 w-4 stroke-error-600' />
+              <InfoIcon className='stroke-error-600 h-4 w-4' />
               <p>{`${t('Price impact too high').replace('!', '')}: ${formatAmount(impact)}%`}</p>
             </Alert>
           )}
         </div>
         <div className='flex flex-row justify-between gap-4'>
-          <EmphasisButton className='w-full flex-[5]' onClick={onCancel}>
+          <EmphasisButton className='w-full flex-5' onClick={onCancel}>
             {t('Cancel')}
           </EmphasisButton>
           <PrimaryButton
             disabled={isDisabled}
-            className='w-full flex-[5]'
+            className='w-full flex-5'
             onClick={() => {
               if (impact >= 10 && impact < 50) {
                 setShowConfirm(true)
@@ -277,7 +277,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
       <Modal isOpen={showConfirm} closeModal={() => setShowConfirm(false)} title={<>{t('Warning')}!</>}>
         <ModalBody>
           <Warning>
-            <InfoIcon className='h-4 w-4 stroke-warn-700' /> {t('Price impact too high')}
+            <InfoIcon className='stroke-warn-700 h-4 w-4' /> {t('Price impact too high')}
           </Warning>
           <Paragraph className='mb-3 text-xl'>{t('Are you sure you want to continue')}</Paragraph>
         </ModalBody>

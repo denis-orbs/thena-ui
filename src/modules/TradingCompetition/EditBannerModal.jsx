@@ -229,7 +229,7 @@ export function EditBannerModal({ competition, open, onClose }) {
             }}
           >
             {stateChecked === 'default' ? (
-              <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+              <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                 <div className='h-2 w-2 rounded-full bg-white' />
               </div>
             ) : (
@@ -239,7 +239,7 @@ export function EditBannerModal({ competition, open, onClose }) {
           </div>
           <div className='flex cursor-pointer items-center gap-4 p-2' onClick={() => setStateChecked('custom')}>
             {stateChecked === 'custom' ? (
-              <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+              <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                 <div className='h-2 w-2 rounded-full bg-white' />
               </div>
             ) : (
@@ -258,7 +258,7 @@ export function EditBannerModal({ competition, open, onClose }) {
                   fill
                   objectFit='fill'
                   className={cn(
-                    '-z-1 !relative bottom-0 left-0 right-0 top-0 aspect-video rounded-xl',
+                    'relative! top-0 right-0 bottom-0 left-0 -z-1 aspect-video rounded-xl',
                     optionSelect === 3 ? 'box-sha box-border rounded-xl border-[5px] border-white shadow-2xl' : '',
                   )}
                 />
@@ -292,7 +292,7 @@ export function EditBannerModal({ competition, open, onClose }) {
           <>
             <p className='mb-3'>Note: You should use image with 16:9 ratio (For example: 1920x1080)</p>
             <div
-              className='mb-2 w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
+              className='border-primary-800 mb-2 w-full rounded-xl border bg-neutral-900 px-4 py-6 lg:p-6'
               {...getRootProps()}
             >
               <input {...getInputProps()} />
@@ -320,7 +320,7 @@ export function EditBannerModal({ competition, open, onClose }) {
               </ReactCrop>
             )}
 
-            {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className=' object-contain' />}
+            {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className='object-contain' />}
           </>
         )}
         <div className='mt-2 flex w-full flex-row items-center gap-2'>

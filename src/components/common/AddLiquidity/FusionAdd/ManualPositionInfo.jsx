@@ -21,16 +21,16 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             <CoinUSDIcon className='size-full' />
           </div>
           <div className='flex flex-col gap-2'>
-            <Paragraph className='text-xs text-primary-100 md:text-xl'>${position.depositInUSD}</Paragraph>
-            <Paragraph className='text-xs text-primary-100 md:text-base'>{t('Deposit Value in USD')}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs md:text-xl'>${position.depositInUSD}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs md:text-base'>{t('Deposit Value in USD')}</Paragraph>
           </div>
         </div>
 
         <div className='flex items-center gap-2 lg:justify-start'>
           <CircleImage className='size-6 md:size-16' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
           <div className='flex flex-col gap-2'>
-            <Paragraph className='text-xs text-primary-100 md:text-xl'>{formatAmount(position.amountAsset0)}</Paragraph>
-            <Paragraph className='text-xs text-primary-100 md:text-base'>
+            <Paragraph className='text-primary-100 text-xs md:text-xl'>{formatAmount(position.amountAsset0)}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs md:text-base'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
@@ -42,8 +42,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         <div className='flex items-center gap-2 lg:justify-start'>
           <CircleImage className='size-6 md:size-16' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
           <div className='flex flex-col gap-2'>
-            <Paragraph className='text-xs text-primary-100 md:text-xl'>{formatAmount(position.amountAsset1)}</Paragraph>
-            <Paragraph className='text-xs text-primary-100 md:text-base'>
+            <Paragraph className='text-primary-100 text-xs md:text-xl'>{formatAmount(position.amountAsset1)}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs md:text-base'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),

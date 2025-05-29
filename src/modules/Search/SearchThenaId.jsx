@@ -39,11 +39,11 @@ function SearchThenaIdItem({ thenaId, setIsPopoverOpen }) {
         </Link>
         <div className='flex items-center justify-start gap-2'>
           {thenaId.available ? (
-            <NeutralBadge className='text-nowrap bg-green-700 px-1 text-[10px] capitalize lg:text-[10px]'>
+            <NeutralBadge className='bg-green-700 px-1 text-[10px] text-nowrap capitalize lg:text-[10px]'>
               {t('Available')}
             </NeutralBadge>
           ) : (
-            <NeutralBadge className='text-nowrap px-1 text-[10px] capitalize lg:text-[10px]'>
+            <NeutralBadge className='px-1 text-[10px] text-nowrap capitalize lg:text-[10px]'>
               {t('Minted')}
             </NeutralBadge>
           )}

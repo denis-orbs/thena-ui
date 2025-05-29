@@ -94,7 +94,7 @@ function OrbsLogo() {
 
 function OrbsLink({ children, href }) {
   return (
-    <a href={href} className='font-medium text-primary-100' target='_blank' rel='noreferrer'>
+    <a href={href} className='text-primary-100 font-medium' target='_blank' rel='noreferrer'>
       {children}
     </a>
   )

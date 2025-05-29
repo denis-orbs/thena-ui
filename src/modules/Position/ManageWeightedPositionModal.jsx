@@ -59,11 +59,11 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
                 extendNumber={(pool?.tokens?.length || 2) - 2}
               />
               <div className='flex items-center gap-2 lg:max-w-[90%]'>
-                <div className='flex w-full flex-wrap items-center gap-1 '>
+                <div className='flex w-full flex-wrap items-center gap-1'>
                   {(pool?.tokens || []).map(token => (
                     <div className='flex items-center gap-1' key={token?.address}>
-                      <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                      <span className='text-sm font-medium leading-5 text-neutral-300 '>{token?.weight}%</span>
+                      <span className='text-[16px] leading-5 font-medium'>{token?.symbol}</span>
+                      <span className='text-sm leading-5 font-medium text-neutral-300'>{token?.weight}%</span>
                     </div>
                   ))}
                 </div>

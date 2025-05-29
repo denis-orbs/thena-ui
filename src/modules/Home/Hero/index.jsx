@@ -24,7 +24,7 @@ function Hero() {
         <HomeImage
           alt='blob background'
           src='/images/home/hero/blob.png'
-          className='absolute -top-16 z-[25] hidden h-[944px] w-full opacity-70 lg:block'
+          className='absolute -top-16 z-25 hidden h-[944px] w-full opacity-70 lg:block'
         />
         <HomeImage
           alt='pillars'
@@ -53,12 +53,12 @@ function Hero() {
             window.open('https://x.com/BinanceLabs/article/1873984088559747124', '_blank')
           }}
         >
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Backed by')}</span>
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/65'>{t('Backed by')}</span>
           <HomeImage alt='binancelabs logo' src='/images/yzilabs.png' />
           {/* Hidden on EN, only show on ZH */}
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audit')}</span>
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/65'>{t('Audit')}</span>
         </div>
-        <h1 className='z-30 mt-[26px] w-full text-center font-archia text-4xl font-semibold leading-10 tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
+        <h1 className='font-archia z-30 mt-[26px] w-full text-center text-4xl leading-10 font-semibold tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
           {t('THE ULTIMATE')}
           <br />
           {t('Decentralized Exchange')}

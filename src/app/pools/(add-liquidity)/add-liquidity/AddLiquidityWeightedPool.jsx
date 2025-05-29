@@ -32,10 +32,10 @@ function AddLiquidityWeightedPool({ setCurrentStep }) {
         <NewTextHeading>{t('Add to Weighted Pool')}</NewTextHeading>
       </div>
       <div className='flex flex-col gap-4 lg:flex-row lg:gap-8'>
-        <div className='flex flex-[6]'>
+        <div className='flex flex-6'>
           <ChoosePoolTokens setTokensSelect={updateTokensSelected} />
         </div>
-        <div className='flex flex-[4]'>
+        <div className='flex flex-4'>
           <Box className='flex flex-col gap-2'>
             <TextHeading className='font-archia text-xl font-semibold'>{t('Weighted Pool')}</TextHeading>
             <Paragraph>{t('Weighted pool description')}</Paragraph>

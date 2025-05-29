@@ -40,7 +40,7 @@ function Input({
         <span
           onClick={rest?.onClick}
           className={cn(
-            'absolute bottom-0 left-4 top-0 my-auto h-fit text-neutral-400',
+            'absolute top-0 bottom-0 left-4 my-auto h-fit text-neutral-400',
             rest?.onClick ? 'cursor-pointer' : '',
             classNames?.prefix,
           )}
@@ -48,12 +48,12 @@ function Input({
           {prefix}
         </span>
       )}
-      {LeadingIcon && <div className='absolute bottom-0 left-4 top-0 my-auto h-5 w-5'>{LeadingIcon}</div>}
-      {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
+      {LeadingIcon && <div className='absolute top-0 bottom-0 left-4 my-auto h-5 w-5'>{LeadingIcon}</div>}
+      {suffix && <span className='absolute top-0 right-3 bottom-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
       {TrailingIcon && (
         <div
           className={cn(
-            'pointer-events-none absolute bottom-0 right-3 top-0 my-auto h-5 w-5',
+            'pointer-events-none absolute top-0 right-3 bottom-0 my-auto h-5 w-5',
             classNames?.trailingIcon,
           )}
         >
@@ -61,7 +61,7 @@ function Input({
         </div>
       )}
       {TrailingButton && (
-        <div className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingIcon ? 'right-12' : 'right-3')}>
+        <div className={cn('absolute top-0 bottom-0 my-auto flex items-center', TrailingIcon ? 'right-12' : 'right-3')}>
           {TrailingButton}
         </div>
       )}

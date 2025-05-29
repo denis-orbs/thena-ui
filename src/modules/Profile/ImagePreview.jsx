@@ -8,7 +8,7 @@ function BoxShow({ value, title, className }) {
   return (
     <div
       className={cn(
-        'flex h-[128px] w-[222px] flex-col justify-center gap-1 rounded-xl bg-white bg-opacity-5 p-5',
+        'bg-opacity-5 flex h-[128px] w-[222px] flex-col justify-center gap-1 rounded-xl bg-white p-5',
         className,
       )}
     >
@@ -22,7 +22,7 @@ function AchievementItem({ achievement, title, subTitle, className }) {
   return (
     <div className={cn('flex h-[134px] w-[222px] flex-col bg-transparent', className)}>
       <Image
-        className='mx-auto mb-[-10px] mt-[-15px]'
+        className='mx-auto mt-[-15px] mb-[-10px]'
         crossOrigin='anonymous'
         src={`/s3/image/${rewriteS3Host(achievement?.icon)}`}
         width={80}
@@ -78,7 +78,7 @@ function ImagePreview({
         )}
       </div>
       <div className='absolute bottom-0 left-0 flex w-full justify-between px-10 py-9'>
-        <LogoIcon className='w-30 h-7' />
+        <LogoIcon className='h-7 w-30' />
         <LogoFooterIcon className='h-6 w-[118px]' />
       </div>
     </>

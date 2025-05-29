@@ -312,7 +312,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                           <Image
                             alt={ticker}
                             src={`https://cdn.thena.fi/assets/${ticker}.png`}
-                            className='h-5 w-5 flex-shrink-0'
+                            className='h-5 w-5 shrink-0'
                             width={20}
                             height={20}
                             loading='lazy'
@@ -399,7 +399,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                       <Image
                         alt={_competition.name}
                         src={item?.logoURI}
-                        className='flex-shrink-0'
+                        className='shrink-0'
                         width={28}
                         height={28}
                         loading='lazy'
@@ -407,7 +407,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                     )}
                     <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
                       <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
-                      <Paragraph className='whitespace-nowrap text-sm'>{item?.name}</Paragraph>
+                      <Paragraph className='text-sm whitespace-nowrap'>{item?.name}</Paragraph>
                     </div>
                   </Box>
                 ))

@@ -81,7 +81,7 @@ export default function SetPoolFees({ fees, setFees }) {
             isSmall
             data={poolRange}
             isTranslation={false}
-            classNames={{ items: 'h-8 !text-base px-4' }}
+            classNames={{ items: 'h-8 text-base! px-4' }}
           />
         </div>
         <Input

@@ -23,13 +23,13 @@ function Popover({ children, triggerElement, trigger = 'click', position = 'righ
   const positionClass = useMemo(() => {
     switch (position) {
       case 'top-center':
-        return 'top-[100%] left-1/2 transform -translate-x-1/2'
+        return 'top-full left-1/2 transform -translate-x-1/2'
       case 'center':
         return 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
       case 'left':
-        return 'left-0 top-[100%]'
+        return 'left-0 top-full'
       default:
-        return 'right-0 top-[100%]'
+        return 'right-0 top-full'
     }
   }, [position])
 
@@ -69,7 +69,7 @@ function Popover({ children, triggerElement, trigger = 'click', position = 'righ
       <div
         hidden={!show}
         className={cn(
-          'absolute z-20 mt-1 h-fit w-full min-w-fit flex-col items-start justify-start gap-1 space-y-3 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow transition-all xl:p-4',
+          'absolute z-20 mt-1 h-fit w-full min-w-fit flex-col items-start justify-start gap-1 space-y-3 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow-sm transition-all xl:p-4',
           positionClass,
         )}
       >

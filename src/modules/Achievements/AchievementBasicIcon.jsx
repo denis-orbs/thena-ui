@@ -25,7 +25,7 @@ function AchievementBasicIcon({ item, showTooltip = true, className, classNames 
       </div>
       {showTooltip && (
         <CustomTooltip
-          className='z-50 text-nowrap !bg-neutral-500 after:!bg-neutral-500'
+          className='z-50 bg-neutral-500! text-nowrap after:bg-neutral-500!'
           id={item.achievement.id}
           place='top'
         >

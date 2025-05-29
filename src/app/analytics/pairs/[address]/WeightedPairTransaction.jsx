@@ -261,7 +261,7 @@ export default function WeightedTransactionTable({ pair }) {
         }, {}),
         account: (
           <span
-            className='cursor-pointer text-primary-600'
+            className='text-primary-600 cursor-pointer'
             onClick={() => {
               goScan(networkId, item.account)
             }}

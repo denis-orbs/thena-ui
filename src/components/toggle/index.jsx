@@ -16,17 +16,17 @@ function Toggle({ className, onChange, toggleId, label, checked, disabled = fals
           type='checkbox'
           checked={checked}
           id={toggleId}
-          className='peer sr-only focus:outline-none'
+          className='peer sr-only focus:outline-hidden'
           disabled={disabled}
         />
         <div
           className={cn(
             'h-[24px] w-[44px] rounded-full bg-neutral-700 hover:bg-neutral-600',
-            'peer-checked peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:hover:bg-primary-700',
-            'after:absolute after:left-1.5 after:top-1 after:h-[16px] after:w-[16px]',
+            'peer-checked peer-checked:bg-primary-600 hover:peer-checked:bg-primary-700 peer-checked:after:translate-x-full peer-checked:after:border-white',
+            'after:absolute after:top-1 after:left-1.5 after:h-[16px] after:w-[16px]',
             "after:rounded-full after:bg-neutral-500 after:transition-all after:content-[''] hover:after:bg-neutral-400",
-            'peer-checked:after:bg-primary-200 peer-checked:hover:after:bg-primary-300',
-            'outline outline-2 outline-offset-4 outline-transparent',
+            'peer-checked:after:bg-primary-200 hover:peer-checked:after:bg-primary-300',
+            'outline-2 outline-offset-4 outline-transparent outline-solid',
             disabled ? 'cursor-not-allowed' : 'active:outline-focus',
           )}
         />

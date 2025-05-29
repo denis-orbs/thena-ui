@@ -81,9 +81,9 @@ function Lock() {
 
   return (
     veTHEs.length > 0 && (
-      <Box className='flex h-full flex-col gap-2 !p-4'>
+      <Box className='flex h-full flex-col gap-2 p-4!'>
         <div className='flex flex-col'>
-          <NewTextHeading className='text-xl !leading-6 md:text-xl'>{t('Lock')}</NewTextHeading>
+          <NewTextHeading className='text-xl leading-6! md:text-xl'>{t('Lock')}</NewTextHeading>
           {isLoading ? (
             <Skeleton className='h-5 w-[112px]' />
           ) : (

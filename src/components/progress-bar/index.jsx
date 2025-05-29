@@ -13,7 +13,7 @@ export function ProgressBar({ progress, suffix }) {
       )}
     >
       <div
-        className={cn('h-full border-r-[3px] border-primary-300 transition-all ease-in-out', 'bg-progress-gradient')}
+        className={cn('border-primary-300 h-full border-r-[3px] transition-all ease-in-out', 'bg-progress-gradient')}
         style={{ width: `${progress}%` }}
       />
       {suffix && <Paragraph className='mr-4 lg:text-sm'>{suffix}</Paragraph>}

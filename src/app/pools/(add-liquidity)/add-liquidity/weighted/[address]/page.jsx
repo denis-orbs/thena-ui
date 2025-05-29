@@ -27,7 +27,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
   return (
     <LayoutWithBackButton
       hiddenBackButton={is2XlDown}
-      className='mx-auto max-lg:mx-4 lg:mx-[40px] xl:mx-auto xl:!mt-6 xl:!w-[1184px] 2xl:!mt-8 2xl:!w-[1312px] 3xl:!mt-16 3xl:!w-[1440px]'
+      className='3xl:mt-16! 3xl:w-[1440px]! mx-auto max-lg:mx-4 lg:mx-[40px] xl:mx-auto xl:mt-6! xl:w-[1184px]! 2xl:mt-8! 2xl:w-[1312px]!'
       backUrl={backUrl}
     >
       <AddLiquidityWeighted pool={poolSelected} />

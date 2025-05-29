@@ -129,7 +129,7 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
                 }}
               >
                 {stateChecked === SelectedAvatarState.default ? (
-                  <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+                  <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                     <div className='h-2 w-2 rounded-full bg-white' />
                   </div>
                 ) : (
@@ -139,7 +139,7 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
               </div>
               <div className='flex cursor-pointer items-center gap-4 p-2' onClick={() => setStateChecked('custom')}>
                 {stateChecked === 'custom' ? (
-                  <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+                  <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                     <div className='h-2 w-2 rounded-full bg-white' />
                   </div>
                 ) : (
@@ -153,7 +153,7 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
               <>
                 <p className='mb-3'>Note: You should use image with 1:1 ratio (For example: 300x300)</p>
                 <div
-                  className='w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
+                  className='border-primary-800 w-full rounded-xl border bg-neutral-900 px-4 py-6 lg:p-6'
                   {...getRootProps()}
                 >
                   <input {...getInputProps()} />
@@ -180,7 +180,7 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
                   </ReactCrop>
                 )}
 
-                {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className=' object-contain' />}
+                {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className='object-contain' />}
               </>
             )}
             {stateChecked === SelectedAvatarState.default && (

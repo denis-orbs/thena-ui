@@ -63,7 +63,7 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
   return (
     <div className='flex h-full flex-col gap-4 lg:relative'>
       <div className='flex flex-col justify-between gap-4 md:gap-8 xl:flex-row'>
-        <div className='flex flex-[7] flex-col gap-4 lg:gap-[14px] xl:min-h-full'>
+        <div className='flex flex-7 flex-col gap-4 lg:gap-[14px] xl:min-h-full'>
           <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
             {t('Weighted Pool')}
           </TextHeading>
@@ -73,12 +73,12 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
               width={tokensAndWeights.length > 4 ? (isMobile ? 16 : 40) : 40}
               height={tokensAndWeights.length > 4 ? (isMobile ? 16 : 40) : 40}
             />
-            <TextHeading className='text-wrap text-base text-neutral-200 md:text-2xl lg:font-archia lg:text-3xl lg:font-semibold'>
+            <TextHeading className='lg:font-archia text-base text-wrap text-neutral-200 md:text-2xl lg:text-3xl lg:font-semibold'>
               {poolName}
             </TextHeading>
           </div>
         </div>
-        <div className='min-h-full flex-[3]'>
+        <div className='min-h-full flex-3'>
           <SetPoolFees fees={fees} setFees={setFees} />
         </div>
         {isLgDown && (
@@ -93,11 +93,11 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
         <div className='flex flex-col-reverse gap-4'>
           <NewTextSubHeading>{t('Set Initial Liquidity')}</NewTextSubHeading>
           {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-            <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center lg:p-8'>
-              <InfoIcon className='size-5 min-h-5 min-w-5 !stroke-warn-600 lg:size-8 lg:min-w-8' />
+            <div className='border-warn-900 bg-warn-950 flex flex-1 gap-4 rounded-lg border px-4 py-5 lg:flex-2 lg:items-center lg:p-8'>
+              <InfoIcon className='stroke-warn-600! size-5 min-h-5 min-w-5 lg:size-8 lg:min-w-8' />
               <div className='flex flex-col gap-1'>
-                <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
-                <TextSubHeading className='text-base text-rose'>
+                <TextHeading className='text-rose text-xl'>{t('Initial funds')}</TextHeading>
+                <TextSubHeading className='text-rose text-base'>
                   {t('We recommend you to provide new pools [maxDeposit]', {
                     maxDeposit: formatAmount(maxDeposit),
                   })}

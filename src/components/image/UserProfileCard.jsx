@@ -70,7 +70,7 @@ export function UserProfileCard({
         <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
             className={cn(
-              'text-nowrap text-base',
+              'text-base text-nowrap',
               nameColor && !String(nameColor).startsWith('#') ? nameColor : '',
               userClassName,
             )}

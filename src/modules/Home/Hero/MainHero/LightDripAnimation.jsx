@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 export function LightDripAnimation({ className, transitions, ...props }) {
   return (
     <svg
-      className={cn('absolute right-0 top-0 h-[150px] md:h-[264px]', className)}
+      className={cn('absolute top-0 right-0 h-[150px] md:h-[264px]', className)}
       width='3'
       height='264'
       viewBox='0 0 3 264'

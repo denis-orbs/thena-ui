@@ -9,7 +9,7 @@ export default function PercentBadge({ value }) {
       <ArrowDownIcon
         className={cn(
           'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
-          value > 0 ? 'rotate-180 stroke-success-600' : 'rotate-0 stroke-error-600',
+          value > 0 ? 'stroke-success-600 rotate-180' : 'stroke-error-600 rotate-0',
         )}
       />
       <span className={cn('text-base', value > 0 ? 'text-success-600' : 'text-error-600')}>

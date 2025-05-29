@@ -418,7 +418,7 @@ export default function SwapBest({
                     disabled
                   />
                   <EmphasisIconButton
-                    className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+                    className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
                     Icon={SwitchVerticalIcon}
                     onClick={() => {
                       updateSearchParams({
@@ -450,7 +450,7 @@ export default function SwapBest({
                   </div>
                   {priceImpact > 5 && (
                     <Alert>
-                      <InfoIcon className='h-4 w-4 stroke-error-600' />
+                      <InfoIcon className='stroke-error-600 h-4 w-4' />
                       <p>{t('Price impact too high')}</p>
                     </Alert>
                   )}
@@ -494,7 +494,7 @@ export default function SwapBest({
         {isTwap && <TwapOrders />}
         {isTwap && <PoweredByOrbs />}
       </div>
-      <div className='flex min-w-0 max-w-[920px] flex-1 flex-col gap-4'>
+      <div className='flex max-w-[920px] min-w-0 flex-1 flex-col gap-4'>
         <SwapChart asset0={toAsset} asset1={fromAsset} />
 
         <Box className='flex flex-col gap-4'>

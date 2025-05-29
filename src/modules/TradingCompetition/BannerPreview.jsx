@@ -76,9 +76,9 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
             id={idCanvas}
             ref={childRef}
             className={cn(
-              "relative h-[576px]  w-[1024px] origin-top-left rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover p-3 xl:p-4",
-              isView ? '' : 'fixed left-[100vh] top-[100vh] hidden',
-              isActive ? 'box-sha box-border rounded-xl border-[10px] border-white shadow-2xl' : '',
+              "relative h-[576px] w-[1024px] origin-top-left rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover p-3 xl:p-4",
+              isView ? '' : 'fixed top-[100vh] left-[100vh] hidden',
+              isActive ? 'box-sha box-border rounded-xl border-10 border-white shadow-2xl' : '',
             )}
           >
             <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl'>
@@ -89,10 +89,10 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     id={`option1_${item?.address}`}
                     alt={item?.name}
                     className={cn(
-                      'aspect-square rounded-[50%] border-[10px] border-neutral-600',
+                      'aspect-square rounded-[50%] border-10 border-neutral-600',
                       tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3
-                        ? '!h-[240px] !w-[240px]'
-                        : '!h-[192px] !w-[192px]',
+                        ? 'h-[240px]! w-[240px]!'
+                        : 'h-[192px]! w-[192px]!',
                     )}
                     style={{
                       backgroundColor: backgroundColors[item?.address] || 'transparent',
@@ -106,11 +106,11 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                 {(tokens.length > 4 || competition?.competitionRules?.pairIds.length > tokens.length) && (
                   <div
                     className={cn(
-                      'flex items-center justify-center rounded-[50%] border-[10px] border-neutral-600',
+                      'flex items-center justify-center rounded-[50%] border-10 border-neutral-600',
                       'gradient-bg text-7xl font-bold',
                       tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3
-                        ? '!h-[240px] !w-[240px]'
-                        : '!h-[192px] !w-[192px]',
+                        ? 'h-[240px]! w-[240px]!'
+                        : 'h-[192px]! w-[192px]!',
                       isView ? '' : 'pb-8',
                     )}
                   >
@@ -125,7 +125,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
       <div className='hidden grid-cols-4' />
       <div className='hidden w-[512px]' />
       {/* 1024/3 */}
-      <div className='hidden !w-[341.3333333333333px]' />
+      <div className='hidden w-[341.3333333333333px]!' />
       <div className='hidden w-[256px]' />
       {option === 2 && (
         <div ref={parentRef}>
@@ -133,9 +133,9 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
             id={idCanvas}
             ref={childRef}
             className={cn(
-              'relative h-[576px]  w-[1024px] origin-top-left rounded-xl bg-cover p-3 xl:p-4',
-              isView ? '' : 'fixed left-[100vh] top-[100vh] hidden',
-              isActive ? 'box-border rounded-xl border-[10px] border-white shadow-2xl' : '',
+              'relative h-[576px] w-[1024px] origin-top-left rounded-xl bg-cover p-3 xl:p-4',
+              isView ? '' : 'fixed top-[100vh] left-[100vh] hidden',
+              isActive ? 'box-border rounded-xl border-10 border-white shadow-2xl' : '',
             )}
           >
             <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl'>
@@ -164,7 +164,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                       id={`option2_${item?.address}`}
                       key={item?.address}
                       alt={item?.name}
-                      className={cn('!relative !aspect-square !h-auto rounded-[50%] bg-transparent')}
+                      className={cn('relative! aspect-square! h-auto! rounded-[50%] bg-transparent')}
                       src={`/logo-token/${item?.logoURI.replace('https://cdn.thena.fi/', '')}`}
                       style={{
                         backgroundColor: backgroundColors[item?.address] || 'transparent',

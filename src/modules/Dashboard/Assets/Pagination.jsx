@@ -12,8 +12,8 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
       className={cn(
         'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
-        'outline outline-2 outline-offset-4 outline-transparent',
-        'cursor-pointer rounded transition-all duration-150 ease-out',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
+        'cursor-pointer rounded-sm transition-all duration-150 ease-out',
         'text-sm',
         active && 'bg-neutral-800',
         className,
@@ -45,7 +45,8 @@ function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, set
             onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
             disabled={currentPage === 1}
             className={cn(
-              currentPage === 1 && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+              currentPage === 1 &&
+                'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
             )}
           >
             <ArrowLeftIcon className='size-4' />
@@ -131,7 +132,7 @@ function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, set
             disabled={currentPage === totalPages}
             className={cn(
               currentPage === totalPages &&
-                'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+                'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
             )}
           >
             <ArrowRightIcon className='size-4' />

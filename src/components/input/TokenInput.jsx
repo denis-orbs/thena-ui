@@ -79,7 +79,7 @@ function TokenInput({
               className={cn(
                 'inline-flex items-center justify-center gap-2',
                 'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                'py-1.5 pl-1.5 pr-2',
+                'py-1.5 pr-2 pl-1.5',
               )}
             >
               {isDouble && alowDouble ? (
@@ -107,10 +107,10 @@ function TokenInput({
                 />
               ) : assetNull ? (
                 <EmphasisButton
-                  className='h-9 !w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
+                  className='h-9 w-[130px]! rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
                   onClick={() => setTokenPopup(true)}
                 >
-                  {t('Select Token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
+                  {t('Select Token')} <ChevronDownIcon className='h-4 w-4 stroke-neutral-200! text-neutral-200' />
                 </EmphasisButton>
               ) : (
                 <Skeleton className='h-[36px] w-[100px]' />
@@ -126,7 +126,7 @@ function TokenInput({
             </span>
 
             {!readOnly && (
-              <span onClick={() => setAmount(asset.balance)} className={cn('cursor-pointer text-primary-600')}>
+              <span onClick={() => setAmount(asset.balance)} className={cn('text-primary-600 cursor-pointer')}>
                 {t('Max')}
               </span>
             )}

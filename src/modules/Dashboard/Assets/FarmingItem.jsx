@@ -305,7 +305,7 @@ function FarmingItem({ position, isXlDown }) {
         </EmphasisButton>
 
         <PrimaryButton
-          className={cn('h-8 w-full flex-1 text-nowrap text-xs md:h-11 md:text-base', {
+          className={cn('h-8 w-full flex-1 text-xs text-nowrap md:h-11 md:text-base', {
             hidden: hideButton.earn,
           })}
           disabled={position?.isFarming || isEnterFarmLoading}
@@ -338,12 +338,12 @@ function FarmingItem({ position, isXlDown }) {
     <>
       {!isXlDown ? (
         <>
-          <td className='rounded-l-md !pl-4'>{pairCell}</td>
+          <td className='rounded-l-md pl-4!'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td className='rounded-r-md !pr-4'>{actionCell}</td>
+          <td className='rounded-r-md pr-4!'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

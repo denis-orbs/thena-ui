@@ -29,7 +29,7 @@ export default function Navigation({ isOpen, setIsOpen }) {
       ref={drawerRef}
       id='drawer-navigation'
       className={cn(
-        'fixed right-0 top-0 z-50 h-screen w-64 transform bg-neutral-900 p-4 transition-transform duration-700 ease-in-out lg:w-[800px]',
+        'fixed top-0 right-0 z-50 h-screen w-64 transform bg-neutral-900 p-4 transition-transform duration-700 ease-in-out lg:w-[800px]',
         isOpen ? 'translate-x-0' : 'translate-x-full',
       )}
       tabIndex={-1}

@@ -28,7 +28,7 @@ export default function ShareProfileStats({
         className,
       )}
     >
-      <p className='mb-4 font-archia text-[24px] font-semibold'>{t('Share Profile Stats')}</p>
+      <p className='font-archia mb-4 text-[24px] font-semibold'>{t('Share Profile Stats')}</p>
       <div className='mb-6 border-b border-b-neutral-700'>
         <p className='mb-3 text-[16px] text-neutral-50'>{t('Show')}</p>
         <ul className='list-none gap-5'>

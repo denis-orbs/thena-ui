@@ -31,9 +31,9 @@ function SearchUserItem({ user, setIsPopoverOpen }) {
       >
         <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
         <div>
-          <div className='mb-1 mr-1 flex items-center gap-1'>
+          <div className='mr-1 mb-1 flex items-center gap-1'>
             <TextHeading
-              className={cn('text-nowrap text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
+              className={cn('text-base text-nowrap', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
             >
               <span
                 style={{
@@ -87,7 +87,7 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
 
   return (
     <div>
-      <TextHeading className='mb-4 mt-2'>{t('Users')}</TextHeading>
+      <TextHeading className='mt-2 mb-4'>{t('Users')}</TextHeading>
       <div className='mt-2 max-h-80 overflow-y-auto' ref={rootRef} id='scrollableDiv'>
         {seeType === TYPE_SEE.ALL ? (
           users?.map(item => (

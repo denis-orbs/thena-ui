@@ -41,7 +41,7 @@ export default function ShareProfileStatsDetail({
           className="relative h-[576px] w-[1024px] origin-top-left rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover px-2 py-6 lg:p-6"
         >
           <div>
-            <div className='mx-auto mb-10 mt-1 flex items-center justify-center'>
+            <div className='mx-auto mt-1 mb-10 flex items-center justify-center'>
               <Image
                 alt='avatar'
                 crossOrigin='anonymous'
@@ -96,10 +96,10 @@ export default function ShareProfileStatsDetail({
       </div>
       <div
         id='share-origin'
-        className="fixed left-[100vh] top-[100vh] hidden !h-[576px] !w-[1024px] bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover py-6"
+        className="fixed top-[100vh] left-[100vh] hidden h-[576px]! w-[1024px]! bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover py-6"
       >
         <div>
-          <div className='mx-auto mb-10 mt-1 flex items-center justify-center'>
+          <div className='mx-auto mt-1 mb-10 flex items-center justify-center'>
             <Image
               alt='avatar'
               crossOrigin='anonymous'
@@ -119,7 +119,7 @@ export default function ShareProfileStatsDetail({
             <div className='ml-3 flex items-center'>
               <TextHeading
                 className={cn(
-                  'pb-5 font-archia text-[26px] leading-[36px]',
+                  'font-archia pb-5 text-[26px] leading-[36px]',
                   userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : '',
                 )}
               >

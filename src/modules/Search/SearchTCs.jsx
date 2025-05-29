@@ -41,10 +41,10 @@ export function SearchTCItem({ competition, setIsPopoverOpen }) {
             alt='tc-banner'
             src={competition?.bannerUrl ?? competition?.defaultBannerUrl}
             layout='fill'
-            className='!relative !h-auto !w-9 rounded-md'
+            className='!relative h-auto! w-9! rounded-md'
           />
         ) : (
-          <div className='h-9 w-9 rounded-md bg-primary-600' />
+          <div className='bg-primary-600 h-9 w-9 rounded-md' />
         )}
       </div>
 
@@ -57,11 +57,11 @@ export function SearchTCItem({ competition, setIsPopoverOpen }) {
           <TextHeading className='ellipsis-1 text-base'>{competition.name}</TextHeading>
         </Link>
         <div className='mt-1 flex items-center justify-start gap-2'>
-          <NeutralBadge className='text-nowrap px-1 text-[10px] capitalize lg:text-[10px]'>
+          <NeutralBadge className='px-1 text-[10px] text-nowrap capitalize lg:text-[10px]'>
             {competition.market.toLowerCase()}
           </NeutralBadge>
           {eventType && (
-            <NeutralBadge className={cn('text-nowrap px-1 text-[10px] lg:text-[10px]', bgStatus)}>
+            <NeutralBadge className={cn('px-1 text-[10px] text-nowrap lg:text-[10px]', bgStatus)}>
               {t(eventType)}
             </NeutralBadge>
           )}

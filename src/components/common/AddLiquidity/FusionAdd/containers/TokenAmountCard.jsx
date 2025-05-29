@@ -112,8 +112,8 @@ export function TokenAmountCard({
             className={cn(
               'flex flex-col gap-3 self-stretch rounded-xl p-4',
               'border border-neutral-700 hover:bg-neutral-900',
-              'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
-              isSmall && 'box-border !gap-1 !px-3 !py-2',
+              'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
+              isSmall && 'box-border gap-1! px-3! py-2!',
               isInvalidAmount && 'border-error-600 focus-within:border-error-500',
             )}
             onClick={onfocusInput}
@@ -142,7 +142,7 @@ export function TokenAmountCard({
               />
               {setCurrency && Array.isArray(assetsSelect) ? (
                 <AssetDropdown
-                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  className='hover-dont-change-bg [&>#info]:!bg-opacity-50 hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]!'
                   selected={currency}
                   setCurrency={setCurrency}
                   data={assetsSelect}
@@ -151,8 +151,8 @@ export function TokenAmountCard({
                 <div
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
-                    'rounded-lg bg-[#292929] bg-opacity-50 text-sm text-neutral-200',
-                    'py-1.5 pl-1.5 pr-2',
+                    'bg-opacity-50 rounded-lg bg-[#292929] text-sm text-neutral-200',
+                    'py-1.5 pr-2 pl-1.5',
                     'cursor-default',
                   )}
                 >
@@ -173,16 +173,16 @@ export function TokenAmountCard({
               )}
             </div>
             <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading className={cn('truncate text-neutral-500', isSmall && '!text-xs')}>
+              <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'text-xs!')}>
                 ${formatAmount(value * price)}
               </TextSubHeading>
-              <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && '!text-xs')}>
+              <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'text-xs!')}>
                 <span>
                   {t('Balance')}: {balanceString}
                 </span>
                 <span
                   onClick={() => handleInput(maxAmount?.toExact())}
-                  className={cn('cursor-pointer text-primary-600', maxAmount?.toExact() === '0' && 'hidden')}
+                  className={cn('text-primary-600 cursor-pointer', maxAmount?.toExact() === '0' && 'hidden')}
                 >
                   {t('Max')}
                 </span>
@@ -190,7 +190,7 @@ export function TokenAmountCard({
             </div>
           </div>
           {isInvalidAmount && (
-            <TextHeading className='text-base font-normal text-error-600'>{t('Invalid amount')}</TextHeading>
+            <TextHeading className='text-error-600 text-base font-normal'>{t('Invalid amount')}</TextHeading>
           )}
         </div>
       )}

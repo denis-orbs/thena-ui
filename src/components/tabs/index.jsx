@@ -18,12 +18,12 @@ function TabItem({ className, item, size, disabled }) {
         type='button'
         className={cn(
           'cursor-pointer rounded-lg px-4 py-2.5',
-          'rounded px-3 py-2 text-xs',
+          'rounded-sm px-3 py-2 text-xs',
           size === SizeTypes.Medium && 'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
           'font-medium text-neutral-200',
-          'outline outline-2 outline-offset-4 outline-transparent',
+          'outline-2 outline-offset-4 outline-transparent outline-solid',
           'transition-all duration-150 ease-out',
-          'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
+          'active:outline-focus hover:bg-neutral-800 hover:text-neutral-100',
           'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-500',
           item.active && 'bg-neutral-800',
           className,
@@ -39,12 +39,12 @@ function TabItem({ className, item, size, disabled }) {
       type='button'
       className={cn(
         'cursor-pointer rounded-lg px-4 py-2.5',
-        'rounded px-3 py-2 text-xs',
+        'rounded-sm px-3 py-2 text-xs',
         size === SizeTypes.Medium && 'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
         'font-medium text-neutral-200',
-        'outline outline-2 outline-offset-4 outline-transparent',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
         'transition-all duration-150 ease-out',
-        'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
+        'active:outline-focus hover:bg-neutral-800 hover:text-neutral-100',
         'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-500',
         item.active && 'bg-neutral-800',
         className,
@@ -76,7 +76,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
           >
             <div
               className={cn(
-                'flex items-center rounded-sm px-1 hover:bg-neutral-800 hover:text-neutral-100',
+                'flex items-center rounded-xs px-1 hover:bg-neutral-800 hover:text-neutral-100',
                 item.active && 'bg-neutral-800',
               )}
             >

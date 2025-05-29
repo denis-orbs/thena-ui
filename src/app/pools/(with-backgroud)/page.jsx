@@ -310,10 +310,10 @@ export default function PoolsPage() {
                   />
                 </div>
 
-                <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
+                <CustomTooltip id='etherBadgeIcon' className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
-                <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
+                <CustomTooltip id='eigenBadgeIcon' className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -327,7 +327,7 @@ export default function PoolsPage() {
                     src='/images/GQhgnIEbUAA4gjewe.jpeg'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -342,7 +342,7 @@ export default function PoolsPage() {
                       src='/images/yieldnest_seed_3d__1__360.png'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                   </CustomTooltip>
 
@@ -353,7 +353,7 @@ export default function PoolsPage() {
                       src='/images/kernel.svg'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -370,7 +370,7 @@ export default function PoolsPage() {
                         src='/images/quaaloop.png'
                       />
                     </div>
-                    <CustomTooltip id={`pool-special-${pool.address}-tooltip`} className='rounded-md !py-2' place='top'>
+                    <CustomTooltip id={`pool-special-${pool.address}-tooltip`} className='rounded-md py-2!' place='top'>
                       <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
                     </CustomTooltip>
                   </div>
@@ -386,7 +386,7 @@ export default function PoolsPage() {
                       src='/svgs/fbtcYieldCampaign.svg'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -407,7 +407,7 @@ export default function PoolsPage() {
                   </div>
                   <CustomTooltip
                     id={`pool-special-${pool.address}-BTCBmBTCAddress`}
-                    className='rounded-md !py-2'
+                    className='rounded-md py-2!'
                     place='top'
                   >
                     <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
@@ -421,9 +421,9 @@ export default function PoolsPage() {
             {(pool.token0?.isWarning || pool.token1?.isWarning) && (
               <>
                 <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
-                  <InfoIcon className='size-4 stroke-warn-700' />
+                  <InfoIcon className='stroke-warn-700 size-4' />
                 </div>
-                <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
                 </CustomTooltip>
               </>
@@ -485,7 +485,7 @@ export default function PoolsPage() {
           <div className='flex gap-2.5'>
             <EmphasisIconButton
               className='size-8 min-w-8 max-lg:p-2 lg:size-11 lg:min-w-11'
-              classNames='[&>path]:group-hover:stroke-neutral-100'
+              classNames='group-hover:[&>path]:stroke-neutral-100'
               Icon={BarChartIcon}
               onClick={e => {
                 e.stopPropagation()
@@ -576,7 +576,7 @@ export default function PoolsPage() {
   return (
     <LayoutWithBackButton
       hiddenBackButton
-      className='!pt-6 xl:mx-12 2xl:mx-auto 2xl:w-[1344px] 3xl:w-[1464px] 3xl:!pt-8'
+      className='3xl:w-[1464px] 3xl:pt-8! pt-6! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]'
     >
       <div className='flex flex-col gap-6 2xl:gap-8'>
         {/* Filter section */}
@@ -607,8 +607,8 @@ export default function PoolsPage() {
                   prefixClass='pr-4 py-3'
                 />
                 <SearchInput2
-                  className='!h-11 w-full !text-neutral-400 lg:w-[280px]'
-                  classNames={{ input: '!h-11 !text-neutral-400' }}
+                  className='h-11! w-full text-neutral-400! lg:w-[280px]'
+                  classNames={{ input: 'h-11! text-neutral-400!' }}
                   val={searchText}
                   setVal={setSearchText}
                 />
@@ -645,7 +645,7 @@ export default function PoolsPage() {
               </TextHeading>
               <ChevronDownWhiteIcon
                 className={cn(
-                  'size-8 cursor-pointer !stroke-neutral-50 transition-all duration-150 ease-in-out',
+                  'size-8 cursor-pointer stroke-neutral-50! transition-all duration-150 ease-in-out',
                   toggleVault ? 'rotate-180' : 'rotate-0',
                 )}
                 onClick={() => setToggleVault(!toggleVault)}
@@ -659,32 +659,32 @@ export default function PoolsPage() {
             >
               <div className='mt-4 flex items-center gap-2'>
                 {vaults.map(trending => (
-                  <Box className='flex w-full cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
+                  <Box className='flex w-full cursor-pointer flex-col gap-4 p-4!' key={trending.address}>
                     <div className='space-y-2'>
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex items-center gap-2'>
                           <CircleImage className='size-6 2xl:size-9' src={trending.allowed.logoURI} alt='thena logo' />
                           <div className='flex flex-col'>
-                            <TextHeading className='!text-base !leading-5 2xl:!text-xl 2xl:!leading-6'>
+                            <TextHeading className='text-base! leading-5! 2xl:text-xl! 2xl:leading-6!'>
                               {`${trending.allowed.symbol}/${
                                 trending.token0.symbol !== trending.allowed.symbol
                                   ? trending.token0.symbol
                                   : trending.token1.symbol
                               }`}
                             </TextHeading>
-                            <TextSubHeading className='text-nowrap !text-xs 2xl:!text-sm'>ICHI</TextSubHeading>
+                            <TextSubHeading className='text-xs! text-nowrap 2xl:text-sm!'>ICHI</TextSubHeading>
                           </div>
                         </div>
-                        <TextHeading className='font-archia !text-base font-bold !leading-5 text-primary-600 2xl:!text-xl 2xl:font-semibold 2xl:!leading-6'>
+                        <TextHeading className='font-archia text-primary-600 text-base! leading-5! font-bold 2xl:text-xl! 2xl:leading-6! 2xl:font-semibold'>
                           {formatAmount(trending.gauge.apr)}%
                         </TextHeading>
                       </div>
                       <div className='space-y-1'>
                         <div className='flex items-center justify-between gap-2'>
-                          <Paragraph className='!text-xs font-medium text-neutral-500 2xl:!text-sm'>
+                          <Paragraph className='text-xs! font-medium text-neutral-500 2xl:text-sm!'>
                             {t('Total Value Locked')}
                           </Paragraph>
-                          <TextHeading className='text-xs font-medium text-neutral-400 2xl:!text-sm'>
+                          <TextHeading className='text-xs font-medium text-neutral-400 2xl:text-sm!'>
                             ${formatAmount(trending.gauge.tvl)}
                           </TextHeading>
                         </div>
@@ -698,7 +698,7 @@ export default function PoolsPage() {
                             logo2={trending.token1.logoURI}
                           />
 
-                          <TextHeading className='text-xs text-neutral-500 2xl:!text-base 2xl:!leading-4'>{`Pool Token ${trending.symbol}`}</TextHeading>
+                          <TextHeading className='text-xs text-neutral-500 2xl:text-base! 2xl:leading-4!'>{`Pool Token ${trending.symbol}`}</TextHeading>
                         </div>
                       </div>
                     </div>

@@ -52,7 +52,7 @@ export function RotatingHeading() {
     <span className='relative mb-4 inline-block w-full lg:mb-5'>
       <span
         ref={textContainerRef}
-        className='absolute left-1/2 top-1/2 block max-h-[41px] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden lg:max-h-[88px]'
+        className='absolute top-1/2 left-1/2 block max-h-[41px] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden lg:max-h-[88px]'
       >
         {HEADINGS.map((text, index) => (
           <motion.span

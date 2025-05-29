@@ -273,7 +273,7 @@ function CompetitionDetailLayout({ children, params }) {
                 <Box
                   onMouseOver={() => setShowIconCloseBanner(true)}
                   onMouseLeave={() => setShowIconCloseBanner(false)}
-                  className='relative mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
+                  className='border-primary-800 bg-primary-950 relative mt-10 flex flex-col space-y-2 border'
                 >
                   <TextHeading className='text-base font-normal'>
                     <strong>{t('You MUST close all your positions highlight')}</strong> &nbsp;
@@ -285,7 +285,7 @@ function CompetitionDetailLayout({ children, params }) {
                   </TextHeading>
                   {showIconCloseBanner && (
                     <EmphasisIconButton
-                      className='absolute right-1 top-1 !m-0 h-6 w-6 lg:h-6 lg:w-6'
+                      className='absolute top-1 right-1 m-0! h-6 w-6 lg:h-6 lg:w-6'
                       classNames='lg:h-4 lg:w-4'
                       Icon={XIcon}
                       onClick={() => setShowBanner(false)}
@@ -295,7 +295,7 @@ function CompetitionDetailLayout({ children, params }) {
               )}
               <div className='grid grid-cols-12 gap-4 lg:gap-12'>
                 <div className='col-span-12 lg:col-span-7'>
-                  <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+                  <div className='bg-opacity-20 sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
                     <Link href={`/arena${queryParams}`}>
                       <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
                         {t('Back')}
@@ -322,7 +322,7 @@ function CompetitionDetailLayout({ children, params }) {
               </div>
 
               <div className='grid grid-cols-12 gap-4 lg:gap-12'>
-                <div className={cn('col-span-12', isTableTab ? ' lg:col-span-12' : ' lg:col-span-7')}>
+                <div className={cn('col-span-12', isTableTab ? 'lg:col-span-12' : 'lg:col-span-7')}>
                   <div className='mt-4 flex w-full flex-col gap-4'>{children}</div>
                 </div>
               </div>

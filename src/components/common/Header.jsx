@@ -73,7 +73,7 @@ function BridgeMaintainModal({ show, onClose }) {
           <div className='mt-3'>
             <Paragraph className='text-neutral-50'>
               The current Polyhedra bridge for $THE between opBNB & BNB Chain will{' '}
-              <span className='font-bold text-primary-600'>
+              <span className='text-primary-600 font-bold'>
                 stop working permanently on April 21, 2025, at 3:00 AM UTC
               </span>{' '}
               due to provider changes and network upgrades. Please complete any necessary $THE transfers before this
@@ -159,7 +159,7 @@ function ChainSelect({ t }) {
   return (
     <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
       <div
-        className='flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-3 pr-4 lg:pl-1.5 lg:pr-2.5 xl:pl-3 xl:pr-4'
+        className='flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pr-4 pl-3 lg:pr-2.5 lg:pl-1.5 xl:pr-4 xl:pl-3'
         onClick={() => setOpen(!open)}
       >
         <CircleImage src={selected.img} alt='' className='h-5 w-5' />
@@ -170,7 +170,7 @@ function ChainSelect({ t }) {
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -225,7 +225,7 @@ function ChainMobileSelect({ t }) {
   return (
     <div className={cn('relative block w-full lg:hidden')} ref={wrapperRef}>
       <div
-        className='flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-3 pr-4'
+        className='flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pr-4 pl-3'
         onClick={() => setOpen(!open)}
       >
         <div className='flex items-center gap-2'>
@@ -239,7 +239,7 @@ function ChainMobileSelect({ t }) {
       <div
         className={cn(
           'visible absolute z-10 mt-2 w-full flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -300,7 +300,7 @@ function LanguageSelect() {
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -322,7 +322,7 @@ function LanguageSelect() {
             <div className='flex items-center gap-2'>
               <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
               <TextHeading className='text-nowrap'>{item.label}</TextHeading>
-              {locale === item.lang && <div className='h-2 w-2 rounded-full bg-primary-600' />}
+              {locale === item.lang && <div className='bg-primary-600 h-2 w-2 rounded-full' />}
             </div>
           </div>
         ))}
@@ -344,7 +344,7 @@ function V3Banner({ onClose }) {
   return (
     <div
       id='v3-banner'
-      className='fixed left-0 top-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
+      className='fixed top-0 left-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
     >
       <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
         <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
@@ -355,14 +355,14 @@ function V3Banner({ onClose }) {
         </span>
         <div className='flex'>
           <TertiaryButton
-            className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'
+            className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'
             onClick={() => push('/dashboard')}
           >
             Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
           </TertiaryButton>
           {new Date() >= new Date('2025-05-29') && (
             <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
-              <TertiaryButton className='h-9 min-w-fit border-none text-sm md:h-11 [&>svg>path]:stroke-primary-600'>
+              <TertiaryButton className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'>
                 Learn More <ArrowRightIcon className='ml-1 h-4 w-4' />
               </TertiaryButton>
             </Link>
@@ -883,13 +883,13 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl md:h-[92px]',
+          'bg-opacity-20 fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start backdrop-blur-2xl md:h-[92px]',
           showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >
         <div
           className={cn(
-            'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pb-6 lg:pt-6',
+            'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pt-6 lg:pb-6',
             !pathname.includes('/add-liquidity') && 'lg:pt-3',
           )}
         >
@@ -915,7 +915,7 @@ function Header() {
                     <div
                       className={cn(
                         item.isHighlight
-                          ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
+                          ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800'
                           : '',
                         item.active && 'after:bg-neutral-800',
                         item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
@@ -926,7 +926,7 @@ function Header() {
                         className={cn(
                           'flex h-11 cursor-pointer items-center justify-center',
                           'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
-                          'outline outline-2 outline-offset-4 outline-transparent',
+                          'outline-2 outline-offset-4 outline-transparent outline-solid',
                           'transition-all duration-150 ease-out',
                           !item.isHighlight && 'hover:bg-neutral-800',
                           !item.isHighlight && item.active && 'bg-neutral-800',
@@ -954,7 +954,7 @@ function Header() {
                       <div
                         className={cn(
                           'visible absolute w-[344px] flex-col items-start justify-start gap-1',
-                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow',
+                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow-sm',
                           'transition-all duration-150 ease-out',
                           openMenu !== item.label && 'invisible opacity-0',
                         )}
@@ -1049,7 +1049,7 @@ function Header() {
               <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
                 {menus.map((menu, idx) => (
                   <div
-                    className='inline-flex cursor-pointer items-center justify-between self-stretch rounded p-3 transition-all hover:bg-neutral-800'
+                    className='inline-flex cursor-pointer items-center justify-between self-stretch rounded-sm p-3 transition-all hover:bg-neutral-800'
                     key={`menu-${idx}`}
                     onClick={() => {
                       if (menu.onClickHandler) {
@@ -1087,14 +1087,14 @@ function Header() {
         <TxnModal />
       </header>
       {/* {pathname.startsWith('/dashboard') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
+        <div className='fixed top-[64px] z-45 w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
       )} */}
       {pathname.includes('/arena') && (
         <div
           className={cn(
-            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
+            'fixed top-[64px] z-45 w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
             showBannerMigrate && 'top-[180px] lg:top-[146px]',
           )}
         >
@@ -1121,7 +1121,7 @@ function Header() {
       {pathname.startsWith('/story') && isRegistered && (
         <div
           className={cn(
-            'fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
+            'fixed top-[64px] z-45 w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
             showBannerMigrate && 'top-[180px] lg:top-[146px]',
           )}
         >

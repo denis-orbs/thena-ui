@@ -145,13 +145,13 @@ export function Features() {
                 alt='dotter grid'
                 src='/images/home/stats/stats21.png'
                 key={feature}
-                className='absolute right-0 h-[600px] w-4/6 opacity-0 transition-opacity duration-[600ms] group-hover:opacity-100'
+                className='absolute right-0 h-[600px] w-4/6 opacity-0 transition-opacity duration-600 group-hover:opacity-100'
               />
-              <div className='absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
+              <div className='bg-opacity-[35%] absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
             </>
           )}
-          <div className='absolute left-0 top-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
-          <div className='absolute bottom-0 right-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
+          <div className='bg-opacity-[35%] absolute top-0 left-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
+          <div className='bg-opacity-[35%] absolute right-0 bottom-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 blur-[220px] filter' />
         </div>
       </div>
 

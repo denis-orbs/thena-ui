@@ -70,7 +70,7 @@ function DashboardProfile() {
     >
       <Box
         className={cn(
-          'flex h-full flex-col gap-1.5 !p-0 md:gap-6',
+          'flex h-full flex-col gap-1.5 p-0! md:gap-6',
           (!userInfo || !userInfo.usernameNfts?.length) && 'bg-transparent',
         )}
       >
@@ -111,7 +111,7 @@ function DashboardProfile() {
             <div className='hidden h-full flex-col justify-between md:flex'>
               <div className='flex h-full'>
                 <div
-                  className='flex min-h-[432px] flex-col justify-between rounded-l-xl bg-cover bg-center bg-no-repeat pb-4 md:!w-[211px]'
+                  className='flex min-h-[432px] flex-col justify-between rounded-l-xl bg-cover bg-center bg-no-repeat pb-4 md:w-[211px]!'
                   style={{
                     backgroundImage: `url('${
                       userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || '/images/profile-bg.png'
@@ -121,7 +121,7 @@ function DashboardProfile() {
                   <NewTextHeading
                     className={cn(
                       'w-full rounded-tl-xl p-4 text-3xl md:text-3xl',
-                      userInfo?.avatar && 'bg-gradient-to-b from-black/60 to-[#666666]/0',
+                      userInfo?.avatar && 'bg-linear-to-b from-black/60 to-[#666666]/0',
                     )}
                   >
                     {t('My Profile')}
@@ -134,13 +134,13 @@ function DashboardProfile() {
                 <div className='flex h-full flex-1 flex-col justify-between gap-4 p-4 max-md:hidden'>
                   <div className='flex flex-col gap-4'>
                     {userInfo?.username && (
-                      <NewTextHeading className='flex gap-2 py-2.5 text-xl uppercase !leading-6 md:text-xl'>
+                      <NewTextHeading className='flex gap-2 py-2.5 text-xl leading-6! uppercase md:text-xl'>
                         <span className='text-neutral-500'>{t('Thena ID')}:</span>
                         <span className='text-warn-600'>{userInfo.username}</span>
                       </NewTextHeading>
                     )}
                     <div className='flex flex-col gap-2'>
-                      <TextHeading className='flex h-10 items-center gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
+                      <TextHeading className='font-archia flex h-10 items-center gap-2 text-xl leading-6! font-semibold lg:text-xl'>
                         <NewTextHeading className='text-xl text-neutral-500 md:text-xl'>
                           {userInfo?.isVerified ? 'Verified' : 'Unverified'}
                         </NewTextHeading>
@@ -172,7 +172,7 @@ function DashboardProfile() {
                       </div>
                       {userInfo?.xProfileUrl && (
                         <div className='flex h-11 w-full items-center gap-2'>
-                          <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
+                          <TextHeading className='font-archia text-xl leading-6! font-semibold text-neutral-500 lg:text-xl'>
                             {t('Socials')}:{' '}
                           </TextHeading>
                           <Link
@@ -206,7 +206,7 @@ function DashboardProfile() {
             <div className='flex flex-col gap-4 p-4 md:hidden'>
               <div className='gap-1.5'>
                 <NewTextHeading className='text-xl'>{t('My Profile')}</NewTextHeading>
-                <TextHeading className='flex items-center gap-2 font-archia text-xl font-semibold'>
+                <TextHeading className='font-archia flex items-center gap-2 text-xl font-semibold'>
                   {userInfo?.username && <span className='text-warn-600'>{userInfo.username}</span>}
                   <span className='text-neutral-500'>{formatAddress(account)}</span>
                 </TextHeading>

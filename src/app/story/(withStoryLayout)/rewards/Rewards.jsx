@@ -19,7 +19,7 @@ export function Rewards({ address }) {
   return (
     <div>
       <div className='mt-[10px]'>
-        <TextHeading className='block font-archia text-3xl font-semibold'>{t('Rewards')}</TextHeading>
+        <TextHeading className='font-archia block text-3xl font-semibold'>{t('Rewards')}</TextHeading>
         <TextSubHeading className='mt-2 block text-base text-neutral-300'>{t('Reward description')}</TextSubHeading>
       </div>
       <div className='mt-6'>

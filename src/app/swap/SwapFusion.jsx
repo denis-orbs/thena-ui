@@ -221,7 +221,7 @@ export default function SwapFusion({
               }}
             />
             <EmphasisIconButton
-              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 updateSearchParams({
@@ -273,7 +273,7 @@ export default function SwapFusion({
             </div>
             {priceImpactInNumber > 5 && (
               <Alert>
-                <InfoIcon className='h-4 w-4 stroke-error-600' />
+                <InfoIcon className='stroke-error-600 h-4 w-4' />
                 <p>{t('Price impact too high')}</p>
               </Alert>
             )}
@@ -332,7 +332,7 @@ export default function SwapFusion({
                 {bestTrade && !showWrap && (
                   <div
                     // eslint-disable-next-line max-len
-                    className='relative flex px-4 py-4 before:absolute before:left-0 before:top-0 before:h-[48px] before:w-full before:border-x before:border-b before:border-neutral-700 after:w-[60px]'
+                    className='relative flex px-4 py-4 before:absolute before:top-0 before:left-0 before:h-[48px] before:w-full before:border-x before:border-b before:border-neutral-700 after:w-[60px]'
                   >
                     <div className='relative flex grow px-3'>
                       <div className='flex w-full justify-between space-x-4 overflow-hidden before:content-[""] after:content-[""]'>
@@ -340,7 +340,7 @@ export default function SwapFusion({
                           const found = assets.find(ele => ele.address.toLowerCase() === token.address.toLowerCase())
                           return (
                             <div
-                              className='h-fit w-fit space-y-1 rounded bg-neutral-600 px-2 py-2'
+                              className='h-fit w-fit space-y-1 rounded-sm bg-neutral-600 px-2 py-2'
                               key={`subroute-${idx}`}
                             >
                               <div className='flex items-center space-x-1 py-1'>

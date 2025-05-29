@@ -233,12 +233,12 @@ function Scenes() {
   return (
     <div className='relative w-full lg:pb-24'>
       <HomeImage alt='background' src='/images/home/scenes/bg.png' className='absolute top-0 w-full' />
-      <div className='container relative z-20 mx-auto flex flex-col items-center justify-center pb-8 lg:pb-20'>
+      <div className='relative z-20 container mx-auto flex flex-col items-center justify-center pb-8 lg:pb-20'>
         <HomeImage className='mb-6 w-fit' alt='scenes' src='/images/home/scenes/1.png' />
         <Heading heading={t('Behind THE Scenes')} wrapperStyles='items-center' title={t('FOUNDERS')} />
       </div>
       {/*  */}
-      <div className='relative ml-auto w-full max-w-[1320px] pl-10 xl:px-0 2xl:max-w-[1520px] 3xl:max-w-[2000px]'>
+      <div className='3xl:max-w-[2000px] relative ml-auto w-full max-w-[1320px] pl-10 xl:px-0 2xl:max-w-[1520px]'>
         <Swiper
           breakpoints={{
             320: {
@@ -269,17 +269,17 @@ function Scenes() {
           pagination
           modules={[Pagination]}
           grabCursor
-          className='scenes-swiper !w-full !pb-20 lg:!pb-0'
+          className='scenes-swiper w-full! pb-20! lg:pb-0!'
         >
           {cardsData.map((item, idx) => (
             <SwiperSlide key={idx} className='w-full'>
-              <div className='group relative z-10 overflow-hidden rounded-xl  bg-transparent p-px transition-opacity after:absolute after:left-0 after:top-0 after:h-full  after:w-full after:bg-gradient-to-b after:from-[#BE01B7]/[0.35] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
-                <div className='relative z-20 !min-h-[286px] rounded-xl bg-[#1A0D1F]/[0.45] px-9 py-8 transition-all duration-300 ease-in-out group-hover:bg-[#1A0D1F]/[0.98]'>
+              <div className='group relative z-10 overflow-hidden rounded-xl bg-transparent p-px transition-opacity after:absolute after:top-0 after:left-0 after:h-full after:w-full after:bg-linear-to-b after:from-[#BE01B7]/[0.35] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
+                <div className='relative z-20 min-h-[286px]! rounded-xl bg-[#1A0D1F]/[0.45] px-9 py-8 transition-all duration-300 ease-in-out group-hover:bg-[#1A0D1F]/[0.98]'>
                   <div className='flex items-start justify-between transition-all duration-300 ease-in-out group-hover:-mt-1'>
                     <div className='flex items-start space-x-5'>
                       <HomeImage className='h-10 w-10' alt={`profile of ${item.name}`} src={item.profilePic} />
                       <div className=''>
-                        <p className='text-xl font-semibold leading-6 tracking-[-0.8px]'>{item.name}</p>
+                        <p className='text-xl leading-6 font-semibold tracking-[-0.8px]'>{item.name}</p>
                         <p className='text-base leading-6 tracking-[-0.48px] text-[#3AAFF8]'>{t(item.position)}</p>
                       </div>
                     </div>

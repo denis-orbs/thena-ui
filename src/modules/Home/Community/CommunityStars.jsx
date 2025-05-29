@@ -13,7 +13,7 @@ export function CommunityStars({ className }) {
       {/* Shooting stars */}
       <motion.path
         initial={{ opacity: 0, transform: 'translate(0px, -0px)' }}
-        className='!origin-center [transform-box:fill-box]'
+        className='origin-center! transform-fill'
         animate={{
           transform: 'translate(-60px, 60px)',
           opacity: [0, 0.65, 0],
@@ -30,7 +30,7 @@ export function CommunityStars({ className }) {
       />
       <motion.path
         initial={{ opacity: 0, transform: 'translate(0px, -0px)' }}
-        className='!origin-center [transform-box:fill-box]'
+        className='origin-center! transform-fill'
         animate={{
           transform: 'translate(-60px, 60px)',
           opacity: [0, 0.65, 0],
@@ -48,7 +48,7 @@ export function CommunityStars({ className }) {
       />
       <motion.path
         initial={{ opacity: 0, transform: 'translate(0px, -0px)' }}
-        className='!origin-center [transform-box:fill-box]'
+        className='origin-center! transform-fill'
         animate={{
           transform: 'translate(-60px, 60px)',
           opacity: [0, 0.65, 0],
@@ -67,7 +67,7 @@ export function CommunityStars({ className }) {
 
       <motion.path
         initial={{ opacity: 0, transform: 'translate(60px, -60px)' }}
-        className='!origin-center [transform-box:fill-box]'
+        className='origin-center! transform-fill'
         animate={{
           transform: 'translate(0px, 0px)',
           opacity: [0, 0.25, 0],

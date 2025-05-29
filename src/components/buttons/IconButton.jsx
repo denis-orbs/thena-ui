@@ -9,7 +9,7 @@ function IconButton({ className, classNames, variant = CompTypes.Primary, Icon, 
       type='button'
       className={cn(
         'group inline-flex h-8 w-8 cursor-pointer items-center justify-center',
-        'outline outline-2 outline-offset-4 outline-transparent',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
         'rounded-lg font-medium transition-all duration-150 ease-out',
         'active:outline-focus disabled:cursor-not-allowed',
         'lg:h-11 lg:w-11',
@@ -25,7 +25,7 @@ function IconButton({ className, classNames, variant = CompTypes.Primary, Icon, 
           'disabled:bg-neutral-700',
         ],
         variant === CompTypes.Tertiary && [
-          'border border-primary-600',
+          'border-primary-600 border',
           'hover:border-primary-700',
           'active:border-primary-600',
           'disabled:border-neutral-700',

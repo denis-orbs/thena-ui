@@ -57,7 +57,7 @@ export default function TradeToEarnPage() {
             <Loading />
           </div>
         )}
-        <div className='fixed left-0 right-0 mx-auto' />
+        <div className='fixed right-0 left-0 mx-auto' />
         <div className='layout'>
           <Suspense fallback={<Loading />}>
             <div className='relative'>

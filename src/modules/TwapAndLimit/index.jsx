@@ -256,7 +256,7 @@ export function Twap({
           <div className='relative flex w-full flex-col gap-2'>
             <TokenPanel isSrcToken />
             <EmphasisIconButton
-              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 updateSearchParams({

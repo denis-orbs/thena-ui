@@ -77,27 +77,27 @@ function Updates() {
               }}
               modules={[Pagination, Navigation]}
               grabCursor
-              className='updates-swiper !w-full !pb-10 md:pb-0'
+              className='updates-swiper w-full! pb-10! md:pb-0'
             >
               {blogData.map((item, idx) => (
                 <SwiperSlide key={idx}>
-                  <div className='group relative z-10 overflow-hidden rounded-xl  bg-transparent p-px transition-opacity after:absolute after:left-0 after:top-0 after:h-full after:w-full after:bg-gradient-to-b after:from-[#BE01B7] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
+                  <div className='group relative z-10 overflow-hidden rounded-xl bg-transparent p-px transition-opacity after:absolute after:top-0 after:left-0 after:h-full after:w-full after:bg-linear-to-b after:from-[#BE01B7] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
                     <div
-                      className='relative z-20 rounded-xl bg-[rgba(26,13,31,0.45)] px-5 pb-8 pt-5  transition-all duration-300 group-hover:bg-[rgba(26,13,31,0.98)]'
+                      className='relative z-20 rounded-xl bg-[rgba(26,13,31,0.45)] px-5 pt-5 pb-8 transition-all duration-300 group-hover:bg-[rgba(26,13,31,0.98)]'
                       onClick={() => {
                         window.open(item.link, '_blank')
                       }}
                     >
                       {item.image && (
-                        <div className='flex justify-center overflow-hidden rounded'>
+                        <div className='flex justify-center overflow-hidden rounded-sm'>
                           <HomeImage
                             alt='blog'
                             src={item.image}
-                            className='h-[250px] w-auto transform rounded transition-all duration-300 ease-linear group-hover:scale-110'
+                            className='h-[250px] w-auto transform rounded-sm transition-all duration-300 ease-linear group-hover:scale-110'
                           />
                         </div>
                       )}
-                      <p className='mt-6 text-ellipsis font-archia text-lg font-medium leading-6 tracking-[0.54px] transition-all duration-300 ease-linear group-hover:mt-5'>
+                      <p className='font-archia mt-6 text-lg leading-6 font-medium tracking-[0.54px] text-ellipsis transition-all duration-300 ease-linear group-hover:mt-5'>
                         {item.title}
                       </p>
                       <p className='mt-4 text-sm leading-5 text-white/[0.45]'>{item.pubDate.slice(0, 10)}</p>
@@ -107,10 +107,10 @@ function Updates() {
               ))}
             </Swiper>
             <div className='absolute bottom-0 z-10 hidden w-full justify-between px-4 lg:flex'>
-              <div className='custom-swiper-button-prev inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-opacity-85'>
+              <div className='custom-swiper-button-prev hover:border-opacity-85 inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1'>
                 <ArrowBackwardIcon className='size-5 [&>path]:stroke-[#007aff]' />
               </div>
-              <div className='custom-swiper-button-next inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-opacity-85'>
+              <div className='custom-swiper-button-next hover:border-opacity-85 inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1'>
                 <ArrowForwardSmallIcon className='size-5 [&>path]:stroke-[#007aff]' />
               </div>
             </div>

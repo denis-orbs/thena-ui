@@ -113,12 +113,12 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
               banner={competition.bannerUrl || Banner.src}
             />
             {!showCheckedHidden ? (
-              <NeutralBadge className='absolute right-4 top-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
+              <NeutralBadge className='absolute top-4 right-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
                 <UserIcon className='h-3 w-3' />
                 {`${competition.participantCount}/${competition.maxParticipants}`}
               </NeutralBadge>
             ) : (
-              <div className='absolute right-4 top-4 flex flex-row items-center'>
+              <div className='absolute top-4 right-4 flex flex-row items-center'>
                 <Toggle checked={competition.isHidden} onChange={updateIsHidden} />
                 <TextSubHeading>Hide</TextSubHeading>
               </div>
@@ -140,7 +140,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                     </NeutralBadge>
                   </div>
                   <CustomTooltip
-                    className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    className='z-999999 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
                     id={`tooltip-tags-${tag.id}`}
                     place='bottom'
                   >
@@ -199,7 +199,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             </Paragraph>
           </div>
           <div className='mb-5'>
-            <p className='text-base font-medium leading-5'>
+            <p className='text-base leading-5 font-medium'>
               {titleForTargetTime}
               {targetEventTime && <span className='font-bold'> {targetEventTime}</span>}
             </p>
@@ -209,7 +209,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                 style={{
                   width: `${percentCountDown}%`,
                 }}
-                className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
               />
             </div>
           </div>

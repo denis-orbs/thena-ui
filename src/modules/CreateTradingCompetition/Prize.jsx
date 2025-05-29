@@ -59,7 +59,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
 
   return (
     <>
-      <p className='font-figtree w-full text-xl font-semibold leading-6 text-white md:text-[22px] md:leading-7'>
+      <p className='font-figtree w-full text-xl leading-6 font-semibold text-white md:text-[22px] md:leading-7'>
         {t('Prizes')}
       </p>
       <div className='mt-4'>
@@ -71,13 +71,10 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               setIsPrizeOpen(true)
             }}
           >
-            <div
-              className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
-           placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
-            >
+            <div className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pr-8 pl-4 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'>
               {data.prize.token.length} {t('Selected')}
             </div>
-            <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
+            <div className='absolute top-0 right-3 bottom-0 my-auto h-5 w-5'>
               <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
             </div>
           </div>
@@ -161,7 +158,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           required
         />
         <div className='mt-3 flex w-full items-center space-x-6 md:mt-4 md:space-x-9'>
-          <span className='whitespace-nowrap text-xl font-semibold leading-6 text-[#E9E9F2] md:text-[22px] md:leading-7'>
+          <span className='text-xl leading-6 font-semibold whitespace-nowrap text-[#E9E9F2] md:text-[22px] md:leading-7'>
             {total} %
           </span>
           <div className='h-2 w-full overflow-hidden rounded-full bg-[#272845]'>
@@ -211,7 +208,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             if (placements > 2) setData({ ...data, prize: { ...data.prize, placements: placements - 1 } })
           }}
           disabled={placements <= 2}
-          className={`bg-red-500 p-[0.5rem] hover:bg-red-500 ${placements <= 2 ? 'bg-red-800 hover:bg-red-800' : ''}`}
+          className={`bg-red-500 p-2 hover:bg-red-500 ${placements <= 2 ? 'bg-red-800 hover:bg-red-800' : ''}`}
         >
           <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
         </PrimaryButton>
@@ -219,9 +216,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           onClick={() => {
             if (placements < 100) setData({ ...data, prize: { ...data.prize, placements: placements + 1 } })
           }}
-          className={`bg-green-600 p-[0.5rem] hover:bg-green-600 ${
-            total >= 100 ? 'bg-green-800 hover:bg-green-800' : ''
-          }`}
+          className={`bg-green-600 p-2 hover:bg-green-600 ${total >= 100 ? 'bg-green-800 hover:bg-green-800' : ''}`}
           disabled={total >= 100 || weights.length >= 100}
         >
           <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />

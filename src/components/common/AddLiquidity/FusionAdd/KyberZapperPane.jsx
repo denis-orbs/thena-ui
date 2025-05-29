@@ -143,7 +143,7 @@ function KyberZapperPane({
   }, [amountIn, invalidAmount, tokenDeposit?.balance])
 
   return (
-    <div className='!mt-4 flex flex-col md:gap-4'>
+    <div className='mt-4! flex flex-col md:gap-4'>
       <div className='space-y-2 md:space-y-4'>
         <WarningZapper />
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
@@ -216,7 +216,7 @@ function KyberZapperPane({
         </div>
       </div>
 
-      <div className='flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row'>
+      <div className='flex w-full flex-col items-center gap-2 max-md:mt-8! lg:flex-row'>
         <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

@@ -17,32 +17,32 @@ function PoolsSummary({ pools }) {
       {/* TODO: replace mock data */}
       <Box className='ml-auto flex flex-row gap-10'>
         <div className='flex flex-col gap-3'>
-          <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+          <TextHeading className='font-archia text-gradient-primary-start text-3xl font-semibold'>
             {pools.length}
           </TextHeading>
           <Paragraph className='text-neutral-500'>{t('Number of pools')}</Paragraph>
         </div>
         <div className='flex flex-col gap-3'>
-          <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+          <TextHeading className='font-archia text-gradient-primary-start text-3xl font-semibold'>
             ${formatAmount(15373984)}
           </TextHeading>
           <Paragraph className='text-neutral-500'>{t('7D Volume')}</Paragraph>
         </div>
 
         <div className='flex flex-col gap-3'>
-          <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+          <TextHeading className='font-archia text-gradient-primary-start text-3xl font-semibold'>
             ${formatAmount(5373)}
           </TextHeading>
           <Paragraph className='text-neutral-500'>{t('7D Fees')}</Paragraph>
         </div>
         <div className='flex flex-col gap-3'>
-          <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+          <TextHeading className='font-archia text-gradient-primary-start text-3xl font-semibold'>
             ${formatAmount(93473141)}
           </TextHeading>
           <Paragraph className='text-neutral-500'>{t('TVL Lending')}</Paragraph>
         </div>
         <div className='flex flex-col gap-3'>
-          <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+          <TextHeading className='font-archia text-gradient-primary-start text-3xl font-semibold'>
             ${formatAmount(93473141)}
           </TextHeading>
           <Paragraph className='text-neutral-500'>{t('TVL Borowed')}</Paragraph>

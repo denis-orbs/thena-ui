@@ -29,7 +29,7 @@ export function Pools() {
         }}
         id='pools-heading'
       >
-        <TextHeading className='block px-4 py-3 font-archia text-[8px] font-semibold text-neutral-50 sm:text-xs md:px-[30px] md:text-lg'>
+        <TextHeading className='font-archia block px-4 py-3 text-[8px] font-semibold text-neutral-50 sm:text-xs md:px-[30px] md:text-lg'>
           Trending pools
         </TextHeading>
       </motion.span>

@@ -73,7 +73,7 @@ export function PoolChart({ address }) {
             valueProperty='tvlUSD'
             title='TVL'
             ChartComponent={LineChart}
-            className='!p-0'
+            className='p-0!'
           />
         )
       }
@@ -85,7 +85,7 @@ export function PoolChart({ address }) {
             valueProperty='dayVolume'
             title='Volume (24h)'
             ChartComponent={BarChart}
-            className='!p-0'
+            className='p-0!'
           />
         )
       }
@@ -97,7 +97,7 @@ export function PoolChart({ address }) {
             valueProperty='dayFees'
             title='Fees (24h)'
             ChartComponent={BarChart}
-            className='!p-0'
+            className='p-0!'
           />
         )
       }

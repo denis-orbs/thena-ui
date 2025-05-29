@@ -243,7 +243,7 @@ export function CandleStickChartBase({
           {activeToken ? (
             <div className='flex items-center gap-2'>
               <CircleImage
-                className='h-6 w-6 -space-x-1.5 outline outline-[2px] outline-[#1C2027]'
+                className='h-6 w-6 -space-x-1.5 outline-2 outline-[#1C2027] outline-solid'
                 src={activeToken?.logoURI}
                 alt='THENA First Logo'
               />

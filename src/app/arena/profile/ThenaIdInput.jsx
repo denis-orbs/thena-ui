@@ -89,7 +89,7 @@ function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '', randomThena
           input: error ? 'border-error-500' : undefined,
         }}
       />
-      {error && <Paragraph className='ml-1 mt-1 text-sm text-error-500'>{error}</Paragraph>}
+      {error && <Paragraph className='text-error-500 mt-1 ml-1 text-sm'>{error}</Paragraph>}
     </div>
   )
 }

@@ -143,7 +143,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >
-            <TelegramIcon className='cursor-pointer fill-white/45 hover:fill-social-telegram' />
+            <TelegramIcon className='hover:fill-social-telegram cursor-pointer fill-white/45' />
           </div>
           <div
             onClick={
@@ -156,7 +156,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >
-            <FacebookIcon className='cursor-pointer fill-white/45 hover:fill-social-facebook' />
+            <FacebookIcon className='hover:fill-social-facebook cursor-pointer fill-white/45' />
           </div>
           <div
             onClick={
@@ -182,7 +182,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >
-            <DiscordIcon className='cursor-pointer fill-white/45 hover:fill-social-discord' />
+            <DiscordIcon className='hover:fill-social-discord cursor-pointer fill-white/45' />
           </div>
           <div
             onClick={
@@ -195,7 +195,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >
-            <RedditIcon className='cursor-pointer fill-white/45 hover:fill-social-reddit' />
+            <RedditIcon className='hover:fill-social-reddit cursor-pointer fill-white/45' />
           </div>
           <Link
             href={getShareSocialNetworkUrl({

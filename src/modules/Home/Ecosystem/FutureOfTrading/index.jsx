@@ -75,7 +75,7 @@ export function FutureOfTrading() {
 
   return (
     <div className='mx-auto my-12 flex max-w-[1171px] flex-col items-center justify-center lg:my-[150px] xl:flex-row xl:items-start xl:space-x-[151px]'>
-      <div className='mt-24 flex w-full max-w-[313px] flex-col items-center justify-center lg:mt-[100px] lg:max-w-[368px] xl:items-start xl:justify-start '>
+      <div className='mt-24 flex w-full max-w-[313px] flex-col items-center justify-center lg:mt-[100px] lg:max-w-[368px] xl:items-start xl:justify-start'>
         <Heading
           heading={t('Collaborative Liquidity Layer')}
           title={t('HOW IT WORKS')}
@@ -94,7 +94,7 @@ export function FutureOfTrading() {
       </div>
 
       <div className='relative mt-7 flex h-full w-full max-w-[652px] items-center justify-center xl:mt-0'>
-        <div className='stats-blob absolute h-[300px] w-[400px] rounded-full bg-opacity-[0.45] blur-[264px] filter' />
+        <div className='stats-blob bg-opacity-[0.45] absolute h-[300px] w-[400px] rounded-full blur-[264px] filter' />
         <div className='w-full px-5 xl:px-0'>
           <div className='w-full rounded-[28px] border border-white/[0.06] bg-[rgba(56,47,65,0.06)] p-4 backdrop-blur-[20px]'>
             <div className='relative min-h-[682px] w-full overflow-hidden rounded-2xl border border-[#221222] bg-[rgba(10,5,11,0.7)] lg:min-h-[735px]'>
@@ -104,13 +104,13 @@ export function FutureOfTrading() {
                     setTradingData('Tokenomics')
                   }}
                   className={cn(
-                    'flex min-w-[164px] flex-shrink-0 cursor-pointer items-center justify-center space-x-2 whitespace-nowrap px-12 py-4 md:w-1/2 md:min-w-fit xl:px-0',
+                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center space-x-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
                     tradingData !== 'Tokenomics' &&
                       `${
                         tradingData === 'THE system'
-                          ? 'rounded-bl-2xl border-l-[#221222] border-r-transparent'
-                          : 'rounded-br-2xl border-l-transparent border-r-[#221222]'
-                      } border-b border-l border-r border-b-[#221222] bg-[#100913] text-white/[0.25]`,
+                          ? 'rounded-bl-2xl border-r-transparent border-l-[#221222]'
+                          : 'rounded-br-2xl border-r-[#221222] border-l-transparent'
+                      } border-r border-b border-l border-b-[#221222] bg-[#100913] text-white/[0.25]`,
                   )}
                 >
                   <div className='flex h-6 w-6 flex-col items-center justify-center rounded-[5.143px] border border-white/[0.05] bg-white/[0.04]'>
@@ -199,7 +199,7 @@ export function FutureOfTrading() {
                     setTradingData('Protocols')
                   }}
                   className={cn(
-                    'flex min-w-[164px] flex-shrink-0 cursor-pointer items-center justify-center space-x-2 whitespace-nowrap px-12 py-4 md:w-1/2 md:min-w-fit xl:px-0',
+                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center space-x-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
                     tradingData !== 'Protocols' &&
                       `${
                         tradingData === 'THE system' ? 'rounded-bl-none' : 'rounded-bl-2xl'
@@ -237,7 +237,7 @@ export function FutureOfTrading() {
                 style={{
                   background: 'radial-gradient(74.35% 74.35% at 50% 50%, rgba(10, 5, 11, 0) 0%, #0A050B 100%)',
                 }}
-                className='pointer-events-none absolute inset-0 z-[9] h-full w-full'
+                className='pointer-events-none absolute inset-0 z-9 h-full w-full'
               />
               <motion.span
                 className='absolute inset-0 z-0 inline-block'
@@ -259,7 +259,7 @@ export function FutureOfTrading() {
               <div className='relative z-10 rounded-2xl py-8 xl:p-10'>
                 {tradingDataObject[tradingData]?.description && (
                   <div className='w-full px-6 xl:px-0'>
-                    <div className='border-l-2 border-[#BE01B7] pl-5 font-medium leading-6 xl:text-xl xl:leading-7'>
+                    <div className='border-l-2 border-[#BE01B7] pl-5 leading-6 font-medium xl:text-xl xl:leading-7'>
                       {t(tradingDataObject[tradingData]?.description)}
                     </div>
                   </div>
@@ -303,15 +303,15 @@ export function FutureOfTrading() {
                               'flex items-center space-x-12 xl:space-x-[60px]',
                             )}
                           >
-                            <div className='relative !w-12 xl:w-full xl:min-w-[78px]'>
+                            <div className='relative w-12! xl:w-full xl:min-w-[78px]'>
                               <div className='absolute -top-1 right-0 h-6 w-6 bg-[rgba(235,149,231,0.25)] opacity-[0.45] blur-md filter lg:-right-4 lg:w-[42px]' />
-                              <div className='absolute bottom-1 right-0 h-3.5 w-3.5 bg-[rgba(234,0,229,0.45)] opacity-[0.45] blur-md filter lg:-right-2 lg:h-6 lg:w-6' />
+                              <div className='absolute right-0 bottom-1 h-3.5 w-3.5 bg-[rgba(234,0,229,0.45)] opacity-[0.45] blur-md filter lg:-right-2 lg:h-6 lg:w-6' />
                               <HomeImage alt='icon' className='w-full' src={item.icon} />
                             </div>
                             <div className='w-full max-w-[333px]'>
                               <Heading
-                                titleExtraStyles='!text-sm !font-figtree'
-                                headingExtraSytles='!text-base lg:!text-xl font-medium !leading-6 w-full'
+                                titleExtraStyles='text-sm! !font-figtree'
+                                headingExtraSytles='text-base! lg:text-xl! font-medium leading-6! w-full'
                                 title={t(item.heading)}
                                 heading={t(item.title)}
                               />

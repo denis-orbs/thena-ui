@@ -20,9 +20,9 @@ function StoryPage() {
         }`}
       />
       <section
-        className={`layout-container relative !pb-0 ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}
+        className={`layout-container relative pb-0! ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}
       >
-        <Box className='mb-[30px] gap-4 border border-primary-800 bg-primary-950'>
+        <Box className='border-primary-800 bg-primary-950 mb-[30px] gap-4 border'>
           <TextHeading className='block text-center text-neutral-100'>
             THE Story has ended and the Leaderboard price distribution is concluded. Please check the official
             communication channels for further updates.

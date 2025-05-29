@@ -15,8 +15,8 @@ export function RewardFragments() {
   const { campaignParticipantInfo: userInfo } = useTHEStory()
 
   return (
-    <div className='border-gradient-secondary w-full rounded-xl  p-[1px] lg:col-span-4'>
-      <div className='rounded-xl bg-neutral-900 '>
+    <div className='border-gradient-secondary w-full rounded-xl p-px lg:col-span-4'>
+      <div className='rounded-xl bg-neutral-900'>
         <div className='p-4 lg:bg-[url("/images/test-2.png")] lg:bg-cover lg:bg-center lg:p-8'>
           <TextHeading>{t('Mint Your NFT')}</TextHeading>
           <div className='flex flex-col items-center justify-center'>
@@ -33,16 +33,16 @@ export function RewardFragments() {
             <span>{`${t('Fragments Required')}: ${userInfo.totalFragments}/${TOTAL_FRAGMENTS}`}</span>
           </div>
 
-          <div className='4 mb-6 mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
+          <div className='4 mt-3 mb-6 inline-block h-3 w-full rounded-md bg-neutral-500'>
             <div
               style={{
                 width: `${(userInfo.totalFragments * 100) / TOTAL_FRAGMENTS}%`,
               }}
-              className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+              className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
             />
           </div>
 
-          <div className='flex flex-col items-center justify-between gap-4 rounded-xl border-[1px] border-primary-700 bg-neutral-800 p-4 lg:flex-row lg:gap-0 lg:p-6 '>
+          <div className='border-primary-700 flex flex-col items-center justify-between gap-4 rounded-xl border bg-neutral-800 p-4 lg:flex-row lg:gap-0 lg:p-6'>
             {userInfo.totalFragments !== TOTAL_FRAGMENTS && (
               <>
                 <TextHeading className='font-archia text-2xl font-semibold'>{t('Mint an NFT')}</TextHeading>
@@ -55,7 +55,7 @@ export function RewardFragments() {
             {userInfo.totalFragments === TOTAL_FRAGMENTS && !minted && (
               <>
                 <TextHeading className='font-archia text-2xl font-semibold'>{t('You Won an NFT')}</TextHeading>
-                <CustomTooltip id='disabled-reward' className='rounded-md !py-2' place='top'>
+                <CustomTooltip id='disabled-reward' className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>
                     The rewards for THE Story will be announced at a later time.
                   </TextHeading>

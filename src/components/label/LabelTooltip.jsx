@@ -26,7 +26,7 @@ export default function LabelTooltip({
         <>
           <InfoIcon className='ml-[6px] h-4 w-4 stroke-neutral-400' data-tooltip-id={id} />
           <CustomTooltip
-            className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+            className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
             id={id}
             place='right'
           >

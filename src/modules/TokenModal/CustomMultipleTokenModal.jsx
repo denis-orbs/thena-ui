@@ -53,7 +53,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
         <div className='flex justify-between px-6'>
           <span className='text-gray-400'>{selectedAssets.length} Selected</span>
           <span
-            className='cursor-pointer text-primary-400'
+            className='text-primary-400 cursor-pointer'
             onClick={() => {
               if (selectedAssets.length > 0) {
                 setSelectedAssets([])
@@ -72,12 +72,11 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
             return (
               <div
                 className={cn(
-                  `flex cursor-pointer items-center justify-between gap-5 rounded-lg px-6
-                 py-3 hover:bg-slate-800`,
+                  'flex cursor-pointer items-center justify-between gap-5 rounded-lg px-6 py-3 hover:bg-slate-800',
                   isSelected && 'bg-neutral-800',
                   selectedAssets.length >= maxAssets
                     ? isSelected
-                      ? 'pointer-events-auto cursor-pointer '
+                      ? 'pointer-events-auto cursor-pointer'
                       : 'pointer-events-none cursor-not-allowed'
                     : '',
                 )}
@@ -93,7 +92,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
                 }}
                 key={item.address}
               >
-                <div className='flex flex-1 items-center justify-between '>
+                <div className='flex flex-1 items-center justify-between'>
                   <div className='flex items-center gap-2 rounded-lg'>
                     <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
                     <div className='flex flex-col'>
@@ -101,7 +100,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
                         <TextHeading>{item.symbol}</TextHeading>
                         {item.address !== 'BNB' && (
                           <div className='flex items-center gap-1'>
-                            <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
+                            <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md py-2!'>
                               <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
                             </CustomTooltip>
                             <ExternalIcon
@@ -113,7 +112,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
                               }}
                               data-tooltip-id={`contract-tooltip-${idx}`}
                             />
-                            <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
+                            <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md py-2!' place='top'>
                               <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                             </CustomTooltip>
                           </div>

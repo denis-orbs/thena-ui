@@ -80,8 +80,8 @@ function Ecosystem() {
         <Grid />
         {!isSafari && <GridLinesAnimation />}
       </div>
-      <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[150px] lg:pt-[217px] xl:px-0'>
-        <div className='mx-auto w-full  max-w-[700px]'>
+      <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pt-[217px] lg:pb-[150px] xl:px-0'>
+        <div className='mx-auto w-full max-w-[700px]'>
           <Heading heading={t('THE Ecosystem')} title={t('Backed by the best')} wrapperStyles='items-center' />
           <div className='mt-6 flex items-center justify-center space-x-3.5 lg:mt-8'>
             {data.map((item, idx) => (
@@ -100,7 +100,7 @@ function Ecosystem() {
             ))}
           </div>
         </div>
-        <div className='mt-14 flex w-full flex-wrap items-center justify-center -space-x-14 space-y-6 px-[38px]'>
+        <div className='mt-14 flex w-full flex-wrap items-center justify-center space-y-6 -space-x-14 px-[38px]'>
           <div
             className={cn(
               'flex w-full flex-wrap items-center justify-center lg:gap-14',
@@ -111,7 +111,7 @@ function Ecosystem() {
               <HomeImage
                 className={cn(
                   'max-h-[47px] min-h-[26px] w-fit object-contain',
-                  logo?.icon === 'hacken' ? '!max-h-4 !min-h-4' : logo?.icon === 'etherfi' ? '!max-h-14 !min-h-14' : '',
+                  logo?.icon === 'hacken' ? 'max-h-4! min-h-4!' : logo?.icon === 'etherfi' ? 'max-h-14! min-h-14!' : '',
                   logo.url.endsWith('Algebra.png') ? 'h-[47px] w-[188px]' : '',
                   logo.url.endsWith('EtherFi.png') ? 'h-[56px] w-[114px]' : '',
                   logo.link ? 'cursor-pointer' : '',

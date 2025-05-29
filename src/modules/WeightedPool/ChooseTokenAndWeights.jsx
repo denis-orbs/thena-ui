@@ -112,7 +112,7 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
         >
           <div
             data-tooltip-id={`${token.token.address}-token`}
-            className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'
+            className='bg-opacity-50 ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] py-[6px] pr-2 pl-[6px]'
           >
             <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
             <Paragraph className='text-sm text-neutral-200'>
@@ -154,7 +154,7 @@ function TokenItem({ token, index, setTokenSelected, max, checkError }) {
           className='flex items-center gap-2'
         >
           <WarningTriangleIcon className='h-4 w-4' />
-          <Paragraph className='text-sm text-error-600'>{t('Min [value] required', { value: 0.01 })}</Paragraph>
+          <Paragraph className='text-error-600 text-sm'>{t('Min [value] required', { value: 0.01 })}</Paragraph>
         </motion.div>
       )}
     </div>
@@ -165,14 +165,14 @@ export function ErrorMessage({ message, type = 'error', className, showIcon = tr
   return (
     <Box
       className={cn(
-        'flex flex-row items-center gap-3 rounded-lg border border-primary-800 bg-primary-950',
+        'border-primary-800 bg-primary-950 flex flex-row items-center gap-3 rounded-lg border',
         type === 'warn' ? 'border-warn-950 bg-warn-950' : '',
         className,
       )}
     >
       {showIcon && (
         <div className='items-center'>
-          <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
+          <InfoIcon className={cn('stroke-primary-600! h-5 w-5', type === 'warn' ? 'stroke-warn-600!' : '')} />
         </div>
       )}
       <div>{message}</div>
@@ -228,13 +228,13 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
     return errorMessages.map((data, index) => (
       <div
-        className='flex items-center gap-2 rounded-lg border border-error-800 bg-error-950 px-4 py-5 lg:gap-4'
+        className='border-error-800 bg-error-950 flex items-center gap-2 rounded-lg border px-4 py-5 lg:gap-4'
         key={index}
       >
         <WarningTriangleIcon className='w-4 min-w-4 lg:w-5 lg:min-w-5' />
         <div className='flex flex-col gap-1'>
-          {data.title && <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>}
-          {data.desc && <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>}
+          {data.title && <TextHeading className='text-rose text-xl'>{data.title}</TextHeading>}
+          {data.desc && <TextSubHeading className='text-rose text-base'>{data.desc}</TextSubHeading>}
         </div>
       </div>
     ))
@@ -266,7 +266,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         ))}
       </div>
-      <div className='!mt-8 flex flex-col gap-2 md:mt-auto lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
+      <div className='mt-8! flex flex-col gap-2 md:mt-auto lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
         <EmphasisButton onClick={() => push('/pools')} className='w-full lg:w-fit'>
           {t('Cancel')}
         </EmphasisButton>

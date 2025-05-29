@@ -49,14 +49,14 @@ function TokenAnalytics({ pair }) {
                   backgroundColor: THENACOLORS[index],
                 }}
               />
-              <div className='absolute bottom-0 top-0 h-full'>
-                <TextHeading className='absolute items-center text-nowrap p-2 text-neutral-950'>
+              <div className='absolute top-0 bottom-0 h-full'>
+                <TextHeading className='absolute items-center p-2 text-nowrap text-neutral-950'>
                   {formatAmount((parseFloat(token.reserve) * token.price * 100) / pair.tvlUSD)} %
                 </TextHeading>
               </div>
               {/* Target line */}
               <div
-                className='absolute bottom-0 top-0 w-0.5 border border-dashed border-neutral-700'
+                className='absolute top-0 bottom-0 w-0.5 border border-dashed border-neutral-700'
                 style={{ left: `${token.weight}%` }}
               />
             </div>
@@ -82,7 +82,7 @@ function PoolAttributesAnalytic({ pair }) {
           </div>
           <div className='relative'>
             <PieChart tokens={tokens} showTotalPercent={false} className='h-full' />
-            <div className='absolute left-[50%] top-[50%] h-[72px] w-[132px] translate-x-[-50%] translate-y-[-50%] p-5 text-center'>
+            <div className='absolute top-[50%] left-[50%] h-[72px] w-[132px] translate-x-[-50%] translate-y-[-50%] p-5 text-center'>
               <TextHeading>{`${t('Pool Fees')} ${formatAmount(pair.fee)}%`}</TextHeading>
             </div>
           </div>

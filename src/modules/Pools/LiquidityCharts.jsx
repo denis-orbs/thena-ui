@@ -269,7 +269,7 @@ export default function LiquidityCharts({
           <div className='mt-6 flex flex-col gap-5'>
             {!mintInfo.noLiquidity && automaticStrategiesData && (
               <div className='relative'>
-                <div className='absolute left-1/2 top-4 mb-2 flex w-full -translate-x-1/2 items-center justify-center lg:-top-[20px]'>
+                <div className='absolute top-4 left-1/2 mb-2 flex w-full -translate-x-1/2 items-center justify-center lg:-top-[20px]'>
                   <TextHeading className='text-sm'>
                     {t('Current Price: [price] [symbolA] [symbolB]', {
                       price: currentPrice,

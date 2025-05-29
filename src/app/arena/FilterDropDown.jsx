@@ -63,7 +63,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
       <div className='relative'>
         {!!hasFilter && (
           <PrimaryBadge
-            className='absolute -right-2 -top-2 z-10 rounded-full p-0 text-[10px] font-medium'
+            className='absolute -top-2 -right-2 z-10 rounded-full p-0 text-[10px] font-medium'
             childrenClassName='bg-primary-600 px-0.5 py-0.5 lg:px-1 lg:py-1 min-w-5 h-5 flex items-center justify-center'
           >
             {hasFilter}
@@ -78,7 +78,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
   return (
     <div>
       <Popover position='left' triggerElement={<FilterButton />}>
-        <p className='font-figtree text-xl font-semibold leading-6 text-white'>{t('Filters')}</p>
+        <p className='font-figtree text-xl leading-6 font-semibold text-white'>{t('Filters')}</p>
         <div className='my-2 rounded-lg bg-neutral-900 p-1'>
           <Tabs
             data={[

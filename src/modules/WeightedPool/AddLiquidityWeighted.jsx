@@ -246,7 +246,7 @@ function AddLiquidityWeighted({ pool }) {
               lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
               fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 36}px`,
             }}
-            className='whitespace-normal text-wrap break-all'
+            className='text-wrap break-all whitespace-normal'
           >
             {pool?.symbol}
           </NewTextHeading>
@@ -257,7 +257,7 @@ function AddLiquidityWeighted({ pool }) {
             <EmphasisButton
               className={cn(
                 'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11',
-                showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
+                showLiquidityInfo ? 'bg-neutral-600!' : 'bg-neutral-900',
               )}
               onClick={() => setShowLiquidityInfo(prev => !prev)}
             >
@@ -277,10 +277,10 @@ function AddLiquidityWeighted({ pool }) {
           </motion.div>
         </div>
       </div>
-      <div className='grid gap-4 max-xl:grid-cols-1 xl:grid-cols-add-liquidity-layout'>
+      <div className='xl:grid-cols-add-liquidity-layout grid gap-4 max-xl:grid-cols-1'>
         <div className='w-full space-y-4'>
           <div className='flex h-11 flex-col justify-end max-xl:hidden'>
-            <NewTextSubHeading className='!text-2xl'>{t('Weighted')}</NewTextSubHeading>
+            <NewTextSubHeading className='text-2xl!'>{t('Weighted')}</NewTextSubHeading>
           </div>
 
           <div className='space-y-2 md:space-y-4'>

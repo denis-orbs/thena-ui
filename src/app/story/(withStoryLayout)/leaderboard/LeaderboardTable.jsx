@@ -18,7 +18,7 @@ function PointHead() {
       <span>{t('Points')}</span>
       <InfoIcon className='ml-1 size-4 stroke-neutral-400' data-tooltip-id='point-description' />
       <CustomTooltip id='point-description'>
-        <span className='text-sm font-normal leading-5'>{t('THE Story leaderboard point description')}</span>
+        <span className='text-sm leading-5 font-normal'>{t('THE Story leaderboard point description')}</span>
       </CustomTooltip>
     </div>
   )
@@ -29,12 +29,12 @@ function ThenianElement({ data, username }) {
     <div className='flex items-center gap-2 md:gap-3'>
       <Image
         src={data?.avatarUrl ?? Avatar}
-        className='!size-8 rounded-full md:!size-9'
+        className='size-8! rounded-full md:size-9!'
         width={36}
         height={36}
         alt='Avatar'
       />
-      <div className='break-all text-sm md:text-base'>{username}</div>
+      <div className='text-sm break-all md:text-base'>{username}</div>
     </div>
   )
 }
@@ -269,7 +269,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
 
   return (
     <div className='mb-9 rounded-xl border border-[#C93FFF] bg-[url("/images/pink-bg.png")] bg-cover'>
-      <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>
+      <p className='pt-8 pl-6 text-[20px] font-medium text-neutral-50'>
         {currentTabIndex === 1 || !isWinners ? t('Leaderboard') : t('Winners List')}
       </p>
       <Table

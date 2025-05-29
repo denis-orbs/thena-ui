@@ -22,7 +22,7 @@ export default function Step2() {
     <div className='space-y-4 md:space-y-8'>
       <PoolTitleSection pairType={pairType} />
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+      <div className='lg:grid-cols-add-liquidity-layout grid gap-4'>
         <ChooseTokensSection pairType={pairType} />
         <PoolDescriptionSection pairType={pairType} />
       </div>

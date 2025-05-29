@@ -175,7 +175,7 @@ export const Brush = ({
                   <path
                     className={cn(
                       'pointer-events-none cursor-ew-resize stroke-[1.5px]',
-                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#685770]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-neutral-500',
                     )}
                     d={brushHandleAccentPath()}
                   />
@@ -215,7 +215,7 @@ export const Brush = ({
                   <path
                     className={cn(
                       'pointer-events-none cursor-ew-resize stroke-[1.5px]',
-                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#685770]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-neutral-500',
                     )}
                     d={brushHandleAccentPath()}
                   />

@@ -44,7 +44,7 @@ function CustomValueContainer(props) {
   const { children, hasValue, ...otherProps } = props
 
   return (
-    <components.ValueContainer className={`${hasValue ? '!block' : ''} !truncate`} {...otherProps}>
+    <components.ValueContainer className={`${hasValue ? 'block!' : ''} truncate!`} {...otherProps}>
       {children}
     </components.ValueContainer>
   )

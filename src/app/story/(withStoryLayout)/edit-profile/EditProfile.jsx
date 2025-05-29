@@ -70,32 +70,32 @@ export function EditProfile({ userInfo, updateUserInfo }) {
   return (
     <form onSubmit={handleUpdateProfile}>
       <div className='mt-[10px]'>
-        <Link className='text-gray-100 ' href='/story/profile'>
+        <Link className='text-gray-100' href='/story/profile'>
           <ArrowBackwardIcon className='inline-block h-5 w-5 opacity-40' />
           <span className='opacity-40'>{t('Back')}</span>
         </Link>
 
-        <h5 className='mt-9 block font-archia text-3xl font-semibold leading-9'>{t('Edit Profile')}</h5>
+        <h5 className='font-archia mt-9 block text-3xl leading-9 font-semibold'>{t('Edit Profile')}</h5>
       </div>
       <div className='mt-10 rounded-xl bg-neutral-900 p-6'>
         <div className='grid grid-cols-1 gap-x-[40px] gap-y-0 lg:grid-cols-3 lg:gap-y-[50px]'>
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Avatar')}</TextHeading>
-            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
+            <TextSubHeading className='my-3 block text-[16px] leading-5 font-normal lg:my-0'>
               {t('Avatar description')}
             </TextSubHeading>
           </div>
-          <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
+          <div className='col-span-3 mt-1 mb-5 lg:col-span-2 lg:m-0'>
             <SelectAvatar avatarUrl={dataUpdate.avatarUrl} />
           </div>
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Country')}</TextHeading>
-            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
+            <TextSubHeading className='my-3 block text-[16px] leading-5 font-normal lg:my-0'>
               {t('Country description')}
             </TextSubHeading>
           </div>
-          <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
+          <div className='col-span-3 mt-1 mb-5 lg:col-span-2 lg:m-0'>
             <SelectCountry
               className='w-full lg:max-w-[550px]'
               selected={dataUpdate.country}
@@ -111,11 +111,11 @@ export function EditProfile({ userInfo, updateUserInfo }) {
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Email')}</TextHeading>
-            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
+            <TextSubHeading className='my-3 block text-[16px] leading-5 font-normal lg:my-0'>
               {t('Email description')}
             </TextSubHeading>
           </div>
-          <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
+          <div className='col-span-3 mt-1 mb-5 lg:col-span-2 lg:m-0'>
             <Input
               className='w-full lg:max-w-[550px]'
               type='email'
@@ -134,11 +134,11 @@ export function EditProfile({ userInfo, updateUserInfo }) {
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('X Profile Username')}</TextHeading>
-            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
+            <TextSubHeading className='my-3 block text-[16px] leading-5 font-normal lg:my-0'>
               {t('Enter Your X Profile Username To Update X')}
             </TextSubHeading>
           </div>
-          <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
+          <div className='col-span-3 mt-1 mb-5 lg:col-span-2 lg:m-0'>
             <Input
               className='w-full lg:max-w-[550px]'
               type='text'
@@ -155,7 +155,7 @@ export function EditProfile({ userInfo, updateUserInfo }) {
           </div>
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0' />
-          <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:mb-6 lg:mt-0'>
+          <div className='col-span-3 mt-1 mb-5 lg:col-span-2 lg:mt-0 lg:mb-6'>
             <PrimaryButton
               className='w-full lg:w-auto'
               disabled={!isFormValid || isSubmit}

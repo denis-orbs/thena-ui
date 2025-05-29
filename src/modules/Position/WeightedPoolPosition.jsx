@@ -101,8 +101,8 @@ export function WeightedPoolPosition({ pool, isStake }) {
               <div className='tems-center flex w-full flex-wrap gap-1'>
                 {(pool?.tokens || []).map(token => (
                   <div className='flex items-center gap-1' key={token?.address}>
-                    <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                    <span className='text-sm font-medium leading-5 text-neutral-300 '>
+                    <span className='text-[16px] leading-5 font-medium'>{token?.symbol}</span>
+                    <span className='text-sm leading-5 font-medium text-neutral-300'>
                       {formatAmount(token?.weight)}%
                     </span>
                   </div>
@@ -194,7 +194,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
           </EmphasisButton>
         </div>
       ) : (
-        <div className='mt-4 flex !max-h-[46px] w-full flex-2 gap-3'>
+        <div className='mt-4 flex max-h-[46px]! w-full flex-2 gap-3'>
           <TextButton
             disabled={stakePending || pool.gauge.address === zeroAddress}
             className='h-11 w-full'

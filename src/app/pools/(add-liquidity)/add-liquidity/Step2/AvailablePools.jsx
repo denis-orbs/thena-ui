@@ -120,9 +120,9 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
         </div>
       ) : (
         <>
-          <div className='flex gap-4 rounded-xl border border-primary-800 bg-primary-950 p-4 px-5 md:p-6 lg:p-8'>
+          <div className='border-primary-800 bg-primary-950 flex gap-4 rounded-xl border p-4 px-5 md:p-6 lg:p-8'>
             <div className='flex'>
-              <InfoIcon className='size-5 !stroke-primary-600 md:size-8' />
+              <InfoIcon className='stroke-primary-600! size-5 md:size-8' />
             </div>
             <div className='flex flex-col gap-2'>
               <Paragraph className='text-xl font-medium text-neutral-100 lg:text-xl'>
@@ -130,7 +130,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
                   type: pairType,
                 })}
               </Paragraph>
-              <Paragraph className='text-base leading-5 text-primary-100'>
+              <Paragraph className='text-primary-100 text-base leading-5'>
                 {t('You can begin to create a new pool below')}
               </Paragraph>
             </div>

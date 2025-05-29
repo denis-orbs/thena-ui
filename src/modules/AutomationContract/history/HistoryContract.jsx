@@ -102,7 +102,7 @@ function HistoryContract({ histories }) {
           setCurrentPage={setCurrentPage}
         />
       ) : (
-        <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px] '>
+        <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
           <Highlight>
             <InfoCircleWhite className='h-4 w-4' />
           </Highlight>

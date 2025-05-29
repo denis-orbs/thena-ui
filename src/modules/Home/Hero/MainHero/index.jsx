@@ -30,12 +30,12 @@ export function MainHero() {
     <div
       ref={scope}
       className={cn(
-        'relative z-20 mt-8 w-full rounded-2xl p-2 sm:my-12 md:rounded-[20px] md:p-3 lg:mb-[73px] lg:mt-[73px]',
+        'relative z-20 mt-8 w-full rounded-2xl p-2 sm:my-12 md:rounded-[20px] md:p-3 lg:mt-[73px] lg:mb-[73px]',
         'before:absolute before:inset-0 before:rounded-[inherit] before:p-0.5',
-        'before:bg-[linear-gradient(180deg,_rgba(255,_255,_255,_0.06)_0%,_rgba(255,_255,_255,_0)_100%)]',
-        'before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,_linear-gradient(#fff_0_0)]',
+        'before:bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_100%)]',
+        'before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]',
         'before:[-webkit-mask-composite:xor]',
-        'before:[mask-composite:exclude]',
+        'before:mask-exclude',
       )}
       style={{
         maskImage: 'linear-gradient(rgb(0 0 0 / 1) 60%, rgb(0 0 0 / 0.01) 90%, rgb(0 0 0 / 0))',
@@ -45,7 +45,7 @@ export function MainHero() {
       }}
     >
       <LightDripAnimation
-        className='left-0 top-16 md:top-24 lg:top-44'
+        className='top-16 left-0 md:top-24 lg:top-44'
         transitions={{
           delay: 0.15 * 2,
         }}

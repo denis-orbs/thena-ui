@@ -38,10 +38,10 @@ export function ShareReferralLink({ referralCode }) {
   }, [])
 
   return (
-    <div className='border-gradient-secondary relative rounded-xl p-[1px]'>
+    <div className='border-gradient-secondary relative rounded-xl p-px'>
       <div className='rounded-xl bg-neutral-900 p-4 xl:p-6'>
         <TextHeading className='font-archia text-3xl font-semibold'>{t('Share Your Referral Link')}</TextHeading>
-        <TextSubHeading className='mt-2  block text-base font-normal leading-5 text-neutral-300'>
+        <TextSubHeading className='mt-2 block text-base leading-5 font-normal text-neutral-300'>
           {t('Share Your Referral Link Description')}
         </TextSubHeading>
         <p className='mt-6 text-lg font-medium'>{t('Your Referral Code')}</p>

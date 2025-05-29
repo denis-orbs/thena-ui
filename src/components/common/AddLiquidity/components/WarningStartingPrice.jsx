@@ -35,26 +35,26 @@ function WarningStartingPrice() {
         >
           <Info className={cn('mt-2 flex-col items-start gap-0 px-5 py-4')}>
             <div className='flex w-full items-center gap-4'>
-              <InfoIcon className='size-5 min-w-5 !stroke-primary-600' />
+              <InfoIcon className='stroke-primary-600! size-5 min-w-5' />
 
               <div className='flex w-full items-center justify-between'>
-                <TextHeading className='text-xl font-semibold text-primary-100'>
+                <TextHeading className='text-primary-100 text-xl font-semibold'>
                   {t('Starting Price needed')}
                 </TextHeading>
               </div>
             </div>
 
-            <div className='!mt-2 pl-9 text-base leading-5 text-primary-100'>{t('Initialize warning')}</div>
+            <div className='text-primary-100 mt-2! pl-9 text-base leading-5'>{t('Initialize warning')}</div>
           </Info>
         </motion.div>
       </div>
 
       <Info className={cn('mt-4 flex-col items-start gap-0 px-3 py-2 md:px-5 md:py-4 xl:hidden')}>
         <div className='flex w-full items-center gap-2 md:gap-4'>
-          <InfoIcon className='size-4 min-w-4 !stroke-primary-600 md:size-5 md:min-w-5' />
+          <InfoIcon className='stroke-primary-600! size-4 min-w-4 md:size-5 md:min-w-5' />
 
           <div className='flex w-full items-center justify-between'>
-            <TextHeading className='text-xl font-semibold text-primary-100'>{t('Starting Price needed')}</TextHeading>
+            <TextHeading className='text-primary-100 text-xl font-semibold'>{t('Starting Price needed')}</TextHeading>
             <ChevronUpIcon
               className={cn(
                 'size-4 min-w-4 cursor-pointer transition-all duration-300 ease-in-out md:size-7 md:min-w-7 md:p-1',
@@ -71,7 +71,7 @@ function WarningStartingPrice() {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className={cn('overflow-hidden xl:hidden')}
         >
-          <div className='!mt-2 pl-6 text-base leading-5 text-primary-100 md:pl-9'>{t('Initialize warning')}</div>
+          <div className='text-primary-100 mt-2! pl-6 text-base leading-5 md:pl-9'>{t('Initialize warning')}</div>
         </motion.div>
       </Info>
     </>

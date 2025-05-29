@@ -50,10 +50,10 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
               ))}
             </div>
             <OutlinedButton
-              className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
+              className='border-primary-600 text-primary-600 hover:text-primary-600 h-11 w-[130px] border p-0'
               onClick={() => handleVotingPairs('ADD_PAIR')}
             >
-              <PlusIcon className='h-4 w-4 !stroke-primary-600' />
+              <PlusIcon className='stroke-primary-600! h-4 w-4' />
               {t('Add Pair')}
             </OutlinedButton>
           </div>
@@ -67,7 +67,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
                 style={{
                   width: `${totalWeight > 100 ? 100 : totalWeight}%`,
                 }}
-                className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
               />
             </div>
           </div>

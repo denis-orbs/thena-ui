@@ -215,7 +215,7 @@ export default function LockPage() {
         <h2>{t('Lock')}</h2>
         <div>
           <Paragraph>{t('Lock description')}</Paragraph>{' '}
-          <span onClick={handleScroll} className='cursor-pointer text-primary-600'>
+          <span onClick={handleScroll} className='text-primary-600 cursor-pointer'>
             {t('How it Works')}
           </span>
         </div>
@@ -246,7 +246,7 @@ export default function LockPage() {
               </Info>
             </article>
             <AutomationsWarning />
-            <div className='mb-4 mt-10 flex items-center justify-between'>
+            <div className='mt-10 mb-4 flex items-center justify-between'>
               <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
               {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}
             </div>

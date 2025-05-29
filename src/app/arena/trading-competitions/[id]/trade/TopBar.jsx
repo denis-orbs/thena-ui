@@ -91,7 +91,7 @@ function TopBar({ competition = {}, balance }) {
                   <Image
                     alt='token'
                     src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}
-                    className='flex-shrink-0'
+                    className='shrink-0'
                     width={24}
                     height={24}
                     loading='lazy'
@@ -115,7 +115,7 @@ function TopBar({ competition = {}, balance }) {
               <Image
                 alt={`${competition.competitionRules?.winningToken?.symbol ?? 'token'}`}
                 src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}
-                className='flex-shrink-0'
+                className='shrink-0'
                 width={24}
                 height={24}
                 loading='lazy'

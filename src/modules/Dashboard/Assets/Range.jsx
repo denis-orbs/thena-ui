@@ -31,7 +31,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
         <div
           className={cn(
             'relative flex h-8 items-center justify-center overflow-hidden px-2 md:h-11',
-            'rounded-md border border-warn-800 bg-warn-950 text-warn-700',
+            'border-warn-800 bg-warn-950 text-warn-700 rounded-md border',
           )}
         >
           {t('Closed')}
@@ -40,10 +40,10 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
         <div
           className={cn(
             'relative flex h-8 items-center justify-center gap-2 overflow-hidden px-2 py-1 text-base md:h-11',
-            'rounded-md border border-warn-800 bg-warn-950 text-warn-700',
+            'border-warn-800 bg-warn-950 text-warn-700 rounded-md border',
           )}
         >
-          <InfoIcon className='size-5 stroke-warn-700' />
+          <InfoIcon className='stroke-warn-700 size-5' />
           <span>Out of Range</span>
         </div>
       ) : (
@@ -72,7 +72,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
             className='pointer-events-none absolute top-0 flex h-full w-full -translate-x-1/2 transform items-center justify-center'
           >
             <div className='absolute h-full w-full bg-[linear-gradient(90deg,rgba(131,0,126,0)_31%,rgba(189,96,186,0.5)_52%,rgba(143,20,138,0)_75%)]' />
-            <div className='z-10 h-[30px] w-[3px] rounded-md bg-primary-300 md:h-[42px]' />
+            <div className='bg-primary-300 z-10 h-[30px] w-[3px] rounded-md md:h-[42px]' />
           </div>
         </div>
       )}

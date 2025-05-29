@@ -15,7 +15,7 @@ export function TagItem({ tag, onSelect, tagSelected }) {
     <>
       <button
         // eslint-disable-next-line max-len
-        className={`relative items-center rounded-lg py-[8.4px] pl-6 pr-8 uppercase text-white disabled:cursor-not-allowed ${
+        className={`relative items-center rounded-lg py-[8.4px] pr-8 pl-6 text-white uppercase disabled:cursor-not-allowed ${
           tagSelected?.id === tag?.id ? 'bg-primary-600' : 'bg-neutral-700'
         }`}
         type='button'

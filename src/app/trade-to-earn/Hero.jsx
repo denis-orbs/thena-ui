@@ -14,17 +14,17 @@ export default function Hero() {
         <HomeImage
           alt='blob background'
           src='/images/home/hero/blob.png'
-          className='absolute -top-12 z-[25] w-full opacity-70 lg:-top-64'
+          className='absolute -top-12 z-25 w-full opacity-70 lg:-top-64'
         />
         <HomeImage
           alt='pillars'
           src='/images/home/hero/pillars-left.png'
-          className='absolute left-0 top-[92px] z-[25] w-1/2 lg:w-1/3'
+          className='absolute top-[92px] left-0 z-25 w-1/2 lg:w-1/3'
         />
         <HomeImage
           alt='pillars'
           src='/images/home/hero/pillars-right.png'
-          className='absolute right-0  top-[92px] z-[25] w-1/2 lg:w-1/3 '
+          className='absolute top-[92px] right-0 z-25 w-1/2 lg:w-1/3'
         />
         {/* mobile backgrounds */}
         {/* <HomeImage

@@ -15,7 +15,7 @@ import NextImage from '../image/NextImage'
 function AnimatedIcon({ externalLink, hoverData, icon, iconColored }) {
   return (
     <a className='group relative' href={externalLink}>
-      <div className='font-figtree absolute -top-6 left-[50%] translate-x-[-50%] transform  whitespace-nowrap rounded bg-[#311530] px-2 py-1.5 text-base leading-4 opacity-0 transition-all duration-300 ease-in-out group-hover:-top-12 group-hover:opacity-100'>
+      <div className='font-figtree absolute -top-6 left-[50%] translate-x-[-50%] transform rounded-sm bg-[#311530] px-2 py-1.5 text-base leading-4 whitespace-nowrap opacity-0 transition-all duration-300 ease-in-out group-hover:-top-12 group-hover:opacity-100'>
         <svg
           className='absolute -bottom-1 left-[50%] translate-x-[-50%] transform'
           width={9}
@@ -107,7 +107,7 @@ function Footer({ isHomePage = false }) {
       <div className='relative w-full'>
         <div
           className={cn(
-            'footer relative mx-auto mt-28 max-w-[1152px] px-10 pb-[184px] pt-10 lg:mt-36 lg:pb-[269px] lg:pt-[58px] xl:px-0',
+            'footer relative mx-auto mt-28 max-w-[1152px] px-10 pt-10 pb-[184px] lg:mt-36 lg:pt-[58px] lg:pb-[269px] xl:px-0',
             !isHomePage ? 'mt-0 lg:mt-0' : '',
           )}
         >
@@ -133,24 +133,24 @@ function Footer({ isHomePage = false }) {
                 ))}
               </div>
             </div>
-            <div className='mt-10 flex flex-col space-y-10 lg:mt-0 lg:flex-row lg:space-x-14 lg:space-y-0'>
+            <div className='mt-10 flex flex-col space-y-10 lg:mt-0 lg:flex-row lg:space-y-0 lg:space-x-14'>
               <div className='flex space-x-12'>
                 <div className='flex flex-col space-y-3 text-sm leading-5'>
                   {footerLinks[0].map((item, idx) => (
-                    <span key={idx} className=' text-white/80' onClick={() => push(item.url)}>
+                    <span key={idx} className='text-white/80' onClick={() => push(item.url)}>
                       {item.link}
                     </span>
                   ))}
                 </div>
                 <div className='flex flex-col space-y-3 text-sm leading-5'>
                   {footerLinks[1].map((item, idx) => (
-                    <span key={idx} className=' text-white/80' onClick={() => push(item.url)}>
+                    <span key={idx} className='text-white/80' onClick={() => push(item.url)}>
                       {item.link}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className='h-fit rounded-2xl bg-gradient-to-b from-white/10 to-white/0 p-px'>
+              <div className='h-fit rounded-2xl bg-linear-to-b from-white/10 to-white/0 p-px'>
                 <div
                   className='flex cursor-pointer items-center space-x-3 rounded-2xl bg-[rgba(14,8,16,0.45)] p-6'
                   onClick={() => window.open('https://twitter.com/ThenaFi_', '_blank')}
@@ -173,7 +173,7 @@ function Footer({ isHomePage = false }) {
           className='absolute bottom-0 h-full w-full md:hidden'
         />
       </div>
-      <div className='fixed bottom-[37px] left-[50%] z-[100] flex translate-x-[-50%] transform items-center space-x-5 rounded-full border border-white/[0.04] bg-[rgba(41,25,47,0.20)] px-4 py-[11px] backdrop-blur-[20px] lg:hidden'>
+      <div className='fixed bottom-[37px] left-[50%] z-100 flex translate-x-[-50%] transform items-center space-x-5 rounded-full border border-white/[0.04] bg-[rgba(41,25,47,0.20)] px-4 py-[11px] backdrop-blur-[20px] lg:hidden'>
         <AnimatedIcon
           externalLink='https://www.coingecko.com/en/coins/thena'
           /* eslint-disable */

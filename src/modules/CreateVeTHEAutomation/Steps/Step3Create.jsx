@@ -34,7 +34,7 @@ function Step3Create() {
   )
 
   return (
-    <div className='space-y-5 divide-y divide-neutral-700 '>
+    <div className='space-y-5 divide-y divide-neutral-700'>
       {/* Details */}
       <div className='flex flex-col gap-3'>
         <TextHeading>{t('Details')}</TextHeading>

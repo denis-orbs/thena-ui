@@ -128,7 +128,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                 },
               })
             }}
-            className={`px-6 py-[8.4px] uppercase text-white ${
+            className={`px-6 py-[8.4px] text-white uppercase ${
               isSpotType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-lg`}
             type='button'
@@ -136,7 +136,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             {t('Spot')}
           </button>
           <button
-            className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+            className={`d px-6 py-[8.4px] text-white uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
               !isSpotType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-lg`}
             type='button'
@@ -166,13 +166,10 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             required
           />
           <div className='relative flex cursor-pointer items-center' onClick={() => setIsTradeOpen(true)}>
-            <div
-              className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
-           placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
-            >
+            <div className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pr-8 pl-4 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'>
               {data.competitionRules?.tradingTokens?.length || 0} Selected
             </div>
-            <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
+            <div className='absolute top-0 right-3 bottom-0 my-auto h-5 w-5'>
               <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
             </div>
           </div>
@@ -214,10 +211,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             }
           }}
         >
-          <div
-            className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
-           placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
-          >
+          <div className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pr-8 pl-4 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'>
             {data.competitionRules?.winningToken ? (
               <div className='flex items-center space-x-1.5'>
                 <CircleImage
@@ -232,7 +226,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               'Select'
             )}
           </div>
-          <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
+          <div className='absolute top-0 right-3 bottom-0 my-auto h-5 w-5'>
             <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
           </div>
         </div>
@@ -249,26 +243,26 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                   winType: WIN_TYPE.PNL,
                 })
               }}
-              className={`py-[8.4px] pl-6 pr-8 uppercase text-white ${
+              className={`py-[8.4px] pr-8 pl-6 text-white uppercase ${
                 !depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
               } relative rounded-lg`}
               type='button'
             >
               <InfoIcon
-                className={`absolute right-1 top-1 h-4 w-4 ${!depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 h-4 w-4 ${!depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='deposit-type-free'
               />
               {t('Free')}
             </button>
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='deposit-type-free'
               place='right'
             >
               {t('Deposit Type Free tooltip')}
             </CustomTooltip>
             <button
-              className={`py-[8.4px] pl-6 uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+              className={`py-[8.4px] pl-6 text-white uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
                 depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
               } relative rounded-lg pr-8`}
               type='button'
@@ -282,13 +276,13 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }}
             >
               <InfoIcon
-                className={`absolute right-1 top-1 h-4 w-4 ${depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 h-4 w-4 ${depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='deposit-type-fixed'
               />
               {t('Fixed')}
             </button>
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='deposit-type-fixed'
               place='right'
             >
@@ -355,7 +349,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
         </div>
       )}
       {!isSpotType && (
-        <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
+        <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-y-0 md:space-x-6'>
           <div className='flex:col flex h-[50px] w-full items-center'>
             <Toggle
               checked={isStartingBalance}
@@ -419,7 +413,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip='Win Type tooltip' required />
           <div className='mt-3 flex items-center space-x-3'>
             <button
-              className={`py-[8.4px] pl-6 uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+              className={`py-[8.4px] pl-6 text-white uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
                 winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
               } relative rounded-lg pr-8`}
               type='button'
@@ -431,13 +425,13 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }}
             >
               <InfoIcon
-                className={`absolute right-1 top-1 h-4 w-4 ${winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 h-4 w-4 ${winType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='win-type-pnl'
               />
               {t('%PNL')}
             </button>
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='win-type-pnl'
               place='right'
             >
@@ -450,19 +444,19 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                   winType: WIN_TYPE.AMOUNT,
                 })
               }}
-              className={`relative py-[8.4px] pl-6 pr-8 uppercase text-white ${
+              className={`relative py-[8.4px] pr-8 pl-6 text-white uppercase ${
                 !winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
               } rounded-lg`}
               type='button'
             >
               <InfoIcon
-                className={`absolute right-1 top-1 h-4 w-4 ${!winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 h-4 w-4 ${!winType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='win-type-amount'
               />
               {t('Amount')}
             </button>
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='win-type-amount'
               place='right'
             >

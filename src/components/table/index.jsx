@@ -21,11 +21,11 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
       className={cn(
         'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
-        'outline outline-2 outline-offset-4 outline-transparent',
-        'cursor-pointer rounded transition-all duration-150 ease-out',
-        'text-sm active:outline-focus',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
+        'cursor-pointer rounded-sm transition-all duration-150 ease-out',
+        'active:outline-focus text-sm',
         active && 'bg-neutral-800',
-        disabled && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+        disabled && 'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
         className,
       )}
       onClick={onClick}
@@ -52,14 +52,14 @@ function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPop
       className={`absolute ${
         showPopover ? '' : 'invisible opacity-0'
         // eslint-disable-next-line max-len
-      } left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-sm transition-opacity duration-300 lg:left-1/2`}
+      } top-12 left-1/2 z-10 inline-block -translate-x-1/2 rounded-lg border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-xs transition-opacity duration-300 lg:left-1/2`}
     >
       <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-600 bg-neutral-700 px-3 py-2'>
         <TextSubHeading className='text-nowrap text-white'>Go to page</TextSubHeading>
         <TextIconButton
           Icon={XIcon}
           classNames='p-[2px]'
-          className='!h-5 !w-5 stroke-neutral-400'
+          className='h-5! w-5! stroke-neutral-400'
           onClick={() => {
             setShowPopover(false)
             setInputPage('')
@@ -330,7 +330,7 @@ function Table({
                           id={`table-row-${eleIdx}`}
                           className={
                             eleIdx === hightLightIndex
-                              ? 'table__animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                              ? 'table__animate-gradient bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
                               : ''
                           }
                         >
@@ -512,7 +512,7 @@ function Table({
                   }}
                   disabled={currentPage === 1}
                 >
-                  <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+                  <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
                 </PaginateCell>
                 {pageCount < 6 &&
                   new Array(pageCount).fill(0).map((item, idx) => (
@@ -616,7 +616,7 @@ function Table({
                   disabled={currentPage === pageCount}
                 >
                   <ArrowLeftIcon
-                    className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`}
+                    className={`h-4 w-4 rotate-180${currentPage === pageCount ? 'stroke-gray-700' : ''}`}
                   />
                 </PaginateCell>
                 {showPopoverPagination && (

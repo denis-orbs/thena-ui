@@ -55,7 +55,7 @@ function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false
           <div className='flex items-center justify-between gap-2'>
             <input
               type='number'
-              className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+              className='w-full flex-4 border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
               placeholder='0.0'
               value={amount}
               onChange={e => {
@@ -70,7 +70,7 @@ function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false
                 className={cn(
                   'inline-flex items-center justify-center gap-2',
                   'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                  'max-w-[60%] py-1.5 pl-1.5 pr-2',
+                  'max-w-[60%] py-1.5 pr-2 pl-1.5',
                 )}
               >
                 <ThreeIconGroup

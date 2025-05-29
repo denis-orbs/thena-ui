@@ -45,7 +45,7 @@ function NotAchievementItem({ achievement, onClick = () => {}, showTooltip = tru
 
       {showTooltip && (
         <CustomTooltip
-          className='z-50 min-w-[136px] max-w-[320px] text-nowrap !bg-neutral-500 after:!bg-neutral-500'
+          className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! text-nowrap after:bg-neutral-500!'
           id={achievement.id}
           place='top'
         >

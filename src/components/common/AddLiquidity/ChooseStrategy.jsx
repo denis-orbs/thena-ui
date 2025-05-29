@@ -248,7 +248,7 @@ export default function ChooseStrategy({
               </div>
             </div>
 
-            <TextHeading className='text-base font-semibold text-primary-600'>
+            <TextHeading className='text-primary-600 text-base font-semibold'>
               {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
@@ -284,7 +284,7 @@ export default function ChooseStrategy({
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6]'>
+      <div className='flex-6'>
         {!position && (
           <div className='space-y-2 md:space-y-4'>
             <StrategyTitle
@@ -298,7 +298,7 @@ export default function ChooseStrategy({
               strategy={strategy}
             />
 
-            <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
+            <div className={cn('mt-2! hidden max-xl:block md:mt-4!')}>
               <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
             </div>
           </div>
@@ -431,7 +431,7 @@ function StrategyTitle({
             not earn any reward until you re-adjust your position accordingly.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 mt-4 block text-xl'>Automatic Strategy</NewTextSubHeading>
+          <NewTextSubHeading className='mt-4 mb-2 block text-xl'>Automatic Strategy</NewTextSubHeading>
           <Paragraph className='text-base'>
             If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
             Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you

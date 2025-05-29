@@ -68,7 +68,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Vote Details */}
-        <Box className='space-y-4 '>
+        <Box className='space-y-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Vote Details')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>

@@ -39,7 +39,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className, position
           >
             <Paragraph
               className={cn(
-                'text-base font-medium text-neutral-400 hover:text-primary-600 hover:underline',
+                'hover:text-primary-600 text-base font-medium text-neutral-400 hover:underline',
                 isHovered && 'text-primary-600 underline',
               )}
             >
@@ -57,7 +57,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className, position
           className='overflow-hidden'
         >
           <div className='z-10 mt-3 flex w-fit gap-3 rounded-lg'>
-            <Selection data={selections} className='bg-transparent !text-neutral-200' />
+            <Selection data={selections} className='bg-transparent text-neutral-200!' />
             <Input
               classNames={{
                 input: 'w-20',

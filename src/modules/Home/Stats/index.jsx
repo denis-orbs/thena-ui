@@ -94,23 +94,23 @@ function Stats() {
       />
       <div className='relative z-40 mx-auto max-w-[1152px] px-10 pt-[150px] xl:px-0 xl:pt-[260px]'>
         <Heading heading={t('THENA in Numbers')} wrapperStyles='items-center' />
-        <div className='flex flex-col justify-center space-y-10 pb-20 pt-12 lg:flex-row lg:items-center lg:space-x-[136px] lg:space-y-0 lg:py-14'>
+        <div className='flex flex-col justify-center space-y-10 pt-12 pb-20 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-[136px] lg:py-14'>
           {statsData.map((item, idx) => (
             <div key={idx} className='flex items-start space-x-5'>
-              <div className='relative flex h-12 w-12 flex-col items-center justify-center rounded-xl border border-white border-opacity-10 bg-white bg-opacity-[0.04] p-1.5 lg:h-14 lg:w-14 lg:p-2'>
+              <div className='border-opacity-10 bg-opacity-[0.04] relative flex h-12 w-12 flex-col items-center justify-center rounded-xl border border-white bg-white p-1.5 lg:h-14 lg:w-14 lg:p-2'>
                 <div className='shadow-box flex h-9 w-9 flex-col items-center justify-center rounded-lg bg-[#DF0ED5] lg:h-10 lg:w-10'>
                   <HomeImage className='w-fit' alt='icon' src={item.svg} />
                 </div>
                 <HomeImage
-                  alt='layer blur'
+                  alt='layer blur-sm'
                   src='/images/home/stats/layerblur.png'
-                  className='absolute bottom-0 w-full blur-[8px]'
+                  className='absolute bottom-0 w-full blur-sm'
                 />
               </div>
               <div className='flex flex-col gap-3'>
                 <p className='text-base leading-4 tracking-[-0.64px] text-white/40'>{t(item.description)}</p>
                 {item.value ? (
-                  <p className='font-archia text-xl font-semibold leading-[14px] tracking-[-0.8px] lg:text-4xl lg:leading-[25px] lg:tracking-[1.44px]'>
+                  <p className='font-archia text-xl leading-[14px] font-semibold tracking-[-0.8px] lg:text-4xl lg:leading-[25px] lg:tracking-[1.44px]'>
                     {item.value}
                   </p>
                 ) : (

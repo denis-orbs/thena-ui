@@ -20,7 +20,7 @@ function RewardChapterDetail({ chapter }) {
 
   return (
     <>
-      <div className='mb-4 mt-4 lg:mb-[60px] lg:mt-11'>
+      <div className='mt-4 mb-4 lg:mt-11 lg:mb-[60px]'>
         <TextHeading className='font-archia text-3xl font-semibold'>
           <span>{t('Rewards in USD')}: </span>
           <span className='text-primary-600'>

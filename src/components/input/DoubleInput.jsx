@@ -56,7 +56,7 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
               className={cn(
                 'inline-flex items-center justify-center gap-2',
                 'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                'py-1.5 pl-1.5 pr-2',
+                'py-1.5 pr-2 pl-1.5',
               )}
             >
               <IconGroup

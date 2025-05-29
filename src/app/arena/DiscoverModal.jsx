@@ -43,7 +43,7 @@ function DiscoverModal({ showLearnMore, text, keyOpen, title = '', titleStyle, s
       showHeadModal={showHeadModal}
     >
       <ModalBody className='relative lg:py-[80px]'>
-        <div className='he mx-auto flex  min-h-[274px] flex-col items-center gap-3 text-center lg:w-[744px]'>
+        <div className='he mx-auto flex min-h-[274px] flex-col items-center gap-3 text-center lg:w-[744px]'>
           {text}
           <div className='flex items-center'>
             <CheckBox checked={checked} onClick={handleChecked} />

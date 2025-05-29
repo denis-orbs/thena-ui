@@ -20,7 +20,7 @@ export function SwapIcon() {
           </g>
           <motion.g
             id='introduction-swap-icon'
-            className='!origin-center [transform-box:fill-box]'
+            className='origin-center! transform-fill'
             clipPath='url(#clip1_1044_5907)'
           >
             <path

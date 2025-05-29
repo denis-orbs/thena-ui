@@ -144,12 +144,12 @@ export default function CreateWeightedPoolPage() {
     <LayoutWithBackButton
       hiddenBackButton={is2XlDown}
       backUrl={backUrl}
-      className='max-lg:mx-4 lg:mx-[40px] xl:mx-auto xl:!mt-6 xl:!w-[1184px] 2xl:!mt-8 2xl:!w-[1312px] 3xl:!mt-16 3xl:!w-[1440px]'
+      className='3xl:mt-16! 3xl:w-[1440px]! max-lg:mx-4 lg:mx-[40px] xl:mx-auto xl:mt-6! xl:w-[1184px]! 2xl:mt-8! 2xl:w-[1312px]!'
     >
       <div className='flex flex-col gap-4'>
         <div className='flex items-center gap-8'>
           <ScalesIcon className='hidden size-14 lg:block' />
-          <NewTextHeading className='xl:!text-[40px] xl:!leading-[48px]'>{t('Create Weighted Pool')}</NewTextHeading>
+          <NewTextHeading className='xl:text-[40px]! xl:leading-[48px]!'>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
         <div
           className={cn(
@@ -171,7 +171,7 @@ export default function CreateWeightedPoolPage() {
             />
           </div>
           {currentStep !== 3 && (
-            <div className={cn('hidden flex-1 flex-col gap-2 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
+            <div className={cn('hidden flex-1 flex-col gap-2 lg:flex lg:flex-4', currentStep === 1 && 'block')}>
               <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
             </div>
           )}

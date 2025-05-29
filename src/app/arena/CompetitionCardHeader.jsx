@@ -38,7 +38,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
     <div
       className={cn(
         'relative rounded-xl p-3 xl:p-4',
-        banner ? '' : competition.owner.isVerified ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-[#100913]',
+        banner ? '' : competition.owner.isVerified ? 'bg-linear-to-r from-blue-400 to-blue-500' : 'bg-[#100913]',
         className,
       )}
     >
@@ -48,11 +48,11 @@ export function CompetitionCardHeader({ competition, className, banner }) {
           src={isString(banner) ? banner : URL.createObjectURL(banner)}
           fill
           priority
-          className='-z-1 absolute bottom-0 left-0 right-0 top-0 rounded-xl object-fill'
+          className='absolute top-0 right-0 bottom-0 left-0 -z-1 rounded-xl object-fill'
         />
       ) : (
         currentPrizePoolUpdate?.length && (
-          <div className='z-1 absolute bottom-0 left-0 right-0 top-0 flex transform flex-col items-center justify-center gap-2 rounded-xl bg-white/5 p-4 backdrop-invert backdrop-opacity-5'>
+          <div className='absolute top-0 right-0 bottom-0 left-0 z-1 flex transform flex-col items-center justify-center gap-2 rounded-xl bg-white/5 p-4 backdrop-invert backdrop-opacity-5'>
             <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
             <TextHeading className='flex flex-wrap items-center justify-center gap-1 text-nowrap'>
               {currentPrizePoolUpdate.map((item, index) => (
@@ -63,7 +63,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
                       <Image
                         alt={name}
                         src={item?.logoURI}
-                        className='ml-1 inline-block flex-shrink-0'
+                        className='ml-1 inline-block shrink-0'
                         width={20}
                         height={20}
                         loading='lazy'

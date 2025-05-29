@@ -186,7 +186,7 @@ export function ThenaCore() {
           scale: 1.2,
         }}
         id='social-icon-2'
-        className='absolute bottom-20 right-10 inline-block'
+        className='absolute right-10 bottom-20 inline-block'
       >
         <Image width={44} height={44} priority src='/images/home/stats/socials/social-2.png' alt='Thena Core' />
       </motion.span>
@@ -198,7 +198,7 @@ export function ThenaCore() {
           scale: 1.2,
         }}
         id='social-icon-3'
-        className='absolute bottom-48 right-4 inline-block'
+        className='absolute right-4 bottom-48 inline-block'
       >
         <Image width={40} height={40} priority src='/images/home/stats/socials/social-4.png' alt='Thena Core' />
       </motion.span>
@@ -220,7 +220,7 @@ export function ThenaCore() {
           scale: 1.2,
         }}
         id='social-icon-5'
-        className='absolute left-20 top-4 inline-block'
+        className='absolute top-4 left-20 inline-block'
       >
         <Image width={35} height={35} priority src='/images/home/stats/socials/social-3.png' alt='Thena Core' />
       </motion.span>
@@ -231,7 +231,7 @@ export function ThenaCore() {
           scale: 1.1,
         }}
         id='social-icon-6'
-        className='absolute left-0 top-28'
+        className='absolute top-28 left-0'
       >
         <Image width={64} priority height={64} src='/images/home/stats/socials/social-6.png' alt='Thena Core' />
       </motion.span>

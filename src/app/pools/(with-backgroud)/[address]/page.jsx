@@ -123,7 +123,7 @@ export default function SpecificPoolPage({ params }) {
           {t('Pools')}
         </TextButton>
         {/* Title */}
-        <div className='mb-6 mt-4'>
+        <div className='mt-4 mb-6'>
           <div>
             {pair.type !== PAIR_TYPES.WEIGHTED ? (
               <div className='flex space-x-4'>
@@ -154,7 +154,7 @@ export default function SpecificPoolPage({ params }) {
                   <div className='flex w-full flex-wrap items-center gap-1 lg:gap-3'>
                     {(pair?.tokens || []).map(token => (
                       <div className='flex items-center gap-1' key={token?.address}>
-                        <span className='text-xl font-semibold leading-10 lg:text-4xl'>{token?.symbol}</span>
+                        <span className='text-xl leading-10 font-semibold lg:text-4xl'>{token?.symbol}</span>
                         <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>
                           {formatAmount(token?.weight)}%
                         </span>
@@ -170,35 +170,35 @@ export default function SpecificPoolPage({ params }) {
 
       {/* Content */}
       <div className='flex w-full flex-col sm:gap-2 lg:flex-row lg:gap-5 xl:gap-10 2xl:gap-12'>
-        <div className='flex-[6] flex-col gap-8'>
+        <div className='flex-6 flex-col gap-8'>
           {/* Pool Overview */}
           <div className='mb-6 flex items-center justify-between gap-3 lg:mb-7'>
             <div className='flex gap-3'>
-              <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
+              <NeutralBadge className='inline text-[14px] leading-5 font-normal text-neutral-50'>
                 {t(pair?.type ?? 'Weighted')}
               </NeutralBadge>
-              <NeutralBadge className='inline whitespace-nowrap text-[14px] font-normal leading-5'>
-                <span className='text-neutral-300 '>{t('Fee')}: </span>
+              <NeutralBadge className='inline text-[14px] leading-5 font-normal whitespace-nowrap'>
+                <span className='text-neutral-300'>{t('Fee')}: </span>
                 <span className='text-neutral-50'>{pair?.fee}%</span>
               </NeutralBadge>
             </div>
             <div className='flex w-full gap-3 lg:w-auto'>
               <TextIconButton
-                className='h-11 w-11 border-[1px] border-neutral-600'
+                className='h-11 w-11 border border-neutral-600'
                 Icon={ExternalIcon}
                 onClick={() => goScan(networkId, pair?.address)}
                 data-tooltip-id='contract-tooltip'
               />
-              <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
+              <CustomTooltip id='contract-tooltip' className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
               </CustomTooltip>
               <TextIconButton
-                className='h-11 w-11 border-[1px] border-neutral-600'
+                className='h-11 w-11 border border-neutral-600'
                 Icon={AnalyticsIcon}
                 onClick={() => push(`/analytics/pairs/${pair?.address}`)}
                 data-tooltip-id='analytics-tooltip'
               />
-              <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
+              <CustomTooltip id='analytics-tooltip' className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
               </CustomTooltip>
             </div>
@@ -207,7 +207,7 @@ export default function SpecificPoolPage({ params }) {
           {/* Code for special pools */}
           <>
             {pair?.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
-              <div className='ml-4 mt-5 flex items-center gap-2'>
+              <div className='mt-5 ml-4 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
@@ -223,10 +223,10 @@ export default function SpecificPoolPage({ params }) {
                     src='/images/Eigenlayer.png'
                   />
                 </div>
-                <CustomTooltip id='etherBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                <CustomTooltip id='etherBadgeIconDetail' className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
-                <CustomTooltip id='eigenBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                <CustomTooltip id='eigenBadgeIconDetail' className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -234,7 +234,7 @@ export default function SpecificPoolPage({ params }) {
 
             {pair.address === BNBLpBNBPoolAdress && (
               <>
-                <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='mt-5 ml-4 flex items-center gap-2'>
                   <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
@@ -242,7 +242,7 @@ export default function SpecificPoolPage({ params }) {
                       src='/images/quaaloop.png'
                     />
                   </div>
-                  <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -251,7 +251,7 @@ export default function SpecificPoolPage({ params }) {
 
             {pair.address === uniBTCFBTC && (
               <>
-                <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='mt-5 ml-4 flex items-center gap-2'>
                   <div className='size-6' data-tooltip-id={`pool-special-${pair.address}-tooltip1`}>
                     <NextImage
                       className='h-full w-full rounded-full bg-white object-cover p-1'
@@ -259,7 +259,7 @@ export default function SpecificPoolPage({ params }) {
                       src='/svgs/fbtcYieldCampaign.svg'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -268,7 +268,7 @@ export default function SpecificPoolPage({ params }) {
 
             {pair.address === BTCBmBTCAddress && (
               <>
-                <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='mt-5 ml-4 flex items-center gap-2'>
                   <div className='flex size-8 items-center rounded-full bg-white' data-tooltip-id='BTCBmBTCAddress'>
                     <NextImage
                       className='w-full rounded-full object-cover'
@@ -276,7 +276,7 @@ export default function SpecificPoolPage({ params }) {
                       src='/images/babbypieBirdLogo.png'
                     />
                   </div>
-                  <CustomTooltip id='BTCBmBTCAddress' className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id='BTCBmBTCAddress' className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -284,7 +284,7 @@ export default function SpecificPoolPage({ params }) {
             )}
 
             {SPECIAL_POOLS.includes(pair.address) && (
-              <div className='mb-5 ml-4 mt-4 flex items-center gap-2'>
+              <div className='mt-4 mb-5 ml-4 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-${pair?.address}`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
@@ -292,7 +292,7 @@ export default function SpecificPoolPage({ params }) {
                     src='/images/GQhgnIEbUAA4gjewe.jpeg'
                   />
                 </div>
-                <CustomTooltip id={`pool-${pair?.address}`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-${pair?.address}`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -308,7 +308,7 @@ export default function SpecificPoolPage({ params }) {
                     src='/images/yieldnest_seed_3d__1__360.png'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                 </CustomTooltip>
 
@@ -319,7 +319,7 @@ export default function SpecificPoolPage({ params }) {
                     src='/images/kernel.svg'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pair.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pair.address}-tooltip2`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -350,7 +350,7 @@ export default function SpecificPoolPage({ params }) {
 
           {/* Desktop pool stats */}
           <div className='mb-6 hidden w-full flex-col gap-6 lg:flex'>
-            <TextHeading className='font-archia text-4xl font-semibold leading-[34px]'>{t('Pool Info')}</TextHeading>
+            <TextHeading className='font-archia text-4xl leading-[34px] font-semibold'>{t('Pool Info')}</TextHeading>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
                 <TextHeading>{pair?.apr ?? '0%'}</TextHeading>
@@ -372,14 +372,14 @@ export default function SpecificPoolPage({ params }) {
           </div>
 
           {/* Pool charts */}
-          <div className='mb-6 mt-6'>
+          <div className='mt-6 mb-6'>
             <PoolChart address={pair.address} />
           </div>
 
           {/* Liquidity Fees table */}
           <div className='mb-6 flex flex-col gap-4'>
             <div className='mb-6 flex flex-col gap-4'>
-              <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
+              <TextHeading className='font-archia text-[30px] leading-[34px] font-semibold'>
                 {t('Liquidity Fees')}
               </TextHeading>
               <LiquidityFeesTable pool={pair} />
@@ -387,7 +387,7 @@ export default function SpecificPoolPage({ params }) {
 
             {/* Pool attributes */}
             <div className='flex flex-col gap-4'>
-              <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
+              <TextHeading className='font-archia text-[30px] leading-[34px] font-semibold'>
                 {t('Pool Attributes')}
               </TextHeading>
               {pair.type === PAIR_TYPES.LSD ? (
@@ -415,10 +415,10 @@ export default function SpecificPoolPage({ params }) {
           </div>
         </div>
 
-        <div className='flex-[4] flex-col gap-12'>
+        <div className='flex-4 flex-col gap-12'>
           {/* User positions */}
           <div className='mt-6 space-y-4'>
-            <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
+            <TextHeading className='font-archia text-[30px] leading-[34px] font-semibold'>
               {t('My Positions')}
             </TextHeading>
             <div className='grid grid-cols-1 gap-4'>

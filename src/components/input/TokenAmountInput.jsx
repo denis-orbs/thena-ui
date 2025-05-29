@@ -131,21 +131,21 @@ export function TokenAmountInput({
         className={cn(
           'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-3 lg:py-4',
           'border border-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
-          'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
+          'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
           classNames?.input,
-          isSmall && 'xl:!gap-1 xl:!px-3 xl:!py-2',
+          isSmall && 'xl:gap-1! xl:px-3! xl:py-2!',
           isInvalidAmount && 'border-error-600 focus-within:border-error-500',
         )}
         onClick={onfocusInput}
         ref={wrapperSelectRef}
       >
-        <div className={cn('flex items-center justify-between gap-2', isSmall && 'xl:!gap-1')}>
+        <div className={cn('flex items-center justify-between gap-2', isSmall && 'xl:gap-1!')}>
           <input
             ref={inputRefer}
             type='number'
             className={cn(
               'w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400',
-              isSmall && '!text-sm',
+              isSmall && 'text-sm!',
             )}
             placeholder='0.0'
             value={amount ?? ''}
@@ -191,7 +191,7 @@ export function TokenAmountInput({
                 />
               ) : (
                 <AssetDropdown
-                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  className='hover-dont-change-bg [&>#info]:!bg-opacity-50 hover:rounded-lg hover:bg-neutral-700 [&>#info]:rounded-lg! [&>#info]:bg-[#292929]!'
                   selected={asset}
                   setSelected={setAsset}
                   data={data}
@@ -203,7 +203,7 @@ export function TokenAmountInput({
               className={cn(
                 'inline-flex items-center justify-center gap-2',
                 'rounded-lg bg-[#29292980] text-xs text-neutral-200 md:text-sm',
-                'py-1.5 pl-1.5 pr-2',
+                'py-1.5 pr-2 pl-1.5',
                 'cursor-default',
               )}
             >
@@ -219,7 +219,7 @@ export function TokenAmountInput({
               ) : (
                 <CircleImage alt='thena' className='h-4 w-4 md:h-6 md:w-6' src={asset?.logoURI ?? UNKNOWN_LOGO} />
               )}
-              <span className='text-nowrap text-xs md:text-sm'>
+              <span className='text-xs text-nowrap md:text-sm'>
                 {`${maxBalance ? 'BNB + WBNB' : asset?.symbol} ${weight ? `(${weight}%)` : ''}`}
               </span>
             </div>
@@ -228,16 +228,16 @@ export function TokenAmountInput({
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'xl:!text-xs')}>
+          <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'xl:text-xs!')}>
             ${formatAmount(amount * (asset?.price || 0))}
           </TextSubHeading>
-          <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'xl:!text-xs')}>
+          <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'xl:text-xs!')}>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>
             <span
               onClick={() => onAmountChange(max.dp(asset?.decimals).toString(10))}
-              className={cn('cursor-pointer text-primary-600 hover:text-primary-400', max?.eq(0) && 'hidden')}
+              className={cn('text-primary-600 hover:text-primary-400 cursor-pointer', max?.eq(0) && 'hidden')}
             >
               {t('Max')}
             </span>
@@ -245,7 +245,7 @@ export function TokenAmountInput({
         </div>
       </div>
       {isInvalidAmount && (
-        <TextHeading className='text-base font-normal leading-5 text-error-600'>{t('Invalid Amount')}</TextHeading>
+        <TextHeading className='text-error-600 text-base leading-5 font-normal'>{t('Invalid Amount')}</TextHeading>
       )}
       {Array.isArray(assetsSelect) && (
         <>

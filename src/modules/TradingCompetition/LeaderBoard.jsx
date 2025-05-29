@@ -303,7 +303,7 @@ export function LeaderBoard({
           <span>
             <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='leaderboard-heading' />
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='leaderboard-heading'
               place='bottom'
             >

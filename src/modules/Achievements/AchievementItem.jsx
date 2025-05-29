@@ -37,7 +37,7 @@ function AchievementItem({ item, onClick = () => {}, showTooltip = true }) {
 
       {showTooltip && (
         <CustomTooltip
-          className='z-50 w-max text-nowrap !bg-neutral-500 px-1 after:!bg-neutral-500'
+          className='z-50 w-max bg-neutral-500! px-1 text-nowrap after:bg-neutral-500!'
           id={item.achievement.id}
           place='top'
         >

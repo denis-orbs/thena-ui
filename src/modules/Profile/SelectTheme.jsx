@@ -39,7 +39,7 @@ export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
       {LIST_THEME.map((theme, index) => (
         <Box
           key={theme.src}
-          className='relative flex h-20 w-36 items-center justify-between space-x-2 border border-primary-800 p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
+          className='border-primary-800 relative flex h-20 w-36 items-center justify-between space-x-2 border p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
           onClick={() => {
             if (index <= 1 || isAdmin) {
               setThemeChecked(theme.src)
@@ -47,12 +47,12 @@ export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
           }}
         >
           {index > 1 && !isAdmin ? (
-            <LockIcon className='z-5 absolute right-3 top-3 h-4 w-4' />
+            <LockIcon className='absolute top-3 right-3 z-5 h-4 w-4' />
           ) : (
             <input
               name='theme-radio'
               type='radio'
-              className='z-5 absolute right-3 top-3 rounded-full border border-neutral-500 bg-transparent p-0 focus:border-neutral-500'
+              className='absolute top-3 right-3 z-5 rounded-full border border-neutral-500 bg-transparent p-0 focus:border-neutral-500'
               checked={themeChecked === theme.src}
               onChange={() => {
                 setThemeChecked(theme.src)

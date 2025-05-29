@@ -44,7 +44,7 @@ export function PairBasicInfo({ pair }) {
     <div className='flex justify-between gap-2'>
       <Box
         className={cn(
-          'w-full justify-between gap-x-4 border border-neutral-600 !py-3 px-4 max-md:grid max-md:grid-cols-2 md:flex',
+          'w-full justify-between gap-x-4 border border-neutral-600 px-4 py-3! max-md:grid max-md:grid-cols-2 md:flex',
           !isMdDown && 'gap-y-4',
         )}
       >
@@ -105,7 +105,7 @@ export function PairBasicInfo({ pair }) {
       </Box>
 
       <EmphasisButton
-        className='size-8 !bg-neutral-900 p-2 outline-0 md:hidden'
+        className='size-8 bg-neutral-900! p-2 outline-0 md:hidden'
         onClick={() => setIsExpanded(prev => !prev)}
       >
         <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && '-rotate-90')} />

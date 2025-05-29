@@ -656,7 +656,7 @@ function Sidebar({ competition, eventType }) {
       </div>
       <Box className='flex flex-col space-y-5'>
         {(headingAndText.subText || headingAndText.text) && (
-          <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
+          <Box className='border-primary-800 bg-primary-950 flex flex-col space-y-2 border'>
             {headingAndText.text && <TextHeading className='text-xl'>{headingAndText.text}</TextHeading>}
             {headingAndText.subText && (
               <TextHeading className='flex text-base'>
@@ -708,10 +708,7 @@ function Sidebar({ competition, eventType }) {
 
         <div className='flex flex-col items-center justify-center gap-2'>
           <div className='h-3 w-full rounded-md bg-neutral-500'>
-            <div
-              ref={progressBarRef}
-              className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
-            />
+            <div ref={progressBarRef} className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]' />
           </div>
           <div>{`${competition.participantCount}/${competition.maxParticipants} ${t('Joined')}`}</div>
         </div>
@@ -733,14 +730,14 @@ function Sidebar({ competition, eventType }) {
               data-tooltip-id='showTooltip'
               disabled={isNotStartRegistration}
               onClick={() => setShowIncreasePrize(true)}
-              className='!text-neutral-400'
+              className='text-neutral-400!'
             >
               {t('Increase Prize Pool')}
-              {eventType === EVENT_TYPES.UPCOMING && <InfoCirCleDisableIcon className='h-4 w-4 !text-neutral-400' />}
+              {eventType === EVENT_TYPES.UPCOMING && <InfoCirCleDisableIcon className='h-4 w-4 text-neutral-400!' />}
             </OutlinedButton>
             {isNotStartRegistration ? (
               <CustomTooltip
-                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
                 id='showTooltip'
                 place='bottom'
               >
@@ -748,7 +745,7 @@ function Sidebar({ competition, eventType }) {
               </CustomTooltip>
             ) : (
               <CustomTooltip
-                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
                 id='showTooltip'
                 place='bottom'
               >
