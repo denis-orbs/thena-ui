@@ -65,9 +65,19 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
   useEffect(() => {
+    if (!baseCurrency) {
+      setBaseCurrency(firstCurrency)
+    }
+    if (!quoteCurrency) {
+      setQuoteCurrency(secondCurrency)
+    }
+  }, [firstCurrency, baseCurrency, quoteCurrency, secondCurrency])
+
+  useEffect(() => {
     setBaseCurrency(firstCurrency)
     setQuoteCurrency(secondCurrency)
-  }, [firstCurrency, isReverse, secondCurrency])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReverse])
 
   const isBaseBNB = useMemo(
     () => baseCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
