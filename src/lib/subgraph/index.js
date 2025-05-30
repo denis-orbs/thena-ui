@@ -1,7 +1,9 @@
 import { gql, GraphQLClient } from 'graphql-request'
 import orderBy from 'lodash/orderBy'
+import { ChainId } from 'thena-sdk-core'
 
-import { blockGraphUrl, fusionClient, fusionFarmingClient } from '../graphql'
+import { fetchRevenue } from '../api'
+import { blockGraphUrl, fusionClient, fusionFarmingClient, v1Client } from '../graphql'
 
 const requestWithTimeout = (graphQLClient, request, variables, timeout = 30000) =>
   Promise.race([
@@ -198,5 +200,46 @@ export const getFusionFeesData = async ({ chainId, poolIds, date }) => {
   } catch (error) {
     console.error(`[${chainId}] fusion fees data fetch error:`, error)
     return {}
+  }
+}
+
+const FUSION_STATS = gql`
+  query globalData {
+    factories {
+      totalValueLockedUSD
+      totalVolumeUSD
+      txCount
+    }
+  }
+`
+
+const V1_STATS = gql`
+  query globalData {
+    factories {
+      totalLiquidityUSD
+      totalVolumeUSD
+      txCount
+    }
+  }
+`
+
+export const fetchStats = async () => {
+  const chainId = ChainId.BSC
+  const [fusionData, v1Data] = await Promise.all([
+    fusionClient[chainId].request(FUSION_STATS),
+    v1Client[chainId].request(V1_STATS),
+  ])
+  let revenueData = 0
+  try {
+    const res = await fetchRevenue()
+    revenueData = res.total_revenue
+  } catch (error) {
+    console.log('revenue fetch error :>> ', error)
+  }
+  return {
+    tvl: Number(fusionData.factories[0].totalValueLockedUSD) + Number(v1Data.factories[0].totalLiquidityUSD),
+    totalVolume: Number(fusionData.factories[0].totalVolumeUSD) + Number(v1Data.factories[0].totalVolumeUSD),
+    txCount: Number(fusionData.factories[0].txCount) + Number(v1Data.factories[0].txCount),
+    revenueData,
   }
 }

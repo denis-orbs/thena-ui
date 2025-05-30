@@ -1,60 +1,16 @@
 'use client'
 
-import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core'
 
 import Skeleton from '@/components/skeleton'
-import { fetchRevenue } from '@/lib/api'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { fetchStats } from '@/lib/subgraph'
 import { formatAmount } from '@/lib/utils'
 
 import { Features } from './Features'
 import { Heading } from '../Common/Heading'
 import HomeImage from '../Common/HomeImage'
-
-const FUSION_STATS = gql`
-  query globalData {
-    factories {
-      totalValueLockedUSD
-      totalVolumeUSD
-      txCount
-    }
-  }
-`
-
-const V1_STATS = gql`
-  query globalData {
-    factories {
-      totalLiquidityUSD
-      totalVolumeUSD
-      txCount
-    }
-  }
-`
-
-const fetchStats = async () => {
-  const chainId = ChainId.BSC
-  const [fusionData, v1Data] = await Promise.all([
-    fusionClient[chainId].request(FUSION_STATS),
-    v1Client[chainId].request(V1_STATS),
-  ])
-  let revenueData = 0
-  try {
-    const res = await fetchRevenue()
-    revenueData = res.total_revenue
-  } catch (error) {
-    console.log('revenue fetch error :>> ', error)
-  }
-  return {
-    tvl: Number(fusionData.factories[0].totalValueLockedUSD) + Number(v1Data.factories[0].totalLiquidityUSD),
-    totalVolume: Number(fusionData.factories[0].totalVolumeUSD) + Number(v1Data.factories[0].totalVolumeUSD),
-    txCount: Number(fusionData.factories[0].txCount) + Number(v1Data.factories[0].txCount),
-    revenueData,
-  }
-}
 
 function Stats() {
   const { data: chartData } = useSWR('thena total stats', () => fetchStats())
