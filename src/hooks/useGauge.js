@@ -183,7 +183,7 @@ export const useGaugeAllHarvest = () => {
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
 
-    const { newGauge, manual, gamma, ichi } = rewards
+    const { newGauge, manual, gamma, ichi, ichiSingleSided } = rewards
 
     const transactions = {}
     if (newGauge.size > 0) {
@@ -216,6 +216,16 @@ export const useGaugeAllHarvest = () => {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
           desc: `${t('Harvest Rewards')} Ichi pools`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      })
+    }
+
+    if (ichiSingleSided.size > 0) {
+      ichiSingleSided.forEach(_pair => {
+        transactions[`ichi-v2-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} Ichi V2 pools`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -307,6 +317,20 @@ export const useGaugeAllHarvest = () => {
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
         const tx = await writeTxn(key, `ichi-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
         if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
+    if (ichiSingleSided.size > 0) {
+      const gaugeAddresses = []
+      ichiSingleSided.forEach(pair => gaugeAddresses.push(pair.args))
+
+      for (let i = 0; i < gaugeAddresses.length; i++) {
+        const gaugeAddress = gaugeAddresses[i]
+        const gaugeContract = getGaugeContract(gaugeAddress, chainId)
+        if (!(await writeTxn(key, `ichi-v2-${gaugeAddresses}`, gaugeContract, 'getReward', []))) {
           setPending(false)
           return
         }
