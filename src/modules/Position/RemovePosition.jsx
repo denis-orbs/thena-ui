@@ -20,7 +20,7 @@ import { useSettings } from '@/state/settings/hooks'
 import SettingSlippageDropDown from './SettingSlippageDropDown'
 import PoolTitle from '../PoolTitle'
 
-export default function RemovePosition({ setPopup, strategy, isManage = false }) {
+export default function RemovePosition({ setPopup, strategy, isStaked, isManage = false }) {
   const [amount, setAmount] = useState('')
   const { deadline } = useSettings()
   const [slippage, setSlippage] = useState(0.5)
@@ -70,7 +70,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount, version, callback)
+      onGammaRemove(strategy, amount, version, isStaked, callback)
     } else if (ICHI_TYPES.includes(strategy.title)) {
       onIchiRemove({
         pool: strategy,
@@ -92,8 +92,9 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     slippage,
     callback,
     onGammaRemove,
-    onIchiRemove,
     version,
+    isStaked,
+    onIchiRemove,
     onDefiedgeRemove,
   ])
 

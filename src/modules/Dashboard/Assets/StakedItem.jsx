@@ -421,7 +421,7 @@ function StakedItem({ position, isXlDown }) {
         onGaugeManage={handleUnstake}
         pending={unstakePending}
       />
-      <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+      <RemovePositionModal isStaked popup={removePopup} setPopup={setRemovePopup} strategy={position} />
     </>
   )
 }
