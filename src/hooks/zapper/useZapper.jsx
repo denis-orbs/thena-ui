@@ -133,7 +133,7 @@ export const useZapperAddLiquidity = () => {
 
         if (!isApproved) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${token.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -278,7 +278,7 @@ export const useV1Zapper = () => {
 
         if (amountToApprove.gt(0)) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${tokenDeposit.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -437,7 +437,7 @@ export const useGammaZapper = () => {
 
         if (amountToApprove.gt(0)) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${tokenDeposit.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }

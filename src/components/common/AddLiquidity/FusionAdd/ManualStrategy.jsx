@@ -68,8 +68,14 @@ function ManualStrategy({
 
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
 
-  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
+  const {
+    onStartPriceInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onChangeLiquidityRangeType,
+    onFieldAInput,
+    onFieldBInput,
+  } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
@@ -118,6 +124,30 @@ function ManualStrategy({
     onRightRangeInput('')
     onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
   }, [dispatch, onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType])
+
+  const handleRevert = useCallback(() => {
+    if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
+      onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
+      onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
+    }
+    dispatch(updateIsReverse({ isReverse: !isReverse }))
+    onFieldAInput('')
+    onFieldBInput('')
+    onStartPriceInput(mintInfo.invertPrice ? mintInfo.price.toSignificant(5) : mintInfo.price.invert().toSignificant(5))
+  }, [
+    dispatch,
+    isReverse,
+    mintInfo.invertPrice,
+    mintInfo.price,
+    mintInfo?.ticksAtLimit,
+    onFieldAInput,
+    onFieldBInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onStartPriceInput,
+    priceLower,
+    priceUpper,
+  ])
 
   useEffect(() => {
     resetState()
@@ -169,10 +199,7 @@ function ManualStrategy({
                 <EmphasisIconButton
                   className='size-6 rounded-[4px] md:size-11 md:rounded-lg'
                   Icon={TransferIcon}
-                  onClick={() => {
-                    resetState()
-                    dispatch(updateIsReverse({ isReverse: !isReverse }))
-                  }}
+                  onClick={handleRevert}
                 />
                 <CircleImage
                   className='size-6 outline outline-[#1C2027] md:size-9'

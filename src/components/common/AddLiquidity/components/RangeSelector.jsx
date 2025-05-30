@@ -157,7 +157,7 @@ export function RangeSelector({
     dispatch(updateIsReverse({ isReverse: !isReverse }))
     onFieldAInput('')
     onFieldBInput('')
-    onStartPriceInput('')
+    onStartPriceInput(mintInfo.invertPrice ? mintInfo.price.toSignificant(5) : mintInfo.price.invert().toSignificant(5))
   }
 
   const brushLabelValue = useCallback(

@@ -169,7 +169,7 @@ export const useGammaRemove = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaRemove = useCallback(
-    async (pool, amount, version, callback) => {
+    async (pool, amount, version, isStaked, callback) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       const unstakeuuid = uuidv4()
@@ -177,13 +177,14 @@ export const useGammaRemove = () => {
         key,
         title: 'Remove Liquidity',
         transactions: {
-          ...(version === 3 && {
-            [unstakeuuid]: {
-              desc: t('Unstake'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
+          ...(version === 3 &&
+            isStaked && {
+              [unstakeuuid]: {
+                desc: t('Unstake'),
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -194,7 +195,7 @@ export const useGammaRemove = () => {
       setPending(true)
       const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, networkId, version)
 
-      if (version === 3) {
+      if (version === 3 && isStaked) {
         const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
         if (!(await writeTxn(key, unstakeuuid, multiFeeDistributionContract, 'unstake', [toWei(amount).toFixed(0)]))) {

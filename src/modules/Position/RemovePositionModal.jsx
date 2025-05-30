@@ -6,7 +6,7 @@ import Modal from '@/components/modal'
 
 import RemovePosition from './RemovePosition'
 
-export default function RemovePositionModal({ popup, setPopup, strategy }) {
+export default function RemovePositionModal({ popup, setPopup, isStaked, strategy }) {
   return (
     <Modal
       isOpen={popup}
@@ -15,7 +15,7 @@ export default function RemovePositionModal({ popup, setPopup, strategy }) {
         setPopup(false)
       }}
     >
-      <RemovePosition setPopup={setPopup} strategy={strategy} />
+      <RemovePosition setPopup={setPopup} strategy={strategy} isStaked={isStaked} />
     </Modal>
   )
 }
