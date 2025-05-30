@@ -300,7 +300,7 @@ function StakedItem({ position, isXlDown }) {
         <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
           onClick={handleHarvest}
-          disabled={claimPending || position.account.earnedUsd.isZero()}
+          disabled={claimPending}
         >
           {t('Claim')}
         </EmphasisButton>
@@ -320,7 +320,7 @@ function StakedItem({ position, isXlDown }) {
             <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
               onClick={handleHarvest}
-              disabled={claimPending || position.account.earnedUsd.isZero()}
+              disabled={claimPending}
             >
               {t('Claim')}
             </EmphasisButton>
@@ -371,7 +371,6 @@ function StakedItem({ position, isXlDown }) {
     isSwapFee,
     migrationLink,
     migrationOptions?.length,
-    position.account.earnedUsd,
     position.type,
     t,
     version,
