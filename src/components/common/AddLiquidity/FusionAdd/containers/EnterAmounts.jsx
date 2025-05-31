@@ -116,6 +116,7 @@ export function EnterAmounts({
       setErrorB(false)
     }
   }, [checkIsInvalid, formattedAmounts, maxAmounts])
+
   return (
     <div
       className={cn('grid grid-cols-1 gap-4', {

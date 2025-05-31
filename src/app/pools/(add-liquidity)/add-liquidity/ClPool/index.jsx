@@ -65,19 +65,10 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
   useEffect(() => {
-    if (!baseCurrency) {
-      setBaseCurrency(firstCurrency)
-    }
-    if (!quoteCurrency) {
-      setQuoteCurrency(secondCurrency)
-    }
-  }, [firstCurrency, baseCurrency, quoteCurrency, secondCurrency])
-
-  useEffect(() => {
     setBaseCurrency(firstCurrency)
     setQuoteCurrency(secondCurrency)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReverse])
+  }, [position?.baseCurrency, isReverse, position?.quoteCurrency])
 
   const isBaseBNB = useMemo(
     () => baseCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
@@ -105,7 +96,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
       const isSorted = baseCurrency && quoteCurrency && baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
       return isSorted ? position.currentPrice : 1 / position.currentPrice
     }
-
     if (!mintInfo.price) return
     const price = mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
     if (price) return parseFloat(price)
