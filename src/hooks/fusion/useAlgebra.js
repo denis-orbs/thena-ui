@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256, parseUnits } from 'viem'
+import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { pluginFactoryAbi } from '@/constant/abi'
@@ -22,6 +22,29 @@ import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+
+export function collectAndClaimRewards({ positions, chainId, account }) {
+  const farmingCenter = getFarmingCenterContract(chainId)
+
+  const calldata = []
+  for (const item of positions) {
+    const collectData = encodeFunctionData({
+      abi: farmingCenter.abi,
+      functionName: 'collectRewards',
+      args: [item.poolKey, item.tokenId],
+    })
+    calldata.push(collectData)
+  }
+
+  const claimRewardData = encodeFunctionData({
+    abi: farmingCenter.abi,
+    functionName: 'claimReward',
+    args: [Contracts.THE[chainId], account, maxUint256],
+  })
+  calldata.push(claimRewardData)
+
+  return calldata
+}
 
 export const useAlgebraAdd = () => {
   const [pending, setPending] = useState(false)
@@ -261,8 +284,18 @@ export const useAlgebraClaim = (version = 3) => {
         }
 
         const farmingCenter = getFarmingCenterContract(chainId)
+        const collectData = encodeFunctionData({
+          abi: farmingCenter.abi,
+          functionName: 'collectRewards',
+          args: [poolkey, tokenId],
+        })
+        const claimRewardData = encodeFunctionData({
+          abi: farmingCenter.abi,
+          functionName: 'claimReward',
+          args: [Contracts.THE[chainId], account, maxUint256],
+        })
 
-        if (!(await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [account, poolkey, tokenId]))) {
+        if (!(await writeTxn(key, claimFarmId, farmingCenter, 'multicall', [[collectData, claimRewardData]]))) {
           setPending(false)
           return
         }
@@ -450,9 +483,9 @@ export const useAlgebraRemove = (version = 3) => {
 
       if (rewardAmount > 0) {
         const farmingCenter = getFarmingCenterContract(chainId)
-        if (
-          !(await writeTxn(key, claimRewardId, farmingCenter, 'collectAndClaimRewards', [account, poolkey, tokenId]))
-        ) {
+        const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
+
+        if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
           setPending(false)
           return
         }

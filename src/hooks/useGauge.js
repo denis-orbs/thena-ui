@@ -19,6 +19,8 @@ import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
+import { collectAndClaimRewards } from './fusion/useAlgebra'
+
 export const useGaugeStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -174,7 +176,7 @@ export const useGaugeAllHarvest = () => {
   const t = useTranslations()
   const { rewards } = useFarmRewards()
 
-  const { chainId } = useWallet()
+  const { chainId, account } = useWallet()
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
 
@@ -245,19 +247,17 @@ export const useGaugeAllHarvest = () => {
       }
     }
 
+    // manual = Map<[key, {amount: number, args: [account, poolKey, tokenId]}]>
     if (manual.size > 0) {
       const farmingCenter = getFarmingCenterContract(chainId)
-      const calldata = []
-      manual.forEach(pair => {
-        calldata.push(
-          encodeFunctionData({
-            abi: farmingCenter.abi,
-            functionName: 'collectAndClaimRewards',
-            args: pair.args,
-          }),
-        )
+      const calldata = collectAndClaimRewards({
+        positions: Array.from(manual).map(pair => ({
+          poolKey: pair[1].args[1],
+          tokenId: pair[1].args[2],
+        })),
+        chainId,
+        account,
       })
-
       const encoded = encodeFunctionData({
         abi: farmingCenter.abi,
         functionName: 'multicall',
@@ -339,7 +339,7 @@ export const useGaugeAllHarvest = () => {
 
     endTxn({ key, final: 'Harvest Successful' })
     setPending(false)
-  }, [rewards, startTxn, t, endTxn, chainId, writeTxn, sendTxn])
+  }, [rewards, startTxn, endTxn, t, chainId, writeTxn, account, sendTxn])
 
   return { onGaugeAllHarvest, pending }
 }
