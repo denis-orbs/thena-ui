@@ -116,6 +116,7 @@ export function EnterAmounts({
       setErrorB(false)
     }
   }, [checkIsInvalid, formattedAmounts, maxAmounts])
+
   return (
     <div
       className={cn('grid grid-cols-1 gap-4', {
@@ -124,7 +125,7 @@ export function EnterAmounts({
     >
       <TokenAmountCard
         currency={currencyA}
-        setCurrency={setCurrencyA}
+        setCurrency={!position ? setCurrencyA : undefined}
         assetsSelect={assetsSelect}
         value={formattedAmounts[Field.CURRENCY_A]}
         handleInput={onFieldAInput}
@@ -138,7 +139,7 @@ export function EnterAmounts({
       />
       <TokenAmountCard
         currency={currencyB}
-        setCurrency={setCurrencyB}
+        setCurrency={!position ? setCurrencyB : undefined}
         assetsSelect={assetsSelect}
         value={formattedAmounts[Field.CURRENCY_B]}
         handleInput={onFieldBInput}

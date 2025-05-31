@@ -19,13 +19,14 @@ import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePos
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
+import { collectAndClaimRewards } from './fusion/useAlgebra'
 import useWallet from './useWallet'
 
 export const useRewardPosition = () => {
   const t = useTranslations()
   const [pending, setPending] = useState(false)
 
-  const { chainId } = useWallet()
+  const { chainId, account: userAddress } = useWallet()
   const { rewards, fees } = useFarmRewards()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
 
@@ -137,17 +138,16 @@ export const useRewardPosition = () => {
       }
     }
 
+    // manual = Map<[key, {amount: number, args: [account, poolKey, tokenId]}]>
     if (manual.size > 0) {
       const farmingCenter = getFarmingCenterContract(chainId)
-      const calldata = []
-      manual.forEach(pair => {
-        calldata.push(
-          encodeFunctionData({
-            abi: farmingCenter.abi,
-            functionName: 'collectAndClaimRewards',
-            args: pair.args,
-          }),
-        )
+      const calldata = collectAndClaimRewards({
+        positions: Array.from(manual).map(pair => ({
+          poolKey: pair[1].args[1],
+          tokenId: pair[1].args[2],
+        })),
+        chainId,
+        account: userAddress,
       })
 
       const encoded = encodeFunctionData({
@@ -316,7 +316,7 @@ export const useRewardPosition = () => {
 
     endTxn({ key, final: 'Claim Successful' })
     setPending(false)
-  }, [rewards, fees, startTxn, endTxn, t, chainId, writeTxn, sendTxn])
+  }, [rewards, fees, startTxn, endTxn, t, chainId, writeTxn, userAddress, sendTxn])
 
   return { onClaimAllRewardPosition, pending }
 }

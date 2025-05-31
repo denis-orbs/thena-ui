@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { gql, GraphQLClient } from 'graphql-request'
 import orderBy from 'lodash/orderBy'
 import { ChainId } from 'thena-sdk-core'
@@ -242,4 +243,52 @@ export const fetchStats = async () => {
     txCount: Number(fusionData.factories[0].txCount) + Number(v1Data.factories[0].txCount),
     revenueData,
   }
+}
+
+/**
+ * @param {address} owner
+ * @param {number} chainId
+ * @returns {Record<position_id, Record<token_address, amount>>}
+ */
+export const getCollectedRewards = async (owner, chainId) => {
+  const { rewards = [] } = await fusionFarmingClient[chainId].request(
+    gql`
+      query rewards($owner: String!) {
+        rewards(where: { owner: $owner }) {
+          amount
+          tokenIds
+          tokenIdRewards
+          rewardAddress
+        }
+      }
+    `,
+    {
+      owner,
+    },
+  )
+
+  const result = {}
+
+  for (const item of rewards) {
+    const { rewardAddress, tokenIds, tokenIdRewards } = item
+    const lowerAddress = rewardAddress.toLowerCase()
+
+    for (let i = 0; i < tokenIds.length; i++) {
+      const tokenId = tokenIds[i]
+      const reward = BigNumber(tokenIdRewards[i])
+
+      if (!result[tokenId]) {
+        result[tokenId] = {}
+      }
+
+      if (!result[tokenId][lowerAddress]) {
+        result[tokenId][lowerAddress] = BigNumber(0)
+      }
+
+      const currentTotal = BigNumber(result[tokenId][lowerAddress])
+      result[tokenId][lowerAddress] = currentTotal.plus(reward)
+    }
+  }
+
+  return result
 }
