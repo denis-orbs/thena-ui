@@ -43,7 +43,7 @@ const getFarmRewardList = async (positions, poolKeys, chainId, account) => {
 
     try {
       const collectRewards = await simulateCall(farmingCenter, 'collectRewards', [poolKey, pos?.tokenId], chainId)
-      const reward = rewards[pos?.tokenId]
+      const reward = rewards[pos?.tokenId] || {}
 
       farmRewardsList.push([
         BigNumber(collectRewards[0]).plus(reward[Contracts.THE[chainId].toLowerCase()] ?? '0'),
