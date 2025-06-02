@@ -226,8 +226,9 @@ const V1_STATS = gql`
 
 export const fetchStats = async () => {
   const chainId = ChainId.BSC
-  const [fusionData, v1Data] = await Promise.all([
-    fusionClient[chainId].request(FUSION_STATS),
+  const [fusionData, fusionV3Data, v1Data] = await Promise.all([
+    fusionClient[2][chainId].request(FUSION_STATS),
+    fusionClient[3][chainId].request(FUSION_STATS),
     v1Client[chainId].request(V1_STATS),
   ])
   let revenueData = 0
@@ -238,9 +239,18 @@ export const fetchStats = async () => {
     console.log('revenue fetch error :>> ', error)
   }
   return {
-    tvl: Number(fusionData.factories[0].totalValueLockedUSD) + Number(v1Data.factories[0].totalLiquidityUSD),
-    totalVolume: Number(fusionData.factories[0].totalVolumeUSD) + Number(v1Data.factories[0].totalVolumeUSD),
-    txCount: Number(fusionData.factories[0].txCount) + Number(v1Data.factories[0].txCount),
+    tvl:
+      Number(fusionData.factories[0].totalValueLockedUSD) +
+      Number(v1Data.factories[0].totalLiquidityUSD) +
+      Number(fusionV3Data.factories[0].totalValueLockedUSD),
+    totalVolume:
+      Number(fusionData.factories[0].totalVolumeUSD) +
+      Number(v1Data.factories[0].totalVolumeUSD) +
+      Number(fusionV3Data.factories[0].totalVolumeUSD),
+    txCount:
+      Number(fusionData.factories[0].txCount) +
+      Number(v1Data.factories[0].txCount) +
+      Number(fusionV3Data.factories[0].txCount),
     revenueData,
   }
 }
