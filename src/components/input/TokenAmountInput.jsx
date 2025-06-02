@@ -126,12 +126,12 @@ export function TokenAmountInput({
   const isInvalidAmount = useMemo(() => {
     if (amount === '' || amount === '0') return false
     if (Number(amount) === Number.isNaN || Number(amount) < 0) return true
-    if (maxBalance) {
-      if (maxBalance.lt(amount)) return true
+    if (max) {
+      if (max.lt(amount)) return true
     }
 
     return false
-  }, [amount, maxBalance])
+  }, [amount, max])
 
   return (
     <div className='flex flex-col gap-2'>

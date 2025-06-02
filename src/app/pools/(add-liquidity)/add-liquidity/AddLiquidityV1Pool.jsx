@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import V1Add from '@/components/common/AddLiquidity/V1Add'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
@@ -21,14 +21,9 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
   const pairType = pair?.type ?? searchParams.get('pairType')
 
-  const [firstAddress, setFirstAddress] = useState(pair?.token0?.address)
-  const [secondAddress, setSecondAddress] = useState(pair?.token1?.address)
+  const [firstAddress, setFirstAddress] = useState(pair?.token0?.address ?? searchParams.get('firstAddress'))
+  const [secondAddress, setSecondAddress] = useState(pair?.token1?.address ?? searchParams.get('secondAddress'))
   const [showReserve, setShowReserve] = useState(false)
-
-  useEffect(() => {
-    setFirstAddress(pair?.token0?.address ?? searchParams.get('firstAddress'))
-    setSecondAddress(pair?.token1?.address ?? searchParams.get('secondAddress'))
-  }, [pair, searchParams])
 
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)

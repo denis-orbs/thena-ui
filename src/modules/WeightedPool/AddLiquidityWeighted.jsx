@@ -92,7 +92,7 @@ function AddLiquidityWeighted({ pool }) {
       }
     }
     return final
-  }, [amountDeposit, balance, depositType, isDouble, tokenDeposit.balance, tokenDeposit?.symbol, tokensData])
+  }, [amountDeposit, balance, depositType, isDouble, tokenDeposit?.balance, tokenDeposit?.symbol, tokensData])
 
   const isDisable = useMemo(() => {
     if (depositType === DEPOSIT_TYPE.SINGLE) {
