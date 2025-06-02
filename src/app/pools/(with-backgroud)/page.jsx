@@ -142,9 +142,10 @@ export default function PoolsPage() {
     const pairFilteredSubpools = pairs.map(ele => {
       let { subpools } = ele
       if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(ele.type)) {
-        subpools = ele.subpools.filter(
-          sub => [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(sub.type) && sub.version === 3,
-        )
+        subpools = ele.subpools.filter(sub => sub.version === 3)
+      }
+      if (ele.type === PAIR_TYPES.LSD) {
+        subpools = ele.subpools.filter(sub => sub.title !== 'CL_SwapFee')
       }
       return { ...ele, subpools }
     })

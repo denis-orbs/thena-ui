@@ -11,6 +11,7 @@ import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
+import { useActivePreset } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { tryParseTick } from '@/state/fusion/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -116,6 +117,7 @@ export const useEstimateAPR = ({
   estimatedLiquidity = 0,
 }) => {
   const { networkId: chainId } = useChainSettings()
+  const activePreset = useActivePreset()
   const currency0 = useGetAsset(token0?.address)
   const currency1 = useGetAsset(token1?.address)
 
@@ -230,23 +232,21 @@ export const useEstimateAPR = ({
     },
   ].map(({ min, max, title }) => {
     const _tickLower =
-      title === 'current'
-        ? tickLower
-        : title === Presets.FULL
-          ? nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING)
+      title === Presets.FULL
+        ? nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING)
+        : title === 'current' || title === activePreset
+          ? tickLower
           : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
-
     const _tickUpper =
-      title === 'current'
-        ? tickUpper
-        : title === Presets.FULL
-          ? nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING)
+      title === Presets.FULL
+        ? nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING)
+        : title === 'current' || title === activePreset
+          ? tickUpper
           : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())
 
     let _position = null
     if (token0 && token1) {
-      if (!_tickUpper || !_tickLower || _tickUpper <= _tickLower) _position = { liquidity: 0 }
-      else if (title === 'current' && !amount0 && !amount1) {
+      if (!_tickUpper || !_tickLower || _tickUpper <= _tickLower) {
         _position = { liquidity: 0 }
       } else {
         const isRevert = _token0.address.toLowerCase() === currency0.address.toLowerCase()
