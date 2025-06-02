@@ -53,7 +53,6 @@ function AddLiquidityWeighted({ pool }) {
   const [tokenDeposit, setTokenDeposit] = useState(null)
   const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
   const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
-  const [isCheckError, setIsCheckError] = useState(false)
 
   const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
   const isLaptop = useMemo(() => windowSize.width > 1024, [windowSize.width])
@@ -83,6 +82,7 @@ function AddLiquidityWeighted({ pool }) {
         tokenDeposit?.balance?.lt(amountDeposit) &&
         (tokenDeposit?.symbol === 'BNB' || tokenDeposit?.symbol === 'WBNB')
       ) {
+        if (isDouble && balance.lt(amountDeposit)) return final
         final = new BigNumber(amountDeposit).minus(tokenDeposit.balance)
       }
     } else {
@@ -92,7 +92,7 @@ function AddLiquidityWeighted({ pool }) {
       }
     }
     return final
-  }, [amountDeposit, depositType, tokenDeposit, tokensData])
+  }, [amountDeposit, balance, depositType, isDouble, tokenDeposit?.balance, tokenDeposit?.symbol, tokensData])
 
   const isDisable = useMemo(() => {
     if (depositType === DEPOSIT_TYPE.SINGLE) {
@@ -134,12 +134,9 @@ function AddLiquidityWeighted({ pool }) {
 
   const onAddLiquidity = useCallback(
     async withStake => {
-      setIsCheckError(true)
       if (depositType === DEPOSIT_TYPE.SINGLE) {
-        if (
-          isInvalidAmount(amountDeposit) ||
-          (isDouble ? Number(amountDeposit) > Number(balance) : Number(amountDeposit) > Number(tokenDeposit.balance))
-        ) {
+        if (isInvalidAmount(amountDeposit)) {
+          warnToast('Invalid Amount')
           return false
         }
         await onAddLiquiditySingleToken(
@@ -172,8 +169,6 @@ function AddLiquidityWeighted({ pool }) {
       slippage,
       tokenDeposit,
       tokensData,
-      balance,
-      isDouble,
     ],
   )
 
@@ -309,7 +304,6 @@ function AddLiquidityWeighted({ pool }) {
                     onAmountChange={value => handleAmountChange(value, token)}
                     alowDouble
                     weight={token.weight}
-                    isCheckError={isCheckError}
                     isSmall
                     showTitle={false}
                   />
@@ -327,11 +321,7 @@ function AddLiquidityWeighted({ pool }) {
                 onAmountChange={setAmountDeposit}
                 assetsSelect={tokensData}
                 showPercent={false}
-                isInvalidAmount={
-                  (isInvalidAmount(amountDeposit) ||
-                    (isDouble ? balance.lt(amountDeposit) : Number(amountDeposit) > Number(tokenDeposit.balance))) &&
-                  isCheckError
-                }
+                isInvalidAmount={isInvalidAmount(amountDeposit)}
                 isSmall
               />
             )}

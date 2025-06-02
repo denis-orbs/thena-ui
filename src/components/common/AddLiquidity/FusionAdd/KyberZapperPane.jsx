@@ -61,7 +61,7 @@ function KyberZapperPane({
 
   const [slippage, setSlippage] = useState(0.5)
 
-  const { data } = useGetZapInRoute({
+  const { data, isFetching } = useGetZapInRoute({
     tickLower,
     tickUpper,
     poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
@@ -82,8 +82,6 @@ function KyberZapperPane({
   const addLiquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
   const _token0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
   const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
-  const [invalidAmount, setInvalidAmount] = useState(false)
-
   const estimateAPR = useEstimateAPR({
     pool: mintInfo.pool,
     poolAddress: mintInfo.poolAddress,
@@ -103,9 +101,13 @@ function KyberZapperPane({
   }, [JSON.stringify(estimateAPR), liquidityAdded])
 
   const handleKyberAddLiquidity = useCallback(() => {
-    if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {
-      setInvalidAmount(true)
-      // warnToast('Invalid Amount')
+    if (isInvalidAmount(amountIn)) {
+      warnToast('Invalid Amount')
+      return false
+    }
+
+    if (BigNumber(amountIn).gt(tokenDeposit?.balance)) {
+      warnToast('Insufficient Balance')
       return false
     }
 
@@ -136,12 +138,6 @@ function KyberZapperPane({
     tokenDeposit,
   ])
 
-  useEffect(() => {
-    if (!isInvalidAmount(amountIn) && !BigNumber(amountIn).gt(tokenDeposit?.balance) && invalidAmount === true) {
-      setInvalidAmount(false)
-    }
-  }, [amountIn, invalidAmount, tokenDeposit?.balance])
-
   return (
     <div className='!mt-4 flex flex-col md:gap-4'>
       <div className='space-y-2 md:space-y-4'>
@@ -157,7 +153,6 @@ function KyberZapperPane({
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={isToken0Wbnb || isToken1Wbnb ? [asset0, asset1, BNB] : [asset0, asset1]}
-            isInvalidAmount={invalidAmount}
           />
 
           <div
@@ -217,11 +212,11 @@ function KyberZapperPane({
       </div>
 
       <div className='flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row'>
-        <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>
         {account ? (
-          <PrimaryButton onClick={handleKyberAddLiquidity} className='w-full'>
+          <PrimaryButton disabled={isFetching || !data?.route} onClick={handleKyberAddLiquidity} className='w-full'>
             {t('Add Liquidity')}
           </PrimaryButton>
         ) : (
