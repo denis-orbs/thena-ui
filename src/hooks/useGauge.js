@@ -207,7 +207,7 @@ export const useGaugeAllHarvest = () => {
     if (gamma.size > 0) {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} Gamma pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pools`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -217,7 +217,7 @@ export const useGaugeAllHarvest = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} Ichi pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -227,7 +227,7 @@ export const useGaugeAllHarvest = () => {
     if (ichiSingleSided.size > 0) {
       ichiSingleSided.forEach(_pair => {
         transactions[`ichi-v2-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} Ichi V2 pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Single Sided Vault`,
           status: TXN_STATUS.START,
           hash: null,
         }
