@@ -23,6 +23,7 @@ import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 function StakedItem({ position, isXlDown }) {
@@ -209,12 +210,15 @@ function StakedItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        currentPrice={currentPrice}
+        minPrice={priceLower}
+        maxPrice={priceUpper}
+        positionType={position.type}
+        apr={position.gauge.apr}
+      />
     ),
-    [position.gauge.apr, t],
+    [currentPrice, priceLower, priceUpper, position.type, position.gauge.apr],
   )
 
   const valueCell = useMemo(

@@ -26,6 +26,7 @@ import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 export const fetchManualInfo = async (account, tokenId, chainId, version) => {
@@ -222,12 +223,22 @@ function ManualItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        positionType={position.type}
+        currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+        minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+        maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
+        apr={position.apr}
+      />
     ),
-    [position.apr, t],
+    [
+      _fusion?.token0Price,
+      _position?.token0PriceLower,
+      _position?.token0PriceUpper,
+      position.type,
+      position.apr,
+      tickAtLimit,
+    ],
   )
 
   const valueCell = useMemo(
@@ -296,15 +307,15 @@ function ManualItem({ position, isXlDown }) {
 
         {version === 3 && (
           <>
+            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+              {t('Add')}
+            </EmphasisButton>
             <EmphasisButton
               className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
               disabled={feesInUsd.isZero()}
               onClick={() => setClaimPopup(true)}
             >
               {t('Claim')}
-            </EmphasisButton>
-            <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-              {t('Add')}
             </EmphasisButton>
           </>
         )}
