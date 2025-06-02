@@ -20,6 +20,11 @@ import TokenModal from '@/modules/TokenModal'
 import AssetDropdown from '../dropdown/AssetDropdown'
 import Skeleton from '../skeleton'
 
+/**
+ * @param {Object} props
+ * @param {import('bignumber.js').BigNumber} maxBalance, ether value
+ * @param {string} props.amount, ether value
+ */
 export function TokenAmountInput({
   asset,
   setAsset,
@@ -33,7 +38,6 @@ export function TokenAmountInput({
   assetsSelect,
   classNames,
   isSmall = false,
-  isInvalidAmount = false,
   isSwapChainLink = false,
 }) {
   const assets = useAssets()
@@ -118,6 +122,16 @@ export function TokenAmountInput({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapperSelectRef?.current, windowSize])
+
+  const isInvalidAmount = useMemo(() => {
+    if (amount === '' || amount === '0') return false
+    if (Number(amount) === Number.isNaN || Number(amount) < 0) return true
+    if (max) {
+      if (max.lt(amount)) return true
+    }
+
+    return false
+  }, [amount, max])
 
   return (
     <div className='flex flex-col gap-2'>

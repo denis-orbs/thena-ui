@@ -24,6 +24,7 @@ import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 function FarmingItem({ position, isXlDown }) {
@@ -194,12 +195,24 @@ function FarmingItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+        minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+        maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
+        positionType={position.type}
+        apr={position.apr}
+        title={position.title}
+      />
     ),
-    [position.apr, t],
+    [
+      _fusion?.token0Price,
+      _position?.token0PriceLower,
+      _position?.token0PriceUpper,
+      position.type,
+      position.apr,
+      position.title,
+      tickAtLimit,
+    ],
   )
 
   const valueCell = useMemo(
@@ -293,15 +306,15 @@ function FarmingItem({ position, isXlDown }) {
           {t('Burn')}
         </EmphasisButton>
 
+        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+          {t('Add')}
+        </EmphasisButton>
+
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
-        </EmphasisButton>
-
-        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-          {t('Add')}
         </EmphasisButton>
 
         <PrimaryButton

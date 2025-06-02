@@ -182,7 +182,7 @@ function Voting() {
           <>
             <div className='flex h-[215px] flex-col justify-end gap-4 pb-11 text-center'>
               <NewTextHeading className='text-gradient-primary-b text-5xl md:text-5xl'>
-                {account ? `$ ${formatAmount(totalRewards)}` : `$ ${formatAmount(chartData?.revenueData ?? 0, true)}`}
+                $ {formatAmount(chartData?.revenueData ?? 0, true)}
               </NewTextHeading>
               <NewTextHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextHeading>
             </div>

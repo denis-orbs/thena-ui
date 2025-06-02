@@ -17,7 +17,7 @@ import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
-import { cn, isInvalidAmount } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
@@ -144,15 +144,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
   const wbnbBalance = useCurrencyBalance(WBNB[networkId])
 
-  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
-
-  const { errorMessage, errorCode } = useMemo(
-    () => ({
-      errorMessage: mintInfo.errorMessage,
-      errorCode: mintInfo.errorCode,
-    }),
-    [mintInfo.errorMessage, mintInfo.errorCode],
-  )
+  const errorMessage = useMemo(() => mintInfo.errorMessage, [mintInfo.errorMessage])
 
   const { handleAddGamma, pending } = useAddGamma()
   const dispatch = useDispatch()
@@ -200,34 +192,18 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, price])
 
   const onAddLiquidity = useCallback(() => {
-    if (
-      errorCode === 3 ||
-      errorCode === 4 ||
-      errorCode === 5 ||
-      isInvalidAmount(amountA.toExact()) ||
-      isInvalidAmount(amountB.toExact())
-    ) {
-      setCheckIsInvalid(true)
-      return
-    }
     if (errorMessage) {
       warnToast(errorMessage, 'warn')
       return
     }
     handleAddGamma({ amountA, amountB, amountToWrap, gammaPair: strategy, slippage }, onShowModalSuccess)
-  }, [amountA, amountB, amountToWrap, handleAddGamma, onShowModalSuccess, slippage, strategy, errorCode, errorMessage])
+  }, [amountA, amountB, amountToWrap, handleAddGamma, onShowModalSuccess, slippage, strategy, errorMessage])
 
   return (
     <div>
       <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
       <div className='flex flex-col'>
-        <EnterAmounts
-          currencyA={baseCurrency}
-          currencyB={quoteCurrency}
-          mintInfo={mintInfo}
-          isSmall={isSmall}
-          checkIsInvalid={checkIsInvalid}
-        />
+        <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} isSmall={isSmall} />
 
         {/* <div className='mt-5 flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
