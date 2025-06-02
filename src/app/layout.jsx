@@ -52,9 +52,9 @@ export const revalidate = 30
 
 const metaCrmConfig = {
   'data-entity-id': '64df0a122effea1f2889adcc',
-  integrity: 'sha384-cL8ja0GhUaNHKs9QNukh3MGvH2oD91vADMkhcQz0aCZnsf83F4DciXdFcMeki4qi',
-  apikey: 'n4crf9vaq9',
-  ecosystem: 'EVM',
+  'data-api-key': 'n4crf9vaq9',
+  'data-eco-systems': '{"evm":true}',
+  integrity: 'sha384-LkepA/fAsOX6JggmmktPy4V6KRGi3EikCz4BG7xdtZ57IlczJNRzUz6L/j4+97wD',
 }
 
 export default function RootLayout({ children }) {
@@ -63,7 +63,7 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <head>
         <script
-          src='https://attribution.metacrm.inc/tracking-1-2-4.js'
+          src='https://attribution.metacrm.inc/tracking-1-3-0.js'
           id='metacrm-tracking'
           crossOrigin='anonymous'
           {...metaCrmConfig}
