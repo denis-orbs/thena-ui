@@ -84,7 +84,7 @@ export function UserInfo({ userInfo, following, followers }) {
 
   return (
     <>
-      <Box className='space-y-4'>
+      <Box className='flex flex-col gap-4'>
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
@@ -154,7 +154,7 @@ export function UserInfo({ userInfo, following, followers }) {
               </div>
             </div>
             {isOwnProfile && !userInfo.usernameNfts.length && (
-              <Box className='border-primary-800 bg-primary-950 flex items-center justify-between space-x-2 border p-2 pl-3 lg:p-2 lg:pl-3'>
+              <Box className='border-primary-800 bg-primary-950 flex items-center justify-between gap-2 border p-2 pl-3 lg:p-2 lg:pl-3'>
                 <InfoIcon className='stroke-primary-600 h-4 w-4' />
                 <TextHeading className='text-base'>
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}

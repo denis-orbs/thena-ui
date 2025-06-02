@@ -89,7 +89,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
   }, [dataUpdate.nameColor, isAdmin])
 
   return (
-    <div className='flex flex-col space-y-10 pt-10'>
+    <div className='flex flex-col gap-10 pt-10'>
       <div>
         <Link href={isAdmin ? '/arena/admin' : '/arena/profile'}>
           <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
@@ -99,7 +99,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
       </div>
       <TextHeading className='text-3xl'>{t('Edit Profile')}</TextHeading>
 
-      <Box className='space-y-10'>
+      <Box className='flex flex-col gap-10'>
         {!!userInfo?.usernameNfts?.length && (
           <SelectUserName dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
         )}

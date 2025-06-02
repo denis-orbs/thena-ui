@@ -89,11 +89,11 @@ function Updates() {
                       }}
                     >
                       {item.image && (
-                        <div className='flex justify-center overflow-hidden rounded-sm'>
+                        <div className='flex justify-center overflow-hidden rounded-xs'>
                           <HomeImage
                             alt='blog'
                             src={item.image}
-                            className='h-[250px] w-auto transform rounded-sm transition-all duration-300 ease-linear group-hover:scale-110'
+                            className='h-[250px] w-auto !max-w-[27rem] transform rounded-xs transition-all duration-300 ease-linear group-hover:scale-110'
                           />
                         </div>
                       )}

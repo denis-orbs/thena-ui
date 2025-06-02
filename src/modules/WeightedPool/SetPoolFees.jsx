@@ -37,7 +37,7 @@ export default function SetPoolFees({ fees, setFees }) {
   const isCustomFee = useMemo(() => fees !== null && fees !== 0.1 && fees !== 0.3 && fees !== 1, [fees])
 
   return (
-    <div className='space-y-2 md:space-y-4'>
+    <div className='flex flex-col gap-2 md:gap-4'>
       <div>
         <div className='flex flex-row items-center justify-between'>
           <NewTextSubHeading>{t('Set Pool Fees')}</NewTextSubHeading>

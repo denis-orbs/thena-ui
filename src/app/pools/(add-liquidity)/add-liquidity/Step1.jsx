@@ -147,7 +147,7 @@ export default function Step1() {
   )
 
   return (
-    <div className='space-y-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:space-y-6'>
+    <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 xl:gap-8'>
         <PoolGroupIcon className='h-9 w-9 lg:h-12 lg:w-20' />
         <NewTextHeading className='max-lg:text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
@@ -175,7 +175,7 @@ export default function Step1() {
             </EmphasisButton>
           </div>
         </div>
-        <div className='w-1/2 space-y-4 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
+        <div className='flex w-1/2 flex-col gap-4 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
           <div className='flex flex-col gap-2'>
             <TextHeading className='leading-5'>{t('Concentrated Liquidity')}</TextHeading>
             <Paragraph className='text-sm! font-normal'>{t('Conc Desc')}</Paragraph>

@@ -25,7 +25,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
 
   return (
     <>
-      <Box className='space-y-4'>
+      <Box className='flex flex-col gap-4'>
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>

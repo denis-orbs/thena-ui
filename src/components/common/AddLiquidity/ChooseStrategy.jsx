@@ -262,7 +262,7 @@ export default function ChooseStrategy({
               {NARROW_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-4',
                     }}
@@ -286,7 +286,7 @@ export default function ChooseStrategy({
     <div className={cn('inline-flex w-full flex-col gap-5')}>
       <div className='flex-6'>
         {!position && (
-          <div className='space-y-2 md:space-y-4'>
+          <div className='flex flex-col gap-2 md:gap-4'>
             <StrategyTitle
               strategyCount={strategyAutoData.length}
               isAutomatic={isAutomatic}

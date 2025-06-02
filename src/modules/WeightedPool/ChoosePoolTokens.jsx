@@ -85,8 +85,8 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
   }, [finalListTokens, setTokensSelect])
 
   return (
-    <div className='w-full space-y-8'>
-      <div className='space-y-2 lg:space-y-4'>
+    <div className='flex w-full flex-col gap-8'>
+      <div className='flex flex-col gap-2 lg:gap-4'>
         <NewTextSubHeading>{t('Choose Pool Tokens')}</NewTextSubHeading>
         <div className='grid h-9 grid-cols-7 rounded-lg bg-neutral-800 p-1 lg:h-11'>
           {[2, 3, 4, 5, 6, 7, 8].map(value => (

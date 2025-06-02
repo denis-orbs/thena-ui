@@ -104,7 +104,7 @@ function PairStrategy({ pair }) {
               {NARROW_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-6',
                     }}

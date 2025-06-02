@@ -22,7 +22,7 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
         'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
         'outline-2 outline-offset-4 outline-transparent outline-solid',
-        'cursor-pointer rounded-sm transition-all duration-150 ease-out',
+        'cursor-pointer rounded-xs transition-all duration-150 ease-out',
         'active:outline-focus text-sm',
         active && 'bg-neutral-800',
         disabled && 'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',

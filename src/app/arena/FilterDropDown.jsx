@@ -117,7 +117,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
             itemClassName='text-sm uppercase'
           />
         </div>
-        <div className='my-2 flex items-center justify-between space-x-2.5'>
+        <div className='my-2 flex items-center justify-between gap-2.5'>
           <span className='whitespace-nowrap text-white'>{t('Sort By')}</span>
           <Dropdown
             className='w-full lg:w-[200px]'
@@ -128,7 +128,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
             setSelected={ele => setFilter({ ...filter, sortBy: ele.label })}
           />
         </div>
-        <div className='my-2 flex items-center justify-between space-x-2.5'>
+        <div className='my-2 flex items-center justify-between gap-2.5'>
           <span className='whitespace-nowrap text-white'>{t('Show')}</span>
           {isLoading ? (
             <Loading />

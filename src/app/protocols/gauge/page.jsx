@@ -57,7 +57,7 @@ export default function GaugePage() {
                 <div className='flex items-center gap-3'>
                   {selected.type === PAIR_TYPES.WEIGHTED ? (
                     <ThreeIconGroup
-                      className='-space-x-2'
+                      className='*:not-first:-ml-2'
                       classNames={{
                         image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                       }}
@@ -67,7 +67,7 @@ export default function GaugePage() {
                     />
                   ) : (
                     <IconGroup
-                      className='-space-x-2'
+                      className='*:not-first:-ml-2'
                       classNames={{
                         image: 'outline-2 w-8 h-8',
                       }}

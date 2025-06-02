@@ -44,7 +44,7 @@ export default function NextRewards({ rewards }) {
         id: (
           <div className='flex items-center gap-3'>
             <IconGroup
-              className='-space-x-2'
+              className='*:not-first:-ml-2'
               classNames={{
                 image: 'outline-2 w-7 h-7',
               }}

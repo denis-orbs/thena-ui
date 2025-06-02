@@ -30,7 +30,7 @@ function AutomationContractDetail({ tokenId }) {
 
   if (isLoading || !veTHE || !contractData.address || !tokenId || isHistoryLoading) return <Loading />
   return (
-    <div className='space-y-11'>
+    <div className='flex flex-col gap-11'>
       <Head veTHE={veTHE} />
       <WarningWithAction contractData={contractData} mutateAutomationData={mutateAutomationData} />
       <LockDetails contractData={contractData} veTHE={veTHE} />

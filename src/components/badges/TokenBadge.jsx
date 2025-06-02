@@ -47,7 +47,7 @@ export default function TokenBadge({
         <>
           {isDouble ? (
             <IconGroup
-              className='-space-x-2'
+              className='*:not-first:-ml-2'
               classNames={{
                 image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
               }}

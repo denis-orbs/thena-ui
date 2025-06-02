@@ -54,7 +54,7 @@ export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' 
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <IconGroup
-            className='-space-x-2'
+            className='*:not-first:-ml-2'
             classNames={{ image: 'w-8 h-8 outline-2' }}
             logo1={pool.token0.logoURI}
             logo2={pool.token1.logoURI}

@@ -29,7 +29,7 @@ function EditVeTHEAutomationPage({ params }) {
   if (isLoading || !id || !contractData.address || !isLoaded) return <Loading />
   return (
     <LayoutWithBackButton backUrl='/dashboard/lock'>
-      <div className='container mx-auto space-y-10'>
+      <div className='container mx-auto flex flex-col gap-10'>
         <div>
           <TextHeading className='font-archia text-3xl font-semibold text-neutral-50 lg:text-[40px]'>
             {t('Edit Automation Contract')} {id}

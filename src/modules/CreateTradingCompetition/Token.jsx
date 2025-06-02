@@ -116,7 +116,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           tooltip='Competition Type Tooltip'
           required
         />
-        <div className='mt-3 flex items-center space-x-3'>
+        <div className='mt-3 flex items-center gap-3'>
           <button
             onClick={() => {
               setData({
@@ -213,7 +213,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
         >
           <div className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pr-8 pl-4 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'>
             {data.competitionRules?.winningToken ? (
-              <div className='flex items-center space-x-1.5'>
+              <div className='flex items-center gap-1.5'>
                 <CircleImage
                   src={data.competitionRules.winningToken.logoURI}
                   width={20}
@@ -234,7 +234,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
       {isSpotType && (
         <div className='mt-3'>
           <LabelTooltip id='deposit-type' label='Deposit Type' showInfoIcon tooltip='Deposit Type tooltip' required />
-          <div className='mt-3 flex items-center space-x-3'>
+          <div className='mt-3 flex items-center gap-3'>
             <button
               onClick={() => {
                 setData({
@@ -328,7 +328,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }}
               TrailingButton={
                 data.competitionRules.winningToken ? (
-                  <div className='absolute right-4 flex items-center space-x-1.5'>
+                  <div className='absolute right-4 flex items-center gap-1.5'>
                     <TextSubHeading>
                       $
                       {formatAmount(
@@ -349,7 +349,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
         </div>
       )}
       {!isSpotType && (
-        <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-y-0 md:space-x-6'>
+        <div className='mt-3 flex flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
           <div className='flex:col flex h-[50px] w-full items-center'>
             <Toggle
               checked={isStartingBalance}
@@ -391,7 +391,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                 }}
                 TrailingButton={
                   data.competitionRules.winningToken ? (
-                    <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <div className='absolute right-4 flex items-center gap-1.5'>
                       <TextSubHeading>
                         $
                         {formatAmount(data.competitionRules.startingBalance * data.competitionRules.winningToken.price)}
@@ -411,7 +411,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
       {isSpotType && (
         <>
           <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip='Win Type tooltip' required />
-          <div className='mt-3 flex items-center space-x-3'>
+          <div className='mt-3 flex items-center gap-3'>
             <button
               className={`py-[8.4px] pl-6 text-white uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
                 winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'

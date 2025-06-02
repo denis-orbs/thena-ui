@@ -62,7 +62,7 @@ function RegisterAutomation({
   )
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <div className='flex flex-row justify-between'>
         <TextHeading>{t('Minimum Link Balance needed')}</TextHeading>
         <div className='flex flex-row items-center gap-2'>

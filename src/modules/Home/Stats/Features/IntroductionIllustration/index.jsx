@@ -135,7 +135,7 @@ export function IntroductionIllustration() {
       </FeatureCard>
       <FeatureCard className='relative col-start-4 col-end-13 row-start-5 row-end-13 h-fit min-w-[240px] overflow-hidden bg-black/25 bg-[linear-gradient(0deg,rgba(0,0,0,0.25),rgba(0,0,0,0.25))] backdrop-blur-3xl before:bg-[linear-gradient(188.68deg,rgba(220,1,212,0.45)_5.6%,rgba(206,79,198,0)_92.91%)] before:duration-500 group-hover:before:opacity-100 after:bg-[linear-gradient(129.41deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_38.31%)] lg:before:opacity-0'>
         <div className='absolute top-0 right-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600/45 blur-[220px] filter lg:block' />
-        <div className='relative flex flex-col space-y-1.5'>
+        <div className='relative flex flex-col gap-1.5'>
           <MotionSwapableCoin
             id='swappable-coin-1'
             coin='BNB'

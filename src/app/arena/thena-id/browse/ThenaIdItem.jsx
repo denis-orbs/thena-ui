@@ -41,7 +41,7 @@ function ThenaIdItem({ item }) {
               <UserProfileCard user={item.owner} enableFollow={false} showVerified={item.owner.isVerified} />
             </div>
           ) : (
-            <div className='flex items-center justify-start space-x-2'>
+            <div className='flex items-center justify-start gap-2'>
               <TextHeading>
                 {t('Mint For')} {formatAmount(item.cost)} {USDTAsset?.symbol}
               </TextHeading>

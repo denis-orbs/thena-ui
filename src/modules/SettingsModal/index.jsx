@@ -107,11 +107,11 @@ function LiquidityHubSettings() {
 
   return (
     <div className='w-full'>
-      <div className='flex items-center justify-between space-x-1.5'>
+      <div className='flex items-center justify-between gap-1.5'>
         <p className='text-lg font-medium'>Liquidity Hub</p>
         <Toggle checked={liquidityHubEnabled} onChange={updateLiquidityHubEnabled} toggleId='liquidityHub' label='' />
       </div>
-      <div className='mt-[9px] flex items-center space-x-[9px]'>
+      <div className='mt-[9px] flex items-center gap-2.5'>
         <p className='inline text-sm text-neutral-300'>
           {locale === LOCALES.en ? (
             <>

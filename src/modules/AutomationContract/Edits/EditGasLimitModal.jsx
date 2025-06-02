@@ -24,7 +24,7 @@ function EditGasLimitModal({ contract, popup, setPopup }) {
       title='Edit gas limit'
     >
       <ModalBody>
-        <div className='space-y-3'>
+        <div className='flex flex-col gap-3'>
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Contract Name')}</Paragraph>
             <TextHeading>{t('veTHE Contract [veTHEId]', { veTHEId })}</TextHeading>

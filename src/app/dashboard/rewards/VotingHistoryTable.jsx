@@ -156,7 +156,7 @@ export default function VotingHistoryTable({ userVotes }) {
             ) : (
               <>
                 <IconGroup
-                  className='-space-x-1'
+                  className='*:not-first:-ml-1'
                   classNames={{
                     image: 'outline-4 w-7 h-7',
                   }}
@@ -178,7 +178,7 @@ export default function VotingHistoryTable({ userVotes }) {
             ) : (
               <>
                 <IconGroup
-                  className='-space-x-1'
+                  className='*:not-first:-ml-1'
                   classNames={{
                     image: 'outline-4 w-7 h-7',
                   }}

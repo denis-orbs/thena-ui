@@ -118,7 +118,7 @@ function BalanceInput({
             >
               {maxBalance ? (
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-6 h-6',
                   }}
@@ -138,7 +138,7 @@ function BalanceInput({
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading className='space-x-2'>
+          <TextSubHeading className='flex gap-2'>
             <span>
               {t('Balance')}:{formatAmount(max)}
             </span>

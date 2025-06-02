@@ -110,7 +110,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
               header: 'border-none border-transparent flex',
               cellItem: 'p-2 lg:p-2',
               cellItemLabel: 'hidden',
-              tableContainer: 'lg:space-y-4 space-y-2',
+              tableContainer: 'flex flex-col gap-2 lg:gap-4',
               rowItem: 'border-none',
             }}
             sortOptions={sortOptions}

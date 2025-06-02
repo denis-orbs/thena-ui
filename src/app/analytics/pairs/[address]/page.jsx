@@ -52,7 +52,7 @@ export default function PairDetailPage({ params }) {
                 <GroupIconTokens
                   classNames={{
                     image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                    rows: '-space-x-2',
+                    rows: '*:not-first:-ml-2',
                   }}
                   width={40}
                   height={40}
@@ -60,7 +60,6 @@ export default function PairDetailPage({ params }) {
                 />
               ) : (
                 <IconGroup
-                  className='-space-x-4'
                   classNames={{
                     image: 'outline-4 w-8 lg:w-16',
                   }}

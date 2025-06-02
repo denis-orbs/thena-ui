@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 export function SelectorPoolTypeMini({ data, className }) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('flex flex-col gap-4', className)}>
       {data.map((ele, idx) => (
         <div key={`selector-${idx}`} onClick={() => ele.onClickHandler()}>
           {ele.content}

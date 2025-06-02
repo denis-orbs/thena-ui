@@ -15,7 +15,7 @@ function SideBarCreateWeighted({ tokensAndWeights, fees, step }) {
     }
     case 2: {
       return (
-        <div className='hidden space-y-2 lg:block'>
+        <div className='hidden flex-col gap-2 lg:flex'>
           <Box className='flex flex-col gap-2'>
             <TextHeading className='font-archia text-xl font-semibold'>{t('Pool Fees')}</TextHeading>
             <Paragraph className='text-neutral-400'>{t('Pool [fees] sidebar description', { fees })}</Paragraph>

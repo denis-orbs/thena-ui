@@ -152,7 +152,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-4'>
         {(tokensAndWeights || []).map((item, index) => (
-          <div className='space-y-2' key={item.token.address}>
+          <div className='flex flex-col gap-2' key={item.token.address}>
             <InputTokenMemo
               key={`${item?.token?.address}_${index}`}
               token={item.token}

@@ -60,7 +60,7 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
               )}
             >
               <IconGroup
-                className='-space-x-2'
+                className='*:not-first:-ml-2'
                 classNames={{
                   image: 'outline-2 w-6 h-6',
                 }}

@@ -112,7 +112,7 @@ export function WrapLayout({ children, params }) {
         <Box
           onMouseOver={() => setShowIconCloseBanner(true)}
           onMouseLeave={() => setShowIconCloseBanner(false)}
-          className='border-primary-800 bg-primary-950 relative mb-10 flex flex-col space-y-2 border'
+          className='border-primary-800 bg-primary-950 relative mb-10 flex flex-col gap-2 border'
         >
           <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
           <TextHeading className='text-base font-normal'>

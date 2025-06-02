@@ -8,7 +8,13 @@ import CircleImage from '../image/CircleImage'
 
 function NewIconGroup({ logo1, logo2, className, classNames, size = 'title' }) {
   return (
-    <div className={cn('flex -space-x-1 lg:-space-x-2', size === 'title' && '-space-x-2 lg:-space-x-4', className)}>
+    <div
+      className={cn(
+        'flex *:not-first:-ml-1 lg:*:not-first:-ml-2',
+        size === 'title' && '*:not-first:-ml-2 lg:*:not-first:-ml-4',
+        className,
+      )}
+    >
       <CircleImage
         className={cn(
           'size-7 rounded-full outline-1 outline-[#1C2027] outline-solid md:size-12 md:outline-2',

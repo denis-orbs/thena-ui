@@ -69,7 +69,7 @@ function Popover({ children, triggerElement, trigger = 'click', position = 'righ
       <div
         hidden={!show}
         className={cn(
-          'absolute z-20 mt-1 h-fit w-full min-w-fit flex-col items-start justify-start gap-1 space-y-3 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow-sm transition-all xl:p-4',
+          'absolute z-20 mt-1 h-fit w-full min-w-fit flex-col items-start justify-start gap-3 rounded-md border border-neutral-600 bg-neutral-800 p-3 shadow-xs transition-all xl:p-4',
           positionClass,
         )}
       >

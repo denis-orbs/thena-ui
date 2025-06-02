@@ -92,7 +92,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
   }, [copied])
 
   return (
-    <div className='flex items-center justify-end space-x-2'>
+    <div className='flex items-center justify-end gap-2'>
       {isOwnProfile && !!currentUserInfo?.usernameNfts?.length && (
         <Link href='/arena/profile/edit'>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>

@@ -76,13 +76,13 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
             id={idCanvas}
             ref={childRef}
             className={cn(
-              "relative h-[576px] w-[1024px] origin-top-left rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover p-3 xl:p-4",
+              "relative h-[576px] w-[1024px] origin-top-left rounded-xl border-4 border-blue-400 bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover p-3 xl:p-4",
               isView ? '' : 'fixed top-[100vh] left-[100vh] hidden',
               isActive ? 'box-sha box-border rounded-xl border-10 border-white shadow-2xl' : '',
             )}
           >
             <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl'>
-              <div className='flex justify-center -space-x-10 rtl:space-x-reverse'>
+              <div className='flex justify-center gap-10 rtl:flex-row-reverse'>
                 {(tokens || []).slice(0, 4).map(item => (
                   <Image
                     key={item?.address}

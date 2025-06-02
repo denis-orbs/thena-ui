@@ -28,7 +28,7 @@ function StakeAndEarnCard({ className, coinPair, arr, netReturn, tvl, netReturn3
         <Paragraph className='text-xs font-semibold text-white'>{coinPair.name}</Paragraph>
       </div>
       <div className='mt-4 border-t border-t-[#281B2D] pt-4'>
-        <div className='flex items-center justify-between space-y-2'>
+        <div className='flex flex-col items-center justify-between gap-2'>
           <Paragraph className='text-[10px] text-white'>ARR</Paragraph>
           <Paragraph className='text-xs font-medium text-[#26E222]'>{arr}%</Paragraph>
         </div>

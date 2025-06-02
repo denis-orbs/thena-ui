@@ -207,7 +207,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <WalletIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Connect your wallet')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Connect Description')}</Paragraph>
               </div>
@@ -216,7 +216,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <BankIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Stake theNFT')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Select Description')}</Paragraph>
               </div>
@@ -225,7 +225,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <PiggySecondIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Earn Income')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Let THE rewards flow in')}</Paragraph>
               </div>

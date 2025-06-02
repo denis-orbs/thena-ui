@@ -143,7 +143,7 @@ function NewListings({
               <GroupIconTokens
                 classNames={{
                   image: cn('outline-2', 'size-7'),
-                  rows: '-space-x-2',
+                  rows: '*:not-first:-ml-2',
                   toolTip: 'hidden',
                 }}
                 width={28}

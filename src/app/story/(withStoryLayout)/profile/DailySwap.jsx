@@ -29,7 +29,7 @@ export function DailySwap({ dailySwaps, userSwaps }) {
     return lastSwap.isBefore(currentDate)
   }, [userSwaps, currentDate])
   return (
-    <div className='border-gradient-secondary space-y-4 rounded-xl p-px'>
+    <div className='border-gradient-secondary flex flex-col gap-4 rounded-xl p-px'>
       <Box>
         <div className='mb-3 flex flex-col justify-between lg:flex-row'>
           <div>

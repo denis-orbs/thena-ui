@@ -80,7 +80,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
   }, [executionTime, updateSetting])
 
   return (
-    <div className='space-y-4 lg:space-y-6'>
+    <div className='flex flex-col gap-4 lg:gap-6'>
       <div className='flex flex-row items-center gap-1'>
         <Toggle
           checked={createData?.settings?.isClaimEveryWeek}

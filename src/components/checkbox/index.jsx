@@ -10,7 +10,7 @@ function CheckBox({ className, checked, setChecked = () => {}, ...rest }) {
       className={cn(
         'h-[21px] w-[21px] border border-transparent p-0.5',
         'outline-2 outline-offset-2 outline-transparent outline-solid',
-        'rounded-sm transition-all duration-150 ease-out',
+        'rounded-xs transition-all duration-150 ease-out',
         'active:outline-focus disabled:bg-neutral-700',
         checked && 'bg-primary-600 hover:bg-primary-700',
         !checked && 'border-neutral-600 hover:border-neutral-400',

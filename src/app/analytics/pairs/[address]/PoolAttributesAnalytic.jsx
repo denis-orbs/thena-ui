@@ -19,7 +19,7 @@ function TokenAnalytics({ pair }) {
       )}
     >
       {(tokens || []).map((token, index) => (
-        <div className='space-y-4 rounded-md bg-neutral-900 p-4' key={token.address}>
+        <div className='flex flex-col gap-4 rounded-md bg-neutral-900 p-4' key={token.address}>
           <div className='flex justify-between gap-2'>
             <div className='flex items-center gap-2'>
               <CircleImage className='size-7' alt='weighted token logo' src={token.logoURI} />
@@ -29,7 +29,7 @@ function TokenAnalytics({ pair }) {
               ${formatAmount(parseFloat(token.reserve) * token.price)}
             </TextHeading>
           </div>
-          <div className='space-y-1'>
+          <div className='flex flex-col gap-1'>
             <div className='flex justify-between gap-4'>
               <TextSubHeading className='text-xs'>{`${t('Pool')} %`}</TextSubHeading>
               <div className='flex gap-2'>

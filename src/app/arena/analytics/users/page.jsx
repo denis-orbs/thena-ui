@@ -12,7 +12,7 @@ function UserAnalyticPage() {
   const t = useTranslations()
 
   return (
-    <div className='mt-10 space-y-4'>
+    <div className='mt-10 flex flex-col gap-4'>
       <Link href='/arena/analytics'>
         <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
           {t('Back')}

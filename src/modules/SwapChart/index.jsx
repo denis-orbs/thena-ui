@@ -110,7 +110,7 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
           {asset0 && asset1 ? (
             <div className='flex items-center gap-2'>
               <IconGroup
-                className='-space-x-1.5'
+                className='*:not-first:-ml-1.5'
                 classNames={{
                   image: 'outline-2 w-6 h-6',
                 }}

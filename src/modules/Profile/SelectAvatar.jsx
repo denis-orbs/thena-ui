@@ -48,7 +48,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
   const isUseNFTAvatar = useMemo(() => userNFTs?.find(nft => nft?.meatadata?.image === avatar), [userNFTs, avatar])
 
   return (
-    <div className='flex-2 items-center justify-start space-x-4'>
+    <div className='flex-2 items-center justify-start gap-4'>
       <div className='custom-scroll mb-6 flex max-w-52 items-center gap-2 overflow-x-auto py-2 pb-5 sm:max-w-4xl'>
         {!avatar && (
           <NextImage

@@ -235,7 +235,7 @@ function AvailablePage() {
           </Link>
         ),
         cost: (
-          <div className='flex items-center justify-center space-x-2'>
+          <div className='flex items-center justify-center gap-2'>
             {USDTAsset?.logoURI && (
               <Image
                 alt='token'
@@ -263,7 +263,8 @@ function AvailablePage() {
         <h2>{t('THENA ID')}</h2>
       </div>
       <MenuTab />
-      <div className='mt-6 flex flex-row items-center justify-between gap-3 space-y-2'>
+      {/* NEED TO CHECK THIS FIRST */}
+      <div className='mt-6 flex flex-col items-center justify-between gap-2 md:flex-row md:gap-3'>
         <SearchInput
           className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}

@@ -158,7 +158,7 @@ export function TokenAmountCard({
                 >
                   {isDouble ? (
                     <IconGroup
-                      className='-space-x-2'
+                      className='*:not-first:-ml-2'
                       classNames={{
                         image: 'outline-2 w-6 h-6',
                       }}
@@ -176,7 +176,7 @@ export function TokenAmountCard({
               <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'text-xs!')}>
                 ${formatAmount(value * price)}
               </TextSubHeading>
-              <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'text-xs!')}>
+              <TextSubHeading className={cn('flex gap-4 text-nowrap text-neutral-500', isSmall && 'text-xs!')}>
                 <span>
                   {t('Balance')}: {balanceString}
                 </span>

@@ -79,7 +79,7 @@ function VotingChart({ data = [], className }) {
           <GroupIconTokens
             classNames={{
               image: 'outline-2 w-8 h-8',
-              rows: '-space-x-2',
+              rows: '*:not-first:-ml-2',
               toolTip: 'hidden',
             }}
             width={32}

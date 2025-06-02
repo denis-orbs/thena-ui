@@ -74,7 +74,7 @@ export function FutureOfTrading() {
   const t = useTranslations()
 
   return (
-    <div className='mx-auto my-12 flex max-w-[1171px] flex-col items-center justify-center lg:my-[150px] xl:flex-row xl:items-start xl:space-x-[151px]'>
+    <div className='mx-auto my-12 flex max-w-[1171px] flex-col items-center justify-center lg:my-[150px] xl:flex-row xl:items-start xl:gap-[9.375rem]'>
       <div className='mt-24 flex w-full max-w-[313px] flex-col items-center justify-center lg:mt-[100px] lg:max-w-[368px] xl:items-start xl:justify-start'>
         <Heading
           heading={t('Collaborative Liquidity Layer')}
@@ -104,7 +104,7 @@ export function FutureOfTrading() {
                     setTradingData('Tokenomics')
                   }}
                   className={cn(
-                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center space-x-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
+                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center gap-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
                     tradingData !== 'Tokenomics' &&
                       `${
                         tradingData === 'THE system'
@@ -199,7 +199,7 @@ export function FutureOfTrading() {
                     setTradingData('Protocols')
                   }}
                   className={cn(
-                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center space-x-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
+                    'flex min-w-[164px] shrink-0 cursor-pointer items-center justify-center gap-2 px-12 py-4 whitespace-nowrap md:w-1/2 md:min-w-fit xl:px-0',
                     tradingData !== 'Protocols' &&
                       `${
                         tradingData === 'THE system' ? 'rounded-bl-none' : 'rounded-bl-2xl'
@@ -286,7 +286,7 @@ export function FutureOfTrading() {
                   )}
                   {tradingData === 'Tokenomics' && <TokenomicsIllustration />}
                   {tradingData === 'Protocols' && (
-                    <div className='mt-5 flex w-full flex-col lg:space-y-6'>
+                    <div className='mt-5 flex w-full flex-col lg:gap-6'>
                       {prtocolsData.map((item, idx) => (
                         <div
                           key={idx}
@@ -298,10 +298,7 @@ export function FutureOfTrading() {
                           )}
                         >
                           <div
-                            className={cn(
-                              idx > 0 ? 'mt-7 lg:mt-0' : '',
-                              'flex items-center space-x-12 xl:space-x-[60px]',
-                            )}
+                            className={cn(idx > 0 ? 'mt-7 lg:mt-0' : '', 'flex items-center gap-12 xl:gap-[3.75rem]')}
                           >
                             <div className='relative w-12! xl:w-full xl:min-w-[78px]'>
                               <div className='absolute -top-1 right-0 h-6 w-6 bg-[rgba(235,149,231,0.25)] opacity-[0.45] blur-md filter lg:-right-4 lg:w-[42px]' />

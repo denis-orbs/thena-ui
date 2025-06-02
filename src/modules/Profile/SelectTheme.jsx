@@ -39,7 +39,7 @@ export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
       {LIST_THEME.map((theme, index) => (
         <Box
           key={theme.src}
-          className='border-primary-800 relative flex h-20 w-36 items-center justify-between space-x-2 border p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
+          className='border-primary-800 relative flex h-20 w-36 items-center justify-between gap-2 border p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
           onClick={() => {
             if (index <= 1 || isAdmin) {
               setThemeChecked(theme.src)
@@ -62,7 +62,7 @@ export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
           )}
           <Image
             src={theme.src}
-            className='absolute left-[-8px] h-full w-full space-x-0'
+            className='absolute left-[-8px] h-full w-full gap-0'
             width={100}
             height={100}
             alt='theme.src'

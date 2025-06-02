@@ -110,7 +110,7 @@ export function Chart({
   }, [brushDomain, brushXScale, onBrushDomainChange, xScale])
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between gap-4 md:gap-8'>
         {label && <NewTextHeading className='text-base md:text-xl'>{t(label)}</NewTextHeading>}
 

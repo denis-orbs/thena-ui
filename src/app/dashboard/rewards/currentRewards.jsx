@@ -109,7 +109,7 @@ export default function CurrentRewards({ rewards, currentMutate, version = 3 }) 
               {pool.type !== PAIR_TYPES.WEIGHTED ? (
                 <>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-fitst:-ml-2'
                     classNames={{
                       image: 'outline-2 w-7 h-7',
                     }}

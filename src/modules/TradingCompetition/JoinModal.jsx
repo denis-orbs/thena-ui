@@ -220,7 +220,7 @@ export function JoinModal({ competition, open, onClose }) {
                 <TextHeading className='text-lg'>
                   {t(isInvalidAmount(startingBalance) ? 'Minimum Deposit to Join' : 'Required Deposit to Join')}
                 </TextHeading>
-                <div className='mt-2 flex space-x-2'>
+                <div className='mt-2 flex gap-2'>
                   <Image
                     alt={winningToken?.name}
                     src={winningToken?.logoURI}

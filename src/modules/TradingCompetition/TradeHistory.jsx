@@ -143,7 +143,7 @@ export function TradeHistory() {
 
         return {
           traded_token: (
-            <div className='flex items-center justify-between space-x-1'>
+            <div className='flex items-center justify-between gap-1'>
               <div className='flex items-center gap-1'>
                 <Image
                   alt={item.traded_token?.[0]?.symbol}

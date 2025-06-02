@@ -18,7 +18,7 @@ export default function TotalAllocated({ tokensAndWeights }) {
 
   const t = useTranslations()
   return (
-    <div className='space-y-2'>
+    <div className='flex flex-col gap-2'>
       <NewTextSubHeading>{t('Total Allocated')}</NewTextSubHeading>
       <Box>
         <PieChart

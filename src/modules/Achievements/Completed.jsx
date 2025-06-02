@@ -10,7 +10,7 @@ export function Completed({ data }) {
   const t = useTranslations()
 
   return (
-    <div className='space-y-3'>
+    <div className='flex flex-col gap-3'>
       <TextHeading>
         {t('Completed Achievements', {
           count: data.length,

@@ -70,7 +70,7 @@ export function ItemToken({
           <CircleImage src={token.logoURI} width={32} height={32} alt='thena token' />
 
           <div className='flex flex-col'>
-            <div className='flex items-center space-x-1'>
+            <div className='flex items-center gap-1'>
               <TextHeading>{token.symbol}</TextHeading>
               {token.address !== 'BNB' && (
                 <div className='flex items-center gap-1'>

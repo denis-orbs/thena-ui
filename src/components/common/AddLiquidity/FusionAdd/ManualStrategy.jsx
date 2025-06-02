@@ -126,7 +126,7 @@ function ManualStrategy({
 
   return (
     <>
-      <div className='space-y-4'>
+      <div className='flex flex-col gap-4'>
         {mintInfo.noLiquidity && (
           <div className='flex flex-col gap-4'>
             <WarningStartingPrice />
@@ -205,7 +205,7 @@ function ManualStrategy({
               <div className='flex items-center gap-1 md:gap-3'>
                 {isEarnFees ? (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-4 md:size-8',
                     }}
@@ -256,7 +256,7 @@ function ManualStrategy({
       </div>
 
       {strategy && (
-        <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <div className={cn('flex flex-col gap-2 md:gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
             <div className='mt-4 flex flex-col xl:hidden'>
               <ChartPriceRangeInput

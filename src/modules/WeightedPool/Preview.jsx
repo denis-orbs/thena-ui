@@ -45,10 +45,10 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
   const isMobile = windowSize.width < 768
 
   return (
-    <div className='max-xl:space-y-4'>
+    <div className='flex flex-col max-xl:gap-4'>
       <NewTextSubHeading className='xl:hidden'>{t('Overview')}</NewTextSubHeading>
 
-      <Box className='w-full space-y-4 p-4 max-xl:rounded-none xl:px-[42px] xl:py-8'>
+      <Box className='flex w-full flex-col gap-4 p-4 max-xl:rounded-none xl:px-[42px] xl:py-8'>
         <NewTextSubHeading className='text-4xl! text-neutral-500 max-xl:hidden'>{t('Overview')}</NewTextSubHeading>
         <div className='flex gap-4'>
           <div className='flex w-full flex-col gap-4 max-xl:w-full xl:flex-row'>

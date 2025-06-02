@@ -163,7 +163,7 @@ function StakedItem({ position, isXlDown }) {
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
-            rows: '-space-x-2',
+            rows: '*:not-first:-ml-2',
             toolTip: 'hidden',
           }}
           width={32}

@@ -65,7 +65,7 @@ export default function ConnectButton({ className }) {
   if (userInfo || account) {
     const auth = getLatestAuthType()
     return auth ? (
-      <div className={`flex items-center space-x-2 ${className}`}>
+      <div className={`flex items-center gap-2 ${className}`}>
         <EmphasisButton
           className={className}
           onClick={() => {

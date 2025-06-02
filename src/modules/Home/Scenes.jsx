@@ -276,7 +276,7 @@ function Scenes() {
               <div className='group relative z-10 overflow-hidden rounded-xl bg-transparent p-px transition-opacity after:absolute after:top-0 after:left-0 after:h-full after:w-full after:bg-linear-to-b after:from-[#BE01B7]/[0.35] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
                 <div className='relative z-20 min-h-[286px]! rounded-xl bg-[#1A0D1F]/[0.45] px-9 py-8 transition-all duration-300 ease-in-out group-hover:bg-[#1A0D1F]/[0.98]'>
                   <div className='flex items-start justify-between transition-all duration-300 ease-in-out group-hover:-mt-1'>
-                    <div className='flex items-start space-x-5'>
+                    <div className='flex items-start gap-5'>
                       <HomeImage className='h-10 w-10' alt={`profile of ${item.name}`} src={item.profilePic} />
                       <div className=''>
                         <p className='text-xl leading-6 font-semibold tracking-[-0.8px]'>{item.name}</p>

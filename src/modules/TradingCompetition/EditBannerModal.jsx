@@ -250,7 +250,7 @@ export function EditBannerModal({ competition, open, onClose }) {
         </div>
         {stateChecked === 'default' && (
           <>
-            <div className='relative flex flex-col space-y-5'>
+            <div className='relative flex flex-col gap-5'>
               <div className='cursor-pointer' onClick={() => setOptionSelect(3)}>
                 <Image
                   alt='background'

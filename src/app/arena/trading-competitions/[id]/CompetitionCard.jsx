@@ -198,7 +198,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
               <div
                 className={cn(
                   'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
-                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'lg:space-x-8',
+                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'lg:gap-8',
                 )}
               >
                 {eventType !== EVENT_TYPES.ENDED && (

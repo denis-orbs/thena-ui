@@ -26,7 +26,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
   }, [JSON.stringify(data)])
 
   return (
-    <div className='w-full space-y-6'>
+    <div className='flex w-full flex-col gap-6'>
       <div className='flex items-center gap-1'>
         <Toggle
           checked={data.votes.isAutoVote}
@@ -36,7 +36,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
       </div>
       {data.votes.isAutoVote && (
         <>
-          <div className='space-y-3'>
+          <div className='flex flex-col gap-3'>
             <TextHeading>{t('Select Voting Pairs and Weights')}</TextHeading>
             <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
               {data.votes.pairs.map((item, index) => (
@@ -57,7 +57,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
               {t('Add Pair')}
             </OutlinedButton>
           </div>
-          <div className='space-y-2'>
+          <div className='flex flex-col gap-2'>
             <div className='flex flex-row justify-between'>
               <TextHeading>{t('Total Allocated')}</TextHeading>
               <span>{totalWeight}%</span>

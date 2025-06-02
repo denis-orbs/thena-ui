@@ -102,7 +102,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   return (
     <div className='rounded-lg xl:bg-neutral-900 xl:p-4'>
       <div className='border-primary-500 rounded-lg border border-dashed'>
-        <div className='bg-primary-950 space-y-4 rounded-lg p-4 text-[14px] leading-5 font-normal'>
+        <div className='bg-primary-950 flex flex-col gap-4 rounded-lg p-4 text-[14px] leading-5 font-normal'>
           {/* Pool Name */}
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>

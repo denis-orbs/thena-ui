@@ -209,7 +209,7 @@ export function TokenAmountInput({
             >
               {maxBalance && !isSwapChainLink ? (
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
                   }}
@@ -231,7 +231,7 @@ export function TokenAmountInput({
           <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'xl:text-xs!')}>
             ${formatAmount(amount * (asset?.price || 0))}
           </TextSubHeading>
-          <TextSubHeading className={cn('space-x-4 text-nowrap text-neutral-500', isSmall && 'xl:text-xs!')}>
+          <TextSubHeading className={cn('flex gap-4 text-nowrap text-neutral-500', isSmall && 'xl:text-xs!')}>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>

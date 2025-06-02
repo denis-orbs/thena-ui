@@ -88,12 +88,12 @@ export function Features() {
   return (
     <>
       {/* desktop view */}
-      <div className='mt-24 hidden space-x-8 lg:flex'>
+      <div className='mt-24 hidden lg:flex lg:gap-8'>
         <FeatureScroller setFeature={setFeature} currentFeatureIndex={features.findIndex(item => item === feature)} />
 
         <div
           id='feature-wrapper'
-          className='bg-landing-page-gradient group relative flex w-full items-center justify-between gap-x-12 overflow-hidden rounded-3xl border-4 border-red-500 p-10 xl:gap-x-[115px] xl:p-20'
+          className='bg-landing-page-gradient group relative flex w-full items-center justify-between gap-x-12 overflow-hidden rounded-3xl p-10 xl:gap-x-[115px] xl:p-20'
         >
           <div className='relative z-10 w-full max-w-[400px] flex-1'>
             <motion.div

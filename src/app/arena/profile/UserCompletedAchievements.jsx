@@ -63,7 +63,7 @@ export function UserCompletedAchievements({ userId }) {
 
   return (
     <div>
-      <div className='space-y-3'>
+      <div className='flex flex-col gap-3'>
         <TextHeading className='text-xl'>
           {t('Completed Achievements', {
             count: sortedData.length,

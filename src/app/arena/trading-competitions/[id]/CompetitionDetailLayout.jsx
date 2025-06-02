@@ -273,7 +273,7 @@ function CompetitionDetailLayout({ children, params }) {
                 <Box
                   onMouseOver={() => setShowIconCloseBanner(true)}
                   onMouseLeave={() => setShowIconCloseBanner(false)}
-                  className='border-primary-800 bg-primary-950 relative mt-10 flex flex-col space-y-2 border'
+                  className='border-primary-800 bg-primary-950 relative mt-10 flex flex-col gap-2 border'
                 >
                   <TextHeading className='text-base font-normal'>
                     <strong>{t('You MUST close all your positions highlight')}</strong> &nbsp;

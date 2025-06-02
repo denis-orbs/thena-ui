@@ -283,7 +283,7 @@ export default function PoolsPage() {
                 <GroupIconTokens
                   classNames={{
                     image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
-                    rows: '-space-x-2',
+                    rows: '*:not-first:-ml-2',
                     toolTip: 'hidden',
                   }}
                   width={32}
@@ -669,7 +669,7 @@ export default function PoolsPage() {
               <div className='mt-4 flex items-center gap-2'>
                 {vaults.map(trending => (
                   <Box className='flex w-full cursor-pointer flex-col gap-4 p-4!' key={trending.address}>
-                    <div className='space-y-2'>
+                    <div className='flex flex-col gap-2'>
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex items-center gap-2'>
                           <CircleImage className='size-6 2xl:size-9' src={trending.allowed.logoURI} alt='thena logo' />
@@ -688,7 +688,7 @@ export default function PoolsPage() {
                           {formatAmount(trending.gauge.apr)}%
                         </TextHeading>
                       </div>
-                      <div className='space-y-1'>
+                      <div className='flex flex-col gap-1'>
                         <div className='flex items-center justify-between gap-2'>
                           <Paragraph className='text-xs! font-medium text-neutral-500 2xl:text-sm!'>
                             {t('Total Value Locked')}
@@ -699,7 +699,7 @@ export default function PoolsPage() {
                         </div>
                         <div className='flex items-center gap-2'>
                           <IconGroup
-                            className='-space-x-1'
+                            className='*:not-first:-ml-1'
                             classNames={{
                               image: 'outline-0 size-4',
                             }}

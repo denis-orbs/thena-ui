@@ -101,7 +101,7 @@ export default function IncentivePage() {
               <div className='flex items-center gap-3'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -111,7 +111,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 w-8 h-8',
                     }}
@@ -197,7 +197,7 @@ export default function IncentivePage() {
               </div>
             </div>
 
-            <div className={cn('space-y-2', !asset && 'hidden')}>
+            <div className={cn('flex flex-col gap-2', !asset && 'hidden')}>
               <TextHeading className='flex items-center gap-1'>
                 {t('Number of Epochs')}{' '}
                 <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='NUMBER_OF_EPOCHS' />
@@ -229,8 +229,8 @@ export default function IncentivePage() {
               const { startDate, endDate } = calculateEpochPeriod(currentEpoch + i)
 
               return (
-                <div className={cn('hidden space-y-2', asset && 'block')} key={`incentive-${i + 1}`}>
-                  <TextHeading className='space-x-3'>
+                <div className={cn('hidden flex-col gap-2', asset && 'flex')} key={`incentive-${i + 1}`}>
+                  <TextHeading className='flex gap-3'>
                     <span>{`Epoch ${currentEpoch + i} Reward`}</span>
                     <Paragraph>
                       {startDate.format('MMM D')} - {endDate.format('MMM D, YYYY')}
@@ -296,7 +296,7 @@ export default function IncentivePage() {
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -306,7 +306,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 w-5 h-5',
                     }}
@@ -330,7 +330,7 @@ export default function IncentivePage() {
             </TextHeading>
           </article>
 
-          <article className={cn('mb-5 space-y-5 border-b border-neutral-700 pb-5', !asset && 'hidden')}>
+          <article className={cn('mb-5 flex flex-col gap-5 border-b border-neutral-700 pb-5', !asset && 'hidden')}>
             <TextHeading className='font-bold'>Epochs and Rewards</TextHeading>
 
             {Array.from({ length: epochs }, (_, i) => {
@@ -417,7 +417,7 @@ export default function IncentivePage() {
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'size-7 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -427,7 +427,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-6',
                     }}
@@ -445,7 +445,7 @@ export default function IncentivePage() {
             </article>
           )}
 
-          <article className={cn('space-y-5', !asset && 'hidden')}>
+          <article className={cn('flex flex-col gap-5', !asset && 'hidden')}>
             <div className='hidden grid-cols-5 md:grid'>
               <TextHeading className='col-span-1'>Epoch</TextHeading>
               <TextHeading className='col-span-2'>Duration</TextHeading>

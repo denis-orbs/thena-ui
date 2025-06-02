@@ -163,7 +163,7 @@ function ChainSelect({ t }) {
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -232,7 +232,7 @@ function ChainMobileSelect({ t }) {
       <div
         className={cn(
           'visible absolute z-10 mt-2 w-full flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -293,7 +293,7 @@ function LanguageSelect() {
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-sm',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -947,7 +947,7 @@ function Header() {
                       <div
                         className={cn(
                           'visible absolute w-[344px] flex-col items-start justify-start gap-1',
-                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow-sm',
+                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow-xs',
                           'transition-all duration-150 ease-out',
                           openMenu !== item.label && 'invisible opacity-0',
                         )}

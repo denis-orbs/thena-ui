@@ -33,7 +33,7 @@ function WithdrawFundsModal({ contract, popup, setPopup }) {
       width={480}
       title='Withdraw Funds'
     >
-      <ModalBody className='space-y-5'>
+      <ModalBody>
         <Box className='border-primary-800 bg-primary-950 flex flex-row items-center gap-3 border'>
           {t('Warrning widraw fund automation')}
         </Box>

@@ -307,7 +307,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                   )}
                   {item.dataUpdate.slice(0, 3).map(({ data, ticker }, idx) =>
                     ticker ? (
-                      <div className='flex space-x-2' key={`${idx}-${ticker}`}>
+                      <div className='flex gap-2' key={`${idx}-${ticker}`}>
                         {ticker !== 'MUSD' && (
                           <Image
                             alt={ticker}
@@ -392,7 +392,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
                 .map(item => (
                   <Box
-                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    className='flex items-center gap-2.5 bg-neutral-800 px-4 py-4 md:gap-3 lg:px-4 lg:py-4'
                     key={item?.address}
                   >
                     {item?.logoURI && (
@@ -415,7 +415,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ?.slice(0, viewAllTradable ? _competition.competitionRules?.pairIds?.length : 8)
                 .map(item => (
                   <Box
-                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    className='flex items-center gap-2.5 bg-neutral-800 px-4 py-4 md:gap-3 lg:px-4 lg:py-4'
                     key={item?.id}
                   >
                     <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>

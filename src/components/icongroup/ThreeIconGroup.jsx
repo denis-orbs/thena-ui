@@ -8,7 +8,7 @@ import CircleImage from '../image/CircleImage'
 
 export function ThreeIconGroup({ logo1, logo2, extendNumber, className, classNames }) {
   return (
-    <div className={cn('flex items-center -space-x-4', className)}>
+    <div className={cn('flex items-center *:not-first:-ml-4', className)}>
       <CircleImage
         className={cn('outline-4 outline-[#1C2027] outline-solid', classNames?.image)}
         src={logo1}

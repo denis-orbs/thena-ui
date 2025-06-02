@@ -654,9 +654,9 @@ function Sidebar({ competition, eventType }) {
         <h3 className='mb-5'>{headingAndText.heading}</h3>
         {isTCJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
       </div>
-      <Box className='flex flex-col space-y-5'>
+      <Box className='flex flex-col gap-5'>
         {(headingAndText.subText || headingAndText.text) && (
-          <Box className='border-primary-800 bg-primary-950 flex flex-col space-y-2 border'>
+          <Box className='border-primary-800 bg-primary-950 flex flex-col gap-2 border'>
             {headingAndText.text && <TextHeading className='text-xl'>{headingAndText.text}</TextHeading>}
             {headingAndText.subText && (
               <TextHeading className='flex text-base'>

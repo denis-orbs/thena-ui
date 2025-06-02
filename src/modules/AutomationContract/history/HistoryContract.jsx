@@ -89,7 +89,7 @@ function HistoryContract({ histories }) {
   const t = useTranslations()
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <TextHeading className='text-2xl lg:text-3xl'>{t('History')}</TextHeading>
       {!isEmpty(histories) ? (
         <Table

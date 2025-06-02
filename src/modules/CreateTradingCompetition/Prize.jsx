@@ -103,7 +103,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               type='number'
               min={0}
               TrailingButton={
-                <div className='absolute right-4 flex items-center space-x-1.5'>
+                <div className='absolute right-4 flex items-center gap-1.5'>
                   <TextSubHeading>${formatAmount(data.entryFee[0] * data.prize.token[0].price)}</TextSubHeading>
                   <Image alt='' src={data.prize.token[0].logoURI} width={20} height={20} />
                   <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token[0].symbol}</span>
@@ -130,7 +130,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
                   type='number'
                   min={0}
                   TrailingButton={
-                    <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <div className='absolute right-4 flex items-center gap-1.5'>
                       <TextSubHeading>${formatAmount(data.entryFee[index] * token.price)}</TextSubHeading>
                       <Image alt='' src={token.logoURI} width={20} height={20} />
                       <span className='font-figtree text-lg leading-[22px] text-white'>{token.symbol}</span>
@@ -157,7 +157,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           showInfoIcon
           required
         />
-        <div className='mt-3 flex w-full items-center space-x-6 md:mt-4 md:space-x-9'>
+        <div className='mt-3 flex w-full items-center gap-6 md:mt-4 md:gap-9'>
           <span className='text-xl leading-6 font-semibold whitespace-nowrap text-[#E9E9F2] md:text-[22px] md:leading-7'>
             {total} %
           </span>
@@ -202,7 +202,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           </div>
         ))}
       </div>
-      <div className='mt-4 flex items-center justify-center space-x-3 md:mt-6'>
+      <div className='mt-4 flex items-center justify-center gap-3 md:mt-6'>
         <PrimaryButton
           onClick={() => {
             if (placements > 2) setData({ ...data, prize: { ...data.prize, placements: placements - 1 } })

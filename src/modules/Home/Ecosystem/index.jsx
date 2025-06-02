@@ -83,7 +83,7 @@ function Ecosystem() {
       <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pt-[217px] lg:pb-[150px] xl:px-0'>
         <div className='mx-auto w-full max-w-[700px]'>
           <Heading heading={t('THE Ecosystem')} title={t('Backed by the best')} wrapperStyles='items-center' />
-          <div className='mt-6 flex items-center justify-center space-x-3.5 lg:mt-8'>
+          <div className='mt-6 flex items-center justify-center gap-3.5 lg:mt-8'>
             {data.map((item, idx) => (
               <div
                 onClick={() => {
@@ -100,7 +100,7 @@ function Ecosystem() {
             ))}
           </div>
         </div>
-        <div className='mt-14 flex w-full flex-wrap items-center justify-center space-y-6 -space-x-14 px-[38px]'>
+        <div className='mt-14 flex w-full flex-col flex-wrap items-center justify-center gap-6 px-[38px]'>
           <div
             className={cn(
               'flex w-full flex-wrap items-center justify-center lg:gap-14',

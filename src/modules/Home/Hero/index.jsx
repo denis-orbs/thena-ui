@@ -48,7 +48,7 @@ function Hero() {
       </div>
       <div className='relative mx-auto flex max-w-[1152px] flex-col items-center justify-center px-[31px] pt-[51px] xl:px-0'>
         <div
-          className='z-30 flex cursor-pointer items-center space-x-3'
+          className='z-30 flex cursor-pointer items-center gap-3'
           onClick={() => {
             window.open('https://x.com/BinanceLabs/article/1873984088559747124', '_blank')
           }}

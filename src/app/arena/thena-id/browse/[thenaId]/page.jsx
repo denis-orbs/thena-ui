@@ -312,10 +312,7 @@ function ThenaIdPage() {
                     </Link>
                   ) : null
                 ) : (
-                  <EmphasisButton
-                    className='flex items-center justify-center space-x-2'
-                    onClick={() => setShowModal(true)}
-                  >
+                  <EmphasisButton className='flex items-center justify-center gap-2' onClick={() => setShowModal(true)}>
                     <TextHeading>
                       {t('Mint For')} {amountToMint} {USDTAsset?.symbol}
                     </TextHeading>

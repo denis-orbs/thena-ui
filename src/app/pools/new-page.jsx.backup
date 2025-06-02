@@ -191,7 +191,7 @@ export default function PoolsPage() {
   //           {pool.type !== PAIR_TYPES.WEIGHTED ? (
   //             <>
   //               <IconGroup
-  //                 className='-space-x-2'
+  //                 className='*:not-first:-ml-2'
   //                 classNames={{
   //                   image: 'outline-2 w-7 h-7',
   //                 }}
@@ -507,7 +507,7 @@ export default function PoolsPage() {
                 <div className='flex items-start justify-between gap-4'>
                   <div className='flex items-center gap-3'>
                     <IconGroup
-                      className='-space-x-3'
+                      className='*:not-first:-ml-3'
                       classNames={{
                         image: 'outline-4 w-10 h-10',
                       }}

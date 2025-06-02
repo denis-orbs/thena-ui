@@ -126,7 +126,7 @@ export default function SpecificPoolPage({ params }) {
         <div className='mt-4 mb-6'>
           <div>
             {pair.type !== PAIR_TYPES.WEIGHTED ? (
-              <div className='flex space-x-4'>
+              <div className='flex gap-4'>
                 <IconGroup
                   classNames={{
                     image: 'w-[36px] lg:w-[56px]',
@@ -417,7 +417,7 @@ export default function SpecificPoolPage({ params }) {
 
         <div className='flex-4 flex-col gap-12'>
           {/* User positions */}
-          <div className='mt-6 space-y-4'>
+          <div className='mt-6 flex flex-col gap-4'>
             <TextHeading className='font-archia text-[30px] leading-[34px] font-semibold'>
               {t('My Positions')}
             </TextHeading>

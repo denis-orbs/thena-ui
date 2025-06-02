@@ -87,7 +87,7 @@ function TopBar({ competition = {}, balance }) {
             </Box>
             <Box className='flex flex-col items-start'>
               <div className='flex w-full items-center justify-between lg:flex'>
-                <div className='flex items-center justify-center space-x-2'>
+                <div className='flex items-center justify-center gap-2'>
                   <Image
                     alt='token'
                     src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}
@@ -111,7 +111,7 @@ function TopBar({ competition = {}, balance }) {
         )}
         <Box className='flex flex-col items-start'>
           <div className='flex w-full items-center justify-between lg:flex'>
-            <div className='flex items-center justify-center space-x-2'>
+            <div className='flex items-center justify-center gap-2'>
               <Image
                 alt={`${competition.competitionRules?.winningToken?.symbol ?? 'token'}`}
                 src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}

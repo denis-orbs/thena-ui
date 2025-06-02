@@ -78,7 +78,7 @@ function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false
                   logo2={pair?.tokens?.[1]?.logoURI}
                   extendNumber={(pair?.tokens?.length || 2) - 2}
                   classNames={{ image: 'w-6 h-6' }}
-                  className='-space-x-1'
+                  className='*:not-first:-ml-1'
                 />
                 <span className='text-wrap' data-tooltip-id={toolTipId}>
                   {pair?.symbol?.length > 10 ? formatAddress(pair?.symbol) : pair?.symbol}

@@ -53,7 +53,7 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
                 classNames={{
                   image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                 }}
-                className='-space-x-1'
+                className='*:not-first:-ml-1'
                 logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
                 logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
                 extendNumber={(pool?.tokens?.length || 2) - 2}

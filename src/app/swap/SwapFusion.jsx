@@ -335,19 +335,19 @@ export default function SwapFusion({
                     className='relative flex px-4 py-4 before:absolute before:top-0 before:left-0 before:h-[48px] before:w-full before:border-x before:border-b before:border-neutral-700 after:w-[60px]'
                   >
                     <div className='relative flex grow px-3'>
-                      <div className='flex w-full justify-between space-x-4 overflow-hidden before:content-[""] after:content-[""]'>
+                      <div className='flex w-full justify-between gap-4 overflow-hidden before:content-[""] after:content-[""]'>
                         {bestTrade.route.tokenPath.slice(1).map((token, idx) => {
                           const found = assets.find(ele => ele.address.toLowerCase() === token.address.toLowerCase())
                           return (
                             <div
-                              className='h-fit w-fit space-y-1 rounded-sm bg-neutral-600 px-2 py-2'
+                              className='flex h-fit w-fit flex-col gap-1 rounded-xs bg-neutral-600 px-2 py-2'
                               key={`subroute-${idx}`}
                             >
-                              <div className='flex items-center space-x-1 py-1'>
+                              <div className='flex items-center gap-1 py-1'>
                                 <NextImage src={found?.logoURI} alt='' className='h-4 w-4' />
                                 <span className='text-xs text-neutral-200'>{found?.symbol}</span>
                               </div>
-                              <div className='flex w-full justify-between space-x-1 pl-1 text-xs'>
+                              <div className='flex w-full justify-between gap-1 pl-1 text-xs'>
                                 <Paragraph className='text-xs'>FUSION</Paragraph>
                                 <TextHeading className='text-xs'>100%</TextHeading>
                               </div>

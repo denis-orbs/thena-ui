@@ -79,7 +79,7 @@ export default function AddLiquidityCLPane({
             isSmall={!isXlDown}
           />
         ) : (
-          <div className='space-y-2'>
+          <div className='flex flex-col gap-2'>
             {!mintInfo?.noLiquidity && !position && (
               <Selection
                 className='w-full items-stretch md:h-11'

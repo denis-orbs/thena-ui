@@ -4,10 +4,10 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import dynamic from 'next/dynamic'
 import React, { Suspense } from 'react'
 
-import '@/styles/globals.css'
 import 'react-datepicker/dist/react-datepicker.css'
 import 'react-toastify/dist/ReactToastify.css'
 import '@rainbow-me/rainbowkit/styles.css'
+import '@/styles/globals.css'
 
 import { siteConfig } from '@/constant/config'
 

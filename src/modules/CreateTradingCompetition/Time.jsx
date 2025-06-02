@@ -136,7 +136,7 @@ function Time({ data, setData }) {
 
   return (
     <>
-      <div className='mb-3 max-w-full md:mt-5 md:flex md:max-w-[50%] md:space-y-0 md:space-x-6'>
+      <div className='mb-3 max-w-full md:mt-5 md:flex md:max-w-[50%] md:gap-6'>
         <div className='w-full'>
           <LabelTooltip
             label='Max Participants'
@@ -152,7 +152,7 @@ function Time({ data, setData }) {
             value={data.maxParticipants}
             onChange={e => handleParticipants(e.target.value)}
             TrailingButton={
-              <div className='absolute top-2.5 right-3 flex items-center space-x-3'>
+              <div className='absolute top-2.5 right-3 flex items-center gap-3'>
                 <button
                   onClick={() => {
                     handleParticipants(data.maxParticipants - 1)
@@ -180,7 +180,7 @@ function Time({ data, setData }) {
           />
         </div>
       </div>
-      <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-y-0 md:space-x-6'>
+      <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
           <DateTimePickerCustom
@@ -228,7 +228,7 @@ function Time({ data, setData }) {
           />
         </div>
       </div>
-      <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-y-0 md:space-x-6'>
+      <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
           <DateTimePickerCustom

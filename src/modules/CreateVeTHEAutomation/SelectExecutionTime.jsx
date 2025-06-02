@@ -31,7 +31,7 @@ function SelectExecutionTime({ executionTime, updateData }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
   return (
-    <div className='space-y-4 lg:space-y-6'>
+    <div className='flex flex-col gap-4 lg:gap-6'>
       <div>
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Automation Execution Time')}</TextHeading>

@@ -256,7 +256,7 @@ export default function VotePage() {
             {pool.type !== PAIR_TYPES.WEIGHTED ? (
               <>
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-7 h-7',
                   }}

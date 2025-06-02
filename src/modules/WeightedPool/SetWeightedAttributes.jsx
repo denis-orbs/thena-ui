@@ -89,7 +89,7 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
           />
         )}
       </div>
-      <div className='space-y-2 md:space-y-4'>
+      <div className='flex flex-col gap-2 md:gap-4'>
         <div className='flex flex-col-reverse gap-4'>
           <NewTextSubHeading>{t('Set Initial Liquidity')}</NewTextSubHeading>
           {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (

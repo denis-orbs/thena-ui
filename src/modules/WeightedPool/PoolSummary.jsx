@@ -33,7 +33,7 @@ function Attributes({ tokens, fees, isMobile }) {
           </div>
 
           {/* Body */}
-          <div className='space-y-4'>
+          <div className='flex flex-col gap-4'>
             {(tokens || []).map(token => (
               <div className='flex' key={token.symbol}>
                 <div className='flex flex-4 items-center gap-2 py-4'>
@@ -92,8 +92,8 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
   return (
     <div className={cn('flex flex-col gap-4', !isMobile && 'lg:rounded-xl lg:bg-neutral-900 lg:p-4')}>
       <NewTextSubHeading className={cn(isMobile && 'hidden')}>{t('Pool Attributes')}</NewTextSubHeading>
-
-      <div className={cn(show ? 'max-lg:space-y-2' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
+      {/* NEED TO CHECK THIS */}
+      <div className={cn(show ? 'max-lg:gap--2 flex flex-col' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
         <div className='flex flex-row items-center justify-between gap-2'>
           <div className='h-8 w-full rounded-lg bg-neutral-900 px-4 py-1'>
             <TextHeading className='font-archia text-xs font-semibold text-neutral-50'>

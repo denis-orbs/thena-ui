@@ -154,7 +154,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
                 ))}
               </div>
 
-              <div className='mt-4 flex items-center justify-center space-x-3 md:mt-6'>
+              <div className='mt-4 flex items-center justify-center gap-3 md:mt-6'>
                 <PrimaryButton
                   onClick={() => {
                     if (thenaIds.length >= 2) {
