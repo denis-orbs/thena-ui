@@ -229,6 +229,7 @@ function ManualItem({ position, isXlDown }) {
         minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
         maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
         apr={position.apr}
+        title={position.title}
       />
     ),
     [
@@ -237,6 +238,7 @@ function ManualItem({ position, isXlDown }) {
       _position?.token0PriceUpper,
       position.type,
       position.apr,
+      position.title,
       tickAtLimit,
     ],
   )

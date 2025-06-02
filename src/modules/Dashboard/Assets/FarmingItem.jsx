@@ -201,6 +201,7 @@ function FarmingItem({ position, isXlDown }) {
         maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
         positionType={position.type}
         apr={position.apr}
+        title={position.title}
       />
     ),
     [
@@ -209,6 +210,7 @@ function FarmingItem({ position, isXlDown }) {
       _position?.token0PriceUpper,
       position.type,
       position.apr,
+      position.title,
       tickAtLimit,
     ],
   )
