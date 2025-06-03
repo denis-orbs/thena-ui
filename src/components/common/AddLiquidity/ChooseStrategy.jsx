@@ -283,10 +283,10 @@ export default function ChooseStrategy({
   }, [sortedSubPools, t, strategy?.address, handleChooseStrategy])
 
   return (
-    <div className={cn('inline-flex w-full flex-col gap-5')}>
+    <div className={cn('w-full flex-col gap-5')}>
       <div className='flex-[6]'>
         {!position && (
-          <div className='space-y-2 md:space-y-4'>
+          <div className='space-y-2'>
             <StrategyTitle
               strategyCount={strategyAutoData.length}
               isAutomatic={isAutomatic}
@@ -298,30 +298,27 @@ export default function ChooseStrategy({
               strategy={strategy}
             />
 
-            <div className={cn('!mt-2 hidden max-xl:block md:!mt-4')}>
+            <div className={cn('hidden max-xl:mt-2 max-xl:block')}>
               <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
             </div>
           </div>
         )}
+        <div className='mt-2 max-md:mt-4'>
+          {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
-        {strategyAutoData && isAutomatic && (
-          <div className='max-xl:mt-4'>
-            <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />
-          </div>
-        )}
-
-        {!isAutomatic && (
-          <ManualStrategy
-            firstAsset={firstAsset ?? pair?.token0}
-            secondAsset={secondAsset ?? pair?.token1}
-            strategy={strategy}
-            position={position}
-            isEarnFees={isEarnFees}
-            setFullRangeWarningShown={setFullRangeWarningShown}
-            fullRangeWarningShown={fullRangeWarningShown}
-            setLastPrice={setLastPrice}
-          />
-        )}
+          {!isAutomatic && (
+            <ManualStrategy
+              firstAsset={firstAsset ?? pair?.token0}
+              secondAsset={secondAsset ?? pair?.token1}
+              strategy={strategy}
+              position={position}
+              isEarnFees={isEarnFees}
+              setFullRangeWarningShown={setFullRangeWarningShown}
+              fullRangeWarningShown={fullRangeWarningShown}
+              setLastPrice={setLastPrice}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
@@ -378,8 +375,9 @@ function StrategyTitle({
     <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>
       <div
         className={cn(
-          'flex flex-col items-start gap-2.5 max-xl:mt-4 md:flex-row md:items-center md:justify-between',
-          !hasToggle && 'md:justify-end xl:mb-2',
+          'flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between',
+          !hasToggle && 'md:justify-end',
+          show && 'xl:mb-2',
         )}
       >
         <div className={cn(!hasToggle && 'hidden')}>
@@ -391,7 +389,7 @@ function StrategyTitle({
           />
         </div>
 
-        <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
+        <div className={cn('flex items-center gap-2 max-xl:mt-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
             className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
@@ -419,7 +417,7 @@ function StrategyTitle({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
+        <div className={cn('rounded-lg bg-neutral-900 p-4 max-xl:mt-2')}>
           <Paragraph className='mb-4 block text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>
