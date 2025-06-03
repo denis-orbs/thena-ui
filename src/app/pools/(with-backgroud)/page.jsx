@@ -760,7 +760,6 @@ export default function PoolsPage() {
             setSort={setSort}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            defaultNumberItem={ITEMS_PER_PAGE}
           />
         </div>
       </div>
