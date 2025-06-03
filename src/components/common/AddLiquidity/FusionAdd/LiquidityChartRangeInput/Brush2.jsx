@@ -337,8 +337,6 @@ export const Brush2 = ({
                     />
                     {interactive && (
                       <g transform='translate(16, 12)' pointerEvents='none'>
-                        {' '}
-                        {/* 9 + 4 = 12 */}
                         <svg width='11' height='16' viewBox='0 0 11 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                           <path
                             d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'

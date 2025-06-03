@@ -36,7 +36,7 @@ import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/s
 
 import NewListings from '../NewListings'
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 10
 
 const sortOptions = [
   {
