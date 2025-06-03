@@ -36,7 +36,7 @@ import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/s
 
 import NewListings from '../NewListings'
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 10
 
 const sortOptions = [
   {
@@ -760,7 +760,6 @@ export default function PoolsPage() {
             setSort={setSort}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            defaultNumberItem={ITEMS_PER_PAGE}
           />
         </div>
       </div>

@@ -306,15 +306,15 @@ function FarmingItem({ position, isXlDown }) {
           {t('Burn')}
         </EmphasisButton>
 
-        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-          {t('Add')}
-        </EmphasisButton>
-
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
+        </EmphasisButton>
+
+        <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
+          {t('Add')}
         </EmphasisButton>
 
         <PrimaryButton

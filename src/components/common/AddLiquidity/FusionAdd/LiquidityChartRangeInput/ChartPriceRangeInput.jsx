@@ -259,16 +259,21 @@ export default function ChartPriceRangeInput({
 
   const brushLabelValue = useCallback(
     (d, x) => {
-      if (!price) return ''
+      let priceVal = price
+      if (!priceVal) {
+        priceVal = pairPrices[pairPrices.length - 1]?.value
+      }
+
+      if (!priceVal) return ''
 
       if (d === 'w' && ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER]) return '0'
       if (d === 'e' && ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER]) return '∞'
 
-      const percent = (x < price ? -1 : 1) * ((Math.max(x, price) - Math.min(x, price)) / price) * 100
+      const percent = (x < priceVal ? -1 : 1) * ((Math.max(x, priceVal) - Math.min(x, priceVal)) / priceVal) * 100
 
-      return price ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
+      return priceVal ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
     },
-    [isSorted, price, ticksAtLimit],
+    [isSorted, pairPrices, price, ticksAtLimit],
   )
 
   const chartSize = useMemo(
@@ -455,7 +460,7 @@ export default function ChartPriceRangeInput({
                             brush: { handle: { south: '#F199EE', north: '#F199EE' } },
                             disabled: {
                               handle: { south: '#35243D', north: '#35243D' },
-                              line: { south: '#35243D', north: '#35243D' },
+                              line: { south: '#685770', north: '#685770' },
                             },
                           }}
                           interactive={interactive}
