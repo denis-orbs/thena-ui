@@ -70,7 +70,7 @@ export default function ManualAdd({
   })
 
   useEffect(() => {
-    setAPRs(estimateAPR)
+    setAPRs({ ...estimateAPR, current: position ? position.apr : estimateAPR.current })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(estimateAPR), setAPRs])
 
