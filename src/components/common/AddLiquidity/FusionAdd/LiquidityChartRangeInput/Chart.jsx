@@ -195,8 +195,8 @@ export function Chart({
                 innerWidth={innerWidth}
                 innerHeight={innerHeight}
                 setBrushExtent={onBrushDomainChange}
-                westHandleColor={interactive ? styles.brush.handle.west : '#685770'}
-                eastHandleColor={interactive ? styles.brush.handle.east : '#685770'}
+                westHandleColor={interactive ? styles.brush.handle.west : '#35243D'}
+                eastHandleColor={interactive ? styles.brush.handle.east : '#35243D'}
                 isFullRange={isFullRange}
               />
             )}

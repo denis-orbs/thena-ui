@@ -251,7 +251,7 @@ export const Brush2 = ({
                 <path
                   color={interactive ? southHandleColor : disableColor.line.south}
                   stroke={interactive ? southHandleColor : disableColor.line.south}
-                  strokeWidth={2}
+                  strokeWidth={3}
                   opacity={interactive ? 0.85 : 1}
                   d={brushHandlePathV2(width)}
                 />
@@ -259,7 +259,7 @@ export const Brush2 = ({
                   {' '}
                   <rect
                     x='0'
-                    y='-36'
+                    y='-37'
                     width='128'
                     height='36'
                     rx='10'
@@ -267,7 +267,7 @@ export const Brush2 = ({
                   />
                   <rect
                     x='0'
-                    y='-18'
+                    y='-19'
                     width='128'
                     height='18'
                     fill={interactive ? southHandleColor : disableColor.handle.south}
@@ -314,16 +314,15 @@ export const Brush2 = ({
                   <path
                     color={interactive ? southHandleColor : disableColor.line.south}
                     stroke={interactive ? southHandleColor : disableColor.line.south}
-                    strokeWidth={2}
+                    strokeWidth={3}
                     opacity={interactive ? 0.85 : 1}
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
                   <g pointerEvents='none' opacity={interactive ? 0.85 : 1}>
-                    {' '}
                     <rect
                       x='0'
-                      y='0'
+                      y='1'
                       width='128'
                       height='36'
                       rx='10'
@@ -331,14 +330,16 @@ export const Brush2 = ({
                     />
                     <rect
                       x='0'
-                      y='0'
+                      y='1'
                       width='128'
                       height='18'
                       fill={interactive ? southHandleColor : disableColor.handle.south}
                     />
                     {interactive && (
-                      <g transform='translate(16, 9)' pointerEvents='none'>
-                        <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <g transform='translate(16, 12)' pointerEvents='none'>
+                        {' '}
+                        {/* 9 + 4 = 12 */}
+                        <svg width='11' height='16' viewBox='0 0 11 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                           <path
                             d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
                             stroke='#2C002A'
@@ -352,14 +353,14 @@ export const Brush2 = ({
                     <text
                       className='font-archia font-semibold'
                       x={interactive ? '80' : '60'}
-                      y='23'
+                      y='25'
                       fill={interactive ? '#2C002A' : '#B3ABB7'}
                       fontSize='20'
                       textAnchor='middle'
                       pointerEvents='none'
-                      transform={`translate(80, ${flipSouthHandle ? 16 : 23}) rotate(${
+                      transform={`translate(80, ${flipSouthHandle ? 20 : 25}) rotate(${
                         flipSouthHandle ? 180 : 0
-                      }) scale(${flipSouthHandle ? -1 : 1},1) translate(-80, ${flipSouthHandle ? -16 : -23})`}
+                      }) scale(${flipSouthHandle ? -1 : 1},1) translate(-80, ${flipSouthHandle ? -20 : -25})`}
                     >
                       {brushLabelValue('w', localBrushExtent?.[0])}
                     </text>
