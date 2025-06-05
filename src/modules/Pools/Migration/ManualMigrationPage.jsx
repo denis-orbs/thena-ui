@@ -117,8 +117,8 @@ export function ManualMigrationPage({ tokenId }) {
     }
   }, [strategy, strategyData])
 
-  const [fusionStateV2, poolV2] = useFusionState({ currencyA, currencyB, version: 2 })
-  const [fusionStateV3, poolV3] = useFusionState({
+  const [fusionStateV2, poolV2, _addressV2, tickSpacingV2] = useFusionState({ currencyA, currencyB, version: 2 })
+  const [fusionStateV3, poolV3, _addressV3, tickSpacingV3] = useFusionState({
     currencyA,
     currencyB,
     version: 3,
@@ -288,7 +288,12 @@ export function ManualMigrationPage({ tokenId }) {
         <div className='my-4 flex flex-col gap-4 md:flex-row'>
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={poolV2} />
+            <GaugeItemManual
+              existingPosition={existingPosition}
+              position={positionV2}
+              fusion={poolV2}
+              tickSpacing={tickSpacingV2}
+            />
           </div>
 
           <div className='flex items-center justify-center'>
@@ -297,7 +302,13 @@ export function ManualMigrationPage({ tokenId }) {
 
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={poolV3} version={3} />
+            <GaugeItemManual
+              existingPosition={existingPosition}
+              position={positionV3}
+              fusion={poolV3}
+              version={3}
+              tickSpacing={tickSpacingV3}
+            />
           </div>
         </div>
 

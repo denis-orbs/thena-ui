@@ -377,7 +377,6 @@ function StrategyTitle({
         className={cn(
           'flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between',
           !hasToggle && 'md:justify-end',
-          show && 'xl:mb-2',
         )}
       >
         <div className={cn(!hasToggle && 'hidden')}>
@@ -417,7 +416,7 @@ function StrategyTitle({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className={cn('rounded-lg bg-neutral-900 p-4 max-xl:mt-2')}>
+        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
           <Paragraph className='mb-4 block text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>

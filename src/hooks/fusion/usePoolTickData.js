@@ -13,9 +13,9 @@ import { PoolState, useFusionState } from './useFusions'
 
 const PRICE_FIXED_DIGITS = 8
 
-const getActiveTick = (tickCurrent, feeAmount) =>
+const getActiveTick = (tickCurrent, feeAmount, tickSpacing) =>
   tickCurrent !== undefined && feeAmount !== undefined
-    ? Math.floor(tickCurrent / TICK_SPACING) * TICK_SPACING
+    ? Math.floor(tickCurrent / (tickSpacing ?? TICK_SPACING)) * (tickSpacing ?? TICK_SPACING)
     : undefined
 
 const fetchTicksData = async ({ networkId, version, poolAddress, skip = 0 }) => {
@@ -90,7 +90,7 @@ function useAllV3Ticks({ poolAddress, version = 2 }) {
 export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
   const { strategy } = useV3MintState()
   const { version = 3, isFarming = true } = strategy ?? {}
-  const [poolState, pool, poolAddress] = useFusionState({
+  const [poolState, pool, poolAddress, tickSpacing] = useFusionState({
     currencyA,
     currencyB,
     version,
@@ -98,7 +98,10 @@ export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
   })
 
   // Find nearest valid tick for pool in case tick is not initialized.
-  const activeTick = useMemo(() => getActiveTick(pool?.tickCurrent, feeAmount), [pool, feeAmount])
+  const activeTick = useMemo(
+    () => getActiveTick(pool?.tickCurrent, feeAmount, tickSpacing),
+    [pool?.tickCurrent, feeAmount, tickSpacing],
+  )
   const { isLoading, error, ticks } = useAllV3Ticks({ poolAddress, version, isFarming })
 
   return useMemo(() => {

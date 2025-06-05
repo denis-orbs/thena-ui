@@ -127,7 +127,10 @@ export const useManualPositions = positions => {
 
     return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
-      const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
+      const [fusionState, fusion, poolAddress = zeroAddress, tickSpacing] = _fusionStates?.[index] || [
+        PoolState.NOT_EXISTS,
+        null,
+      ]
       const fees = feesList?.[index]
 
       const position = fusion
@@ -200,6 +203,7 @@ export const useManualPositions = positions => {
         fusionState,
         fusion,
         poolAddress,
+        tickSpacing,
       }
     })
   }, [annualPoolFeesPools, farmInfoList, feesList, _fusionStates, getAsset, positions])

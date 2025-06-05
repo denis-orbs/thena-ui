@@ -156,7 +156,10 @@ export const useFarmPositions = positions => {
 
     return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
-      const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
+      const [fusionState, fusion, poolAddress = zeroAddress, tickSpacing] = _fusionStates?.[index] || [
+        PoolState.NOT_EXISTS,
+        null,
+      ]
       const farmRewardData = farmRewardsList[index]
 
       const farmingData = fusionFarmings.find(item => item.pool.toLowerCase() === farmAddresses[index]) ?? {}
@@ -243,6 +246,7 @@ export const useFarmPositions = positions => {
         fusionState,
         fusion,
         poolAddress,
+        tickSpacing,
       }
     })
   }, [

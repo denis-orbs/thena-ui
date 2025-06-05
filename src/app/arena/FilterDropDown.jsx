@@ -126,6 +126,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
             }))}
             selected={filter.sortBy}
             setSelected={ele => setFilter({ ...filter, sortBy: ele.label })}
+            listClassNames='z-30'
           />
         </div>
         <div className='my-2 flex items-center justify-between space-x-2.5'>
