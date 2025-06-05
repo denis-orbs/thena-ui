@@ -52,6 +52,5 @@ export function tryParseTick(baseToken, quoteToken, feeAmount, value, tickSpacin
     tick = priceToClosestTick(price)
   }
 
-  // TODO: CHECK
   return nearestUsableTick(tick, tickSpacing ?? TICK_SPACING)
 }

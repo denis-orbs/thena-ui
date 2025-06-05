@@ -629,7 +629,8 @@ export const useRangeHopCallbacks = (
 
   const baseToken = useMemo(() => baseCurrency?.wrapped, [baseCurrency])
   const quoteToken = useMemo(() => quoteCurrency?.wrapped, [quoteCurrency])
-  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
+  // TODO: Need to check price not change when decrease tick if tick spacing is 1
+  const _tickSpacing = useMemo(() => (tickSpacing === 1 ? 2 : tickSpacing) ?? TICK_SPACING, [tickSpacing])
 
   const getDecrementLower = useCallback(
     (rate = 1) => {
