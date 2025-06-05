@@ -669,7 +669,7 @@ export default function PoolsPage() {
             >
               <div className='mt-4 flex items-center gap-2'>
                 {vaults.map(trending => (
-                  <Box className='flex w-full cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
+                  <Box className='flex w-full min-w-[210px] cursor-pointer flex-col gap-4 !p-4' key={trending.address}>
                     <div className='space-y-2'>
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex items-center gap-2'>
