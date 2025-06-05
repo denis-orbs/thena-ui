@@ -290,6 +290,8 @@ export default function ChartPriceRangeInput({
       isOutOfView &&
       zoomFactor === 1 &&
       !isFullRange &&
+      priceLower &&
+      priceUpper &&
       // Full Range
       Number(priceLower.toSignificant(6)) > 2.9543e-39 &&
       Number(priceUpper.toSignificant(6)) < 3.3849e38
