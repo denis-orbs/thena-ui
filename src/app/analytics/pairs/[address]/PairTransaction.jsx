@@ -3,7 +3,7 @@
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Table from '@/components/table'
@@ -437,6 +437,10 @@ export default function TransactionTable({ pair }) {
       })),
     [filter],
   )
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
 
   const sortedData = useMemo(
     () =>
