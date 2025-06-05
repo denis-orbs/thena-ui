@@ -124,7 +124,7 @@ const usePairs = () => {
         const v3Subpools = subpools.filter(ele => ele.version === 3)
 
         const highApr = v3Subpools.length > 0 ? v3Subpools[0].gauge.apr.toNumber() : 0
-        const poolsWithApr = v3Subpools.filter(ele => ele.gauge.apr.gt(0))
+        const poolsWithApr = v3Subpools.filter(ele => ele.gauge.apr.gt(0) && ele.title !== 'CL_SwapFee')
         const lowApr = poolsWithApr.length > 0 ? poolsWithApr[poolsWithApr.length - 1].gauge.apr.toNumber() : 0
         const apr =
           !v3Subpools.length || !highApr

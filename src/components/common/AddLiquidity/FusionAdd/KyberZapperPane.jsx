@@ -93,6 +93,7 @@ function KyberZapperPane({
     amount1: Number(amountIn),
     isFarming: strategy?.title === MANUAL_TYPES[0],
     estimatedLiquidity: liquidityAdded,
+    tickSpacing: mintInfo.tickSpacing,
   })
 
   useEffect(() => {

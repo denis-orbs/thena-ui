@@ -162,8 +162,16 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
   const fee = Number(globalStates?.[2]) || poolInfo?.[2]?.result
   const tickSpacing = Number(poolInfo?.[3]?.result)
 
-  if (!token0 || !token1 || !fee || !price || !liquidity || !tickSpacing) return [PoolState.NOT_EXISTS, null]
-  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing), poolAddress]
+  if (!token0 || !token1 || !fee || !price || !liquidity || !tickSpacing) {
+    return [PoolState.NOT_EXISTS, null]
+  }
+
+  return [
+    PoolState.EXISTS,
+    new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing),
+    poolAddress,
+    tickSpacing,
+  ]
 }
 
 // @dev: deprecated
@@ -238,7 +246,12 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
 
-  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing), poolAddress]
+  return [
+    PoolState.EXISTS,
+    new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing),
+    poolAddress,
+    tickSpacing,
+  ]
 }
 
 const getTokens = (pool, chainId, getAsset) => {
@@ -277,7 +290,7 @@ const getMultiFusionState = async (contracts, pools, poolAddressList, chainId, g
     }
 
     const pool = new Pool(token0, token1, fee, price, liquidity, tick, tickSpacing)
-    return [PoolState.EXISTS, pool, poolAddress]
+    return [PoolState.EXISTS, pool, poolAddress, tickSpacing]
   })
 
   return fusionStates
@@ -286,13 +299,15 @@ const getMultiFusionState = async (contracts, pools, poolAddressList, chainId, g
 export const useGetMultipleFusionState = (pools, poolAddressList) => {
   const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
+  const prevData = useRef([])
+
   const contracts = (pools || []).map((pool, index) => {
     const { version } = pool
     const poolAddress = poolAddressList[index]
     const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : newPoolAbi }
     return poolContract
   })
-  const prevData = useRef([])
+
   const { data, isLoading } = useSWR(
     contracts.length > 0 &&
       account &&
@@ -310,6 +325,7 @@ export const useGetMultipleFusionState = (pools, poolAddressList) => {
     prevData.current = data
     return data
   }, [data, isLoading])
+
   return _data
 }
 

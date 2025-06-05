@@ -36,12 +36,15 @@ function RangePart({
 
   const initialTokenPrice = useInitialTokenPrice()
 
-  const enforcer = nextUserInput => {
-    if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
-      setLocalTokenValue(nextUserInput.trim())
-      dispatch(updateSelectedPreset({ preset: null }))
-    }
-  }
+  const enforcer = useCallback(
+    nextUserInput => {
+      if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
+        setLocalTokenValue(nextUserInput.trim())
+        dispatch(updateSelectedPreset({ preset: null }))
+      }
+    },
+    [dispatch],
+  )
 
   const handleOnBlur = useCallback(() => {
     onUserInput(localTokenValue)
@@ -145,12 +148,7 @@ export function RangeSelector({
   const rightPrice = useMemo(() => (isSorted ? priceUpper : priceLower?.invert()), [isSorted, priceUpper, priceLower])
 
   const handleRevert = () => {
-    if (isReverse) {
-      if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
-        onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-        onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-      }
-    } else if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
+    if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
       onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
       onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
     }
@@ -174,11 +172,19 @@ export function RangeSelector({
     [isSorted, price, mintInfo?.ticksAtLimit],
   )
 
+  const [leftValue, rightValue] = useMemo(
+    () => [
+      mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? '',
+      mintInfo?.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? '',
+    ],
+    [mintInfo?.ticksAtLimit, leftPrice, rightPrice],
+  )
+
   return (
     <div className='flex flex-col items-center gap-2 md:flex-row'>
       <div className='w-full md:min-w-0 md:flex-1'>
         <RangePart
-          value={mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? ''}
+          value={leftValue}
           onUserInput={onLeftRangeInput}
           decrement={isSorted ? getDecrementLower : getIncrementUpper}
           increment={isSorted ? getIncrementLower : getDecrementUpper}
@@ -204,7 +210,7 @@ export function RangeSelector({
 
       <div className='w-full md:min-w-0 md:flex-1'>
         <RangePart
-          value={mintInfo?.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? ''}
+          value={rightValue}
           onUserInput={onRightRangeInput}
           decrement={isSorted ? getDecrementUpper : getIncrementLower}
           increment={isSorted ? getIncrementUpper : getDecrementLower}

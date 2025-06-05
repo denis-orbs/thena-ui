@@ -52,17 +52,20 @@ function FarmingItem({ position, isXlDown }) {
     fusionState,
     fusion,
     poolAddress,
+    tickSpacing,
   } = position
 
   const { incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
+
   const tickAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
     }),
-    [tickLower, tickUpper],
+    [tickLower, tickUpper, _tickSpacing],
   )
 
   const [, _fusion] = useMemo(() => {
