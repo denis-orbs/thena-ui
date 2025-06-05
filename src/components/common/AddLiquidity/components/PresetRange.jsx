@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 import { Paragraph } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
@@ -103,13 +103,6 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       })),
     [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
-
-  useEffect(() => {
-    if (isStablecoinPair && !activePreset) {
-      handlePresetRangeSelection(stableRanges)
-      onChangePresetRange(stableRanges)
-    }
-  }, [isStablecoinPair, activePreset, handlePresetRangeSelection, onChangePresetRange])
 
   return (
     <div
