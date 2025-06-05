@@ -91,7 +91,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
 
   const independentCurrency = useMemo(() => currencies[independentField], [currencies, independentField])
 
-  const [fusionState, fusion] = useFusionState({
+  const [fusionState, fusion, _, tickSpacing] = useFusionState({
     currencyA,
     currencyB,
     isFarmingPool: pool?.deployer === ZERO_ADDRESS,
@@ -101,10 +101,14 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
 
   const ticksAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: tickLower
+        ? tickLower === nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
+        : undefined,
+      [Bound.UPPER]: tickUpper
+        ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
+        : undefined,
     }),
-    [tickLower, tickUpper],
+    [tickLower, tickUpper, tickSpacing],
   )
 
   const [, _fusion] = useMemo(() => {

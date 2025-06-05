@@ -69,6 +69,7 @@ function ManualItem({ position, isXlDown }) {
     fusionState,
     fusion,
     poolAddress,
+    tickSpacing,
   } = position
 
   const pools = usePools()
@@ -79,12 +80,14 @@ function ManualItem({ position, isXlDown }) {
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
   const [reward0, reward1] = rewards
 
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
+
   const tickAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
     }),
-    [tickLower, tickUpper],
+    [tickLower, tickUpper, _tickSpacing],
   )
 
   const [, _fusion] = useMemo(() => {

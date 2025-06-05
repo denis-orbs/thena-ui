@@ -54,7 +54,7 @@ export default function ManualAdd({
 
   const [slippage, setSlippage] = useState(0.5)
 
-  const { strategy, ticks, pool, poolAddress, parsedAmounts } = mintInfo
+  const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing } = mintInfo
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
 
   const estimateAPR = useEstimateAPR({
@@ -67,6 +67,7 @@ export default function ManualAdd({
     token1: quoteCurrency,
     amount1: currencyBAmount?.quotient,
     isFarming: strategy?.title === MANUAL_TYPES[0],
+    tickSpacing,
   })
 
   useEffect(() => {

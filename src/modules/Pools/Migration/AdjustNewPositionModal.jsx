@@ -47,13 +47,21 @@ export function AdjustNewPositionModal({
   const { leftRangeTypedValue, rightRangeTypedValue } = useV3MintState()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency)
 
-  const { ticksAtLimit, invertPrice, dynamicFee, pool } = mintInfo
+  const { ticksAtLimit, invertPrice, dynamicFee, pool, tickSpacing } = mintInfo
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
-    useRangeHopCallbacks(baseCurrency ?? undefined, quoteCurrency ?? undefined, dynamicFee, tickLower, tickUpper, pool)
+    useRangeHopCallbacks(
+      baseCurrency ?? undefined,
+      quoteCurrency ?? undefined,
+      dynamicFee,
+      tickLower,
+      tickUpper,
+      pool,
+      tickSpacing,
+    )
 
   const { startPriceTypedValue } = useV3MintState()
   const { onFieldAInput, onFieldBInput, onStartPriceInput, onLeftRangeInput, onRightRangeInput } =

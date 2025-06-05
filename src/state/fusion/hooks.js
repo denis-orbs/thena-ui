@@ -230,7 +230,7 @@ export const useV3DerivedMintInfo = (
         : balances[1],
   }
 
-  const [poolState, pool, poolAddress] = useFusionState({
+  const [poolState, pool, poolAddress, tickSpacing] = useFusionState({
     currencyA: currencies[Field.CURRENCY_A],
     currencyB: currencies[Field.CURRENCY_B],
     isFarmingPool: strategy?.isFarming,
@@ -242,6 +242,8 @@ export const useV3DerivedMintInfo = (
 
   // note to parse inputs in reverse
   const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0))
+
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
 
   // always returns the price with 0 as base token
   const price = useMemo(() => {
@@ -285,10 +287,10 @@ export const useV3DerivedMintInfo = (
     if (tokenA && tokenB && feeAmount && price && !invalidPrice) {
       const currentTick = priceToClosestTick(price)
       const currentSqrt = TickMath.getSqrtRatioAtTick(currentTick)
-      return new Pool(tokenA, tokenB, feeAmount, currentSqrt, JSBI.BigInt(0), currentTick, TICK_SPACING, [])
+      return new Pool(tokenA, tokenB, feeAmount, currentSqrt, JSBI.BigInt(0), currentTick, _tickSpacing, [])
     }
     return undefined
-  }, [feeAmount, invalidPrice, price, tokenA, tokenB])
+  }, [feeAmount, invalidPrice, price, tokenA, tokenB, _tickSpacing])
 
   // if pool exists use it, if not use the mock pool
   const poolForPosition = pool ?? mockPool
@@ -296,10 +298,10 @@ export const useV3DerivedMintInfo = (
   // lower and upper limits in the tick space for `feeAmount`
   const tickSpaceLimits = useMemo(
     () => ({
-      [Bound.LOWER]: feeAmount ? nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: feeAmount ? nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: feeAmount ? nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+      [Bound.UPPER]: feeAmount ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
     }),
-    [feeAmount],
+    [feeAmount, _tickSpacing],
   )
 
   // parse typed range values and determine closest ticks
@@ -313,8 +315,8 @@ export const useV3DerivedMintInfo = (
               (!invertPrice && typeof leftRangeTypedValue === 'boolean')
             ? tickSpaceLimits[Bound.LOWER]
             : invertPrice
-              ? tryParseTick(token1, token0, feeAmount, rightRangeTypedValue.toString())
-              : tryParseTick(token0, token1, feeAmount, leftRangeTypedValue.toString()),
+              ? tryParseTick(token1, token0, feeAmount, rightRangeTypedValue.toString(), _tickSpacing)
+              : tryParseTick(token0, token1, feeAmount, leftRangeTypedValue.toString(), _tickSpacing),
       [Bound.UPPER]:
         typeof existingPosition?.tickUpper === 'number'
           ? existingPosition.tickUpper
@@ -322,8 +324,8 @@ export const useV3DerivedMintInfo = (
               (invertPrice && typeof leftRangeTypedValue === 'boolean')
             ? tickSpaceLimits[Bound.UPPER]
             : invertPrice
-              ? tryParseTick(token1, token0, feeAmount, leftRangeTypedValue.toString())
-              : tryParseTick(token0, token1, feeAmount, rightRangeTypedValue.toString()),
+              ? tryParseTick(token1, token0, feeAmount, leftRangeTypedValue.toString(), _tickSpacing)
+              : tryParseTick(token0, token1, feeAmount, rightRangeTypedValue.toString(), _tickSpacing),
     }),
     [
       existingPosition,
@@ -334,6 +336,7 @@ export const useV3DerivedMintInfo = (
       token0,
       token1,
       tickSpaceLimits,
+      _tickSpacing,
     ],
   )
 
@@ -609,78 +612,88 @@ export const useV3DerivedMintInfo = (
     liquidityRangeType,
     presetRange,
     strategy,
+    tickSpacing: _tickSpacing,
   }
 }
 
-export const useRangeHopCallbacks = (baseCurrency, quoteCurrency, feeAmount, tickLower, tickUpper, pool) => {
+export const useRangeHopCallbacks = (
+  baseCurrency,
+  quoteCurrency,
+  feeAmount,
+  tickLower,
+  tickUpper,
+  pool,
+  tickSpacing,
+) => {
   const dispatch = useDispatch()
 
   const baseToken = useMemo(() => baseCurrency?.wrapped, [baseCurrency])
   const quoteToken = useMemo(() => quoteCurrency?.wrapped, [quoteCurrency])
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
 
   const getDecrementLower = useCallback(
     (rate = 1) => {
       if (baseToken && quoteToken && typeof tickLower === 'number' && feeAmount) {
-        const newPrice = tickToPrice(baseToken, quoteToken, tickLower - TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, tickLower - _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       // use pool current tick as starting tick if we have pool but no tick input
 
       if (!(typeof tickLower === 'number') && baseToken && quoteToken && feeAmount && pool) {
-        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent - TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent - _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       return ''
     },
-    [baseToken, quoteToken, tickLower, feeAmount, pool],
+    [baseToken, quoteToken, tickLower, feeAmount, pool, _tickSpacing],
   )
 
   const getIncrementLower = useCallback(
     (rate = 1) => {
       if (baseToken && quoteToken && typeof tickLower === 'number' && feeAmount) {
-        const newPrice = tickToPrice(baseToken, quoteToken, tickLower + TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, tickLower + _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       // use pool current tick as starting tick if we have pool but no tick input
       if (!(typeof tickLower === 'number') && baseToken && quoteToken && feeAmount && pool) {
-        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent + TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent + _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       return ''
     },
-    [baseToken, quoteToken, tickLower, feeAmount, pool],
+    [baseToken, quoteToken, tickLower, feeAmount, pool, _tickSpacing],
   )
 
   const getDecrementUpper = useCallback(
     (rate = 1) => {
       if (baseToken && quoteToken && typeof tickUpper === 'number' && feeAmount) {
-        const newPrice = tickToPrice(baseToken, quoteToken, tickUpper - TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, tickUpper - _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       // use pool current tick as starting tick if we have pool but no tick input
       if (!(typeof tickUpper === 'number') && baseToken && quoteToken && feeAmount && pool) {
-        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent - TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent - _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       return ''
     },
-    [baseToken, quoteToken, tickUpper, feeAmount, pool],
+    [baseToken, quoteToken, tickUpper, feeAmount, pool, _tickSpacing],
   )
 
   const getIncrementUpper = useCallback(
     (rate = 1) => {
       if (baseToken && quoteToken && typeof tickUpper === 'number' && feeAmount) {
-        const newPrice = tickToPrice(baseToken, quoteToken, tickUpper + TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, tickUpper + _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       // use pool current tick as starting tick if we have pool but no tick input
       if (!(typeof tickUpper === 'number') && baseToken && quoteToken && feeAmount && pool) {
-        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent + TICK_SPACING * rate)
+        const newPrice = tickToPrice(baseToken, quoteToken, pool.tickCurrent + _tickSpacing * rate)
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP)
       }
       return ''
     },
-    [baseToken, quoteToken, tickUpper, feeAmount, pool],
+    [baseToken, quoteToken, tickUpper, feeAmount, pool, _tickSpacing],
   )
 
   const getSetRange = useCallback(

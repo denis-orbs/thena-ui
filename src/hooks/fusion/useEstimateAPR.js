@@ -103,6 +103,7 @@ const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, is
  * @param {number} amount1
  * @param {boolean} isFarming
  * @param {number} estimatedLiquidity
+ * @param {number} tickSpacing
  */
 export const useEstimateAPR = ({
   pool,
@@ -115,6 +116,7 @@ export const useEstimateAPR = ({
   amount1 = 0,
   isFarming = true,
   estimatedLiquidity = 0,
+  tickSpacing = TICK_SPACING,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const activePreset = useActivePreset()
@@ -233,13 +235,13 @@ export const useEstimateAPR = ({
   ].map(({ min, max, title }) => {
     const _tickLower =
       title === Presets.FULL
-        ? nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING)
+        ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
         : title === 'current' || title === activePreset
           ? tickLower
           : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
     const _tickUpper =
       title === Presets.FULL
-        ? nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING)
+        ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
         : title === 'current' || title === activePreset
           ? tickUpper
           : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())

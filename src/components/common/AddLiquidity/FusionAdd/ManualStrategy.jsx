@@ -90,6 +90,7 @@ function ManualStrategy({
       tickLower,
       tickUpper,
       mintInfo.pool,
+      mintInfo.tickSpacing,
     )
 
   const price = useMemo(() => {
