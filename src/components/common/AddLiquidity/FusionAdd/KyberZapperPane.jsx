@@ -66,22 +66,34 @@ function KyberZapperPane({
     tickUpper,
     poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
     tokenIn: tokenDeposit,
-    amountIn,
+    amountIn: Number(amountIn) || 1,
     slippage: slippage * 100,
   })
 
-  const tokens = {
-    [asset0.address]: asset0,
-    [asset1.address]: asset1,
-  }
-  const swaps = data?.zapDetails?.actions
-    .filter(action => action.type.includes('SWAP'))
-    .flatMap(entry => entry.aggregatorSwap?.swaps || entry.poolSwap?.swaps || [])
+  const tokens = useMemo(
+    () => ({
+      [asset0.address]: asset0,
+      [asset1.address]: asset1,
+    }),
+    [asset0, asset1],
+  )
 
-  const liquidityAdded = data?.positionDetails?.addedLiquidity
-  const addLiquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
-  const _token0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
-  const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
+  const [liquidityAdded, addLiquidityAction, swaps] = useMemo(() => {
+    const liquidityData = data?.positionDetails?.addedLiquidity
+    const liquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
+    const swapsData = data?.zapDetails?.actions
+      .filter(action => action.type.includes('SWAP'))
+      .flatMap(entry => entry.aggregatorSwap?.swaps || entry.poolSwap?.swaps || [])
+
+    return [liquidityData, liquidityAction, swapsData]
+  }, [data])
+
+  const [_token0, _token1] = useMemo(() => {
+    const tk0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
+    const tk1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
+    return [tk0, tk1]
+  }, [addLiquidityAction, tokens])
+
   const estimateAPR = useEstimateAPR({
     pool: mintInfo.pool,
     poolAddress: mintInfo.poolAddress,
@@ -89,11 +101,13 @@ function KyberZapperPane({
     tickLower,
     token0: (tokenDeposit.address === 'BNB' && isToken0Wbnb) || tokenDeposit.address === asset0.address ? asset0 : null,
     token1: (tokenDeposit.address === 'BNB' && isToken1Wbnb) || tokenDeposit.address === asset1.address ? asset1 : null,
-    amount0: Number(amountIn),
-    amount1: Number(amountIn),
+    amount0: Number(amountIn) || 1,
+    amount1: Number(amountIn) || 1,
     isFarming: strategy?.title === MANUAL_TYPES[0],
     estimatedLiquidity: liquidityAdded,
     tickSpacing: mintInfo.tickSpacing,
+    poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
+    slippage: slippage * 100,
   })
 
   useEffect(() => {
@@ -159,7 +173,7 @@ function KyberZapperPane({
           <div
             className={cn(
               'flex gap-3 rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
-              !data && 'hidden',
+              (!amountIn || !data) && 'hidden',
             )}
           >
             <article className='flex flex-col gap-2'>
