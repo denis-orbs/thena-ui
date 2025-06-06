@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
@@ -11,7 +11,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
-import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
@@ -23,10 +23,8 @@ import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ZapperIcon } from '@/svgs'
 
 import { EnterAmounts } from './containers/EnterAmounts'
-import { CommonZapperPane } from '../components/CommonZapperPane'
 
 const feeAmount = 3000
 
@@ -73,8 +71,8 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
 
-  const asset0 = useGetAsset(strategy?.token0?.address)
-  const asset1 = useGetAsset(strategy?.token1?.address)
+  // const asset0 = useGetAsset(strategy?.token0?.address)
+  // const asset1 = useGetAsset(strategy?.token1?.address)
 
   const addSelections = useMemo(
     () => [
@@ -85,18 +83,18 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
           setIsZapper(false)
         },
       },
-      {
-        label: (
-          <div className='flex items-center justify-center gap-1'>
-            <ZapperIcon className='size-5' />
-            <span>{t('Zapper Deposit')}</span>
-          </div>
-        ),
-        active: isZapper,
-        onClickHandler: () => {
-          setIsZapper(true)
-        },
-      },
+      // {
+      //   label: (
+      //     <div className='flex items-center justify-center gap-1'>
+      //       <ZapperIcon className='size-5' />
+      //       <span>{t('Zapper Deposit')}</span>
+      //     </div>
+      //   ),
+      //   active: isZapper,
+      //   onClickHandler: () => {
+      //     setIsZapper(true)
+      //   },
+      // },
     ],
     [isZapper, t],
   )
@@ -106,7 +104,8 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
       <div className='flex flex-col gap-5'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull isTranslation={false} />
-        {isZapper ? (
+        {/* Temporary remove zapper */}
+        {/* (
           <CommonZapperPane
             asset0={asset0}
             asset1={asset1}
@@ -115,7 +114,8 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
             handleBack={handleBack}
             isSmall={isSmall}
           />
-        ) : (
+        )  */}
+        {!isZapper && (
           <ManualPane
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
