@@ -17,6 +17,7 @@ import { tryParseTick } from '@/state/fusion/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { useGetAsset } from './Tokens'
+import { useGetZapInRoutePerRange } from '../zapper/useZapper'
 
 const getFusionFeesData = async ({ chainId, pool }) => {
   try {
@@ -92,6 +93,34 @@ const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, is
     .div(tvl)
 }
 
+const presetRanges = [
+  {
+    min: 0,
+    max: Infinity,
+    title: Presets.FULL,
+  },
+  {
+    min: 0.8,
+    max: 1.2,
+    title: Presets.SAFE,
+  },
+  {
+    min: 0.9,
+    max: 1.1,
+    title: Presets.NORMAL,
+  },
+  {
+    min: 0.95,
+    max: 1.05,
+    title: Presets.RISK,
+  },
+  {
+    min: 0.984,
+    max: 1.016,
+    title: Presets.STABLE,
+  },
+]
+
 /**
  * @param {import('thenafi-fusion-sdk').Pool} pool
  * @param {string} poolAddress
@@ -117,6 +146,8 @@ export const useEstimateAPR = ({
   isFarming = true,
   estimatedLiquidity = 0,
   tickSpacing = TICK_SPACING,
+  poolId,
+  slippage,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const activePreset = useActivePreset()
@@ -166,6 +197,24 @@ export const useEstimateAPR = ({
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
+  const poolPrice = pool?._token0Price?.toSignificant(5)
+  const _token0 = pool?.token0
+  const _token1 = pool?.token1
+
+  const { data: zapAprInRanges } = useGetZapInRoutePerRange(
+    poolId,
+    tickSpacing,
+    presetRanges.map(range => ({
+      ...range,
+      _token0,
+      _token1,
+      poolPrice,
+      tokenIn: token0,
+      amountIn: amount0,
+      slippage,
+    })),
+  )
+
   if (!pool) return {}
 
   let _amount0 =
@@ -187,52 +236,13 @@ export const useEstimateAPR = ({
           currency1?.decimals ?? 18,
         )
 
-  const poolPrice = pool?._token0Price?.toSignificant(5)
-  const _token0 = pool.token0
-  const _token1 = pool.token1
-
   // In case, user do not enters amount0 and amount1
   if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
     _amount0 = currency0?.price ? toWei(50 / currency0.price, currency0.decimals) : BigNumber(0)
     _amount1 = currency1?.price ? toWei(50 / currency1.price, currency1.decimals) : BigNumber(0)
-  } else if (!estimatedLiquidity) {
-    if (_amount0?.isZero() && token0 && !token1) {
-      _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
-    } else if (_amount1?.isZero() && token1 && !token0) {
-      _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
-    }
   }
 
-  const presetPositions = [
-    {
-      min: 0,
-      max: Infinity,
-      title: Presets.FULL,
-    },
-    {
-      min: 0.8,
-      max: 1.2,
-      title: Presets.SAFE,
-    },
-    {
-      min: 0.9,
-      max: 1.1,
-      title: Presets.NORMAL,
-    },
-    {
-      min: 0.95,
-      max: 1.05,
-      title: Presets.RISK,
-    },
-    {
-      min: 0.984,
-      max: 1.016,
-      title: Presets.STABLE,
-    },
-    {
-      title: 'current',
-    },
-  ].map(({ min, max, title }) => {
+  const presetPositions = [...presetRanges, { title: 'current' }].map(({ min, max, title }) => {
     const _tickLower =
       title === Presets.FULL
         ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
@@ -261,29 +271,13 @@ export const useEstimateAPR = ({
           useFullPrecision: true,
         })
       }
-    } else if (!estimatedLiquidity) {
-      if (title === 'current') {
-        _position = { liquidity: 0 }
-      } else if (token0 && !token1) {
-        _position = Position.fromAmount0({
-          pool,
-          tickLower: _tickLower,
-          tickUpper: _tickUpper,
-          amount0: Math.round(_amount0.toNumber()),
-          useFullPrecision: true,
-        })
-      } else if (!token0 && token1) {
-        _position = Position.fromAmount1({
-          pool,
-          tickLower: _tickLower,
-          tickUpper: _tickUpper,
-          amount1: Math.round(_amount1.toNumber()),
-          useFullPrecision: true,
-        })
-      }
-    } else {
+    } else if (title === 'current' || title === activePreset) {
       _position = { liquidity: estimatedLiquidity }
+    } else {
+      const liquidityData = zapAprInRanges?.[title]?.positionDetails?.addedLiquidity
+      _position = { liquidity: liquidityData ?? 0 }
     }
+
     return {
       title,
       position: _position,
