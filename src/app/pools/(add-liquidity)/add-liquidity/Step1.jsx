@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { SelectorPoolTypeLarge, SelectorPoolTypeMini } from '@/components/selector/SelectorMobile'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
+import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import { InfoNeutralIcon, PoolGroupIcon } from '@/svgs'
 
@@ -146,6 +147,14 @@ export default function Step1() {
     [pairType, t, updateSearchParams],
   )
 
+  const handleNext = useCallback(() => {
+    if (pairType === PAIR_TYPES.WEIGHTED) {
+      errorToast('Creation of Weighted pools is currently unavailable. Please check again later.')
+      return
+    }
+    updateSearchParams({ step: 2 }, true)
+  }, [pairType, updateSearchParams])
+
   return (
     <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 xl:gap-8'>
@@ -167,10 +176,7 @@ export default function Step1() {
             <EmphasisButton className='w-full lg:hidden' onClick={() => push('/pools')}>
               {t('Cancel')}
             </EmphasisButton>
-            <EmphasisButton
-              className='max-lg:bg-primary-600 w-full'
-              onClick={() => updateSearchParams({ step: 2 }, true)}
-            >
+            <EmphasisButton className='max-lg:bg-primary-600 w-full' onClick={handleNext}>
               {t('Next')}
             </EmphasisButton>
           </div>

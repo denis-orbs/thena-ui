@@ -27,7 +27,7 @@ import {
 } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, wrappedAddress } from '@/lib/utils'
+import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, toWeiRound, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -474,12 +474,11 @@ export const useWeightedPool = () => {
       const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
       const tokensToLowerCase = tokens.map(item => item.toLowerCase())
       const idx = tokensToLowerCase?.indexOf(token?.address?.toLowerCase())
-      const amountIn = Math.floor(toWei(amountDeposit, token.decimals)).toString()
-      const minAmountOut = Math.floor(
-        toWei(minBPTAmountOut || 0)
-          .times((100 - slippage) / 100)
-          .toNumber(),
-      )
+      const amountIn = toWeiRound(amountDeposit, token.decimals).toString()
+      const minAmountOut = toWeiRound(
+        BigNumber(minBPTAmountOut || 0).times((100 - slippage) / 100),
+        token.decimals,
+      ).toString()
 
       const result = await writeTxn(key, joinPooluuid, routerContract, 'joinPool', [
         poolId32,
@@ -516,8 +515,8 @@ export const useWeightedPool = () => {
   const onAddLiquidityAllToken = useCallback(
     async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
       let isOutOfBalance = false
-      const handleInsufficientBalance = () => {
-        // warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
+      const handleInsufficientBalance = tokenSymbol => {
+        warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
         isOutOfBalance = true
       }
 

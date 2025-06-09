@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
@@ -21,6 +22,8 @@ import {
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { fromWei, toWei, wrappedAddress } from '@/lib/utils'
+import { Presets } from '@/state/fusion/reducer'
+import { tryParseTick } from '@/state/fusion/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -35,6 +38,52 @@ const BASE_ZAPPER_URL = 'https://zap-api.kyberswap.com/bsc/api/v1'
 // tokensIn=0x55d398326f99059ff775485246999027b3197955&
 // amountsIn=10000000000000000000000&
 // slippage=100
+
+export const useGetZapInRoutePerRange = (poolId, tickSpacing, presetRanges) =>
+  useQuery({
+    queryKey: ['zapInRoutePerRange', poolId, presetRanges],
+    queryFn: async () => {
+      const results = {}
+      for (const range of presetRanges) {
+        const { title, min, max, _token0, _token1, poolPrice, tokenIn, amountIn, slippage = 100 } = range
+
+        const amount = toWei(
+          new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
+          tokenIn.decimals,
+        )
+        const tickLower =
+          title === Presets.FULL
+            ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
+            : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
+        const tickUpper =
+          title === Presets.FULL
+            ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
+            : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())
+
+        const params = {
+          dex: 'DEX_THENAALGEBRAINTEGRAL',
+          'pool.id': getAddress(poolId),
+          'position.tickLower': tickLower,
+          'position.tickUpper': tickUpper,
+          tokenIn: getAddress(wrappedAddress(tokenIn)),
+          amountIn: amount,
+          slippage,
+        }
+
+        const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
+          params,
+        })
+        results[title] = response.data?.data
+      }
+      return results
+    },
+    enabled: Boolean(poolId && presetRanges.length > 0),
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchInterval: false,
+  })
 
 export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amountIn, slippage = 100 }) =>
   useQuery({
@@ -133,7 +182,7 @@ export const useZapperAddLiquidity = () => {
 
         if (!isApproved) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${token.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -278,7 +327,7 @@ export const useV1Zapper = () => {
 
         if (amountToApprove.gt(0)) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${tokenDeposit.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -437,7 +486,7 @@ export const useGammaZapper = () => {
 
         if (amountToApprove.gt(0)) {
           transactions[approveId] = {
-            desc: 'Approving token',
+            desc: `Approving ${tokenDeposit.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }

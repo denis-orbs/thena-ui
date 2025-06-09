@@ -23,6 +23,7 @@ import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 function StakedItem({ position, isXlDown }) {
@@ -209,12 +210,16 @@ function StakedItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        currentPrice={currentPrice}
+        minPrice={priceLower}
+        maxPrice={priceUpper}
+        positionType={position.type}
+        apr={position.gauge.apr}
+        title={position.title}
+      />
     ),
-    [position.gauge.apr, t],
+    [currentPrice, priceLower, priceUpper, position.type, position.gauge.apr, position.title],
   )
 
   const valueCell = useMemo(
@@ -300,7 +305,7 @@ function StakedItem({ position, isXlDown }) {
         <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
           onClick={handleHarvest}
-          disabled={claimPending || position.account.earnedUsd.isZero()}
+          disabled={claimPending}
         >
           {t('Claim')}
         </EmphasisButton>
@@ -320,7 +325,7 @@ function StakedItem({ position, isXlDown }) {
             <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
               onClick={handleHarvest}
-              disabled={claimPending || position.account.earnedUsd.isZero()}
+              disabled={claimPending}
             >
               {t('Claim')}
             </EmphasisButton>
@@ -371,7 +376,6 @@ function StakedItem({ position, isXlDown }) {
     isSwapFee,
     migrationLink,
     migrationOptions?.length,
-    position.account.earnedUsd,
     position.type,
     t,
     version,
@@ -421,7 +425,7 @@ function StakedItem({ position, isXlDown }) {
         onGaugeManage={handleUnstake}
         pending={unstakePending}
       />
-      <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+      <RemovePositionModal isStaked popup={removePopup} setPopup={setRemovePopup} strategy={position} />
     </>
   )
 }

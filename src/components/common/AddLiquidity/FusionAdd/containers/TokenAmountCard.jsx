@@ -12,10 +12,15 @@ import { FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useCurrencyLogo, useCurrencyPrice } from '@/hooks/fusion/useCurrencyLogo'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { LockIcon } from '@/svgs'
 
+/**
+ * @param {Object} props
+ * @param {string} props.value, ether value
+ * @param {import('thena-sdk-core').CurrencyAmount} props.maxAmount, wei value
+ */
 export function TokenAmountCard({
   currency,
   setCurrency,
@@ -29,7 +34,6 @@ export function TokenAmountCard({
   showPercent = true,
   showOutsideWarning = true,
   isSmall = false,
-  isInvalidAmount = false,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -89,6 +93,17 @@ export function TokenAmountCard({
       inputRefer.current.focus()
     }
   }, [])
+
+  const isInvalidAmount = useMemo(() => {
+    if (value === '' || value === '0') return false
+    if (Number(value) === Number.isNaN || Number(value) < 0) return true
+    if (maxAmount) {
+      const amountBN = fromWei(maxAmount.quotient.toString())
+      if (amountBN.lt(value)) return true
+    }
+
+    return false
+  }, [value, maxAmount])
 
   return (
     <div className='w-full'>

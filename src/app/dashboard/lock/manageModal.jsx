@@ -132,6 +132,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           </div>
         </ModalBody>
       )}
+      {/* isAutomation: is automation if status is not no or canceled */}
       {type === ManageTypes.lock && (
         <LockManage
           selected={veTHE}
@@ -140,7 +141,12 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
         />
       )}
-      {type === ManageTypes.merge && <MergeManage selected={veTHE} isAutomation={status !== AUTOMATION_STATUS.NO} />}
+      {type === ManageTypes.merge && (
+        <MergeManage
+          selected={veTHE}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+        />
+      )}
       {type === ManageTypes.split && (
         <SplitManage
           selected={veTHE}

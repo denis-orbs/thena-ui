@@ -9,12 +9,15 @@ import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typograp
 import { THENACOLORS } from '@/constant'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
+import { errorToast } from '@/lib/notify'
 import { formatAmount, toWei, wrappedAddress } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
 
 import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
+
+const blockCreated = true
 
 export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
@@ -31,6 +34,11 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
   const { onCreateWeightedPool, pending } = useWeightedPool()
 
   const onCreate = useCallback(() => {
+    if (blockCreated) {
+      errorToast('Creation of Weighted pools is currently unavailable. Please check again later.')
+      return
+    }
+
     const sortedTokens = tokens.sort((a, b) => wrappedAddress(a).localeCompare(wrappedAddress(b)))
     const allocatesPercent = sortedTokens.map(token => token.weight)
     const amountsWei = sortedTokens.map(token => toWei(Number(token.amount)))

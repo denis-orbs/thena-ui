@@ -36,12 +36,15 @@ function RangePart({
 
   const initialTokenPrice = useInitialTokenPrice()
 
-  const enforcer = nextUserInput => {
-    if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
-      setLocalTokenValue(nextUserInput.trim())
-      dispatch(updateSelectedPreset({ preset: null }))
-    }
-  }
+  const enforcer = useCallback(
+    nextUserInput => {
+      if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
+        setLocalTokenValue(nextUserInput.trim())
+        dispatch(updateSelectedPreset({ preset: null }))
+      }
+    },
+    [dispatch],
+  )
 
   const handleOnBlur = useCallback(() => {
     onUserInput(localTokenValue)
@@ -68,24 +71,24 @@ function RangePart({
 
   useEffect(() => {
     if (activePreset === Presets.FULL) {
-      setLocalTokenValue(title === 'Min' ? 0 : Infinity)
+      setLocalTokenValue(title === 'Min' ? 0 : Number.POSITIVE_INFINITY)
     }
   }, [activePreset, title, value])
 
   return (
     <div className='flex w-full flex-col gap-1.5'>
-      <TextSubHeading className='text-xs'>
+      <TextSubHeading className='truncate text-xs'>
         {t(title === 'Min' ? 'Min [symbol0] per [symbol1] price' : 'Max [symbol0] per [symbol1] price', {
           symbol0: unwrappedSymbol(tokenB),
           symbol1: unwrappedSymbol(tokenA),
         })}
       </TextSubHeading>
 
-      <div className='flex items-center justify-between rounded-xl border border-neutral-700 px-3 py-2'>
-        <div className='flex flex-col gap-1.5 p-0 max-md:w-[calc(100%-80px)]'>
+      <div className='flex min-w-0 items-center justify-between rounded-xl border border-neutral-700 px-3 py-2'>
+        <div className='flex min-w-0 flex-1 flex-col gap-1.5 p-0 pr-2'>
           <input
             type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='truncate border-0 bg-transparent p-0 text-sm leading-5! text-neutral-50 placeholder-neutral-400 xl:text-base!'
+            className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base'
             placeholder='0.0'
             value={localTokenValue}
             onChange={e => {
@@ -97,9 +100,11 @@ function RangePart({
             disabled={disabled || locked}
             onFocus={e => e.target.select()}
           />
-          <Paragraph className='truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>{description}</Paragraph>
+          <Paragraph className='min-w-0 truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>
+            {description}
+          </Paragraph>
         </div>
-        <div className='flex gap-4 md:flex-col md:gap-1'>
+        <div className='flex flex-shrink-0 gap-4 md:flex-col md:gap-1'>
           <OutlineIconButton
             className='order-2 size-6! rounded-xs md:order-1'
             Icon={PlusIcon}
@@ -145,19 +150,14 @@ export function RangeSelector({
   const rightPrice = useMemo(() => (isSorted ? priceUpper : priceLower?.invert()), [isSorted, priceUpper, priceLower])
 
   const handleRevert = () => {
-    if (isReverse) {
-      if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
-        onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-        onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-      }
-    } else if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
+    if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
       onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
       onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
     }
     dispatch(updateIsReverse({ isReverse: !isReverse }))
     onFieldAInput('')
     onFieldBInput('')
-    onStartPriceInput('')
+    onStartPriceInput(mintInfo.invertPrice ? mintInfo.price.toSignificant(5) : mintInfo.price.invert().toSignificant(5))
   }
 
   const brushLabelValue = useCallback(
@@ -174,25 +174,35 @@ export function RangeSelector({
     [isSorted, price, mintInfo?.ticksAtLimit],
   )
 
+  const [leftValue, rightValue] = useMemo(
+    () => [
+      mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? '',
+      mintInfo?.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? '',
+    ],
+    [mintInfo?.ticksAtLimit, leftPrice, rightPrice],
+  )
+
   return (
     <div className='flex flex-col items-center gap-2 md:flex-row'>
-      <RangePart
-        value={mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? ''}
-        onUserInput={onLeftRangeInput}
-        decrement={isSorted ? getDecrementLower : getIncrementUpper}
-        increment={isSorted ? getIncrementLower : getDecrementUpper}
-        decrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
-        incrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
-        label={leftPrice ? `${currencyB?.symbol}` : '-'}
-        tokenA={currencyA}
-        tokenB={currencyB}
-        disabled={disabled}
-        title='Min'
-        description={brushLabelValue('w', leftPrice?.toSignificant(5))}
-      />
+      <div className='w-full md:min-w-0 md:flex-1'>
+        <RangePart
+          value={leftValue}
+          onUserInput={onLeftRangeInput}
+          decrement={isSorted ? getDecrementLower : getIncrementUpper}
+          increment={isSorted ? getIncrementLower : getDecrementUpper}
+          decrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
+          incrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
+          label={leftPrice ? `${currencyB?.symbol}` : '-'}
+          tokenA={currencyA}
+          tokenB={currencyB}
+          disabled={disabled}
+          title='Min'
+          description={brushLabelValue('w', leftPrice?.toSignificant(5))}
+        />
+      </div>
 
       <button
-        className='flex h-fit w-full items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit'
+        className='flex h-fit w-full items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit md:flex-shrink-0'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}
@@ -200,21 +210,23 @@ export function RangeSelector({
         <ReverseIcon className='size-4 rotate-90 md:rotate-0' />
       </button>
 
-      <RangePart
-        value={mintInfo?.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? ''}
-        onUserInput={onRightRangeInput}
-        decrement={isSorted ? getDecrementUpper : getIncrementLower}
-        increment={isSorted ? getIncrementUpper : getDecrementLower}
-        incrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
-        decrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
-        label={rightPrice ? `${currencyB?.symbol}` : '-'}
-        tokenA={currencyA ?? undefined}
-        tokenB={currencyB ?? undefined}
-        initialPrice={mintInfo?.price}
-        disabled={disabled}
-        title='Max'
-        description={brushLabelValue('e', rightPrice?.toSignificant(5))}
-      />
+      <div className='w-full md:min-w-0 md:flex-1'>
+        <RangePart
+          value={rightValue}
+          onUserInput={onRightRangeInput}
+          decrement={isSorted ? getDecrementUpper : getIncrementLower}
+          increment={isSorted ? getIncrementUpper : getDecrementLower}
+          incrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
+          decrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
+          label={rightPrice ? `${currencyB?.symbol}` : '-'}
+          tokenA={currencyA ?? undefined}
+          tokenB={currencyB ?? undefined}
+          initialPrice={mintInfo?.price}
+          disabled={disabled}
+          title='Max'
+          description={brushLabelValue('e', rightPrice?.toSignificant(5))}
+        />
+      </div>
     </div>
   )
 }

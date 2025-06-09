@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
@@ -11,6 +11,7 @@ import SuccessModal from '@/components/modal/SuccessModal'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
+import { warnToast } from '@/lib/notify'
 import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
@@ -28,7 +29,6 @@ export function ManualPaneV1({
   const { push } = useRouter()
 
   const [slippage, setSlippage] = useState(0.5)
-  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
 
   const [firstAmount, setFirstAmount] = useState('')
   const [secondAmount, setSecondAmount] = useState('')
@@ -92,17 +92,28 @@ export function ManualPaneV1({
     [strategy, firstAsset],
   )
 
+  const errorMsg = useMemo(() => {
+    if (isInvalidAmount(firstAmount) || isInvalidAmount(secondAmount)) {
+      return 'Invalid Amount'
+    }
+
+    if (firstAsset.balance.lt(firstAmount)) {
+      return `Insufficient ${firstAsset.symbol} balance`
+    }
+
+    if (secondAsset.balance.lt(secondAmount)) {
+      return `Insufficient ${secondAsset.symbol} balance`
+    }
+
+    return null
+  }, [firstAmount, secondAmount, firstAsset, secondAsset])
+
   const onAddLiquidity = useCallback(() => {
-    if (
-      isInvalidAmount(firstAmount) ||
-      isInvalidAmount(secondAmount) ||
-      firstAsset?.balance?.lt(firstAmount) ||
-      secondAsset?.balance?.lt(secondAmount)
-    ) {
-      // warnToast(errorMsg, 'warn')
-      setCheckIsInvalid(true)
+    if (errorMsg) {
+      warnToast(errorMsg, 'warn')
       return
     }
+
     onV1Add(
       firstAsset,
       secondAsset,
@@ -117,19 +128,14 @@ export function ManualPaneV1({
         setSecondAmount('')
       },
     )
-  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, slippage])
+  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, slippage, errorMsg])
 
   const onAddAndStake = useCallback(() => {
-    if (
-      isInvalidAmount(firstAmount) ||
-      isInvalidAmount(secondAmount) ||
-      firstAsset?.balance?.lt(firstAmount) ||
-      secondAsset?.balance?.lt(secondAmount)
-    ) {
-      // warnToast(errorMsg, 'warn')
-      setCheckIsInvalid(true)
+    if (errorMsg) {
+      warnToast(errorMsg, 'warn')
       return
     }
+
     onV1AddAndStake(
       strategy,
       firstAsset,
@@ -145,19 +151,18 @@ export function ManualPaneV1({
         setSecondAmount('')
       },
     )
-  }, [onV1AddAndStake, strategy, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, slippage])
-
-  useEffect(() => {
-    if (
-      !isInvalidAmount(firstAmount) &&
-      !isInvalidAmount(secondAmount) &&
-      !firstAsset?.balance?.lt(firstAmount) &&
-      !secondAsset?.balance?.lt(secondAmount) &&
-      checkIsInvalid
-    ) {
-      setCheckIsInvalid(false)
-    }
-  }, [checkIsInvalid, firstAmount, firstAsset?.balance, secondAmount, secondAsset?.balance])
+  }, [
+    firstAmount,
+    secondAmount,
+    errorMsg,
+    onV1AddAndStake,
+    strategy,
+    firstAsset,
+    secondAsset,
+    pairType,
+    deadline,
+    slippage,
+  ])
 
   return (
     <>
@@ -170,7 +175,6 @@ export function ManualPaneV1({
             amount={firstAmount}
             onAmountChange={onFirstChange}
             showPercent={false}
-            isInvalidAmount={checkIsInvalid}
           />
           <TokenAmountInput
             asset={secondAsset}
@@ -178,7 +182,6 @@ export function ManualPaneV1({
             amount={secondAmount}
             onAmountChange={onSecondChange}
             showPercent={false}
-            isInvalidAmount={checkIsInvalid}
           />
         </div>
       </div>

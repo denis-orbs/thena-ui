@@ -389,6 +389,9 @@ export const useNftClaimAllReward = () => {
   const handleClaimAll = useCallback(
     async callback => {
       const key = uuidv4()
+      const claimable = await readCall(getRoyaltyContract(), 'claimable', [account], ChainId.BSC)
+      const isClaimable = BigNumber(claimable).gt(0)
+
       const harvestfeesuuid = uuidv4()
       const harvestroyaltyuuid = uuidv4()
 
@@ -398,11 +401,13 @@ export const useNftClaimAllReward = () => {
           status: TXN_STATUS.START,
           hash: null,
         },
-        [harvestroyaltyuuid]: {
-          desc: t('Claim Royalty'),
-          status: TXN_STATUS.START,
-          hash: null,
-        },
+        ...(isClaimable && {
+          [harvestroyaltyuuid]: {
+            desc: t('Claim Royalty'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
       }
 
       startTxn({
@@ -420,11 +425,13 @@ export const useNftClaimAllReward = () => {
         return
       }
 
-      const royaltyContract = getRoyaltyContract()
-      const isRoyaltySuccess = await writeTxn(key, harvestroyaltyuuid, royaltyContract, 'claim', [account])
-      if (!isRoyaltySuccess) {
-        setPending(false)
-        return
+      if (isClaimable) {
+        const royaltyContract = getRoyaltyContract()
+        const isRoyaltySuccess = await writeTxn(key, harvestroyaltyuuid, royaltyContract, 'claim', [account])
+        if (!isRoyaltySuccess) {
+          setPending(false)
+          return
+        }
       }
 
       endTxn({

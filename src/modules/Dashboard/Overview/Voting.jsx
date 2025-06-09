@@ -18,6 +18,7 @@ import { useEpochTimer } from '@/hooks/useGeneral'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
+import { fetchStats } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { ExternalIcon } from '@/svgs'
@@ -35,6 +36,7 @@ function Voting() {
   const { account, chainId } = useWallet()
   const v3PoolsWithGauge = useV3PoolsWithGauge()
   const { veTHEs } = useVeTHEsContext()
+  const { data: chartData } = useSWR('thena total stats', () => fetchStats())
 
   const debouncedId = useDebounce(approvedId)
 
@@ -180,7 +182,7 @@ function Voting() {
           <>
             <div className='flex h-[215px] flex-col justify-end gap-4 pb-11 text-center'>
               <NewTextHeading className='text-gradient-primary-b text-5xl md:text-5xl'>
-                ${formatAmount(totalRewards)}
+                $ {formatAmount(chartData?.revenueData ?? 0, true)}
               </NewTextHeading>
               <NewTextHeading className='text-xl md:text-xl'>{t('Earned by veTHE Voters')}</NewTextHeading>
             </div>

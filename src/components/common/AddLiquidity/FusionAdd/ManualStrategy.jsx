@@ -68,8 +68,14 @@ function ManualStrategy({
 
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
 
-  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
+  const {
+    onStartPriceInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onChangeLiquidityRangeType,
+    onFieldAInput,
+    onFieldBInput,
+  } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
@@ -84,6 +90,7 @@ function ManualStrategy({
       tickLower,
       tickUpper,
       mintInfo.pool,
+      mintInfo.tickSpacing,
     )
 
   const price = useMemo(() => {
@@ -118,6 +125,30 @@ function ManualStrategy({
     onRightRangeInput('')
     onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
   }, [dispatch, onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType])
+
+  const handleRevert = useCallback(() => {
+    if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
+      onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
+      onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
+    }
+    dispatch(updateIsReverse({ isReverse: !isReverse }))
+    onFieldAInput('')
+    onFieldBInput('')
+    onStartPriceInput(mintInfo.invertPrice ? mintInfo.price.toSignificant(5) : mintInfo.price.invert().toSignificant(5))
+  }, [
+    dispatch,
+    isReverse,
+    mintInfo.invertPrice,
+    mintInfo.price,
+    mintInfo?.ticksAtLimit,
+    onFieldAInput,
+    onFieldBInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onStartPriceInput,
+    priceLower,
+    priceUpper,
+  ])
 
   useEffect(() => {
     resetState()
@@ -169,10 +200,7 @@ function ManualStrategy({
                 <EmphasisIconButton
                   className='size-6 rounded-[4px] md:size-11 md:rounded-lg'
                   Icon={TransferIcon}
-                  onClick={() => {
-                    resetState()
-                    dispatch(updateIsReverse({ isReverse: !isReverse }))
-                  }}
+                  onClick={handleRevert}
                 />
                 <CircleImage
                   className='size-6 outline-[#1C2027] outline-solid md:size-9'
@@ -198,7 +226,7 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'mt-4 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900/50 p-4 font-medium md:mt-2 md:px-5 md:py-4',
+                'bg-opacity-50 mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -244,10 +272,15 @@ function ManualStrategy({
 
               <div className='flex flex-col justify-end'>
                 <NewTextSubHeading className='text-gradient-primary-start text-end text-xs font-bold md:text-xl md:leading-6'>
-                  {formatAmount(APRs?.current && APRs.current.isZero() ? strategy?.apr : APRs?.current)}%
+                  {formatAmount(
+                    APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
+                      ? strategy?.apr
+                      : APRs?.[activePreset ?? 'current'],
+                  )}
+                  %
                 </NewTextSubHeading>
                 <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
-                  {t('Estimated APR')}
+                  {t(isEarnFees ? 'Historical Weekly APR' : 'Estimated APR')}
                 </Paragraph>
               </div>
             </article>
@@ -264,7 +297,7 @@ function ManualStrategy({
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
                 ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={price ? parseFloat(price) : undefined}
+                price={price ? Number.parseFloat(price) : undefined}
                 priceLower={position?.priceLower ?? priceLower}
                 priceUpper={position?.priceUpper ?? priceUpper}
                 onLeftRangeInput={onLeftRangeInput}
@@ -284,7 +317,7 @@ function ManualStrategy({
 
           {!position && (
             <RangeSelector
-              price={price ? parseFloat(price) : undefined}
+              price={price ? Number.parseFloat(price) : undefined}
               priceLower={priceLower}
               priceUpper={priceUpper}
               getDecrementLower={getDecrementLower}

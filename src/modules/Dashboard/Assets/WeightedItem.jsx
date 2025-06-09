@@ -16,7 +16,7 @@ import {
   useGaugeStakeWeighted,
   useGaugeUnstakeWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
 import ManageWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
 import { InfoIcon } from '@/svgs'
@@ -100,7 +100,19 @@ function WeightedItem({ position, isStake, isXlDown }) {
     [position.tokens, position.symbol, position.address],
   )
 
-  const rangeCell = useMemo(() => <div className='w-full text-center'>{isStake ? 'Stake' : 'UnStake'}</div>, [isStake])
+  const rangeCell = useMemo(
+    () => (
+      <div
+        className={cn(
+          'relative flex h-8 items-center justify-center overflow-hidden md:h-11',
+          'bg-full-range rounded-md border border-neutral-600 px-2 text-base text-neutral-300',
+        )}
+      >
+        {t('Full Range')}
+      </div>
+    ),
+    [t],
+  )
 
   const aprCell = useMemo(
     () => (

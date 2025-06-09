@@ -10,27 +10,46 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
   const t = useTranslations()
 
   return (
-    <div className='mt-4 md:mt-0'>
+    <div className='mt-4 md:mt-0 xl:space-y-2'>
+      <TextHeading className='!text-xl !leading-6 max-md:hidden'>{t('Your Deposit')}</TextHeading>
       <article
         className={cn(
-          'gird-cols-2 grid items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4',
+          'grid grid-cols-2 items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4',
         )}
       >
-        <div className='col-span-2 flex items-center gap-2 md:col-span-1 lg:justify-start'>
-          <div className='size-6 min-w-6 md:size-16 md:min-w-16'>
-            <CoinUSDIcon className='size-full' />
+        <div className='col-span-2 flex flex-row gap-2 max-md:items-center md:col-span-1 md:flex-col lg:justify-start'>
+          <div className='flex gap-2'>
+            <div className='size-6 min-w-6 md:size-8 md:min-w-8'>
+              <CoinUSDIcon className='size-full' />
+            </div>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+              ${position.depositInUSD}
+            </Paragraph>
           </div>
-          <div className='flex flex-col gap-2'>
-            <Paragraph className='text-primary-100 text-xs md:text-xl'>${position.depositInUSD}</Paragraph>
-            <Paragraph className='text-primary-100 text-xs md:text-base'>{t('Deposit Value in USD')}</Paragraph>
+          <div className='flex flex-col max-md:gap-1'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>${position.depositInUSD}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
+              {t('Deposit Value in USD')}
+            </Paragraph>
           </div>
         </div>
 
-        <div className='flex items-center gap-2 lg:justify-start'>
-          <CircleImage className='size-6 md:size-16' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
-          <div className='flex flex-col gap-2'>
-            <Paragraph className='text-primary-100 text-xs md:text-xl'>{formatAmount(position.amountAsset0)}</Paragraph>
-            <Paragraph className='text-primary-100 text-xs md:text-base'>
+        <div className='flex flex-row gap-2 max-md:items-center md:flex-col lg:justify-start'>
+          <div className='flex gap-2'>
+            <CircleImage
+              className='size-6 min-w-6 md:size-8 md:min-w-8'
+              src={baseCurrency.logoURI ?? UNKNOWN_LOGO}
+              alt='base token'
+            />
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+              {formatAmount(position.amountAsset0)}
+            </Paragraph>
+          </div>
+          <div className='flex flex-col max-md:gap-1'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
+              {formatAmount(position.amountAsset0)}
+            </Paragraph>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
@@ -39,11 +58,22 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           </div>
         </div>
 
-        <div className='flex items-center gap-2 lg:justify-start'>
-          <CircleImage className='size-6 md:size-16' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
-          <div className='flex flex-col gap-2'>
-            <Paragraph className='text-primary-100 text-xs md:text-xl'>{formatAmount(position.amountAsset1)}</Paragraph>
-            <Paragraph className='text-primary-100 text-xs md:text-base'>
+        <div className='flex flex-row gap-2 max-md:items-center md:flex-col md:items-end'>
+          <div className='flex gap-2'>
+            <CircleImage
+              className='size-6 min-w-6 md:size-8 md:min-w-8'
+              src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
+              alt='quote token'
+            />
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+              {formatAmount(position.amountAsset1)}
+            </Paragraph>
+          </div>
+          <div className='flex flex-col max-md:gap-1'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
+              {formatAmount(position.amountAsset1)}
+            </Paragraph>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),

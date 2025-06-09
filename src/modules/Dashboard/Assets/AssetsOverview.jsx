@@ -85,10 +85,11 @@ function AssetsOverview({
 
   const processWeightedPosition = useCallback(
     pos => {
-      const amount = pos.claimableFee?.total ?? ZERO_VALUE
-      if (pos.staked && amount.gt(0)) {
+      const total = pos.claimableFee?.total ?? ZERO_VALUE
+      if (pos.staked && total.gt(0)) {
+        const farmReward = (pos.claimableFee?.tokenList ?? []).find(tk => tk.symbol === 'THE')
         addReward({
-          amount,
+          amount: farmReward?.fee ?? 0,
           type: 'weighted',
           args: pos.gauge.address,
           key: getKeyFromTokenAddress(

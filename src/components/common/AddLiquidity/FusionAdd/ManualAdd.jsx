@@ -32,15 +32,10 @@ export default function ManualAdd({
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
 
-  const { errorMessage, errorCode } = useMemo(
-    () => ({
-      errorMessage: position ? position.errorMessage : mintInfo.errorMessage,
-      errorCode: position ? position.errorCode : mintInfo.errorCode,
-    }),
-    [mintInfo.errorMessage, mintInfo.errorCode, position],
+  const errorMessage = useMemo(
+    () => (position ? position.errorMessage : mintInfo.errorMessage),
+    [mintInfo.errorMessage, position],
   )
-
-  const [checkIsInvalid, setCheckIsInvalid] = useState(false)
 
   const amountA = useMemo(
     () => (position ? position.parsedAmounts?.[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_A]),
@@ -59,7 +54,7 @@ export default function ManualAdd({
 
   const [slippage, setSlippage] = useState(0.5)
 
-  const { strategy, ticks, pool, poolAddress, parsedAmounts } = mintInfo
+  const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing } = mintInfo
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
 
   const estimateAPR = useEstimateAPR({
@@ -72,20 +67,17 @@ export default function ManualAdd({
     token1: quoteCurrency,
     amount1: currencyBAmount?.quotient,
     isFarming: strategy?.title === MANUAL_TYPES[0],
+    tickSpacing,
   })
 
   useEffect(() => {
-    setAPRs(estimateAPR)
+    setAPRs({ ...estimateAPR, current: position ? position.apr : estimateAPR.current })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(estimateAPR), setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
-      if (errorCode === 3 || errorCode === 4 || errorCode === 5 || (position && position.errorMessage)) {
-        setCheckIsInvalid(true)
-      } else {
-        warnToast(errorMessage, 'warn')
-      }
+      warnToast(errorMessage, 'warn')
       return
     }
 
@@ -110,7 +102,6 @@ export default function ManualAdd({
   }, [
     errorMessage,
     position,
-    errorCode,
     onAlgebraAdd,
     amountA,
     amountB,
@@ -135,7 +126,6 @@ export default function ManualAdd({
           mintInfo={mintInfo}
           position={position}
           isSmall
-          checkIsInvalid={checkIsInvalid}
         />
       </div>
 

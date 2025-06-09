@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
@@ -37,6 +37,7 @@ import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 function NotStakedItem({ position, isXlDown }) {
@@ -268,12 +269,16 @@ function NotStakedItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        currentPrice={currentPrice}
+        minPrice={priceLower}
+        maxPrice={priceUpper}
+        positionType={position.type}
+        apr={position.apr}
+        title={position.title}
+      />
     ),
-    [position.apr, t],
+    [currentPrice, priceLower, priceUpper, position.type, position.apr, position.title],
   )
 
   const valueCell = useMemo(
@@ -427,7 +432,7 @@ function NotStakedItem({ position, isXlDown }) {
         onGaugeManage={handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+      <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} />
       <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} />
     </>
   )

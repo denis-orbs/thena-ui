@@ -3,7 +3,7 @@
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Table from '@/components/table'
@@ -204,6 +204,10 @@ export default function WeightedTransactionTable({ pair }) {
     [filter],
   )
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
+
   const sortedData = useMemo(
     () =>
       (txnData ?? [])
@@ -250,7 +254,11 @@ export default function WeightedTransactionTable({ pair }) {
             {getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t, pair.tokens, true)}
           </div>
         ),
-        total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
+        total: (
+          <Paragraph>
+            ${formatAmount(Number(item.amountUSD) < 0 ? item.amountUSD * -1 : item.amountUSD, true)}
+          </Paragraph>
+        ),
         ...(item.tokens || []).reduce((acc, token) => {
           acc[token.symbol] = (
             <Paragraph>

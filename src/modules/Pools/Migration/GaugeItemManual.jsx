@@ -33,17 +33,19 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export function GaugeItemManual({ existingPosition, position, fusion, version = 2 }) {
+export function GaugeItemManual({ existingPosition, position, fusion, version = 2, tickSpacing }) {
   const t = useTranslations()
   const [reversePrice, setReversePrice] = useState(false)
   const { asset0, asset1, liquidity, tickLower, tickUpper } = existingPosition
 
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
+
   const tickAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
     }),
-    [tickLower, tickUpper],
+    [tickLower, tickUpper, _tickSpacing],
   )
 
   const amount0 = useMemo(() => position?.amount0?.toExact() ?? 0, [position])

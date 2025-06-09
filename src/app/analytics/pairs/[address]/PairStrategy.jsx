@@ -56,6 +56,7 @@ function PairStrategy({ pair }) {
     tickLower,
     tickUpper,
     mintInfo.pool,
+    mintInfo.tickSpacing,
   )
 
   const price = useMemo(() => {
@@ -222,6 +223,7 @@ function PairStrategy({ pair }) {
     token0: baseCurrency,
     token1: quoteCurrency,
     isFarming: strategy?.isFarming,
+    tickSpacing: mintInfo.tickSpacing,
   })
 
   useEffect(() => {

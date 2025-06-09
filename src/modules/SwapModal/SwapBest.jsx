@@ -128,7 +128,7 @@ export default function SwapBest({
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
     if (!isFallbackLH && bestTrade) {
-      return Math.abs(bestTrade.priceImpact)
+      return Math.abs(bestTrade.percentDiff)
     }
     if (fromAsset && toAsset && fromAmount && toAmount) {
       const fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)

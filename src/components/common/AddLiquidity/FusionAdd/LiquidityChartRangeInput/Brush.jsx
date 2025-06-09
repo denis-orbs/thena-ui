@@ -64,7 +64,8 @@ export const Brush = ({
 
       setLocalBrushExtent(scaled)
     },
-    [xScale, brushExtent, setBrushExtent],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [brushExtent, setBrushExtent, JSON.stringify(xScale)],
   )
 
   // keep local and external brush extent in sync
@@ -103,14 +104,16 @@ export const Brush = ({
     select(brushRef.current)
       .selectAll('.handle')
       .attr('cursor', interactive ? 'ew-resize' : 'default')
-  }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, xScale])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, JSON.stringify(xScale)])
 
   // respond to xScale changes only
   useEffect(() => {
     if (!brushRef.current || !brushBehavior.current) return
 
     brushBehavior.current.move(select(brushRef.current), brushExtent.map(xScale))
-  }, [brushExtent, xScale])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brushExtent, JSON.stringify(xScale)])
 
   // show labels when local brush changes
   useEffect(() => {
@@ -175,7 +178,7 @@ export const Brush = ({
                   <path
                     className={cn(
                       'pointer-events-none cursor-ew-resize stroke-[1.5px]',
-                      interactive ? 'stroke-[#F199EE]' : 'stroke-neutral-500',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#35243D]',
                     )}
                     d={brushHandleAccentPath()}
                   />
@@ -215,7 +218,7 @@ export const Brush = ({
                   <path
                     className={cn(
                       'pointer-events-none cursor-ew-resize stroke-[1.5px]',
-                      interactive ? 'stroke-[#F199EE]' : 'stroke-neutral-500',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#35243D]',
                     )}
                     d={brushHandleAccentPath()}
                   />

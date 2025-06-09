@@ -30,11 +30,7 @@ export function PairBasicInfo({ pair }) {
         apr: aprMin.isEqualTo(aprMax)
           ? `${formatAmount(aprMin)}%`
           : `${formatAmount(aprMin)}% ~ ${formatAmount(aprMax)}%`,
-        tvlUSD: singleSideVault
-          ? BigNumber(singleSideVault.gauge?.tvl || 0)
-              .plus(BigNumber(pair.tvlUSD))
-              .toNumber()
-          : pair.tvlUSD,
+        tvlUSD: pair.tvlUSD,
       }
     }
     return pair

@@ -27,7 +27,7 @@ export function tryParsePrice(baseToken, quoteToken, value) {
   )
 }
 
-export function tryParseTick(baseToken, quoteToken, feeAmount, value) {
+export function tryParseTick(baseToken, quoteToken, feeAmount, value, tickSpacing) {
   if (!baseToken || !quoteToken || !feeAmount || !value) {
     return undefined
   }
@@ -52,6 +52,5 @@ export function tryParseTick(baseToken, quoteToken, feeAmount, value) {
     tick = priceToClosestTick(price)
   }
 
-  // TODO: CHECK
-  return nearestUsableTick(tick, TICK_SPACING)
+  return nearestUsableTick(tick, tickSpacing ?? TICK_SPACING)
 }

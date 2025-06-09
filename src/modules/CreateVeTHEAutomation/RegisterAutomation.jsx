@@ -37,6 +37,14 @@ function RegisterAutomation({
     (contractData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )
 
+  const selectedChainLINK = useMemo(
+    () => ({
+      ...chainLINK,
+      balance: chainLinkData?.find(item => item.address === chainLINK?.address)?.balance ?? chainLINK?.balance,
+    }),
+    [chainLINK, chainLinkData],
+  )
+
   useEffect(() => {
     if (!minRef.current || !minRef.current.eq(minFunds)) {
       setMinFunds(minFunds)
@@ -52,14 +60,6 @@ function RegisterAutomation({
       )
     }
   }, [chainLINK, chainLinkData, updateRegistration])
-
-  const selectedChainLINK = useMemo(
-    () => ({
-      ...chainLINK,
-      balance: chainLinkData?.find(item => item.address === chainLINK?.address)?.balance ?? chainLINK?.balance,
-    }),
-    [chainLINK, chainLinkData],
-  )
 
   return (
     <div className='flex flex-col gap-4'>

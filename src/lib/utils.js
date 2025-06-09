@@ -15,6 +15,8 @@ BigNumber.config({
 export const ZERO_VALUE = new BigNumber(0)
 export const fromWei = (number, decimals = 18) => new BigNumber(number).div(new BigNumber(10).pow(decimals))
 export const toWei = (number, decimals = 18) => new BigNumber(number).times(new BigNumber(10).pow(decimals))
+export const toWeiRound = (number, decimals = 18, round = BigNumber.ROUND_DOWN) =>
+  new BigNumber(number).decimalPlaces(decimals, round).times(BigNumber(10).pow(decimals))
 
 export const addToken = async asset => {
   const provider = window.stargate?.wallet?.ethereum?.signer?.provider?.provider ?? window.ethereum

@@ -19,6 +19,8 @@ import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
+import { collectAndClaimRewards } from './fusion/useAlgebra'
+
 export const useGaugeStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -174,7 +176,7 @@ export const useGaugeAllHarvest = () => {
   const t = useTranslations()
   const { rewards } = useFarmRewards()
 
-  const { chainId } = useWallet()
+  const { chainId, account } = useWallet()
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
 
@@ -183,7 +185,7 @@ export const useGaugeAllHarvest = () => {
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
 
-    const { newGauge, manual, gamma, ichi } = rewards
+    const { newGauge, manual, gamma, ichi, ichiSingleSided } = rewards
 
     const transactions = {}
     if (newGauge.size > 0) {
@@ -205,7 +207,7 @@ export const useGaugeAllHarvest = () => {
     if (gamma.size > 0) {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} Gamma pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pools`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -215,7 +217,17 @@ export const useGaugeAllHarvest = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} Ichi pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pool`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      })
+    }
+
+    if (ichiSingleSided.size > 0) {
+      ichiSingleSided.forEach(_pair => {
+        transactions[`ichi-v2-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Single Sided Vault`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -235,19 +247,17 @@ export const useGaugeAllHarvest = () => {
       }
     }
 
+    // manual = Map<[key, {amount: number, args: [account, poolKey, tokenId]}]>
     if (manual.size > 0) {
       const farmingCenter = getFarmingCenterContract(chainId)
-      const calldata = []
-      manual.forEach(pair => {
-        calldata.push(
-          encodeFunctionData({
-            abi: farmingCenter.abi,
-            functionName: 'collectAndClaimRewards',
-            args: pair.args,
-          }),
-        )
+      const calldata = collectAndClaimRewards({
+        positions: Array.from(manual).map(pair => ({
+          poolKey: pair[1].args[1],
+          tokenId: pair[1].args[2],
+        })),
+        chainId,
+        account,
       })
-
       const encoded = encodeFunctionData({
         abi: farmingCenter.abi,
         functionName: 'multicall',
@@ -313,9 +323,23 @@ export const useGaugeAllHarvest = () => {
       }
     }
 
+    if (ichiSingleSided.size > 0) {
+      const gaugeAddresses = []
+      ichiSingleSided.forEach(pair => gaugeAddresses.push(pair.args))
+
+      for (let i = 0; i < gaugeAddresses.length; i++) {
+        const gaugeAddress = gaugeAddresses[i]
+        const gaugeContract = getGaugeContract(gaugeAddress, chainId)
+        if (!(await writeTxn(key, `ichi-v2-${gaugeAddresses}`, gaugeContract, 'getReward', []))) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
     endTxn({ key, final: 'Harvest Successful' })
     setPending(false)
-  }, [rewards, startTxn, t, endTxn, chainId, writeTxn, sendTxn])
+  }, [rewards, startTxn, endTxn, t, chainId, writeTxn, account, sendTxn])
 
   return { onGaugeAllHarvest, pending }
 }

@@ -2,7 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -12,6 +12,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
+import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
@@ -53,7 +54,6 @@ export const fetchIchiInfo = async (chainId, strategy) => {
 
 export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, handleBack, isSmall = false }) {
   const [amount, setAmount] = useState('')
-  const [invalidAmount, setInvalidAmount] = useState(false)
 
   const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
   const { addIchiPool: addIchiPoolV3, pending: pendingV3 } = useIchiManageV3()
@@ -82,23 +82,22 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
   }, [amount, depositToken])
 
   const onAddLiquidityAndStake = useCallback(() => {
-    if (isInvalidAmount(amount) || balance.lt(amount)) {
-      setInvalidAmount(true)
-      // warnToast(errorMsg)
+    if (isInvalidAmount(amount)) {
+      warnToast('Invalid Amount')
       return
     }
+
+    if (balance.lt(amount)) {
+      warnToast('Insufficient Balance')
+      return
+    }
+
     if (strategy?.version === 2) {
       addIchiPoolV2({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)
     } else {
       addIchiPoolV3({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)
     }
   }, [amount, balance, strategy, addIchiPoolV2, amountToWrap, slippage, onShowModalSuccess, addIchiPoolV3])
-
-  useEffect(() => {
-    if (!isInvalidAmount(amount) && !BigNumber(amount).gt(depositToken?.balance) && invalidAmount === true) {
-      setInvalidAmount(false)
-    }
-  }, [amount, invalidAmount, depositToken?.balance])
 
   return (
     <>
@@ -114,7 +113,6 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
           onAmountChange={setAmount}
           showPercent={false}
           isSmall={isSmall}
-          isInvalidAmount={invalidAmount}
         />
       </div>
 

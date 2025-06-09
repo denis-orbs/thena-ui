@@ -39,6 +39,7 @@ export const getSimpleChartDataCodexQuery = (
         from: ${startTimestampUnix}
         to: ${endTimestampUnix}
         resolution: "${interval}"
+        symbolType: TOKEN
       ) {
         o,
         t
@@ -77,7 +78,8 @@ export const getAdvanceChartDataCodexQuery = (
         from: ${startTimestampUnix}
         to: ${endTimestampUnix}
         resolution: "${interval}"
-        removeEmptyBars:true
+        removeEmptyBars: true
+        symbolType: TOKEN
       ) {
         o
         h

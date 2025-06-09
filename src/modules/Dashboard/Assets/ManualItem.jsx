@@ -26,6 +26,7 @@ import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
+import APR from './APR'
 import Range from './Range'
 
 export const fetchManualInfo = async (account, tokenId, chainId, version) => {
@@ -68,6 +69,7 @@ function ManualItem({ position, isXlDown }) {
     fusionState,
     fusion,
     poolAddress,
+    tickSpacing,
   } = position
 
   const pools = usePools()
@@ -78,12 +80,14 @@ function ManualItem({ position, isXlDown }) {
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
   const [reward0, reward1] = rewards
 
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
+
   const tickAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
-      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING) : undefined,
+      [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+      [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
     }),
-    [tickLower, tickUpper],
+    [tickLower, tickUpper, _tickSpacing],
   )
 
   const [, _fusion] = useMemo(() => {
@@ -222,12 +226,24 @@ function ManualItem({ position, isXlDown }) {
 
   const aprCell = useMemo(
     () => (
-      <div className='flex flex-col max-xl:flex-1'>
-        <TextHeading>{formatAmount(position.apr)}%</TextHeading>
-        <TextSubHeading className='font-medium xl:text-base'>{t('APR')}</TextSubHeading>
-      </div>
+      <APR
+        positionType={position.type}
+        currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+        minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+        maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
+        apr={position.apr}
+        title={position.title}
+      />
     ),
-    [position.apr, t],
+    [
+      _fusion?.token0Price,
+      _position?.token0PriceLower,
+      _position?.token0PriceUpper,
+      position.type,
+      position.apr,
+      position.title,
+      tickAtLimit,
+    ],
   )
 
   const valueCell = useMemo(

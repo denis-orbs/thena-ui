@@ -7,6 +7,7 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
+import useChainLINKData from '@/hooks/useChainLINKData'
 import { warnToast } from '@/lib/notify'
 import { convertBooleansToHex, isInvalidAmount } from '@/lib/utils'
 
@@ -50,9 +51,12 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
 }
 
 function NavigationBottom({ currentStep, onNext, onPrev }) {
-  const [isActive, setIsActive] = useState(false)
+  const { push } = useRouter()
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
+
+  const { chainLinkData } = useChainLINKData()
+  const { onCreateAutomation, pending: pendingCreate } = useCreateAutomation()
   const { minimumFunds: minimumBalance } = useGetMinimumFunds(
     createData.veTHEId,
     convertBooleansToHex(
@@ -62,13 +66,11 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
     ),
     (createData?.votes?.pairs || []).length,
   )
-  const { push } = useRouter()
-
-  const { onCreateAutomation, pending: pendingCreate } = useCreateAutomation()
 
   const [isSuccess, setIsSuccess] = useState(false)
-
+  const [isActive, setIsActive] = useState(false)
   const [error, setError] = useState(null)
+
   const handleValidate = useCallback(() => {
     setIsActive(true)
     const { isDisabled: disabledState, message } = checkDisabledState({
@@ -91,6 +93,22 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
       })
     }
   }, [createData, currentStep, minimumBalance, onCreateAutomation, onNext, t])
+
+  const handleCreate = useCallback(() => {
+    const currentChainLink = createData?.registration?.chainlink
+    const chainLINKBalance =
+      chainLinkData?.find(item => item.address === currentChainLink?.address)?.balance ?? currentChainLink?.balance
+
+    if (
+      isInvalidAmount(createData?.registration?.chainlinkAmount) ||
+      Number(chainLINKBalance ?? 0) < Number(createData?.registration?.chainlinkAmount ?? 0)
+    ) {
+      warnToast(t('Invalid Amount'))
+      return
+    }
+
+    handleValidate()
+  }, [chainLinkData, createData?.registration?.chainlink, createData?.registration?.chainlinkAmount, handleValidate, t])
 
   useEffect(() => {
     if (isActive) {
@@ -127,23 +145,7 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
         )}
 
         {currentStep === 3 && (
-          <PrimaryButton
-            disabled={pendingCreate}
-            className='w-full'
-            onClick={
-              () => {
-                if (
-                  isInvalidAmount(createData?.registration?.chainlinkAmount) ||
-                  createData?.registration?.chainlink?.balance < createData?.registration?.chainlinkAmount
-                ) {
-                  warnToast(t('Invalid Amount'))
-                  return
-                }
-                handleValidate()
-              }
-              // eslint-disable-next-line react/jsx-curly-newline
-            }
-          >
+          <PrimaryButton disabled={pendingCreate} className='w-full' onClick={handleCreate}>
             {t('Create Automation')}
           </PrimaryButton>
         )}

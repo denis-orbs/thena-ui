@@ -298,30 +298,27 @@ export default function ChooseStrategy({
               strategy={strategy}
             />
 
-            <div className={cn('mt-2! hidden max-xl:block md:mt-4!')}>
+            <div className={cn('hidden max-xl:mt-2 max-xl:block')}>
               <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
             </div>
           </div>
         )}
+        <div className='mt-2 max-md:mt-4'>
+          {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
-        {strategyAutoData && isAutomatic && (
-          <div className='max-xl:mt-4'>
-            <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />
-          </div>
-        )}
-
-        {!isAutomatic && (
-          <ManualStrategy
-            firstAsset={firstAsset ?? pair?.token0}
-            secondAsset={secondAsset ?? pair?.token1}
-            strategy={strategy}
-            position={position}
-            isEarnFees={isEarnFees}
-            setFullRangeWarningShown={setFullRangeWarningShown}
-            fullRangeWarningShown={fullRangeWarningShown}
-            setLastPrice={setLastPrice}
-          />
-        )}
+          {!isAutomatic && (
+            <ManualStrategy
+              firstAsset={firstAsset ?? pair?.token0}
+              secondAsset={secondAsset ?? pair?.token1}
+              strategy={strategy}
+              position={position}
+              isEarnFees={isEarnFees}
+              setFullRangeWarningShown={setFullRangeWarningShown}
+              fullRangeWarningShown={fullRangeWarningShown}
+              setLastPrice={setLastPrice}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
@@ -378,8 +375,8 @@ function StrategyTitle({
     <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>
       <div
         className={cn(
-          'flex flex-col items-start gap-2.5 max-xl:mt-4 md:flex-row md:items-center md:justify-between',
-          !hasToggle && 'md:justify-end xl:mb-2',
+          'flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between',
+          !hasToggle && 'md:justify-end',
         )}
       >
         <div className={cn(!hasToggle && 'hidden')}>
@@ -391,7 +388,7 @@ function StrategyTitle({
           />
         </div>
 
-        <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
+        <div className={cn('flex items-center gap-2 max-xl:mt-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
             className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
             data={strategyType}

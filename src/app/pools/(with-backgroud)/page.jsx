@@ -36,7 +36,7 @@ import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/s
 
 import NewListings from '../NewListings'
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 10
 
 const sortOptions = [
   {
@@ -142,9 +142,10 @@ export default function PoolsPage() {
     const pairFilteredSubpools = pairs.map(ele => {
       let { subpools } = ele
       if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(ele.type)) {
-        subpools = ele.subpools.filter(
-          sub => [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(sub.type) && sub.version === 3,
-        )
+        subpools = ele.subpools.filter(sub => sub.version === 3)
+      }
+      if (ele.type === PAIR_TYPES.LSD) {
+        subpools = ele.subpools.filter(sub => sub.title !== 'CL_SwapFee')
       }
       return { ...ele, subpools }
     })
@@ -668,7 +669,7 @@ export default function PoolsPage() {
             >
               <div className='mt-4 flex items-center gap-2'>
                 {vaults.map(trending => (
-                  <Box className='flex w-full cursor-pointer flex-col gap-4 p-4!' key={trending.address}>
+                  <Box className='flex w-full min-w-[210px] cursor-pointer flex-col gap-4 p-4!' key={trending.address}>
                     <div className='flex flex-col gap-2'>
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex items-center gap-2'>
@@ -759,7 +760,6 @@ export default function PoolsPage() {
             setSort={setSort}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            defaultNumberItem={ITEMS_PER_PAGE}
           />
         </div>
       </div>

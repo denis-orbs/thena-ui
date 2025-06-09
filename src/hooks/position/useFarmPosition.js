@@ -8,7 +8,7 @@ import { zeroAddress } from 'viem'
 import Contracts from '@/constant/contracts'
 import { batchCallMulti, simulateCall } from '@/lib/contractActions'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
-import { getFusionFarmingData, getFusionFeesData } from '@/lib/subgraph'
+import { getCollectedRewards, getFusionFarmingData, getFusionFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
 import { useGetAssetFn } from '../fusion/Tokens'
@@ -31,17 +31,24 @@ const getPoolKey = async (farmAddress, chainId) => {
   )
 }
 
-const getFarmRewardList = async (positions, poolKeys, chainId) => {
+const getFarmRewardList = async (positions, poolKeys, chainId, account) => {
   const farmingCenter = getFarmingCenterContract(chainId)
   const farmRewardsList = []
+
+  const rewards = await getCollectedRewards(account, chainId)
 
   for (let i = 0; i < positions.length; i++) {
     const pos = positions[i]
     const poolKey = poolKeys[i]
 
     try {
-      const res = await simulateCall(farmingCenter, 'collectRewards', [poolKey, pos?.tokenId], chainId)
-      farmRewardsList.push(res)
+      const collectRewards = await simulateCall(farmingCenter, 'collectRewards', [poolKey, pos?.tokenId], chainId)
+      const reward = rewards[pos?.tokenId] || {}
+
+      farmRewardsList.push([
+        BigNumber(collectRewards[0]).plus(reward[Contracts.THE[chainId].toLowerCase()] ?? '0'),
+        BigNumber(collectRewards[1]).plus(reward[Contracts.WBNB[chainId].toLowerCase()] ?? '0'),
+      ])
     } catch (error) {
       farmRewardsList.push([0n, 0n])
     }
@@ -124,7 +131,7 @@ export const useFarmPositions = positions => {
 
   const { data: farmRewardsList = [] } = useCachedSWR(
     farmRewardsKey,
-    () => getFarmRewardList(positions, poolKeys, chainId),
+    () => getFarmRewardList(positions, poolKeys, chainId, account),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
@@ -149,7 +156,10 @@ export const useFarmPositions = positions => {
 
     return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
-      const [fusionState, fusion, poolAddress = zeroAddress] = _fusionStates?.[index] || [PoolState.NOT_EXISTS, null]
+      const [fusionState, fusion, poolAddress = zeroAddress, tickSpacing] = _fusionStates?.[index] || [
+        PoolState.NOT_EXISTS,
+        null,
+      ]
       const farmRewardData = farmRewardsList[index]
 
       const farmingData = fusionFarmings.find(item => item.pool.toLowerCase() === farmAddresses[index]) ?? {}
@@ -236,6 +246,7 @@ export const useFarmPositions = positions => {
         fusionState,
         fusion,
         poolAddress,
+        tickSpacing,
       }
     })
   }, [
