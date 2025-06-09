@@ -196,14 +196,6 @@ function PairStrategy({ pair }) {
     [handleChooseStrategy, pair.address, push, sortedSubPools],
   )
 
-  const aprs = useMemo(() => {
-    if (!pair?.subpools) return []
-    return pair.subpools
-      .filter(sub => MANUAL_TYPES.includes(sub.title))
-      .map(sub => sub.gauge.apr.toNumber())
-      .sort((a, b) => a - b)
-  }, [pair])
-
   const bestManualPool = useMemo(() => {
     if (!pair?.subpools) return null
     return pair.subpools
@@ -222,9 +214,18 @@ function PairStrategy({ pair }) {
     poolAddress: poolAddress?.toLowerCase(),
     token0: baseCurrency,
     token1: quoteCurrency,
+    tickLower,
+    tickUpper,
     isFarming: strategy?.isFarming,
     tickSpacing: mintInfo.tickSpacing,
+    isStablecoinPair,
   })
+
+  const estimateAPRs = useMemo(() => {
+    if (Object.values(estimateAPR).every(apr => Number(apr) === 0)) return '0%'
+    return `${formatAmount(estimateAPR[Presets.FULL], true)} ~ ${formatAmount(estimateAPR[Presets.RISK], true)}%`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(estimateAPR)])
 
   useEffect(() => {
     setAPRs(estimateAPR)
@@ -278,12 +279,7 @@ function PairStrategy({ pair }) {
             <Paragraph className='text-sm leading-5 font-bold text-neutral-500 md:text-lg'>
               {t('Estimated APR')}
             </Paragraph>
-            <NewTextSubHeading className='text-primary-600 text-base lg:text-3xl'>
-              {/* display like: 23% OR 23 ~ 30% */}
-              {aprs.length === 0 && '0%'}
-              {aprs.length === 1 && `${formatAmount(aprs.at(0), true)}%`}
-              {aprs.length >= 2 && `${formatAmount(aprs.at(0), true)} ~ ${formatAmount(aprs.at(-1), true)}%`}
-            </NewTextSubHeading>
+            <NewTextSubHeading className='text-primary-600 text-base lg:text-3xl'>{estimateAPRs}</NewTextSubHeading>
           </div>
         </div>
 

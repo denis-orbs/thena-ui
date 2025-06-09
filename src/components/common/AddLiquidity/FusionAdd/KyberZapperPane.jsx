@@ -8,7 +8,7 @@ import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES } from '@/constant'
-import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { useGetAsset, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
@@ -32,7 +32,10 @@ function KyberZapperPane({
   handleBack,
 }) {
   const t = useTranslations()
+  const { account } = useWallet()
   const { setAPRs } = useAprStore()
+  const stableAssets = useStableTokens()
+  const { handleAddLiquidity } = useZapperAddLiquidity()
 
   const [token0, token1] = useMemo(() => {
     const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]
@@ -45,21 +48,17 @@ function KyberZapperPane({
   const asset1 = useGetAsset(token1.address)
   const BNB = useGetAsset('BNB')
 
+  const [amount, setAmount] = useState(0)
+  const [tokenDeposit, setTokenDeposit] = useState(asset0)
+  const [slippage, setSlippage] = useState(0.5)
+
+  const amountIn = useDebounce(amount, 500)
+  const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
+
   const isToken0Wbnb = useMemo(() => asset0?.symbol === 'WBNB', [asset0])
   const isToken1Wbnb = useMemo(() => asset1?.symbol === 'WBNB', [asset1])
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
-
-  const { account } = useWallet()
-  const [tokenDeposit, setTokenDeposit] = useState(asset0)
-  const { handleAddLiquidity } = useZapperAddLiquidity()
-
-  const [amount, setAmount] = useState(0)
-  const amountIn = useDebounce(amount, 500)
-
-  const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
-
-  const [slippage, setSlippage] = useState(0.5)
 
   const { data, isFetching } = useGetZapInRoute({
     tickLower,
@@ -94,6 +93,11 @@ function KyberZapperPane({
     return [tk0, tk1]
   }, [addLiquidityAction, tokens])
 
+  const isStablecoinPair = useMemo(() => {
+    const stablecoins = stableAssets.map(token => token.address)
+    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, quoteCurrency, stableAssets])
+
   const estimateAPR = useEstimateAPR({
     pool: mintInfo.pool,
     poolAddress: mintInfo.poolAddress,
@@ -108,6 +112,7 @@ function KyberZapperPane({
     tickSpacing: mintInfo.tickSpacing,
     poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
     slippage: slippage * 100,
+    isStablecoinPair,
   })
 
   useEffect(() => {
