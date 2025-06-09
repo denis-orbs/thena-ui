@@ -203,7 +203,7 @@ function SelectToken({
       <div
         className={cn(
           'relative h-[60px] lg:h-20',
-          isError && 'rounded-lg border border-error-500',
+          isError && 'border-error-500 rounded-lg border',
           style === SELECT_TOKEN_STYLE.BADGE && 'h-9 w-fit lg:h-9',
           className,
         )}
@@ -263,7 +263,7 @@ function SelectToken({
             className={cn(
               'inline-flex h-full items-center justify-center gap-2',
               'rounded-lg bg-[#29292980] text-xs text-neutral-200 hover:bg-neutral-700 md:text-sm',
-              'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
+              'py-0.5 pr-1.5 pl-1 lg:py-1.5 lg:pr-2 lg:pl-1.5',
               'hover-dont-change-bg cursor-pointer',
             )}
             asset={selectedAsset}
@@ -278,7 +278,7 @@ function SelectToken({
             'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
             'rounded-xl border border-neutral-900 bg-neutral-900 p-2 shadow-lg',
             'visible top-full opacity-100',
-            dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
+            dropdownAlign === 'right' ? 'right-0 left-auto' : 'right-auto left-0',
             listClassNames,
             !isDisabled && open ? 'visible opacity-100' : 'invisible opacity-0',
           )}
@@ -294,7 +294,7 @@ function SelectToken({
             }}
             setVal={setSearchText}
             val={searchText}
-            className='mb-3 mr-2 2xl:mr-3'
+            className='mr-2 mb-3 2xl:mr-3'
             classNames={{
               trailingIcon: 'cursor-pointer pointer-events-auto',
             }}
@@ -327,7 +327,7 @@ function SelectToken({
         </div>
       </div>
       {isError && (
-        <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+        <p className='text-error-500 mt-1 mb-2 flex gap-1'>
           <WarningTriangleIcon className='h-5 w-5' />
           <span>{errorMessage}</span>
         </p>

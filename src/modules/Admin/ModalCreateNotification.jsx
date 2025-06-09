@@ -92,10 +92,7 @@ export function ModalCreateNotification({ onClose, isOpen }) {
                 required
               />
               <div className='relative flex cursor-pointer items-center' onClick={() => setIsOpenSelectUser(true)}>
-                <div
-                  className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
-           placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
-                >
+                <div className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pr-8 pl-4 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'>
                   {data.recipients.length} {t('Selected')}
                 </div>
               </div>
@@ -160,7 +157,7 @@ export function ModalCreateNotification({ onClose, isOpen }) {
             <EmphasisIconButton
               Icon={ChartIcon}
               onClick={() => setIsOpenAnalytic(true)}
-              className='lg:flex-0 h-full w-full flex-1'
+              className='h-full w-full flex-1 lg:flex-0'
             />
           </div>
         </div>

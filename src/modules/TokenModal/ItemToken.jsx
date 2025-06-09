@@ -70,7 +70,7 @@ export function ItemToken({
           <CircleImage src={token.logoURI} width={32} height={32} alt='thena token' />
 
           <div className='flex flex-col'>
-            <div className='flex items-center space-x-1'>
+            <div className='flex items-center gap-1'>
               <TextHeading>{token.symbol}</TextHeading>
               {token.address !== 'BNB' && (
                 <div className='flex items-center gap-1'>
@@ -85,7 +85,7 @@ export function ItemToken({
                       data-tooltip-id={`add-tooltip-${token.address}`}
                     />
                   )}
-                  <CustomTooltip id={`add-tooltip-${token.address}`} className='rounded-md !py-2'>
+                  <CustomTooltip id={`add-tooltip-${token.address}`} className='rounded-md py-2!'>
                     <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
                   </CustomTooltip>
                   <ExternalIcon
@@ -97,7 +97,7 @@ export function ItemToken({
                     }}
                     data-tooltip-id={`contract-tooltip-${token.address}`}
                   />
-                  <CustomTooltip id={`contract-tooltip-${token.address}`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`contract-tooltip-${token.address}`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -127,7 +127,7 @@ export function ItemToken({
               hidden: !token.isCustom,
             })}
           >
-            <PlusIcon className={cn('size-5 stroke-primary-400')} />
+            <PlusIcon className={cn('stroke-primary-400 size-5')} />
           </span>
 
           <span
@@ -140,7 +140,7 @@ export function ItemToken({
               hidden: !token.isFromStorage,
             })}
           >
-            <MinusIcon className={cn('size-5 stroke-primary-400')} />
+            <MinusIcon className={cn('stroke-primary-400 size-5')} />
           </span>
         </div>
       </div>

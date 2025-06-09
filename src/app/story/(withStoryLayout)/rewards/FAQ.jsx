@@ -44,8 +44,8 @@ export function FAQ() {
   )
 
   return (
-    <div className='mt-[80px] '>
-      <TextHeading className='font-archia text-[40px] font-semibold leading-10'>{t('FAQs')}</TextHeading>
+    <div className='mt-[80px]'>
+      <TextHeading className='font-archia text-[40px] leading-10 font-semibold'>{t('FAQs')}</TextHeading>
       <div className='mt-6 grid grid-cols-1 gap-0 rounded-xl bg-neutral-900 lg:grid-cols-3 lg:gap-[30px] lg:bg-transparent'>
         {faqs.map((faq, index) => (
           <div
@@ -54,7 +54,7 @@ export function FAQ() {
             onClick={() => handleSetExpand(index)}
           >
             <div className='flex justify-between lg:block'>
-              <TextHeading className='block font-archia text-[22px] font-semibold leading-8 tracking-tight'>
+              <TextHeading className='font-archia block text-[22px] leading-8 font-semibold tracking-tight'>
                 {t(faq.title)}
               </TextHeading>
               {expansions[index] ? (
@@ -63,7 +63,7 @@ export function FAQ() {
                 <ExpandDownIcon className='h-5 w-5 cursor-pointer lg:hidden' />
               )}
             </div>
-            <span className={cn('text-base text-neutral-300 lg:block ', expansions[index] ? 'block ' : 'hidden')}>
+            <span className={cn('text-base text-neutral-300 lg:block', expansions[index] ? 'block' : 'hidden')}>
               {t(faq.answer)}
             </span>
             {index !== faqs.length - 1 ? (

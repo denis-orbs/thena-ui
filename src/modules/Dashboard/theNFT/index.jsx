@@ -32,7 +32,7 @@ function InfoBlock({ title, value, isLoading }) {
       {isLoading ? (
         <Skeleton className='h-9 w-[100px]' />
       ) : (
-        value && <TextHeading className='font-archia text-3xl font-semibold text-primary-300'>{value}</TextHeading>
+        value && <TextHeading className='font-archia text-primary-300 text-3xl font-semibold'>{value}</TextHeading>
       )}
     </div>
   )
@@ -84,7 +84,7 @@ function TheNFT() {
             {hasNfts && <TextSubHeading className='text-sm'>{`${t('Last Epoch Earnings')}`}</TextSubHeading>}
           </div>
           {hasNfts && (
-            <TextSubHeading className='pr-4 font-archia text-4xl font-semibold text-neutral-500'>
+            <TextSubHeading className='font-archia pr-4 text-4xl font-semibold text-neutral-500'>
               ${formatAmount(lastEarnings)}
             </TextSubHeading>
           )}
@@ -120,10 +120,10 @@ function TheNFT() {
                   <TextHeading className='text-gradient-primary-b font-archia text-5xl font-semibold'>
                     ${formatAmount(lastEarnings)}
                   </TextHeading>
-                  <NewTextHeading className='text-xl !leading-6 md:text-xl'>{t('Last Epoch Earnings')}</NewTextHeading>
+                  <NewTextHeading className='text-xl leading-6! md:text-xl'>{t('Last Epoch Earnings')}</NewTextHeading>
                 </div>
               </div>
-              <Paragraph className='mt-2 block px-4 !text-sm font-normal text-neutral-500'>
+              <Paragraph className='mt-2 block px-4 text-sm! font-normal text-neutral-500'>
                 {t('TheNFT benefits earn')}
               </Paragraph>
             </div>
@@ -173,7 +173,7 @@ function TheNFT() {
                   {isOriginal && !isInvalidAmount(claimable) ? (
                     <EmphasisButton
                       disabled={pendingClaim}
-                      className='text-nowrap text-sm max-md:h-8'
+                      className='text-sm text-nowrap max-md:h-8'
                       onClick={() => handleClaim(true, false)}
                     >
                       {t('Claim')}
@@ -191,7 +191,7 @@ function TheNFT() {
                     href='https://docs.thena.fi/thena/the-tokenomics/tokens-the-vethe-thenft#thenft-erc-721-founders-token-in-the-form-of-an-nft-non-fungible-token'
                     target='_blank'
                   >
-                    <EmphasisButton className='w-full text-nowrap text-sm max-md:h-8'>
+                    <EmphasisButton className='w-full text-sm text-nowrap max-md:h-8'>
                       {t('Learn more')}
                       <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                     </EmphasisButton>

@@ -37,7 +37,7 @@ function Work() {
       <div className='mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3'>
         {data.map((item, index) => (
           <div key={index} className='flex flex-col items-center gap-3'>
-            <div className='rounded-xl border border-neutral-50 border-opacity-5 bg-neutral-50 bg-opacity-5 p-2'>
+            <div className='rounded-xl border border-neutral-50/5 bg-neutral-50/5 p-2'>
               <PrimaryIconButton Icon={item.icon} className='pointer-events-none lg:h-9 lg:w-9' />
             </div>
             <TextHeading className='text-base'>{t(item.heading)}</TextHeading>

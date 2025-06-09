@@ -99,7 +99,7 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
                 <GroupIconTokens
                   classNames={{
                     image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
-                    rows: '-space-x-2',
+                    rows: 'flex *:-ml-2',
                     toolTip: 'hidden',
                   }}
                   width={32}

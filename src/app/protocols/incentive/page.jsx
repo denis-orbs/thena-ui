@@ -95,13 +95,13 @@ export default function IncentivePage() {
 
       <div className='flex flex-col gap-4'>
         <TextHeading className='text-xl'>{t('Top Incentives')}</TextHeading>
-        <div className='grid grid-cols-1 gap-2 lg:grid-cols-4 lg:gap-8 '>
+        <div className='grid grid-cols-1 gap-2 lg:grid-cols-4 lg:gap-8'>
           {topPools.map(pool => (
             <Box className='flex items-center justify-between' key={`incentive-${pool.address}`}>
               <div className='flex items-center gap-3'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -111,7 +111,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 w-8 h-8',
                     }}
@@ -197,7 +197,7 @@ export default function IncentivePage() {
               </div>
             </div>
 
-            <div className={cn('space-y-2', !asset && 'hidden')}>
+            <div className={cn('flex flex-col gap-2', !asset && 'hidden')}>
               <TextHeading className='flex items-center gap-1'>
                 {t('Number of Epochs')}{' '}
                 <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='NUMBER_OF_EPOCHS' />
@@ -229,8 +229,8 @@ export default function IncentivePage() {
               const { startDate, endDate } = calculateEpochPeriod(currentEpoch + i)
 
               return (
-                <div className={cn('hidden space-y-2', asset && 'block')} key={`incentive-${i + 1}`}>
-                  <TextHeading className='space-x-3'>
+                <div className={cn('hidden flex-col gap-2', asset && 'flex')} key={`incentive-${i + 1}`}>
+                  <TextHeading className='flex gap-3'>
                     <span>{`Epoch ${currentEpoch + i} Reward`}</span>
                     <Paragraph>
                       {startDate.format('MMM D')} - {endDate.format('MMM D, YYYY')}
@@ -256,7 +256,7 @@ export default function IncentivePage() {
                     <div
                       className={cn(
                         'flex items-center justify-center gap-2',
-                        'absolute right-4 top-1/2 -translate-y-1/2',
+                        'absolute top-1/2 right-4 -translate-y-1/2',
                       )}
                     >
                       <Paragraph>${formatAmount(amounts[i] * (asset?.price || 0))}</Paragraph>
@@ -285,7 +285,7 @@ export default function IncentivePage() {
         </div>
 
         <div className={cn('rounded-xl bg-neutral-900 p-5', !isConfirmState && 'hidden')}>
-          <TextHeading className='mb-8 flex items-center '>
+          <TextHeading className='mb-8 flex items-center'>
             <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => setIsConfirmState(false)} />
             <h2 className='font-archia text-3xl'>Confirm Incentive</h2>
           </TextHeading>
@@ -296,7 +296,7 @@ export default function IncentivePage() {
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -306,7 +306,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 w-5 h-5',
                     }}
@@ -330,7 +330,7 @@ export default function IncentivePage() {
             </TextHeading>
           </article>
 
-          <article className={cn('mb-5 space-y-5 border-b border-neutral-700 pb-5', !asset && 'hidden')}>
+          <article className={cn('mb-5 flex flex-col gap-5 border-b border-neutral-700 pb-5', !asset && 'hidden')}>
             <TextHeading className='font-bold'>Epochs and Rewards</TextHeading>
 
             {Array.from({ length: epochs }, (_, i) => {
@@ -376,10 +376,10 @@ export default function IncentivePage() {
 
           <article
             className={cn(
-              'mt-5 flex flex-row items-center gap-2 rounded-xl border border-primary-800 bg-primary-950 p-4',
+              'border-primary-800 bg-primary-950 mt-5 flex flex-row items-center gap-2 rounded-xl border p-4',
             )}
           >
-            <InfoIcon className='size-5 stroke-primary-600' />
+            <InfoIcon className='stroke-primary-600 size-5' />
             <TextHeading>You can’t retrieve or cancel incentives after depositing.</TextHeading>
           </article>
 
@@ -406,7 +406,7 @@ export default function IncentivePage() {
         </div>
 
         <div className='rounded-xl bg-neutral-900 p-5'>
-          <h2 className='mb-2 font-archia text-2xl'>Total Incentives</h2>
+          <h2 className='font-archia mb-2 text-2xl'>Total Incentives</h2>
           <Paragraph className={cn('mb-5 block border-b border-neutral-700 pb-5 text-sm')}>
             Select a pair to view the total rewards deposited.
           </Paragraph>
@@ -417,7 +417,7 @@ export default function IncentivePage() {
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
                   <ThreeIconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'size-7 text-xl font-medium leading-5 text-[#1C2027]',
                     }}
@@ -427,7 +427,7 @@ export default function IncentivePage() {
                   />
                 ) : (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-6',
                     }}
@@ -445,7 +445,7 @@ export default function IncentivePage() {
             </article>
           )}
 
-          <article className={cn('space-y-5', !asset && 'hidden')}>
+          <article className={cn('flex flex-col gap-5', !asset && 'hidden')}>
             <div className='hidden grid-cols-5 md:grid'>
               <TextHeading className='col-span-1'>Epoch</TextHeading>
               <TextHeading className='col-span-2'>Duration</TextHeading>
@@ -474,7 +474,7 @@ export default function IncentivePage() {
         </div>
       </div>
 
-      <Neutral className='flex  h-fit flex-col items-start justify-start gap-2 md:hidden'>
+      <Neutral className='flex h-fit flex-col items-start justify-start gap-2 md:hidden'>
         <TextHeading className='text-xl'>{t('What is a Voting Incentive')}</TextHeading>
         <Paragraph>{t('Voting Incentive Description')}</Paragraph>
       </Neutral>

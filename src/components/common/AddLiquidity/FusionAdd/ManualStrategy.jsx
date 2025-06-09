@@ -157,7 +157,7 @@ function ManualStrategy({
 
   return (
     <>
-      <div className='space-y-4'>
+      <div className='flex flex-col gap-4'>
         {mintInfo.noLiquidity && (
           <div className='flex flex-col gap-4'>
             <WarningStartingPrice />
@@ -193,7 +193,7 @@ function ManualStrategy({
 
               <div className='flex h-[46px] items-center gap-4'>
                 <CircleImage
-                  className='size-6 outline outline-[#1C2027] md:size-9'
+                  className='size-6 outline-[#1C2027] outline-solid md:size-9'
                   src={quoteCurrency?.logoURI ?? UNKNOWN_LOGO}
                   alt='quote token'
                 />
@@ -203,7 +203,7 @@ function ManualStrategy({
                   onClick={handleRevert}
                 />
                 <CircleImage
-                  className='size-6 outline outline-[#1C2027] md:size-9'
+                  className='size-6 outline-[#1C2027] outline-solid md:size-9'
                   src={baseCurrency?.logoURI ?? UNKNOWN_LOGO}
                   alt='base token'
                 />
@@ -213,27 +213,27 @@ function ManualStrategy({
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('flex gap-4 rounded-lg border border-warn-900 bg-warn-950 px-5 py-4')}>
+          <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-              <WarningTriangleYellowIcon className='size-full stroke-warn-600' />
+              <WarningTriangleYellowIcon className='stroke-warn-600 size-full' />
             </div>
             <div className='flex flex-col gap-1'>
-              <NewTextHeading className='!text-xl font-medium text-warn-100'>{t('OUT OF RANGE')}</NewTextHeading>
-              <Paragraph className='!text-base leading-5 text-warn-100'>{t('OUT OF RANGE description')}</Paragraph>
+              <NewTextHeading className='text-warn-100 text-xl! font-medium'>{t('OUT OF RANGE')}</NewTextHeading>
+              <Paragraph className='text-warn-100 text-base! leading-5'>{t('OUT OF RANGE description')}</Paragraph>
             </div>
           </div>
         ) : (
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 bg-opacity-50 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4',
+                'bg-opacity-50 mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >
               <div className='flex items-center gap-1 md:gap-3'>
                 {isEarnFees ? (
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-4 md:size-8',
                     }}
@@ -252,7 +252,7 @@ function ManualStrategy({
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading> */}
                 <div className='flex flex-col'>
-                  <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
+                  <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl md:leading-6'>
                     {isEarnFees ? 'Fees' : '$THE'}
                   </NewTextSubHeading>
                   <Paragraph className='text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
@@ -262,7 +262,7 @@ function ManualStrategy({
               </div>
 
               <div className='flex flex-col'>
-                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl md:leading-6'>
+                <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl md:leading-6'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
                 <Paragraph className='md:eading-5 text-xs font-medium text-neutral-300 md:text-base'>
@@ -271,7 +271,7 @@ function ManualStrategy({
               </div>
 
               <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-end text-xs font-bold text-gradient-primary-start md:text-xl md:leading-6'>
+                <NewTextSubHeading className='text-gradient-primary-start text-end text-xs font-bold md:text-xl md:leading-6'>
                   {formatAmount(
                     APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
                       ? strategy?.apr
@@ -289,7 +289,7 @@ function ManualStrategy({
       </div>
 
       {strategy && (
-        <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <div className={cn('flex flex-col gap-2 md:gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
             <div className='mt-4 flex flex-col xl:hidden'>
               <ChartPriceRangeInput
@@ -297,7 +297,7 @@ function ManualStrategy({
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
                 ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={price ? parseFloat(price) : undefined}
+                price={price ? Number.parseFloat(price) : undefined}
                 priceLower={position?.priceLower ?? priceLower}
                 priceUpper={position?.priceUpper ?? priceUpper}
                 onLeftRangeInput={onLeftRangeInput}
@@ -317,7 +317,7 @@ function ManualStrategy({
 
           {!position && (
             <RangeSelector
-              price={price ? parseFloat(price) : undefined}
+              price={price ? Number.parseFloat(price) : undefined}
               priceLower={priceLower}
               priceUpper={priceUpper}
               getDecrementLower={getDecrementLower}

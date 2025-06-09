@@ -112,7 +112,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
           <div className='flex items-center gap-1'>
             {pair.pair.type === PAIR_TYPES.WEIGHTED ? (
               <ThreeIconGroup
-                className='-space-x-2'
+                className='*:not-first:-ml-2'
                 classNames={{
                   image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                 }}
@@ -122,7 +122,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
               />
             ) : (
               <IconGroup
-                className='-space-x-2'
+                className='*:not-first:-ml-2'
                 classNames={{
                   image: 'outline-2 w-8 h-8',
                 }}

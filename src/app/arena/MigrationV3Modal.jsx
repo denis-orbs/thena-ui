@@ -43,18 +43,18 @@ function MigrationV3Modal({ keyOpen, title = '', titleStyle, showHeadModal = tru
       showHeadModal={showHeadModal}
     >
       <ModalBody className='relative lg:py-[80px]'>
-        <div className='he mx-auto flex  min-h-[274px] flex-col items-center gap-3 text-center lg:w-[744px]'>
+        <div className='he mx-auto flex min-h-[274px] flex-col items-center gap-3 text-center lg:w-[744px]'>
           <TextHeading className='font-archia text-4xl text-neutral-50'>THENA is migrating from V2 to V3</TextHeading>
           <TextSubHeading className='flex flex-col gap-2 text-[16px] text-neutral-300 lg:text-[18px]'>
             <span>
               For the current epoch (May 22nd to May 29th), V2 gauges are still active and emissions continue as usual.
               You can access them here:{' '}
               <Link href='https://v2.thena.fi/pools' target='_blank'>
-                <span className='font-semibold text-primary-600 hover:underline'>v2.thena.fi</span>
+                <span className='text-primary-600 font-semibold hover:underline'>v2.thena.fi</span>
               </Link>
               . The liquidity migration to V3 will begin next week, at the end of this epoch.
             </span>
-            <span className='font-semibold text-primary-600'>
+            <span className='text-primary-600 font-semibold'>
               If you’re currently holding an LP position, no action is required on your part
             </span>
           </TextSubHeading>

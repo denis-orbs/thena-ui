@@ -159,10 +159,10 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   return (
     <div className='flex flex-col-reverse md:flex-row'>
       <div className='h-fit w-full rounded-[3px] px-5 py-4 md:max-w-[324px]'>
-        <p className='font-figtree text-[27px] font-semibold leading-[33px] text-white'>
+        <p className='font-figtree text-[27px] leading-[33px] font-semibold text-white'>
           {t('Create Trading Competition')}?
         </p>
-        <p className='text-lightGray mb-3 mt-2 text-base leading-[22px]'>
+        <p className='text-lightGray mt-2 mb-3 text-base leading-[22px]'>
           {t('Create Trading Competition Description')}
         </p>
         {/* <div className='mb-3 w-full'>

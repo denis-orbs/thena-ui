@@ -226,7 +226,7 @@ function AddLiquidityWeighted({ pool }) {
 
   return (
     <div className='flex flex-col'>
-      <div className='space-y-2'>
+      <div className='flex flex-col gap-2'>
         <div className='flex flex-row gap-4 lg:gap-8'>
           <GroupIconTokens
             height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
@@ -241,7 +241,7 @@ function AddLiquidityWeighted({ pool }) {
               lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
               fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 36}px`,
             }}
-            className='whitespace-normal text-wrap break-all'
+            className='text-wrap break-all whitespace-normal'
           >
             {pool?.symbol}
           </NewTextHeading>
@@ -252,7 +252,7 @@ function AddLiquidityWeighted({ pool }) {
             <EmphasisButton
               className={cn(
                 'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11',
-                showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
+                showLiquidityInfo ? 'bg-neutral-600!' : 'bg-neutral-900',
               )}
               onClick={() => setShowLiquidityInfo(prev => !prev)}
             >
@@ -272,20 +272,20 @@ function AddLiquidityWeighted({ pool }) {
           </motion.div>
         </div>
       </div>
-      <div className='grid gap-4 max-xl:grid-cols-1 xl:grid-cols-add-liquidity-layout'>
-        <div className='w-full space-y-4'>
+      <div className='xl:grid-cols-add-liquidity-layout grid gap-4 max-xl:grid-cols-1'>
+        <div className='flex w-full flex-col gap-4'>
           <div className='flex h-11 flex-col justify-end max-xl:hidden'>
-            <NewTextSubHeading className='!text-2xl'>{t('Weighted')}</NewTextSubHeading>
+            <NewTextSubHeading className='text-2xl!'>{t('Weighted')}</NewTextSubHeading>
           </div>
 
-          <div className='space-y-2 md:space-y-4'>
+          <div className='flex flex-col gap-2 md:gap-4'>
             <PairBasicInfo pair={pool} isMobile />
             <div className='block xl:hidden'>
               <PoolAttributesSection pair={pool} />
             </div>
           </div>
 
-          <div className='space-y-2 md:space-y-4'>
+          <div className='flex flex-col gap-2 md:gap-4'>
             <MenuTab className='grid h-8 w-full grid-cols-2 md:h-11' menuData={toggleDepositType} />
             <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
             {depositType === DEPOSIT_TYPE.ALL && (
@@ -361,7 +361,7 @@ function AddLiquidityWeighted({ pool }) {
             )}
           </div>
         </div>
-        <div className='hidden w-full space-y-4 xl:block'>
+        <div className='hidden w-full flex-col gap-4 xl:flex'>
           <PoolAttributesSection pair={pool} />
           <LiquidityPoolInfo pool={pool} />
         </div>

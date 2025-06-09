@@ -49,17 +49,17 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
         <tbody className='text-gray-700'>
           {data.map((row, index) => (
             <tr key={index}>
-              <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{row.symbol}</td>
-              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>
+              <td className='px-6 py-4 whitespace-nowrap text-neutral-200'>{row.symbol}</td>
+              <td className='px-6 py-4 text-right whitespace-nowrap text-neutral-200'>
                 {formatAmount(getValueTokenAmountToUSD(row?.address, row?.balance))}
               </td>
-              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{row.pool}</td>
+              <td className='px-6 py-4 text-right whitespace-nowrap text-neutral-200'>{row.pool}</td>
             </tr>
           ))}
           <tr className='border-t border-t-neutral-700 font-semibold'>
-            <td className='whitespace-nowrap px-6 py-4 text-sm text-neutral-200 xl:text-base'>{t('Total')}</td>
-            <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{formatAmount(totalPrice)}</td>
-            <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{totalPool}</td>
+            <td className='px-6 py-4 text-sm whitespace-nowrap text-neutral-200 xl:text-base'>{t('Total')}</td>
+            <td className='px-6 py-4 text-right whitespace-nowrap text-neutral-200'>{formatAmount(totalPrice)}</td>
+            <td className='px-6 py-4 text-right whitespace-nowrap text-neutral-200'>{totalPool}</td>
           </tr>
         </tbody>
       </table>

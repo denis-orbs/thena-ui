@@ -150,7 +150,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
               <Paragraph>{t('New veTHE Voting Power')}</Paragraph>
               <div>
                 <TextHeading>{formatAmount(extendVotingPower)}&nbsp;</TextHeading>
-                <span className='font-medium text-success-600'>
+                <span className='text-success-600 font-medium'>
                   {`(+${formatAmount(extendVotingPower.minus(selected.voting_amount))})`}
                 </span>
               </div>
@@ -163,7 +163,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
               <Paragraph>{t('New veTHE Voting Power')}</Paragraph>
               <div>
                 <TextHeading>{formatAmount(lockVotingPower)}&nbsp;</TextHeading>
-                <span className='font-medium text-success-600'>
+                <span className='text-success-600 font-medium'>
                   {`(+${formatAmount(lockVotingPower.minus(selected.voting_amount))})`}
                 </span>
               </div>

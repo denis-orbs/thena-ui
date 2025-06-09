@@ -96,7 +96,7 @@ function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, onChange
                 }}
               >
                 {stateChecked === 'default' ? (
-                  <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+                  <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                     <div className='h-2 w-2 rounded-full bg-white' />
                   </div>
                 ) : (
@@ -106,7 +106,7 @@ function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, onChange
               </div>
               <div className='flex cursor-pointer items-center gap-4 p-2' onClick={() => setStateChecked('custom')}>
                 {stateChecked === 'custom' ? (
-                  <div className='h-4 w-4 rounded-full bg-primary-600 p-1'>
+                  <div className='bg-primary-600 h-4 w-4 rounded-full p-1'>
                     <div className='h-2 w-2 rounded-full bg-white' />
                   </div>
                 ) : (
@@ -119,7 +119,7 @@ function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, onChange
             {stateChecked === 'custom' && (
               <>
                 <div
-                  className='w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
+                  className='border-primary-800 w-full rounded-xl border bg-neutral-900 px-4 py-6 lg:p-6'
                   {...getRootProps()}
                 >
                   <input {...getInputProps()} />

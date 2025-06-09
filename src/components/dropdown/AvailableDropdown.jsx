@@ -67,7 +67,7 @@ function AvailableDropdown({ className, listClassNames, data, selected, setSelec
       <div
         className={cn(
           'visible absolute z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
           'left-0, right-0 w-full overflow-y-auto transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
           listClassNames,
@@ -91,7 +91,7 @@ function AvailableDropdown({ className, listClassNames, data, selected, setSelec
             </div>
           ))
         ) : (
-          <div className={cn('w-full', 'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out ')}>
+          <div className={cn('w-full', 'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out')}>
             <p>Empty</p>
           </div>
         )}

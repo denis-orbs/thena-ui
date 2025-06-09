@@ -74,7 +74,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               <div className='mb-5 flex flex-wrap items-center justify-center gap-2'>
                 <p className='font-archia text-[36px] font-semibold md:text-[72px]'>THE Story of</p>
                 <div className='flex justify-center'>
-                  <LogoWithTextIcon className=' w-[152px] md:w-[268px]' />
+                  <LogoWithTextIcon className='w-[152px] md:w-[268px]' />
                 </div>
               </div>
               <p className='leading-[1.3] text-[#D1D0D2] lg:text-[18px]'>
@@ -89,7 +89,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 <StoryRegister isRegistered={isRegistered} />
               </div>
               <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] md:w-[610px]'>
-                <p className='mb-5 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
+                <p className='font-archia mb-5 text-[26px] font-semibold md:text-3xl md:tracking-wide'>
                   {t('First Chapter Available in')}
                 </p>
                 <Countdown timestamp={campaignStartsAt} />
@@ -104,13 +104,13 @@ function StoryHome({ isUpcoming, isRegistered }) {
               <StoryRegister isRegistered={isRegistered} />
             </div>
 
-            <p className='mx-auto mb-5 max-w-[743px] text-center font-archia text-[36px] font-semibold md:text-[72px]'>
+            <p className='font-archia mx-auto mb-5 max-w-[743px] text-center text-[36px] font-semibold md:text-[72px]'>
               {t('THE Story of THENA')}
             </p>
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
               <span className='inline-block align-bottom'>
-                <LogoTextIcon className='ml-1 mr-2 h-[20px] w-[90px]' />
+                <LogoTextIcon className='mr-2 ml-1 h-[20px] w-[90px]' />
               </span>
               <span className='lg:ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}
@@ -122,7 +122,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               {countDownTimeStamp ? (
                 <>
                   <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
-                    <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                    <h2 className='font-archia mb-6 text-center text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
                       THE Story Ends in
                     </h2>
                     {countDownTimeStamp && <Countdown timestamp={countDownTimeStamp} />}
@@ -130,7 +130,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 </>
               ) : (
                 <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
-                  <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                  <h2 className='font-archia mb-6 text-center text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
                     THE Story Ended
                   </h2>
                 </div>
@@ -150,8 +150,8 @@ function StoryHome({ isUpcoming, isRegistered }) {
               )}
 
               <div className='mx-auto mt-16 flex max-w-[813px] flex-col justify-center xl:mt-28'>
-                <p className='text-center font-archia text-[31px] font-semibold lg:text-[70px]'>{t('Unlock Over')}</p>
-                <p className='mb-5 text-center font-archia text-[31px] font-semibold lg:text-[70px]'>
+                <p className='font-archia text-center text-[31px] font-semibold lg:text-[70px]'>{t('Unlock Over')}</p>
+                <p className='font-archia mb-5 text-center text-[31px] font-semibold lg:text-[70px]'>
                   {t('$30,000 in Rewards')}
                 </p>
                 <p className='mb-8 text-center text-[16px] lg:text-[20px]'>

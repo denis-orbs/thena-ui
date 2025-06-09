@@ -241,7 +241,7 @@ function Competitions() {
   return (
     <div>
       <TextHeading className='text-xl'>Competitions</TextHeading>
-      <div className='mb-4 mt-6 flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
+      <div className='mt-6 mb-4 flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
         <Tabs data={subTabs} size={SizeTypes.Medium} itemClassName='text-sm' />
         <SearchInput
           className='h-11 w-full md:w-[420px]'

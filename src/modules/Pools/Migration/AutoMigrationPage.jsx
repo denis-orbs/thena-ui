@@ -224,12 +224,12 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
               <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
             </div>
 
-            <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
+            <Box className='border-primary-800 bg-primary-950 mt-[30px] flex flex-row items-center justify-between gap-4 border'>
               <TextHeading className='text-neutral-100'>{t('During the migration all rewards will be')}</TextHeading>
             </Box>
           </>
         ) : (
-          <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
+          <Box className='border-primary-800 bg-primary-950 mt-[30px] flex flex-row items-center justify-between gap-4 border'>
             <TextHeading className='text-neutral-100'>
               {`${strategyType} ${t('withdraw and deposit manually warning')}`}
             </TextHeading>

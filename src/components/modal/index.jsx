@@ -94,7 +94,7 @@ function Modal({
       {...rest}
     >
       {showHeadModal && (
-        <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
+        <div className='inline-flex w-full items-center justify-between px-4 pt-6 pb-3 lg:px-6'>
           <div className='flex items-center'>
             {isBack && (
               <TextIconButton
@@ -103,7 +103,7 @@ function Modal({
                 onClick={() => onClickHandler && onClickHandler()}
               />
             )}
-            <div className={`font-archia  font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
+            <div className={`font-archia font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
               {isIntl ? title : title && typeof title === 'string' && t(title)}
             </div>
           </div>

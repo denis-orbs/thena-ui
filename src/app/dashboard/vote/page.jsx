@@ -256,7 +256,7 @@ export default function VotePage() {
             {pool.type !== PAIR_TYPES.WEIGHTED ? (
               <>
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-7 h-7',
                   }}
@@ -521,7 +521,7 @@ export default function VotePage() {
             />
           </div>
           {account && (
-            <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
+            <div className='fixed right-0 bottom-0 left-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
               <div className='flex items-center justify-center'>
                 <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
                 <span
@@ -533,7 +533,7 @@ export default function VotePage() {
                   {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
                 </span>
               </div>
-              <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
+              <div className='mt-3 ml-0 flex flex-col gap-2 lg:mt-0 lg:ml-2 lg:flex-row'>
                 <PrimaryButton
                   className='px-2.5 py-2'
                   disabled={votePending}

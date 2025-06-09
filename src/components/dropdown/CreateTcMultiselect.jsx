@@ -67,7 +67,7 @@ function CreateTcMultiSelect({ className, data, selected, setSelected }) {
             <div className='mb-4 flex justify-between px-6'>
               <span className='text-gray-400'>{selected.length} Selected</span>
               <span
-                className='cursor-pointer text-primary-400'
+                className='text-primary-400 cursor-pointer'
                 onClick={() => {
                   if (selected.length > 0) {
                     setSelected([])

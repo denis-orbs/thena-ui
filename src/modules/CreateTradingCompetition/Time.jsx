@@ -136,7 +136,7 @@ function Time({ data, setData }) {
 
   return (
     <>
-      <div className='mb-3 max-w-[100%] md:mt-5 md:flex md:max-w-[50%] md:space-x-6 md:space-y-0'>
+      <div className='mb-3 max-w-full md:mt-5 md:flex md:max-w-[50%] md:gap-6'>
         <div className='w-full'>
           <LabelTooltip
             label='Max Participants'
@@ -152,13 +152,13 @@ function Time({ data, setData }) {
             value={data.maxParticipants}
             onChange={e => handleParticipants(e.target.value)}
             TrailingButton={
-              <div className='absolute right-3 top-2.5 flex items-center space-x-3'>
+              <div className='absolute top-2.5 right-3 flex items-center gap-3'>
                 <button
                   onClick={() => {
                     handleParticipants(data.maxParticipants - 1)
                   }}
                   disabled={data.maxParticipants <= TC_PARTICIPANTS.MIN}
-                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white/5 disabled:cursor-not-allowed disabled:bg-white/[0.02]'
                   type='button'
                   aria-label='minus-participants'
                 >
@@ -169,7 +169,7 @@ function Time({ data, setData }) {
                     handleParticipants(data.maxParticipants + 1)
                   }}
                   disabled={data.maxParticipants >= TC_PARTICIPANTS.MAX}
-                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white/5 disabled:cursor-not-allowed disabled:bg-white/[0.02]'
                   type='button'
                   aria-label='plus-participants'
                 >
@@ -180,7 +180,7 @@ function Time({ data, setData }) {
           />
         </div>
       </div>
-      <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
+      <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
           <DateTimePickerCustom
@@ -228,7 +228,7 @@ function Time({ data, setData }) {
           />
         </div>
       </div>
-      <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
+      <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
           <DateTimePickerCustom

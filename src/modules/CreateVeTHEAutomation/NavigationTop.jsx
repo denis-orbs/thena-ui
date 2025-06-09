@@ -10,7 +10,7 @@ import { ArrowLeftIcon } from '@/svgs'
 function NavigationTop({ steps, currentStep, onPrev }) {
   const t = useTranslations()
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-1'>
         <TextButton
           onClick={onPrev}

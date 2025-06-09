@@ -143,12 +143,12 @@ export function TradeHistory() {
 
         return {
           traded_token: (
-            <div className='flex items-center justify-between space-x-1'>
+            <div className='flex items-center justify-between gap-1'>
               <div className='flex items-center gap-1'>
                 <Image
                   alt={item.traded_token?.[0]?.symbol}
                   src={item.traded_token?.[0]?.logoURI}
-                  className='flex-shrink-0'
+                  className='shrink-0'
                   width={24}
                   height={24}
                   loading='lazy'
@@ -160,7 +160,7 @@ export function TradeHistory() {
                 <Image
                   alt={item.traded_token?.[1]?.symbol}
                   src={item.traded_token?.[1]?.logoURI}
-                  className='flex-shrink-0'
+                  className='shrink-0'
                   width={24}
                   height={24}
                   loading='lazy'
@@ -193,7 +193,7 @@ export function TradeHistory() {
   return (
     <>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-        <TextHeading className='text-xl lg:flex-2 '>{t('Trade History')}</TextHeading>
+        <TextHeading className='text-xl lg:flex-2'>{t('Trade History')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
 

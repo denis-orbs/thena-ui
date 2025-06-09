@@ -27,7 +27,7 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
         <div className='flex items-center justify-between rounded-lg bg-neutral-800 p-3'>
           <div className='flex items-center gap-3'>
             <IconGroup
-              className='-space-x-2'
+              className='*:not-first:-ml-2'
               classNames={{ image: 'w-8 h-8 outline-2' }}
               logo1={pool?.asset0?.logoURI}
               logo2={pool?.asset1?.logoURI}

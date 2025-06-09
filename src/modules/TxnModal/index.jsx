@@ -78,13 +78,13 @@ function TxnModal() {
                   <CircleImage className='h-5 w-5 rounded-full' src='/images/spin.png' alt='thena spin' />
                 )}
                 {txn.status === TXN_STATUS.PENDING && <Spinner />}
-                {txn.status === TXN_STATUS.FAILED && <InfoIcon className='h-5 w-5 stroke-error-600' />}
+                {txn.status === TXN_STATUS.FAILED && <InfoIcon className='stroke-error-600 h-5 w-5' />}
               </div>
             ))}
         </div>
         {final && (
           <Info>
-            <InfoIcon className='h-4 w-4 stroke-primary-600' />
+            <InfoIcon className='stroke-primary-600 h-4 w-4' />
             <p>{t('All done')}</p>
           </Info>
         )}

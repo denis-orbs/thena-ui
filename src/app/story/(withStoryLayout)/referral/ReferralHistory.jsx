@@ -17,7 +17,7 @@ export function ReferralHistory({ referralHistory }) {
   const t = useTranslations()
 
   return (
-    <div className='border-gradient-secondary rounded-xl p-[1px]'>
+    <div className='border-gradient-secondary rounded-xl p-px'>
       <div className='rounded-xl bg-neutral-900'>
         <div className='p-4 lg:p-6'>
           <TextHeading className='font-archia text-3xl font-semibold'>{t('Referral History')}</TextHeading>
@@ -61,7 +61,7 @@ export function ReferralHistory({ referralHistory }) {
             ))}
           </div>
         ) : (
-          <div className=' w-full'>
+          <div className='w-full'>
             <div className='grid grid-cols-12 px-11 py-4'>
               <div className='col-span-6 md:col-span-8'>{t('Registered Referrals')}</div>
               <div className='col-span-4 md:col-span-3'>{t('Successful Referrals')}</div>
@@ -70,7 +70,7 @@ export function ReferralHistory({ referralHistory }) {
             <div className='max-h-[430px] overflow-auto px-6 py-4'>
               {referralHistory.map((referral, index) => (
                 <div className='mb-3 grid grid-cols-12 rounded-xl bg-neutral-800 px-5 py-6' key={index}>
-                  <div className='col-span-6 overflow-hidden text-ellipsis break-all pr-1 md:col-span-8'>
+                  <div className='col-span-6 overflow-hidden pr-1 break-all text-ellipsis md:col-span-8'>
                     {referral.invitedWallet}
                   </div>
                   <div

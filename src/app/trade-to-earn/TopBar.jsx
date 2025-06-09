@@ -12,13 +12,13 @@ function TopBar() {
   return (
     <div className='mb-8 flex items-center justify-center py-5'>
       <div className='flex flex-col gap-5 text-center'>
-        <TextHeading className='text-3xl font-semibold leading-9 md:text-5xl'>
+        <TextHeading className='text-3xl leading-9 font-semibold md:text-5xl'>
           {t('Our Trade2Earn Program Has Ended!')}
         </TextHeading>
         <TextSubHeading className='text-base leading-[22px] text-neutral-300 md:text-[17px]'>
           {t('Trade to earn description')}
         </TextSubHeading>
-        <div className='flex flex-col items-center justify-center gap-4 md:flex-row [&>*]:w-48'>
+        <div className='flex flex-col items-center justify-center gap-4 *:w-48 md:flex-row'>
           <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
             {t('Trade on ALPHA')}
           </TrailingButton>

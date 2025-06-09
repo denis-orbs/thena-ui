@@ -212,7 +212,7 @@ export default function HoldingsPage() {
               {networkId === ChainId.BSC && farmedPools.length > 0 && (
                 <div
                   className={cn(
-                    'cursor-pointer text-sm font-medium text-primary-600 transition-all duration-150 ease-out hover:text-primary-700',
+                    'text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium transition-all duration-150 ease-out',
                     pending && 'text-neutral-700',
                   )}
                   onClick={() => {
@@ -233,19 +233,19 @@ export default function HoldingsPage() {
 
           <Box
             className={cn(
-              'mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
+              'border-primary-800 bg-primary-950 mt-[30px] flex flex-row items-center justify-between gap-4 border',
               !isShowMigrationWarning && 'hidden',
             )}
           >
             <div className='h-8 w-8'>
-              <InfoIcon className='h-8 w-8 stroke-primary-600' />
+              <InfoIcon className='stroke-primary-600 h-8 w-8' />
             </div>
 
             <div className='flex flex-col'>
               <TextHeading className='text-xl text-neutral-100'>
                 {t('Migrate Your Conc Liquidity Positions')}
               </TextHeading>
-              <TextSubHeading className='text-base text-primary-100'>
+              <TextSubHeading className='text-primary-100 text-base'>
                 {t('Migrate Your Conc Liquidity Positions description')}
                 &nbsp;
                 <span>

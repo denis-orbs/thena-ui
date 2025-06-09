@@ -36,7 +36,7 @@ export function Referral({ address }) {
   return (
     <div>
       <div className='mt-[10px]'>
-        <TextHeading className='block font-archia text-3xl font-semibold'>{t('Invite Friends')}</TextHeading>
+        <TextHeading className='font-archia block text-3xl font-semibold'>{t('Invite Friends')}</TextHeading>
         <TextSubHeading className='mt-2 block text-base text-neutral-300'>
           {t('Invite Friends description')}
         </TextSubHeading>
@@ -44,13 +44,13 @@ export function Referral({ address }) {
       <div className='mt-6 grid grid-cols-6 gap-6'>
         <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>{userReferral?.length}</TextHeading>
-          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-neutral-300'>
+          <TextSubHeading className='mt-2 text-base leading-5 font-normal text-neutral-300'>
             {t('Registered Referrals')}
           </TextSubHeading>
         </div>
         <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>{totalSuccessfulReferral} / 30</TextHeading>
-          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-neutral-300'>
+          <TextSubHeading className='mt-2 text-base leading-5 font-normal text-neutral-300'>
             {t('Successful Referrals')}
           </TextSubHeading>
         </div>
@@ -64,7 +64,7 @@ export function Referral({ address }) {
             />
             {REFERRAL_REWARD * totalSuccessfulReferral <= 300 ? REFERRAL_REWARD * totalSuccessfulReferral : 300}
           </TextHeading>
-          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-neutral-300'>
+          <TextSubHeading className='mt-2 text-base leading-5 font-normal text-neutral-300'>
             {t('Your Earnings')}
           </TextSubHeading>
         </div>

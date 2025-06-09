@@ -71,7 +71,7 @@ function RangePart({
 
   useEffect(() => {
     if (activePreset === Presets.FULL) {
-      setLocalTokenValue(title === 'Min' ? 0 : Infinity)
+      setLocalTokenValue(title === 'Min' ? 0 : Number.POSITIVE_INFINITY)
     }
   }, [activePreset, title, value])
 
@@ -100,17 +100,19 @@ function RangePart({
             disabled={disabled || locked}
             onFocus={e => e.target.select()}
           />
-          <Paragraph className='min-w-0 truncate !text-[10px] !leading-4 text-neutral-300'>{description}</Paragraph>
+          <Paragraph className='min-w-0 truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>
+            {description}
+          </Paragraph>
         </div>
         <div className='flex flex-shrink-0 gap-4 md:flex-col md:gap-1'>
           <OutlineIconButton
-            className='rounded-xs order-2 !size-6 md:order-1'
+            className='order-2 size-6! rounded-xs md:order-1'
             Icon={PlusIcon}
             onClick={handleIncrement}
             disabled={incrementDisabled || disabled}
           />
           <OutlineIconButton
-            className='rounded-xs order-1 !size-6 md:order-2'
+            className='order-1 size-6! rounded-xs md:order-2'
             Icon={MinusIcon}
             onClick={handleDecrement}
             disabled={decrementDisabled || disabled}

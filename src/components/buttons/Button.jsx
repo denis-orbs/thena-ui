@@ -23,7 +23,7 @@ function Button({
       type='button'
       className={cn(
         'group inline-flex cursor-pointer items-center justify-center gap-2',
-        'outline outline-2 outline-offset-4 outline-transparent',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
         'rounded-lg font-medium transition-all duration-150 ease-out',
         !disabled && 'active:outline-focus',
         responsive ? 'p-2 text-xs lg:px-4 lg:py-3 lg:text-base lg:leading-tight' : 'px-4 py-3 text-base leading-tight',
@@ -46,7 +46,7 @@ function Button({
         ],
         variant === CompTypes.Tertiary && [
           'px-[15px] py-[11px]',
-          'border border-primary-600 text-primary-600',
+          'border-primary-600 text-primary-600 border',
           !disabled && 'hover:border-primary-700 hover:text-primary-700',
           !disabled && 'active:border-primary-600 active:text-primary-600',
           disabled && 'border-neutral-700 text-neutral-700',
@@ -69,7 +69,7 @@ function Button({
           disabled && 'border-neutral-700 bg-transparent text-neutral-700',
         ],
         variant === CompTypes.Trailing && [
-          'relative flex items-center overflow-hidden pl-6 pr-4',
+          'relative flex items-center overflow-hidden pr-4 pl-6',
           'bg-primary-600 hover:bg-primary-700',
         ],
         disabled && 'cursor-not-allowed',

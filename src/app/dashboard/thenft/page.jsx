@@ -142,7 +142,7 @@ export default function TheNftPage() {
                     <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 pb-6' key={`thenft-${idx}`}>
                       <div className='relative'>
                         <NextImage className='w-full min-w-[200px] rounded-lg' src={nft.image} alt='' />
-                        <div className='absolute right-1 top-2'>
+                        <div className='absolute top-2 right-1'>
                           {stakedIds.includes(nft.id) ? (
                             <GreenBadge>{t('Staked')}</GreenBadge>
                           ) : (
@@ -207,7 +207,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <WalletIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Connect your wallet')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Connect Description')}</Paragraph>
               </div>
@@ -216,7 +216,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <BankIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Stake theNFT')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Select Description')}</Paragraph>
               </div>
@@ -225,7 +225,7 @@ export default function TheNftPage() {
               <Highlight className='bg-primary-600'>
                 <PiggySecondIcon className='h-4 w-4' />
               </Highlight>
-              <div className='flex flex-col space-y-1 text-center'>
+              <div className='flex flex-col gap-1 text-center'>
                 <TextHeading>{t('Earn Income')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Let THE rewards flow in')}</Paragraph>
               </div>

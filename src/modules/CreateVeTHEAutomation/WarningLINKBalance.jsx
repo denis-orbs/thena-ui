@@ -24,13 +24,13 @@ function WarningLINKBalance({ contract, chainLINK, refetchChainLINKData }) {
   return (
     <>
       {chainLINK && minFunds?.gt(chainLINK?.balance) && (
-        <div className='flex items-center gap-4 rounded-xl border border-error-800 bg-error-950 px-4 py-2 lg:px-5 lg:py-4'>
-          <InfoIcon className='h-5 w-5 !stroke-error-800' />
+        <div className='border-error-800 bg-error-950 flex items-center gap-4 rounded-xl border px-4 py-2 lg:px-5 lg:py-4'>
+          <InfoIcon className='stroke-error-800! h-5 w-5' />
           <div className='flex w-full flex-row items-center justify-between gap-2'>
             <Paragraph className='text-base text-red-100'>
               {t('You have [balance] LINK in your Wallet', { balance: formatAmount(chainLINK.balance) || 0 })}
             </Paragraph>
-            <ErrorButton onClick={() => setOpenSwapModal(true)} className='min-w-fit bg-error-800'>
+            <ErrorButton onClick={() => setOpenSwapModal(true)} className='bg-error-800 min-w-fit'>
               {t('Get LINK')}
             </ErrorButton>
           </div>

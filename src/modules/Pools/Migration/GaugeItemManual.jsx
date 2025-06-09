@@ -87,7 +87,7 @@ export function GaugeItemManual({ existingPosition, position, fusion, version = 
       <div className='flex items-start justify-between'>
         <article className='flex items-center gap-3'>
           <IconGroup
-            className='-space-x-2'
+            className='*:not-first:-ml-2'
             classNames={{ image: 'w-8 h-8 outline-2' }}
             logo1={asset0.logoURI}
             logo2={asset1.logoURI}

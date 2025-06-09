@@ -223,7 +223,7 @@ export function FarmingPosition({ position }) {
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <IconGroup
-            className='-space-x-2'
+            className='*:not-first:-ml-2'
             classNames={{ image: 'w-8 h-8 outline-2' }}
             logo1={asset0.logoURI}
             logo2={asset1.logoURI}
@@ -353,7 +353,7 @@ export function FarmingPosition({ position }) {
         </div>
 
         <Box
-          className={cn('flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
+          className={cn('border-primary-800 bg-primary-950 flex flex-row items-center justify-between gap-4 border', {
             hidden:
               position?.isFarming ||
               !incentiveAddress ||
@@ -363,11 +363,11 @@ export function FarmingPosition({ position }) {
           })}
         >
           <div className='size-5'>
-            <InfoIcon className='size-5 stroke-primary-600' />
+            <InfoIcon className='stroke-primary-600 size-5' />
           </div>
 
           <div className='flex flex-col'>
-            <TextSubHeading className='text-base text-primary-100'>{t('warning un-farming pool')}</TextSubHeading>
+            <TextSubHeading className='text-primary-100 text-base'>{t('warning un-farming pool')}</TextSubHeading>
           </div>
         </Box>
         <WarningOutOfRange isShow={outOfRange} />

@@ -52,7 +52,7 @@ export default function PairDetailPage({ params }) {
                 <GroupIconTokens
                   classNames={{
                     image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                    rows: '-space-x-2',
+                    rows: '*:not-first:-ml-2',
                   }}
                   width={40}
                   height={40}
@@ -60,7 +60,6 @@ export default function PairDetailPage({ params }) {
                 />
               ) : (
                 <IconGroup
-                  className='-space-x-4'
                   classNames={{
                     image: 'outline-4 w-8 lg:w-16',
                   }}
@@ -69,7 +68,7 @@ export default function PairDetailPage({ params }) {
                 />
               )}
               <div className='flex items-end gap-4 py-2.5'>
-                <NewTextHeading className='whitespace-normal text-wrap break-all'>{pair.symbol}</NewTextHeading>
+                <NewTextHeading className='text-wrap break-all whitespace-normal'>{pair.symbol}</NewTextHeading>
                 <LinkExternalIcon
                   className='mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
                   onClick={() => goScan(networkId, pair.address)}

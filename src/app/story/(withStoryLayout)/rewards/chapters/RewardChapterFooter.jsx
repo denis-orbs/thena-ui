@@ -93,16 +93,16 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
         </div>
       </div>
 
-      <div className='4 mb-6 mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
+      <div className='4 mt-3 mb-6 inline-block h-3 w-full rounded-md bg-neutral-500'>
         <div
           style={{
             width: `${chapterProgressPercent}%`,
           }}
-          className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+          className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
         />
       </div>
 
-      <div className='flex flex-col items-center justify-between gap-4 rounded-xl border-[1px] border-primary-700 bg-neutral-800 p-6 lg:flex-row lg:gap-0'>
+      <div className='border-primary-700 flex flex-col items-center justify-between gap-4 rounded-xl border bg-neutral-800 p-6 lg:flex-row lg:gap-0'>
         {renderActionMessage()}
       </div>
 

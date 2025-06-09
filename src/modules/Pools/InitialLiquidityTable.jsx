@@ -21,7 +21,7 @@ function InitialLiquidityRow({ token }) {
             ({token?.weight}%)
           </span>
           <br />
-          <span className='text-[16px] font-normal leading-5 text-neutral-500'>
+          <span className='text-[16px] leading-5 font-normal text-neutral-500'>
             {t('Initial weight')}: {token?.weight}%
           </span>
         </div>

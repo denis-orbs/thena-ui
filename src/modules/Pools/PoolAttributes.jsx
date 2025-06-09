@@ -101,8 +101,8 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   return (
     <div className='rounded-lg xl:bg-neutral-900 xl:p-4'>
-      <div className='rounded-lg border border-dashed border-primary-500'>
-        <div className='space-y-4 rounded-lg bg-primary-950 p-4 text-[14px] font-normal leading-5'>
+      <div className='border-primary-500 rounded-lg border border-dashed'>
+        <div className='bg-primary-950 flex flex-col gap-4 rounded-lg p-4 text-[14px] leading-5 font-normal'>
           {/* Pool Name */}
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
@@ -120,13 +120,13 @@ export function PoolAttributesCL({ strategy, pool }) {
             <div className='col-span-3 text-neutral-50'>{t('Type')}:</div>
             <div className='col-span-4 flex items-center gap-1 text-neutral-50'>
               <Link
-                className='flex items-center gap-1 text-primary-500'
+                className='text-primary-500 flex items-center gap-1'
                 target='_blank'
                 href='https://github.com/cryptoalgebra/Algebra/tree/integral-v1.2'
               >
                 {t('Type attribute CL pool')}
                 <div className='item-center flex cursor-pointer gap-1'>
-                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                  <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                 </div>
               </Link>
             </div>
@@ -139,7 +139,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                 <Link
                   target='_blank'
                   href={linkDocsStrategy[0]}
-                  className='col-span-4 flex items-center gap-1 text-primary-500'
+                  className='text-primary-500 col-span-4 flex items-center gap-1'
                 >
                   <span>
                     {ICHI_TYPES.includes(strategy.title)
@@ -149,7 +149,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                         : 'Unknown'}
                   </span>
                   <div className='item-center flex cursor-pointer gap-1'>
-                    <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                    <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                   </div>
                 </Link>
               </div>
@@ -160,7 +160,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                 <Link
                   target='_blank'
                   href={linkDocsStrategy[1]}
-                  className='col-span-4 flex items-center gap-1 text-primary-500'
+                  className='text-primary-500 col-span-4 flex items-center gap-1'
                 >
                   <span>
                     {ICHI_TYPES.includes(strategy.title)
@@ -170,7 +170,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                         : 'Unknown'}
                   </span>
                   <div className='item-center flex cursor-pointer gap-1'>
-                    <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                    <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                   </div>
                 </Link>
               </div>
@@ -183,10 +183,10 @@ export function PoolAttributesCL({ strategy, pool }) {
             <div className='col-span-4 text-neutral-50'>
               <div
                 onClick={() => goScan(networkId, poolDeployer)}
-                className='item-center flex cursor-pointer gap-1 text-primary-500'
+                className='item-center text-primary-500 flex cursor-pointer gap-1'
               >
                 <span>{formatAddress(poolDeployer)}</span>
-                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
               </div>
             </div>
           </div>
@@ -197,10 +197,10 @@ export function PoolAttributesCL({ strategy, pool }) {
             <div className='col-span-4 text-neutral-50'>
               <div
                 onClick={() => goScan(networkId, strategy.address)}
-                className='item-center flex cursor-pointer items-center gap-1 text-primary-500'
+                className='item-center text-primary-500 flex cursor-pointer items-center gap-1'
               >
                 <span>{formatAddress(strategy.address)}</span>
-                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                 <div
                   onClick={e => onCopy(e, strategy.address, 'poolAddress-cl')}
                   className='h-5 w-5 cursor-pointer stroke-neutral-200'
@@ -221,7 +221,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                   className='item-center flex cursor-pointer gap-1'
                 >
                   <span>{pool.plugInAddress}</span>
-                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                  <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                 </div>
               </div>
             </div>
@@ -237,7 +237,7 @@ export function PoolAttributesCL({ strategy, pool }) {
               <Link
                 target='_blank'
                 className={cn(
-                  'hidden text-primary-500',
+                  'text-primary-500 hidden',
                   plugInAddress && plugInAddress !== zeroAddress && 'inline-block',
                 )}
                 href={
@@ -275,12 +275,12 @@ export function PoolAttributesCL({ strategy, pool }) {
                   <div key={addr} className='flex flex-col'>
                     <li>
                       <Link
-                        className='flex items-center gap-1 text-primary-500'
+                        className='text-primary-500 flex items-center gap-1'
                         href={`${SCAN_URLS[networkId]}/address/${addr}`}
                         target='_blank'
                       >
                         {formatAddress(addr)}
-                        <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                        <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                       </Link>
                     </li>
                   </div>
@@ -293,12 +293,12 @@ export function PoolAttributesCL({ strategy, pool }) {
                   <div key={addr} className='flex'>
                     <li>
                       <Link
-                        className='flex items-center gap-1 text-primary-500'
+                        className='text-primary-500 flex items-center gap-1'
                         href={`${SCAN_URLS[networkId]}/address/${addr}`}
                         target='_blank'
                       >
                         {formatAddress(addr)}
-                        <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                        <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
                       </Link>
                     </li>
                   </div>
@@ -347,7 +347,7 @@ export function NormalPoolAttributes({ pool }) {
 
   return (
     <div className='rounded-lg xl:bg-neutral-900 xl:p-4'>
-      <div className='flex flex-col gap-2 rounded-lg border border-dashed border-primary-600 bg-primary-950 p-4 text-xs lg:text-sm'>
+      <div className='border-primary-600 bg-primary-950 flex flex-col gap-2 rounded-lg border border-dashed p-4 text-xs lg:text-sm'>
         {/* Pool name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
@@ -388,10 +388,10 @@ export function NormalPoolAttributes({ pool }) {
             <div className='col-span-4 text-neutral-50'>
               <div
                 onClick={() => goScan(networkId, pool.owner)}
-                className='item-center flex cursor-pointer gap-1 text-primary-500'
+                className='item-center text-primary-500 flex cursor-pointer gap-1'
               >
                 <span>{formatAddress(pool.owner)}</span>
-                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+                <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
               </div>
             </div>
           </div>
@@ -415,10 +415,10 @@ export function NormalPoolAttributes({ pool }) {
         {/* Pool address */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
-          <div className='col-span-4 text-primary-500'>
+          <div className='text-primary-500 col-span-4'>
             <div onClick={() => goScan(networkId, pool?.address)} className='flex cursor-pointer items-center gap-1'>
               <span>{formatAddress(pool?.address)}</span>
-              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
+              <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block h-4 w-4' />
               <div
                 onClick={e => onCopy(e, pool?.address, 'poolAddress-normal')}
                 className='h-5 w-5 cursor-pointer stroke-neutral-200'

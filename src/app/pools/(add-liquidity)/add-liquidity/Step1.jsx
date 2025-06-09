@@ -27,14 +27,14 @@ function ContentTypeOptionMini({ heading, desc, active }) {
           )}
         >
           {active ? (
-            <div className='size-5 rounded-full bg-primary-600 p-1.5'>
+            <div className='bg-primary-600 size-5 rounded-full p-1.5'>
               <div className='h-2 w-2 rounded-full bg-white' />
             </div>
           ) : (
             <div className='size-5 rounded-full border border-neutral-600' />
           )}
           <div className={cn('flex flex-1 flex-col')}>
-            <TextHeading className='!text-sm font-normal !leading-5 text-neutral-300'>{t(heading)}</TextHeading>
+            <TextHeading className='text-sm! leading-5! font-normal text-neutral-300'>{t(heading)}</TextHeading>
             <motion.div
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
@@ -47,7 +47,7 @@ function ContentTypeOptionMini({ heading, desc, active }) {
         </div>
         <EmphasisButton
           className={cn(
-            'ml-auto flex !size-9 items-center justify-center p-2 outline-0 hover:bg-neutral-900',
+            'ml-auto flex size-9! items-center justify-center p-2 outline-0 hover:bg-neutral-900',
             show ? 'bg-neutral-600' : 'bg-neutral-900',
           )}
           onClick={e => {
@@ -156,7 +156,7 @@ export default function Step1() {
   }, [pairType, updateSearchParams])
 
   return (
-    <div className='space-y-4 max-lg:-mx-2 max-lg:-mb-4 max-lg:-mt-2.5 max-lg:min-h-[calc(100vh-128px)] lg:space-y-6'>
+    <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 xl:gap-8'>
         <PoolGroupIcon className='h-9 w-9 lg:h-12 lg:w-20' />
         <NewTextHeading className='max-lg:text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
@@ -176,27 +176,27 @@ export default function Step1() {
             <EmphasisButton className='w-full lg:hidden' onClick={() => push('/pools')}>
               {t('Cancel')}
             </EmphasisButton>
-            <EmphasisButton className='w-full max-lg:bg-primary-600' onClick={handleNext}>
+            <EmphasisButton className='max-lg:bg-primary-600 w-full' onClick={handleNext}>
               {t('Next')}
             </EmphasisButton>
           </div>
         </div>
-        <div className='w-1/2 space-y-4 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
+        <div className='flex w-1/2 flex-col gap-4 rounded-lg bg-neutral-900 p-4 max-lg:hidden'>
           <div className='flex flex-col gap-2'>
             <TextHeading className='leading-5'>{t('Concentrated Liquidity')}</TextHeading>
-            <Paragraph className='!text-sm font-normal'>{t('Conc Desc')}</Paragraph>
+            <Paragraph className='text-sm! font-normal'>{t('Conc Desc')}</Paragraph>
           </div>
           <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Weighted')}</TextHeading>
-            <Paragraph className='!text-sm font-normal'>{t('Weighted Desc')}</Paragraph>
+            <Paragraph className='text-sm! font-normal'>{t('Weighted Desc')}</Paragraph>
           </div>
           <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Stable')}</TextHeading>
-            <Paragraph className='!text-sm font-normal'>{t('Stable Desc new')}</Paragraph>
+            <Paragraph className='text-sm! font-normal'>{t('Stable Desc new')}</Paragraph>
           </div>
           <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Classic')}</TextHeading>
-            <Paragraph className='!text-sm font-normal'>{t('Classic Desc')}</Paragraph>
+            <Paragraph className='text-sm! font-normal'>{t('Classic Desc')}</Paragraph>
           </div>
         </div>
       </div>

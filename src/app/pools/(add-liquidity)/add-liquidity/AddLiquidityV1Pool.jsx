@@ -86,7 +86,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
           >
             <div className='mt-2 h-max flex-col gap-2 rounded-md bg-neutral-800 p-4'>
               <div>
-                <NewTextSubHeading className='font-archia !text-xl'>{t('New Deposit')}</NewTextSubHeading>
+                <NewTextSubHeading className='font-archia text-xl!'>{t('New Deposit')}</NewTextSubHeading>
               </div>
               <div>
                 <Paragraph className='text-neutral-400'>{t('New Deposit description')}</Paragraph>
@@ -126,7 +126,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         <div className='order-1 col-span-1 flex-col gap-2 md:gap-4 xl:flex'>
           {!pair && (
             <div className='mt-4 hidden h-max flex-col gap-2 rounded-md bg-neutral-800 p-4 xl:mt-8 xl:flex'>
-              <NewTextSubHeading className='font-archia !text-xl'>{t('New Deposit')}</NewTextSubHeading>
+              <NewTextSubHeading className='font-archia text-xl!'>{t('New Deposit')}</NewTextSubHeading>
               <Paragraph className='text-neutral-400'>{t('New Deposit description')}</Paragraph>
             </div>
           )}

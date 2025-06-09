@@ -39,9 +39,9 @@ function CreateVeTHEAutomation() {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='flex flex-col gap-8'>
       <NewTextHeading>{t('Create Automation')}</NewTextHeading>
-      <div className='space-y-3'>
+      <div className='flex flex-col gap-3'>
         {currentStep === 1 && (
           <div className='hidden gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:flex lg:p-8'>
             <InfoNeutralIcon className='h-8 w-8' />
@@ -52,7 +52,7 @@ function CreateVeTHEAutomation() {
                   <li>
                     You must have a{' '}
                     <TextHeading
-                      className='cursor-pointer text-primary-500 hover:underline'
+                      className='text-primary-500 cursor-pointer hover:underline'
                       onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe-specs')}
                     >
                       veTHE
@@ -65,7 +65,7 @@ function CreateVeTHEAutomation() {
                       href={`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}&swapType=1`}
                       target='_blank'
                     >
-                      <TextHeading className='cursor-pointer text-primary-500 hover:underline'>$LINK</TextHeading>
+                      <TextHeading className='text-primary-500 cursor-pointer hover:underline'>$LINK</TextHeading>
                     </Link>{' '}
                     in your wallet for minimum deposit.
                   </li>
@@ -88,8 +88,8 @@ function CreateVeTHEAutomation() {
             <Stepper steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
           </div>
 
-          {/* Main Content */}
-          <div className='order-3 grid grid-rows-[auto,1fr,auto] space-y-4 bg-transparent lg:order-2 lg:min-w-[480px] lg:flex-[5] lg:rounded-xl lg:bg-neutral-900 lg:p-4 xl:min-w-[480px]'>
+          {/* Main Content - RELD NEEDS FURTHER UNDERSTANDING BEFORE IMPLEMENTING y4 */}
+          <div className='order-3 grid grid-rows-[auto_1fr_auto] gap-y-4 bg-transparent lg:order-2 lg:min-w-[480px] lg:flex-5 lg:rounded-xl lg:bg-neutral-900 lg:p-4 xl:min-w-[480px]'>
             <NavigationTop
               steps={stepsTitle}
               currentStep={currentStep}
@@ -126,7 +126,7 @@ function CreateVeTHEAutomation() {
                       <li>
                         You must have a{' '}
                         <TextHeading
-                          className='cursor-pointer text-primary-500 hover:underline'
+                          className='text-primary-500 cursor-pointer hover:underline'
                           onClick={() => push('/dashboard/lock')}
                         >
                           veTHE
@@ -136,7 +136,7 @@ function CreateVeTHEAutomation() {
                       <li>
                         You need to have approximately $15-$20 worth of{' '}
                         <TextHeading
-                          className='cursor-pointer text-primary-500 hover:underline'
+                          className='text-primary-500 cursor-pointer hover:underline'
                           onClick={() => {
                             push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)
                           }}

@@ -164,7 +164,7 @@ function StakedItem({ position, isXlDown }) {
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
-            rows: '-space-x-2',
+            rows: '*:not-first:-ml-2',
             toolTip: 'hidden',
           }}
           width={32}
@@ -385,12 +385,12 @@ function StakedItem({ position, isXlDown }) {
     <>
       {!isXlDown ? (
         <>
-          <td className='rounded-l-md !pl-4'>{pairCell}</td>
+          <td className='rounded-l-md pl-4!'>{pairCell}</td>
           <td>{rangeCell}</td>
           <td>{aprCell}</td>
           <td>{valueCell}</td>
           <td>{rewardsCell}</td>
-          <td className='rounded-r-md !pr-4'>{actionCell}</td>
+          <td className='rounded-r-md pr-4!'>{actionCell}</td>
         </>
       ) : (
         <div className='flex flex-col gap-4 py-4'>

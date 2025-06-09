@@ -112,7 +112,7 @@ export function WrapLayout({ children, params }) {
         <Box
           onMouseOver={() => setShowIconCloseBanner(true)}
           onMouseLeave={() => setShowIconCloseBanner(false)}
-          className='relative mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
+          className='border-primary-800 bg-primary-950 relative mb-10 flex flex-col gap-2 border'
         >
           <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
           <TextHeading className='text-base font-normal'>
@@ -120,7 +120,7 @@ export function WrapLayout({ children, params }) {
           </TextHeading>
           {showIconCloseBanner && (
             <EmphasisIconButton
-              className='absolute right-1 top-1 !m-0 h-6 w-6 lg:h-6 lg:w-6'
+              className='absolute top-1 right-1 m-0! h-6 w-6 lg:h-6 lg:w-6'
               classNames='lg:h-4 lg:w-4'
               Icon={XIcon}
               onClick={() => setShowBanner(false)}

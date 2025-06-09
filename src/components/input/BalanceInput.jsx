@@ -113,12 +113,12 @@ function BalanceInput({
               className={cn(
                 'inline-flex items-center justify-center gap-2',
                 'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                'py-1.5 pl-1.5 pr-2',
+                'py-1.5 pr-2 pl-1.5',
               )}
             >
               {maxBalance ? (
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-6 h-6',
                   }}
@@ -138,13 +138,13 @@ function BalanceInput({
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading className='space-x-2'>
+          <TextSubHeading className='flex gap-2'>
             <span>
               {t('Balance')}:{formatAmount(max)}
             </span>
             <span
               onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
-              className={cn('cursor-pointer text-primary-600 hover:text-primary-400', max?.eq(0) && 'hidden')}
+              className={cn('text-primary-600 hover:text-primary-400 cursor-pointer', max?.eq(0) && 'hidden')}
             >
               {t('Max')}
             </span>

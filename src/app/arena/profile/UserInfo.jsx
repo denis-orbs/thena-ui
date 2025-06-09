@@ -84,7 +84,7 @@ export function UserInfo({ userInfo, following, followers }) {
 
   return (
     <>
-      <Box className='space-y-4'>
+      <Box className='flex flex-col gap-4'>
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
@@ -154,8 +154,8 @@ export function UserInfo({ userInfo, following, followers }) {
               </div>
             </div>
             {isOwnProfile && !userInfo.usernameNfts.length && (
-              <Box className='flex items-center justify-between space-x-2 border border-primary-800 bg-primary-950 p-2 pl-3 lg:p-2 lg:pl-3'>
-                <InfoIcon className='h-4 w-4 stroke-primary-600' />
+              <Box className='border-primary-800 bg-primary-950 flex items-center justify-between gap-2 border p-2 pl-3 lg:p-2 lg:pl-3'>
+                <InfoIcon className='stroke-primary-600 h-4 w-4' />
                 <TextHeading className='text-base'>
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>
@@ -164,7 +164,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   rel='nofollow noopener noreferrer'
                   target='_blank'
                 >
-                  <OutlinedButton className='text-nowrap border-primary-600 p-2 text-primary-600 hover:bg-primary-900'>
+                  <OutlinedButton className='border-primary-600 text-primary-600 hover:bg-primary-900 p-2 text-nowrap'>
                     {t('Learn More')}
                   </OutlinedButton>
                 </Link>
@@ -210,9 +210,9 @@ export function UserInfo({ userInfo, following, followers }) {
           <div className='flex flex-col'>
             <TextHeading className='text-2xl'>{t('About')}</TextHeading>
             <div className='relative h-full w-full'>
-              <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
+              <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-xs'>
                 <EmphasisButton
-                  className='animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                  className='animate-gradient bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
                   onClick={() => handleClickThenaButton('get')}
                 >
                   {t('To Edit Your About Section')}

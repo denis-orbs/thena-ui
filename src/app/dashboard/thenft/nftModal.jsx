@@ -99,7 +99,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
             <div className='flex items-center justify-between'>
               <TextHeading>{t('Select your theNFT')}</TextHeading>
               <div
-                className='cursor-pointer text-primary-600'
+                className='text-primary-600 cursor-pointer'
                 onClick={() => {
                   setStakingsIds(stakingIds.length === walletIds.length ? [] : walletIds)
                 }}
@@ -119,7 +119,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
             <div className='flex items-center justify-between'>
               <TextHeading>{t('Select your theNFT')}</TextHeading>
               <div
-                className='cursor-pointer text-primary-600'
+                className='text-primary-600 cursor-pointer'
                 onClick={() => {
                   setUnStakingIds(unstakingIds.length === stakedIds.length ? [] : stakedIds)
                 }}

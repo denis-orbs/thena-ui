@@ -137,7 +137,7 @@ function PieChart({ tokens, colors, showTotalPercent = true, className, bgColor 
         />
         {showTotalPercent && (
           <div
-            className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'
+            className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'
             style={{ backgroundColor: bgColor }}
           >
             <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight || 0)}%</TextHeading>

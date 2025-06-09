@@ -92,7 +92,7 @@ function NotificationItem({ notification, markRead, afterClassName }) {
   const NotificationIcon = useCallback(() => {
     if (notification.type === 'general') {
       return (
-        <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
+        <Highlight className='to-primary-600 bg-linear-to-t from-[#9A5EFF]'>
           <AnnouncementIcon className='h-5 w-5' />
         </Highlight>
       )
@@ -119,7 +119,7 @@ function NotificationItem({ notification, markRead, afterClassName }) {
           'flex min-w-[320px] items-center gap-4',
           !notification.isRead &&
             // eslint-disable-next-line max-len
-            `relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-[''] ${afterClassName}`,
+            `after:bg-primary-600 relative after:absolute after:top-1/2 after:right-5 after:h-2 after:w-2 after:rounded-full after:content-[''] ${afterClassName}`,
         )}
       >
         <div className='flex h-12 w-12 min-w-12 items-center justify-center'>

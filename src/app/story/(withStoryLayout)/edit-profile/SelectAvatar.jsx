@@ -27,7 +27,7 @@ export function SelectAvatar({ avatarUrl }) {
         />
         <div
           className={cn(
-            'absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-full bg-[]',
+            'bg-[] absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full',
             isHovered ? 'opacity-1' : 'opacity-0',
           )}
           style={{

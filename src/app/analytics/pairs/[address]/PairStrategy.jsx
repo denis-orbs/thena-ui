@@ -86,12 +86,12 @@ function PairStrategy({ pair }) {
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm text-neutral-400'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='!text-sm'>${formatAmount(sub.tvl ?? sub.gauge.tvl)}</Paragraph>
+                  <Paragraph className='text-sm!'>${formatAmount(sub.tvl ?? sub.gauge.tvl)}</Paragraph>
                 </div>
               </div>
             </div>
 
-            <TextHeading className='font-archia text-xl font-semibold text-primary-600'>
+            <TextHeading className='font-archia text-primary-600 text-xl font-semibold'>
               {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
@@ -99,20 +99,20 @@ function PairStrategy({ pair }) {
               {ICHI_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <CircleImage alt={sub.title} className='size-6' src={sub.allowed.logoURI} />
-                  <Paragraph className='!text-sm text-neutral-400'>{t('Deposit')}</Paragraph>
+                  <Paragraph className='text-sm! text-neutral-400'>{t('Deposit')}</Paragraph>
                 </div>
               )}
               {NARROW_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-6',
                     }}
                     logo1={sub.token0.logoURI}
                     logo2={sub.token1.logoURI}
                   />
-                  <Paragraph className='!text-sm'>{t('Deposit')}</Paragraph>
+                  <Paragraph className='text-sm!'>{t('Deposit')}</Paragraph>
                 </div>
               )}
             </div>
@@ -240,13 +240,13 @@ function PairStrategy({ pair }) {
     <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
       <div className='w-full 2xl:w-[25%]'>
         <div className={cn('flex items-center justify-between py-4 lg:h-[92px]')}>
-          <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
+          <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
             Automatic Strategy
           </NewTextSubHeading>
 
           <EmphasisIconButton
             Icon={ArrowRightIcon}
-            className='size-8 bg-neutral-700 lg:size-11 [&>svg>path]:stroke-neutral-400 [&>svg]:size-4 lg:[&>svg]:size-5'
+            className='size-8 bg-neutral-700 lg:size-11 [&>svg]:size-4 lg:[&>svg]:size-5 [&>svg>path]:stroke-neutral-400'
             onClick={() => handleAddLiquidity('automatic')}
           />
         </div>
@@ -262,25 +262,23 @@ function PairStrategy({ pair }) {
       </div>
 
       <div className='flex w-full flex-col gap-8 2xl:w-[75%]'>
-        <div
-          className={cn('flex items-center justify-between gap-2 rounded-xl bg-primary-950 bg-opacity-50 p-4  lg:px-6')}
-        >
+        <div className={cn('bg-primary-950/50 flex items-center justify-between gap-2 rounded-xl p-4 lg:px-6')}>
           <div className='flex items-center gap-4 lg:gap-8'>
-            <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
+            <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
               Manual Strategy
             </NewTextSubHeading>
             <EmphasisIconButton
               Icon={ArrowRightIcon}
-              className='size-8 bg-neutral-700 lg:size-11 [&>svg>path]:stroke-neutral-400 [&>svg]:size-4 lg:[&>svg]:size-5'
+              className='size-8 bg-neutral-700 lg:size-11 [&>svg]:size-4 lg:[&>svg]:size-5 [&>svg>path]:stroke-neutral-400'
               onClick={() => handleAddLiquidity('manual')}
             />
           </div>
 
           <div className='flex flex-col justify-end'>
-            <Paragraph className='text-sm font-bold leading-5 text-neutral-500 md:text-lg'>
+            <Paragraph className='text-sm leading-5 font-bold text-neutral-500 md:text-lg'>
               {t('Estimated APR')}
             </Paragraph>
-            <NewTextSubHeading className='text-base text-primary-600 lg:text-3xl'>
+            <NewTextSubHeading className='text-primary-600 text-base lg:text-3xl'>
               {/* display like: 23% OR 23 ~ 30% */}
               {aprs.length === 0 && '0%'}
               {aprs.length === 1 && `${formatAmount(aprs.at(0), true)}%`}

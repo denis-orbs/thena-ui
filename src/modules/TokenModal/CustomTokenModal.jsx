@@ -62,11 +62,11 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
               <div className='flex items-center gap-2 rounded-lg'>
                 <CircleImage src={item?.logoURI} width={32} height={32} alt='thena token' />
                 <div className='flex flex-col'>
-                  <div className='flex items-center space-x-1'>
+                  <div className='flex items-center gap-1'>
                     <TextHeading>{item?.symbol}</TextHeading>
                     {item?.address !== 'BNB' && (
                       <div className='flex items-center gap-1'>
-                        <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
+                        <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md py-2!'>
                           <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
                         </CustomTooltip>
                         <ExternalIcon
@@ -78,7 +78,7 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
                           }}
                           data-tooltip-id={`contract-tooltip-${idx}`}
                         />
-                        <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
+                        <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md py-2!' place='top'>
                           <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                         </CustomTooltip>
                       </div>

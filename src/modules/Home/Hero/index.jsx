@@ -24,7 +24,7 @@ function Hero() {
         <HomeImage
           alt='blob background'
           src='/images/home/hero/blob.png'
-          className='absolute -top-16 z-[25] hidden h-[944px] w-full opacity-70 lg:block'
+          className='absolute -top-16 z-25 hidden h-[944px] w-full opacity-70 lg:block'
         />
         <HomeImage
           alt='pillars'
@@ -48,17 +48,17 @@ function Hero() {
       </div>
       <div className='relative mx-auto flex max-w-[1152px] flex-col items-center justify-center px-[31px] pt-[51px] xl:px-0'>
         <div
-          className='z-30 flex cursor-pointer items-center space-x-3'
+          className='z-30 flex cursor-pointer items-center gap-3'
           onClick={() => {
             window.open('https://x.com/BinanceLabs/article/1873984088559747124', '_blank')
           }}
         >
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Backed by')}</span>
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/65'>{t('Backed by')}</span>
           <HomeImage alt='binancelabs logo' src='/images/yzilabs.png' />
           {/* Hidden on EN, only show on ZH */}
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audit')}</span>
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/65'>{t('Audit')}</span>
         </div>
-        <h1 className='z-30 mt-[26px] w-full text-center font-archia text-4xl font-semibold leading-10 tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
+        <h1 className='font-archia z-30 mt-[26px] w-full text-center text-4xl leading-10 font-semibold tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
           {t('THE ULTIMATE')}
           <br />
           {t('Decentralized Exchange')}

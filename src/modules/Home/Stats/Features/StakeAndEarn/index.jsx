@@ -13,22 +13,22 @@ function StakeAndEarnCard({ className, coinPair, arr, netReturn, tvl, netReturn3
   return (
     <MotionFeatureCard
       className={cn(
-        'relative z-40 min-w-[220px] rounded-md bg-[linear-gradient(0deg,_rgba(19,_10,_23,_0.99),_rgba(19,_10,_23,_0.99))] backdrop-blur-lg',
-        'before:bg-[linear-gradient(180deg,_rgba(214,_66,_219,_0.45)_0%,_rgba(214,_66,_219,_0)_100%)] before:opacity-0 md:min-w-[255.74px]  md:rounded-lg',
-        'after:bg-[linear-gradient(180deg,_rgba(214,_66,_219,_0.12)_0%,_rgba(214,_66,_219,_0)_100%)]',
+        'relative z-40 min-w-[220px] rounded-md bg-[linear-gradient(0deg,rgba(19,10,23,0.99),rgba(19,10,23,0.99))] backdrop-blur-lg',
+        'before:bg-[linear-gradient(180deg,rgba(214,66,219,0.45)_0%,rgba(214,66,219,0)_100%)] before:opacity-0 md:min-w-[255.74px] md:rounded-lg',
+        'after:bg-[linear-gradient(180deg,rgba(214,66,219,0.12)_0%,rgba(214,66,219,0)_100%)]',
         'before:duration-500',
-        'before:opacity-100 before:group-hover:opacity-100 before:lg:opacity-0',
+        'before:opacity-100 group-hover:before:opacity-100 lg:before:opacity-0',
         '[--x-multiplier:-3] [--y-multiplier:3]',
         'pointer-events-none',
         className,
       )}
     >
-      <div className=' flex items-center gap-1'>
+      <div className='flex items-center gap-1'>
         <div className='relative mr-4 md:mr-5'>{coinPair.icons}</div>
         <Paragraph className='text-xs font-semibold text-white'>{coinPair.name}</Paragraph>
       </div>
       <div className='mt-4 border-t border-t-[#281B2D] pt-4'>
-        <div className='flex items-center justify-between space-y-2'>
+        <div className='flex flex-col items-center justify-between gap-2'>
           <Paragraph className='text-[10px] text-white'>ARR</Paragraph>
           <Paragraph className='text-xs font-medium text-[#26E222]'>{arr}%</Paragraph>
         </div>
@@ -135,14 +135,14 @@ export function StakeAndEarn({ noAnimation }) {
           name: 'TEZ/ALG',
           icons: (
             <>
-              <Tezos className=' h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
-              <Algorand className='absolute -right-3 top-0 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
+              <Tezos className='h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
+              <Algorand className='absolute top-0 -right-3 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
             </>
           ),
         }}
         className={cn(
           'stake-and-earn-card-1',
-          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*12px)] rotate-[-2deg]',
+          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*12px)] -rotate-2',
         )}
         arr={2.1}
         netReturn={123.45}
@@ -154,8 +154,8 @@ export function StakeAndEarn({ noAnimation }) {
           name: 'APE/AVA',
           icons: (
             <>
-              <Ape className=' h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
-              <Avalanche className='absolute -right-3 top-0 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
+              <Ape className='h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
+              <Avalanche className='absolute top-0 -right-3 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
             </>
           ),
         }}
@@ -165,7 +165,7 @@ export function StakeAndEarn({ noAnimation }) {
         netReturn30d={12.33}
         className={cn(
           'stake-and-earn-card-2 absolute [--x-multiplier:-1] [--y-multiplier:1]',
-          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*8px)] rotate-[3deg]',
+          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*8px)] rotate-3',
         )}
       />
       <StakeAndEarnCard
@@ -173,8 +173,8 @@ export function StakeAndEarn({ noAnimation }) {
           name: 'USDC/THE',
           icons: (
             <>
-              <USDC className=' h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
-              <Thena className='absolute -right-3 top-0 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
+              <USDC className='h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
+              <Thena className='absolute top-0 -right-3 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
             </>
           ),
         }}
@@ -184,7 +184,7 @@ export function StakeAndEarn({ noAnimation }) {
         netReturn30d={12.33}
         className={cn(
           'stake-and-earn-card-3 absolute [--x-multiplier:1] [--y-multiplier:-1]',
-          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*8px)] rotate-[10deg]',
+          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*8px)] rotate-10',
         )}
       />
       <StakeAndEarnCard
@@ -192,8 +192,8 @@ export function StakeAndEarn({ noAnimation }) {
           name: 'BNB/THE',
           icons: (
             <>
-              <BNB className=' h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
-              <Thena className='absolute -right-3 top-0 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
+              <BNB className='h-4 w-4 md:h-5 md:w-5 md:translate-y-0.5' />
+              <Thena className='absolute top-0 -right-3 h-4 w-4 md:-right-4 md:h-6 md:w-6' />
             </>
           ),
         }}
@@ -203,7 +203,7 @@ export function StakeAndEarn({ noAnimation }) {
         netReturn30d={12.33}
         className={cn(
           'stake-and-earn-card-4 absolute [--x-multiplier:3] [--y-multiplier:-3]',
-          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*13px)] rotate-[15deg]',
+          'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*13px)] rotate-15',
         )}
       />
     </motion.div>

@@ -22,13 +22,13 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             <div className='size-6 min-w-6 md:size-8 md:min-w-8'>
               <CoinUSDIcon className='size-full' />
             </div>
-            <Paragraph className='text-xs text-primary-100 max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
               ${position.depositInUSD}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs text-primary-100 md:hidden md:!text-xl'>${position.depositInUSD}</Paragraph>
-            <Paragraph className='text-nowrap text-xs text-primary-100 md:!text-base md:!leading-5'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>${position.depositInUSD}</Paragraph>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
               {t('Deposit Value in USD')}
             </Paragraph>
           </div>
@@ -41,15 +41,15 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               src={baseCurrency.logoURI ?? UNKNOWN_LOGO}
               alt='base token'
             />
-            <Paragraph className='text-xs text-primary-100 max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset0)}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs text-primary-100 md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset0)}
             </Paragraph>
-            <Paragraph className='text-nowrap text-xs text-primary-100 md:!text-base md:!leading-5'>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
@@ -65,15 +65,15 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
               alt='quote token'
             />
-            <Paragraph className='text-xs text-primary-100 max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset1)}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs text-primary-100 md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset1)}
             </Paragraph>
-            <Paragraph className='text-nowrap text-xs text-primary-100 md:!text-base md:!leading-5'>
+            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),

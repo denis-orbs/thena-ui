@@ -8,21 +8,21 @@ import CircleImage from '../image/CircleImage'
 
 export function ThreeIconGroup({ logo1, logo2, extendNumber, className, classNames }) {
   return (
-    <div className={cn('flex items-center -space-x-4', className)}>
+    <div className={cn('flex items-center *:not-first:-ml-4', className)}>
       <CircleImage
-        className={cn('outline outline-4 outline-[#1C2027]', classNames?.image)}
+        className={cn('outline-4 outline-[#1C2027] outline-solid', classNames?.image)}
         src={logo1}
         alt='THENA First Logo'
       />
       <CircleImage
-        className={cn('z-1 rounded-full outline outline-4 outline-[#1C2027]', classNames?.image)}
+        className={cn('z-1 rounded-full outline-4 outline-[#1C2027] outline-solid', classNames?.image)}
         src={logo2}
         alt='THENA Second Logo'
       />
       {extendNumber > 0 && (
         <div
           className={cn(
-            'logo z-2 flex items-center justify-center rounded-full bg-neutral-200 outline outline-4 outline-[#1C2027]',
+            'logo z-2 flex items-center justify-center rounded-full bg-neutral-200 outline-4 outline-[#1C2027] outline-solid',
             classNames?.image,
           )}
         >

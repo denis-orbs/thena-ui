@@ -79,7 +79,7 @@ function VotingChart({ data = [], className }) {
           <GroupIconTokens
             classNames={{
               image: 'outline-2 w-8 h-8',
-              rows: '-space-x-2',
+              rows: '*:not-first:-ml-2',
               toolTip: 'hidden',
             }}
             width={32}
@@ -183,8 +183,8 @@ function VotingChart({ data = [], className }) {
 
         <div
           className={cn(
-            'min-h-[36px] font-archia text-3xl font-semibold leading-9 text-primary-300',
-            pools.length === 0 && 'text-xl uppercase leading-6 text-error-600',
+            'font-archia text-primary-300 min-h-[36px] text-3xl leading-9 font-semibold',
+            pools.length === 0 && 'text-error-600 text-xl leading-6 uppercase',
           )}
         >
           {pools.length > 0

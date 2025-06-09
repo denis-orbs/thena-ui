@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 export function Paragraph({ children, className, title = undefined, ...props }) {
   return (
-    <span className={cn('text-sm text-neutral-300 lg:text-base', className)} title={title} {...props}>
+    <span className={cn('text-sm font-normal text-neutral-300 lg:text-base', className)} title={title} {...props}>
       {children}
     </span>
   )
@@ -12,7 +12,7 @@ export function Paragraph({ children, className, title = undefined, ...props }) 
 
 export function TextHeading({ children, className, ...props }) {
   return (
-    <span className={cn('font-medium text-neutral-50', className)} {...props}>
+    <span className={cn(['font-medium text-neutral-50'], className)} {...props}>
       {children}
     </span>
   )
@@ -33,7 +33,7 @@ export function NewTextHeading({ children, className, ...props }) {
 export function NewTextSubHeading({ children, className, ...props }) {
   return (
     <span
-      className={cn('text-base font-medium leading-4 text-neutral-50 md:text-2xl md:leading-8', className)}
+      className={cn('text-base leading-4 font-medium text-neutral-50 md:text-2xl md:leading-8', className)}
       {...props}
     >
       {children}

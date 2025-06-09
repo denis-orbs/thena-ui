@@ -122,8 +122,8 @@ function VotingPowerChart({ data, extendVotingPower }) {
       <Divider className='my-1 h-[2px] bg-neutral-700' />
 
       {extendVotingPower && (
-        <div className={cn('pointer-events-none absolute bottom-2 left-0 right-0 flex flex-col text-center')}>
-          <NewTextHeading className='text-base text-success-700 md:text-lg lg:text-xl'>
+        <div className={cn('pointer-events-none absolute right-0 bottom-2 left-0 flex flex-col text-center')}>
+          <NewTextHeading className='text-success-700 text-base md:text-lg lg:text-xl'>
             +{formatAmount(extendVotingPower)}
           </NewTextHeading>
           <Paragraph className='text-neutral-300 lg:text-sm'>{t('Voting Power')}</Paragraph>
@@ -131,9 +131,9 @@ function VotingPowerChart({ data, extendVotingPower }) {
       )}
 
       {selectedVethe && !extendVotingPower && (
-        <div className={cn('pointer-events-none absolute bottom-2 left-0 right-0 text-center')}>
+        <div className={cn('pointer-events-none absolute right-0 bottom-2 left-0 text-center')}>
           <div className='flex items-center justify-center gap-2'>
-            <div className='size-2 rounded-sm' style={{ background: selectedVethe.color }} />
+            <div className='size-2 rounded-xs' style={{ background: selectedVethe.color }} />
             <Paragraph className='font-medium text-neutral-50 lg:text-sm'>ID #{selectedVethe.id}</Paragraph>
           </div>
           <Paragraph className='text-neutral-500 lg:text-sm'>Power {formatAmount(selectedVethe.value, true)}</Paragraph>

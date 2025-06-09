@@ -27,7 +27,7 @@ export function Countdown({ timestamp }) {
     <div className='flex justify-center gap-x-4'>
       {days > 0 && (
         <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 px-2 py-2 lg:px-4 lg:py-4 2xl:px-6'>
-          <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
+          <Paragraph className='text-gradient-tertiary font-archia text-center text-xl font-semibold md:text-3xl'>
             {days}
           </Paragraph>
           <Paragraph className='text-xs xl:text-base'>{days <= 1 ? t('Day') : t('Days')}</Paragraph>
@@ -36,7 +36,7 @@ export function Countdown({ timestamp }) {
 
       {hours > 0 && (
         <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
-          <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
+          <Paragraph className='text-gradient-tertiary font-archia text-center text-xl font-semibold md:text-3xl'>
             {hours}
           </Paragraph>
           <Paragraph className='text-xs xl:text-base'>{hours <= 1 ? t('Hour') : t('Hours')}</Paragraph>
@@ -45,7 +45,7 @@ export function Countdown({ timestamp }) {
 
       {minutes > 0 && (
         <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
-          <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
+          <Paragraph className='text-gradient-tertiary font-archia text-center text-xl font-semibold md:text-3xl'>
             {minutes}
           </Paragraph>
           <Paragraph className='text-xs xl:text-base'>{minutes <= 1 ? t('Minute') : t('Minutes')}</Paragraph>
@@ -54,7 +54,7 @@ export function Countdown({ timestamp }) {
 
       {seconds >= 0 && (
         <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
-          <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
+          <Paragraph className='text-gradient-tertiary font-archia text-center text-xl font-semibold md:text-3xl'>
             {seconds}
           </Paragraph>
           <Paragraph className='text-xs xl:text-base'>{seconds <= 1 ? t('Second') : t('Seconds')}</Paragraph>

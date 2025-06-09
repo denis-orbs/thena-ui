@@ -95,7 +95,7 @@ function AutomationsWarning() {
   if (isLoading && !data && !data?.id) return null
 
   return (
-    <div className='space-y-6'>
+    <div className='flex flex-col gap-6'>
       {(data || []).map(item => {
         if (item.statusString === AUTOMATION_STATUS.PENDING) {
           return (

@@ -11,7 +11,7 @@ function DateTimeInput({ className, ...rest }) {
         <Image width={24} height={24} alt='' src='/svgs/clock.svg' />
         <input
           type='datetime-local'
-          className='datetime-local-input w-full border-none bg-transparent pl-[6px] text-lg font-light leading-10 text-white placeholder-[#757384] focus:outline-none'
+          className='datetime-local-input w-full border-none bg-transparent pl-[6px] text-lg leading-10 font-light text-white placeholder-[#757384] focus:outline-hidden'
           {...rest}
         />
       </div>

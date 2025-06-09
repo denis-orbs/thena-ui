@@ -26,14 +26,14 @@ function ThenaIdItem({ item }) {
   return (
     <Link
       href={`/arena/thena-id/browse/${encodeURIComponent(item.name)}`}
-      className='rounded-[10px] hover:border-[2px] hover:border-neutral-400'
+      className='rounded-[10px] hover:border-2 hover:border-neutral-400'
     >
       <div key={item.name} className='rounded-lg'>
         <div className='rounded-t-lg bg-neutral-300'>
           <ImageThenaId name={item.name} className='rounded-t-lg' />
         </div>
 
-        <Box className='rounded-b-lg rounded-t-none p-3 lg:p-3'>
+        <Box className='rounded-t-none rounded-b-lg p-3 lg:p-3'>
           <TextHeading className='mb-4 block truncate text-sm'>{item.name}.thena</TextHeading>
           {item.owner ? (
             <div className='flex flex-row flex-wrap items-center overflow-hidden'>
@@ -41,7 +41,7 @@ function ThenaIdItem({ item }) {
               <UserProfileCard user={item.owner} enableFollow={false} showVerified={item.owner.isVerified} />
             </div>
           ) : (
-            <div className='flex items-center justify-start space-x-2'>
+            <div className='flex items-center justify-start gap-2'>
               <TextHeading>
                 {t('Mint For')} {formatAmount(item.cost)} {USDTAsset?.symbol}
               </TextHeading>
@@ -49,7 +49,7 @@ function ThenaIdItem({ item }) {
                 <Image
                   alt='token'
                   src={`${USDTAsset.logoURI ?? ''}`}
-                  className='flex-shrink-0'
+                  className='shrink-0'
                   width={24}
                   height={24}
                   loading='lazy'

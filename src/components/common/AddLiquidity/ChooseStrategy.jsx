@@ -248,7 +248,7 @@ export default function ChooseStrategy({
               </div>
             </div>
 
-            <TextHeading className='text-base font-semibold text-primary-600'>
+            <TextHeading className='text-primary-600 text-base font-semibold'>
               {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
@@ -262,7 +262,7 @@ export default function ChooseStrategy({
               {NARROW_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 size-4',
                     }}
@@ -283,10 +283,10 @@ export default function ChooseStrategy({
   }, [sortedSubPools, t, strategy?.address, handleChooseStrategy])
 
   return (
-    <div className={cn('w-full flex-col gap-5')}>
-      <div className='flex-[6]'>
+    <div className={cn('inline-flex w-full flex-col gap-5')}>
+      <div className='flex-6'>
         {!position && (
-          <div className='space-y-2'>
+          <div className='flex flex-col gap-2 md:gap-4'>
             <StrategyTitle
               strategyCount={strategyAutoData.length}
               isAutomatic={isAutomatic}
@@ -428,7 +428,7 @@ function StrategyTitle({
             not earn any reward until you re-adjust your position accordingly.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 mt-4 block text-xl'>Automatic Strategy</NewTextSubHeading>
+          <NewTextSubHeading className='mt-4 mb-2 block text-xl'>Automatic Strategy</NewTextSubHeading>
           <Paragraph className='text-base'>
             If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
             Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you

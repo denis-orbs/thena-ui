@@ -34,7 +34,7 @@ function Step3Create() {
   )
 
   return (
-    <div className='space-y-5 divide-y divide-neutral-700 '>
+    <div className='flex flex-col gap-5 divide-y divide-neutral-700'>
       {/* Details */}
       <div className='flex flex-col gap-3'>
         <TextHeading>{t('Details')}</TextHeading>
@@ -74,7 +74,7 @@ function Step3Create() {
               {pair.pair?.type !== PAIR_TYPES.WEIGHTED ? (
                 <div className='flex flex-row gap-3'>
                   <IconGroup
-                    className='-space-x-2'
+                    className='*:not-first:-ml-2'
                     classNames={{
                       image: 'outline-2 w-7 h-7',
                     }}

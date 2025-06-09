@@ -58,13 +58,13 @@ export function RewardChapter({ chapters }) {
   )
 
   return (
-    <div className='border-gradient-secondary w-full rounded-xl bg-neutral-900 p-[1px] lg:col-span-6 '>
+    <div className='border-gradient-secondary w-full rounded-xl bg-neutral-900 p-px lg:col-span-6'>
       <div className='rounded-xl bg-neutral-900 p-4 lg:p-8'>
         <ChapterTabNavigator
           nav={rewardChapterNav}
           currentTabIndex={selectedChapterIndex}
           setCurrentTabIndex={setSelectedChapterIndex}
-          classOfButton='lg:!px-3 lg:!py-2'
+          classOfButton='lg:px-3! lg:py-2!'
         />
         <div>
           <RewardChapterDetail chapter={currentChapter} />

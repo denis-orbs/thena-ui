@@ -66,7 +66,7 @@ export default function Chapters({ chapters, isLoading }) {
     <>
       {chapters[selectedChapterIndex - 1] && (
         <>
-          <div className='mb-5 mt-5 grid grid-cols-12 gap-8'>
+          <div className='mt-5 mb-5 grid grid-cols-12 gap-8'>
             <div className='col-span-12'>
               <ChapterTabNavigator
                 chapters={chapters}

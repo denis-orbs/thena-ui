@@ -26,7 +26,7 @@ function UserThenaIds({ thenaIds }) {
 
   return (
     <div>
-      <div className='space-y-4'>
+      <div className='flex flex-col gap-4'>
         <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
           <TextHeading className='flex-2 text-xl'>
             {t('THENA IDs')} ({thenaIds.length})

@@ -191,7 +191,7 @@ export default function PoolsPage() {
   //           {pool.type !== PAIR_TYPES.WEIGHTED ? (
   //             <>
   //               <IconGroup
-  //                 className='-space-x-2'
+  //                 className='*:not-first:-ml-2'
   //                 classNames={{
   //                   image: 'outline-2 w-7 h-7',
   //                 }}
@@ -226,10 +226,10 @@ export default function PoolsPage() {
   //                 />
   //               </div>
 
-  //               <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
+  //               <CustomTooltip id='etherBadgeIcon' className='rounded-md py-2!' place='top'>
   //                 <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
   //               </CustomTooltip>
-  //               <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
+  //               <CustomTooltip id='eigenBadgeIcon' className='rounded-md py-2!' place='top'>
   //                 <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
   //               </CustomTooltip>
   //             </div>
@@ -243,7 +243,7 @@ export default function PoolsPage() {
   //                   src='/images/GQhgnIEbUAA4gjewe.jpeg'
   //                 />
   //               </div>
-  //               <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+  //               <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md py-2!' place='top'>
   //                 <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
   //               </CustomTooltip>
   //             </div>
@@ -258,7 +258,7 @@ export default function PoolsPage() {
   //                     src='/images/yieldnest_seed_3d__1__360.png'
   //                   />
   //                 </div>
-  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
   //                   <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
   //                 </CustomTooltip>
 
@@ -269,7 +269,7 @@ export default function PoolsPage() {
   //                     src='/images/Kernel.svg'
   //                   />
   //                 </div>
-  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md py-2!' place='top'>
   //                   <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
   //                 </CustomTooltip>
   //               </div>
@@ -285,7 +285,7 @@ export default function PoolsPage() {
   //                     src='/images/quaaloop.png'
   //                   />
   //                 </div>
-  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
   //                   <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
   //                 </CustomTooltip>
   //               </div>
@@ -301,7 +301,7 @@ export default function PoolsPage() {
   //                     src='/svgs/fbtcYieldCampaign.svg'
   //                   />
   //                 </div>
-  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+  //                 <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
   //                   <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
   //                 </CustomTooltip>
   //               </div>
@@ -322,7 +322,7 @@ export default function PoolsPage() {
   //                 </div>
   //                 <CustomTooltip
   //                   id={`pool-special-${pool.address}-BTCBmBTCAddress`}
-  //                   className='rounded-md !py-2'
+  //                   className='rounded-md py-2!'
   //                   place='top'
   //                 >
   //                   <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
@@ -338,7 +338,7 @@ export default function PoolsPage() {
   //               <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
   //                 <InfoIcon className='size-4 stroke-warn-700' />
   //               </div>
-  //               <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+  //               <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md py-2!' place='top'>
   //                 <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
   //               </CustomTooltip>
   //             </>
@@ -507,7 +507,7 @@ export default function PoolsPage() {
                 <div className='flex items-start justify-between gap-4'>
                   <div className='flex items-center gap-3'>
                     <IconGroup
-                      className='-space-x-3'
+                      className='*:not-first:-ml-3'
                       classNames={{
                         image: 'outline-4 w-10 h-10',
                       }}

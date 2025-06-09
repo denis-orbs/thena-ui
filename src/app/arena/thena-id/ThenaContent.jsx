@@ -160,7 +160,7 @@ function ThenaContent() {
         <div
           onClick={() => setType('get')}
           className={cn(
-            'flex min-h-[180px] items-center rounded-lg border border-primary-800 p-6',
+            'border-primary-800 flex min-h-[180px] items-center rounded-lg border p-6',
             type === 'get' ? 'bg-primary-900' : '',
           )}
         >
@@ -175,7 +175,7 @@ function ThenaContent() {
         <div
           onClick={() => setType('gift')}
           className={cn(
-            'flex min-h-[180px] items-center rounded-lg border border-primary-800 p-6',
+            'border-primary-800 flex min-h-[180px] items-center rounded-lg border p-6',
             type === 'gift' ? 'bg-primary-900' : '',
           )}
         >
@@ -202,7 +202,7 @@ function ThenaContent() {
             ))}
           </div>
 
-          <div className='mt-4 flex items-center justify-center space-x-3 md:mt-6'>
+          <div className='mt-4 flex items-center justify-center gap-3 md:mt-6'>
             <PrimaryButton
               onClick={() => {
                 if (thenaIds.length >= 2) {
@@ -210,7 +210,7 @@ function ThenaContent() {
                 }
               }}
               disabled={thenaIds.length === 1}
-              className='bg-red-600 p-[0.5rem] hover:bg-red-600'
+              className='bg-red-600 p-2 hover:bg-red-600'
             >
               <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
             </PrimaryButton>
@@ -226,7 +226,7 @@ function ThenaContent() {
                   ])
                 }
               }}
-              className='bg-green-600 p-[0.5rem] hover:bg-green-600'
+              className='bg-green-600 p-2 hover:bg-green-600'
               disabled={thenaIds.length >= 10}
             >
               <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
@@ -264,7 +264,7 @@ function ThenaContent() {
         <div className='mt-5'>
           <Alert>
             <p className='text-sm'>{t('Minting Wrong Chain')}</p>
-            <ErrorButton className='text-nowrap p-2 text-xs' onClick={() => updateNetwork(ChainId.BSC)}>
+            <ErrorButton className='p-2 text-xs text-nowrap' onClick={() => updateNetwork(ChainId.BSC)}>
               {t('Switch Chain')}
             </ErrorButton>
           </Alert>

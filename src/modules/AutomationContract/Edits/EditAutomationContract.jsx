@@ -202,7 +202,7 @@ function EditAutomationContract({ data }) {
             <TextSubHeading>{t('Automation vote description')}</TextSubHeading>
           </div>
           <div className='col-span-full flex flex-row lg:col-span-8'>
-            <div className='w-full space-y-11'>
+            <div className='flex w-full flex-col gap-11'>
               <SelectVotingPairsAndWeights data={dataEdit} handleVotingPairs={handleVotingPairs} />
               {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
               <PrimaryButton disabled={pendingEdit} className='w-full lg:w-fit' onClick={handleSave}>

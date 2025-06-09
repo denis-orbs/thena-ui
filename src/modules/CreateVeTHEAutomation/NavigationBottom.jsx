@@ -135,7 +135,7 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
   ])
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
       <>
         {currentStep < 3 && (

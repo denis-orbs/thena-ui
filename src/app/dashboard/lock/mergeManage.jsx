@@ -63,7 +63,7 @@ export default function MergeManage({ selected, isAutomation }) {
               setSelected={setVeTHE}
               placeHolder='Make a selection'
               isLocale={false}
-              listClassNames='z-[60]'
+              listClassNames='z-60'
             />
           </div>
           <div className='flex flex-col gap-2'>
@@ -80,7 +80,7 @@ export default function MergeManage({ selected, isAutomation }) {
               <Paragraph>{t('veTHE #[Number] Balance Will Be:', { id: selected.id })}</Paragraph>
               <div>
                 <TextHeading>{formatAmount(votingPower)}&nbsp;</TextHeading>
-                <span className='font-medium text-success-600'>
+                <span className='text-success-600 font-medium'>
                   {`(+${formatAmount(votingPower.minus(selected.voting_amount))})`}
                 </span>
               </div>

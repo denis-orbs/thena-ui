@@ -34,11 +34,11 @@ function AutomationDetails({ contractData, transactionHash, date }) {
   }, [contractData.settings.executionTime])
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Automation Details')}</TextHeading>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3'>
         {/* Rebase */}
-        <Box className='space-y-4'>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Rebase')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
@@ -53,7 +53,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Relock */}
-        <Box className='space-y-4'>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Relock')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
@@ -68,7 +68,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Vote Details */}
-        <Box className='space-y-4 '>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Vote Details')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
@@ -85,7 +85,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
                   {pair?.pair?.type !== PAIR_TYPES.WEIGHTED ? (
                     <div className='flex flex-row gap-3'>
                       <IconGroup
-                        className='-space-x-2'
+                        className='*:not-first:-ml-2'
                         classNames={{
                           image: 'outline-2 w-7 h-7',
                         }}
@@ -108,7 +108,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Registration */}
-        <Box className='space-y-4'>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Registration')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between gap-1.5'>
@@ -174,7 +174,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Contract */}
-        <Box className='space-y-4'>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Contract')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between gap-1.5'>
@@ -210,7 +210,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         </Box>
 
         {/* Execution */}
-        <Box className='space-y-4'>
+        <Box className='flex flex-col gap-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Execution')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between gap-1.5'>

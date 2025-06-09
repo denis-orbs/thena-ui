@@ -75,7 +75,7 @@ export function ProfilePage({ address }) {
   }
 
   return (
-    <div className='mt-10 space-y-10'>
+    <div className='mt-10 flex flex-col gap-10'>
       <UserInfo
         userInfo={userInfo}
         completedChapter={numberCompletedChapters}

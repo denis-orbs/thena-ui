@@ -14,7 +14,7 @@ export function ProgressBar({ progress, suffix }) {
     >
       <div
         className={cn(
-          'absolute h-full border-r-[3px] border-primary-300 transition-all ease-in-out',
+          'border-primary-300 absolute h-full border-r-[3px] transition-all ease-in-out',
           'bg-progress-gradient',
         )}
         style={{ width: `${progress}%` }}

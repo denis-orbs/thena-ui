@@ -21,7 +21,7 @@ export function TokenPercentage({ tokens, poolAddress, small = false }) {
       <GroupIconTokens
         classNames={{
           image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
-          rows: length > 2 ? (isMobile ? '-space-x-2' : '-space-x-3') : '-space-x-2',
+          rows: length > 2 ? (isMobile ? '*:not-first:-ml-2' : '*:not-first:-ml-3') : '*:not-first:-ml-2',
         }}
         width={isMobile && small ? 16 : length <= 4 ? (isSmall && small ? 28 : 32) : 24}
         height={isMobile && small ? 16 : length <= 4 ? (isSmall && small ? 28 : 32) : 24}

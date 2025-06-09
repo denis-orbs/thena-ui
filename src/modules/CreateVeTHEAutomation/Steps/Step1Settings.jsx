@@ -80,7 +80,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
   }, [executionTime, updateSetting])
 
   return (
-    <div className='space-y-4 lg:space-y-6'>
+    <div className='flex flex-col gap-4 lg:gap-6'>
       <div className='flex flex-row items-center gap-1'>
         <Toggle
           checked={createData?.settings?.isClaimEveryWeek}
@@ -89,7 +89,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
         />
         <InfoIcon data-tooltip-id='setting-claim-rebase' className='h-4 w-4 stroke-neutral-400' />
         <CustomTooltip
-          className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+          className='z-40 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
           id='setting-claim-rebase'
           place='bottom'
         >
@@ -104,7 +104,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
         />
         <InfoIcon data-tooltip-id='settings-relock' className='h-4 w-4 stroke-neutral-400' />
         <CustomTooltip
-          className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+          className='z-40 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
           id='settings-relock'
           place='bottom'
         >

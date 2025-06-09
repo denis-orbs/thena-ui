@@ -20,9 +20,9 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
           key={chapter.id}
           type='button'
           className={cn(
-            'cursor-pointer rounded-xl border-[1px] border-neutral-900 bg-neutral-900 py-[13px] text-[15px] font-medium leading-[35px]',
-            chapter.index === selectedChapterIndex && 'col-span-2 border-primary-600 bg-primary-950',
-            !isAvailable(chapter) ? 'cursor-not-allowed opacity-60' : ' hover:border-primary-600',
+            'cursor-pointer rounded-xl border border-neutral-900 bg-neutral-900 py-[13px] text-[15px] leading-[35px] font-medium',
+            chapter.index === selectedChapterIndex && 'border-primary-600 bg-primary-950 col-span-2',
+            !isAvailable(chapter) ? 'cursor-not-allowed opacity-60' : 'hover:border-primary-600',
           )}
           disabled={!isAvailable(chapter)}
           onClick={() => {
@@ -31,7 +31,7 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
             }
           }}
         >
-          <div className='flex flex-row items-center justify-center '>
+          <div className='flex flex-row items-center justify-center'>
             {!isAvailable(chapter) ? (
               <Lock2Icon className='mr-1 h-5 w-5' />
             ) : (

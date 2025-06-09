@@ -144,7 +144,7 @@ function SearchContent({
     >
       {seeType !== TYPE_SEE.ALL && (
         <TextButton
-          className='pb-2 pl-0 pt-0 outline-0 outline-offset-0'
+          className='pt-0 pb-2 pl-0 outline-0 outline-offset-0'
           LeadingIcon={ArrowLeftIcon}
           onClick={e => {
             e.stopPropagation()

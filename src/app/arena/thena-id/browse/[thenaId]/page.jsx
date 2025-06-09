@@ -233,7 +233,7 @@ function ThenaIdPage() {
 
   return (
     <div>
-      <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+      <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
         <TextButton className='pl-0' onClick={() => router.back()} LeadingIcon={ArrowLeftIcon}>
           {t('Back')}
         </TextButton>
@@ -260,7 +260,7 @@ function ThenaIdPage() {
               </TertiaryButton>
             </div>
           </div>
-          <TextHeading className='my-6 block break-words text-4xl'>{thenaIdFormat}.thena</TextHeading>
+          <TextHeading className='my-6 block text-4xl break-words'>{thenaIdFormat}.thena</TextHeading>
           {!isLoading && (
             <>
               {usernameNft ? (
@@ -287,7 +287,7 @@ function ThenaIdPage() {
                       <Image
                         alt='token'
                         src={`${USDTAsset.logoURI ?? ''}`}
-                        className='flex-shrink-0'
+                        className='shrink-0'
                         width={24}
                         height={24}
                         loading='lazy'
@@ -312,10 +312,7 @@ function ThenaIdPage() {
                     </Link>
                   ) : null
                 ) : (
-                  <EmphasisButton
-                    className='flex items-center justify-center space-x-2'
-                    onClick={() => setShowModal(true)}
-                  >
+                  <EmphasisButton className='flex items-center justify-center gap-2' onClick={() => setShowModal(true)}>
                     <TextHeading>
                       {t('Mint For')} {amountToMint} {USDTAsset?.symbol}
                     </TextHeading>
@@ -323,7 +320,7 @@ function ThenaIdPage() {
                       <Image
                         alt='token'
                         src={`${USDTAsset.logoURI ?? ''}`}
-                        className='flex-shrink-0'
+                        className='shrink-0'
                         width={24}
                         height={24}
                         loading='lazy'

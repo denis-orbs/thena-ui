@@ -221,7 +221,7 @@ export function ChapterProcess({
   )
 
   return (
-    <div className='rounded-xl border border-primary-600 bg-neutral-900 px-4 py-6'>
+    <div className='border-primary-600 rounded-xl border bg-neutral-900 px-4 py-6'>
       <div>
         <div className='flex flex-wrap items-center justify-between lg:flex-nowrap'>
           <div
@@ -231,7 +231,7 @@ export function ChapterProcess({
             <ArrowBackwardIcon className='inline-block h-5 w-5' />
             <span>{t('Back')}</span>
           </div>
-          <p className='order-3 mt-3 w-full text-center text-[18px] font-medium leading-5 text-neutral-300 lg:order-2 lg:mt-0 lg:w-auto'>
+          <p className='order-3 mt-3 w-full text-center text-[18px] leading-5 font-medium text-neutral-300 lg:order-2 lg:mt-0 lg:w-auto'>
             {`${t.rich('[numberCompletedChapters] / [numberAvailableChapters] chapters completed', {
               numberAvailableChapters,
               numberCompletedChapters,
@@ -239,7 +239,7 @@ export function ChapterProcess({
           </p>
           <div
             className={cn(
-              ' order-2 flex w-1/2 cursor-pointer justify-end  text-gray-100 lg:order-3 lg:w-auto',
+              'order-2 flex w-1/2 cursor-pointer justify-end text-gray-100 lg:order-3 lg:w-auto',
               nextChapterIndex ? '' : 'opacity-40',
             )}
             onClick={() => nextChapterIndex && setSelectedChapterIndex(nextChapterIndex)}
@@ -253,12 +253,12 @@ export function ChapterProcess({
             style={{
               width: `${percentageTaskCompleted}%`,
             }}
-            className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+            className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
           />
         </div>
         <hr className='my-5 border-neutral-600' />
         <div>
-          <p className='text-gradient-primary inline-block text-base font-medium leading-5 tracking-[.03em]'>
+          <p className='text-gradient-primary inline-block text-base leading-5 font-medium tracking-[.03em]'>
             {t('Chapter').toUpperCase()} {chapter.index}
           </p>
           <h3 className='text-3xl font-semibold'>{chapter.available ? t(chapter.name) : t('The Fates Await')}</h3>
@@ -278,7 +278,7 @@ export function ChapterProcess({
                         <div key={index}>
                           {Boolean(amount) && task.name !== TaskDailyName && (
                             <div className='flex flex-row items-center'>
-                              <span className='text-lg font-light leading-6 '>+{amount}</span>
+                              <span className='text-lg leading-6 font-light'>+{amount}</span>
                               <RewardIconTooltip
                                 rewardType={task.rewardType[index]}
                                 id={`chapter-${chapter.id}_task-${task.id}_reward`}
@@ -297,7 +297,7 @@ export function ChapterProcess({
                     </EmphasisButton>
                   ) : (
                     <PrimaryButton
-                      className='flex w-full  items-center justify-center gap-1 lg:w-28'
+                      className='flex w-full items-center justify-center gap-1 lg:w-28'
                       onClick={() => handleTask(task)}
                     >
                       <span>{t('Start task')}</span>

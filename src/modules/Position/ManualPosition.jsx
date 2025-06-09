@@ -206,7 +206,7 @@ export default function ManualPosition({ position }) {
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <IconGroup
-            className='-space-x-2'
+            className='*:not-first:-ml-2'
             classNames={{ image: 'w-8 h-8 outline-2' }}
             logo1={asset0.logoURI}
             logo2={asset1.logoURI}
@@ -403,16 +403,16 @@ export function WarningOutOfRange({ isShow }) {
 
   return (
     <Box
-      className={cn('hidden flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
+      className={cn('border-primary-800 bg-primary-950 hidden flex-row items-center justify-between gap-4 border', {
         flex: isShow,
       })}
     >
       <div className='size-5'>
-        <InfoIcon className='size-5 stroke-primary-600' />
+        <InfoIcon className='stroke-primary-600 size-5' />
       </div>
 
       <div className='flex flex-col'>
-        <TextSubHeading className='text-base text-primary-100'>{t('warning Out of Range')}</TextSubHeading>
+        <TextSubHeading className='text-primary-100 text-base'>{t('warning Out of Range')}</TextSubHeading>
       </div>
     </Box>
   )

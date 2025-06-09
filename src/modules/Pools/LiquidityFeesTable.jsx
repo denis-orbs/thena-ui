@@ -12,9 +12,9 @@ function LiquidityFeeRow({ token, pairType }) {
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   return (
-    <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800  px-5 py-4 lg:grid-cols-3'>
+    <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800 px-5 py-4 lg:grid-cols-3'>
       <div className='col-span-2 flex flex-col items-start lg:col-span-1 lg:flex-row lg:items-center'>
-        <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>
+        <div className='mb-1 text-[13px] leading-5 font-normal lg:hidden'>
           {t(pairType === PAIR_TYPES.WEIGHTED ? 'Token and Weight' : 'Token')}
         </div>
         <div className='flex items-center gap-2 lg:gap-3'>
@@ -33,16 +33,16 @@ function LiquidityFeeRow({ token, pairType }) {
         </div>
       </div>
       <div className='flex flex-col items-start'>
-        <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Current Liquidity')}</div>
-        <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.reserve)}</p>
-        <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>
+        <div className='mb-1 text-[13px] leading-5 font-normal lg:hidden'>{t('Current Liquidity')}</div>
+        <p className='text-[18px] leading-[26px] font-medium'>{formatAmount(token?.reserve)}</p>
+        <p className='text-[14px] leading-[26px] font-normal text-neutral-200'>
           ${formatAmount(getValueTokenAmountToUSD(token.address, token.reserve))}
         </p>
       </div>
       <div className='flex flex-col items-start'>
-        <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Generated Cumulative Fees')}</div>
-        <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.totalFees)}</p>
-        <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>
+        <div className='mb-1 text-[13px] leading-5 font-normal lg:hidden'>{t('Generated Cumulative Fees')}</div>
+        <p className='text-[18px] leading-[26px] font-medium'>{formatAmount(token?.totalFees)}</p>
+        <p className='text-[14px] leading-[26px] font-normal text-neutral-200'>
           ${formatAmount(getValueTokenAmountToUSD(token.address, token?.totalFees))}
         </p>
       </div>
@@ -75,7 +75,7 @@ export function LiquidityFeesTable({ pool }) {
 
   return (
     <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-3 lg:p-6'>
-      <div className='hidden grid-cols-3 px-5 text-[14px] font-normal leading-5 lg:grid'>
+      <div className='hidden grid-cols-3 px-5 text-[14px] leading-5 font-normal lg:grid'>
         <div className='col-span-1'>{t(pool.type === PAIR_TYPES.WEIGHTED ? 'Token and Weight' : 'Token')}</div>
         <div>{t('Current Liquidity')}</div>
         <div>{t('Generated Cumulative Fees')}</div>

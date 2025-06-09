@@ -23,7 +23,7 @@ function LockDetails({ contractData, veTHE }) {
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
 
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       <div className='hidden bg-[#0000F5]' />
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Lock Details')}</TextHeading>
       <div className='grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6'>

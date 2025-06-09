@@ -81,7 +81,7 @@ export function Notification() {
               Icon={BellIcon}
               className={cn(
                 hasUnread
-                  ? "relative after:absolute after:right-1/4 after:top-1/4 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']"
+                  ? "after:bg-primary-600 relative after:absolute after:top-1/4 after:right-1/4 after:h-2 after:w-2 after:rounded-full after:content-['']"
                   : '',
               )}
             />

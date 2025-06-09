@@ -134,10 +134,10 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       <ModalBody className='p-2'>
         <div className='rounded-lg'>
           <div className='flex w-full flex-col items-center justify-center'>
-            <p className='font-figtree text-[17px] font-semibold leading-5 tracking-[1.7px] text-white lg:text-xl lg:leading-6 lg:tracking-[2px]'>
+            <p className='font-figtree text-[17px] leading-5 font-semibold tracking-[1.7px] text-white lg:text-xl lg:leading-6 lg:tracking-[2px]'>
               {TC_STEPS[step]}
             </p>
-            <div className='mt-[9px] flex items-center space-x-4 lg:mt-2.5 lg:space-x-[17px]'>
+            <div className='mt-[9px] flex items-center gap-4 lg:mt-2.5'>
               {TC_STEPS.map((_, idx) => {
                 let valid = true
                 for (let subidx = 0; subidx < idx; subidx++) {

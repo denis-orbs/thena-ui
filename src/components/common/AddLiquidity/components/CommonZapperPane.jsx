@@ -199,7 +199,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
       <div className='relative flex w-full flex-col gap-2 md:gap-4'>
         <WarningZapper />
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-        <div className='space-y-2'>
+        <div className='flex flex-col gap-2'>
           <TokenAmountInput
             type='number'
             amount={amount}
@@ -222,7 +222,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             <article className='flex flex-col gap-2'>
               <div className='flex items-center justify-center gap-1 rounded-md bg-[#29292980] p-[6px]'>
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-7 h-7',
                   }}
@@ -233,7 +233,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
                   {asset0.symbol}/{asset1.symbol}
                 </p>
               </div>
-              <p className='space-x-2'>
+              <p className='flex gap-2'>
                 <span>{liquidityAdded}</span>
                 <TextSubHeading className='text-sm'>LP</TextSubHeading>
               </p>
@@ -294,7 +294,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
       {account ? (
         <div
           className={cn(
-            'mt-auto flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row',
+            'mt-auto flex w-full flex-col items-center gap-2 max-md:mt-8! lg:flex-row',
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
@@ -326,7 +326,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
           </PrimaryButton>
         </div>
       ) : (
-        <ConnectButton className='w-full max-md:!mt-8' />
+        <ConnectButton className='w-full max-md:mt-8!' />
       )}
     </div>
   )

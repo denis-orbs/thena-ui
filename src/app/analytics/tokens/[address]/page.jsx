@@ -47,7 +47,7 @@ export default function TokenDetailPage({ params }) {
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-4'>
-            <div className='flex flex-col items-start  justify-between gap-4 lg:flex-row lg:items-end'>
+            <div className='flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end'>
               <div className='flex w-full items-center gap-4'>
                 <CircleImage className='h-[48px] w-[48px] lg:h-[56px] lg:w-[56px]' src={token.logoURI} alt='' />
                 <div className='flex w-full flex-col gap-0.5 lg:gap-2'>

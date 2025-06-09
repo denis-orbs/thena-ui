@@ -22,28 +22,28 @@ export function ChapterOverviewProcess({ chapter }) {
   }, [totalTask, taskCompleted])
 
   return (
-    <div className='border-gradient-secondary min-h-80 rounded-xl p-[1px]'>
+    <div className='border-gradient-secondary min-h-80 rounded-xl p-px'>
       <div className='h-full rounded-[11px] bg-neutral-900 px-6 py-5'>
-        <p className='text-center text-base font-medium leading-5 text-neutral-300'>
+        <p className='text-center text-base leading-5 font-medium text-neutral-300'>
           {taskCompleted}/{totalTask} {t('Tasks completed').toLowerCase()}
         </p>
-        <div className='mt-2  inline-block h-[6px] w-full rounded-md bg-neutral-500'>
+        <div className='mt-2 inline-block h-[6px] w-full rounded-md bg-neutral-500'>
           <div
             style={{
               width: `${percentageTaskCompleted}%`,
             }}
-            className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+            className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
           />
         </div>
         <hr className='my-4 border-neutral-600' />
         <div>
           <div className='flex items-center'>
             {/* <ChapterLogoIcon className='inlin h-5 w-5' /> */}
-            <p className='text-gradient-primary inline-block text-base font-medium leading-5 tracking-[.03em]'>
+            <p className='text-gradient-primary inline-block text-base leading-5 font-medium tracking-[.03em]'>
               {t('Chapter').toUpperCase()} {chapter.index}
             </p>
           </div>
-          <div className='my-4 mt-1 flex items-center '>
+          <div className='my-4 mt-1 flex items-center'>
             {/* <Lock2Icon className='mr-1 inline-block h-[30px] w-[30px]' /> */}
             <h3 className='text-3xl font-semibold'>{Boolean(chapter.name) && t(chapter.name)}</h3>
           </div>

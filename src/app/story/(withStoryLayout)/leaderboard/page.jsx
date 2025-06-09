@@ -69,9 +69,9 @@ export default function LeaderboardPage() {
 
   return (
     <>
-      <div className='absolute left-0 top-[129px] h-[1077px] w-full bg-[url("/images/story/bg-leaderboard.png")] bg-cover' />
+      <div className='absolute top-[129px] left-0 h-[1077px] w-full bg-[url("/images/story/bg-leaderboard.png")] bg-cover' />
       <div className='relative'>
-        <TextHeading className='block font-archia text-3xl font-semibold'>{t('Leaderboard')}</TextHeading>
+        <TextHeading className='font-archia block text-3xl font-semibold'>{t('Leaderboard')}</TextHeading>
         <TextSubHeading className='mt-2 block text-base text-neutral-300'>
           {t('Story Leaderboard Description')}
         </TextSubHeading>

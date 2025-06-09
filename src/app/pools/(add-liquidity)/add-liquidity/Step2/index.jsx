@@ -19,10 +19,10 @@ export default function Step2() {
   }, [dispatch])
 
   return (
-    <div className='space-y-4 md:space-y-8'>
+    <div className='flex flex-col gap-4 md:gap-8'>
       <PoolTitleSection pairType={pairType} />
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+      <div className='lg:grid-cols-add-liquidity-layout grid gap-4'>
         <ChooseTokensSection pairType={pairType} />
         <PoolDescriptionSection pairType={pairType} />
       </div>

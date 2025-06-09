@@ -32,7 +32,7 @@ const customStyles = css`
 function CustomOption(props) {
   return (
     <components.Option {...props} innerProps={{ ...props.innerProps, className: 'custom-option bg-neutral-800' }}>
-      <div className='flex cursor-pointer items-center space-x-2 bg-neutral-800 p-2'>
+      <div className='flex cursor-pointer items-center gap-2 bg-neutral-800 p-2'>
         <CheckBox checked={props.isSelected} />
         <span className='ml-2 text-neutral-300'>{props.data.label}</span>
       </div>
@@ -44,7 +44,7 @@ function CustomValueContainer(props) {
   const { children, hasValue, ...otherProps } = props
 
   return (
-    <components.ValueContainer className={`${hasValue ? '!block' : ''} !truncate`} {...otherProps}>
+    <components.ValueContainer className={`${hasValue ? 'block!' : ''} truncate!`} {...otherProps}>
       {children}
     </components.ValueContainer>
   )

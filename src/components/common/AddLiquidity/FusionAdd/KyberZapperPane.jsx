@@ -154,8 +154,8 @@ function KyberZapperPane({
   ])
 
   return (
-    <div className='!mt-4 flex flex-col md:gap-4'>
-      <div className='space-y-2 md:space-y-4'>
+    <div className='mt-4! flex flex-col md:gap-4'>
+      <div className='flex flex-col gap-2 md:gap-4'>
         <WarningZapper />
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='relative flex w-full flex-col gap-2'>
@@ -179,7 +179,7 @@ function KyberZapperPane({
             <article className='flex flex-col gap-2'>
               <div className='flex items-center justify-center gap-1 rounded-md bg-[#29292980] p-[6px]'>
                 <IconGroup
-                  className='-space-x-2'
+                  className='*:not-first:-ml-2'
                   classNames={{
                     image: 'outline-2 w-7 h-7',
                   }}
@@ -190,7 +190,7 @@ function KyberZapperPane({
                   {asset0.symbol}/{asset1.symbol}
                 </p>
               </div>
-              <p className='space-x-2'>
+              <p className='flex gap-2'>
                 <span>{formatAmount(fromWei(liquidityAdded))}</span>
                 <TextSubHeading className='text-sm'>LP</TextSubHeading>
               </p>
@@ -226,7 +226,7 @@ function KyberZapperPane({
         </div>
       </div>
 
-      <div className='flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row'>
+      <div className='flex w-full flex-col items-center gap-2 max-md:mt-8! lg:flex-row'>
         <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

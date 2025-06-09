@@ -53,11 +53,11 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
   const isMobile = windowSize.width < 768
 
   return (
-    <div className='max-xl:space-y-4'>
+    <div className='flex flex-col max-xl:gap-4'>
       <NewTextSubHeading className='xl:hidden'>{t('Overview')}</NewTextSubHeading>
 
-      <Box className='w-full space-y-4 p-4 max-xl:rounded-none xl:px-[42px] xl:py-8'>
-        <NewTextSubHeading className='!text-4xl text-neutral-500 max-xl:hidden'>{t('Overview')}</NewTextSubHeading>
+      <Box className='flex w-full flex-col gap-4 p-4 max-xl:rounded-none xl:px-[42px] xl:py-8'>
+        <NewTextSubHeading className='text-4xl! text-neutral-500 max-xl:hidden'>{t('Overview')}</NewTextSubHeading>
         <div className='flex gap-4'>
           <div className='flex w-full flex-col gap-4 max-xl:w-full xl:flex-row'>
             <div className='flex flex-row gap-4 xl:gap-2'>
@@ -66,7 +66,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
                 width={tokens?.length > 4 ? (isMobile ? 16 : 32) : 32}
                 tokens={tokens}
               />
-              <TextHeading className='flex-wrap font-archia text-xl font-semibold xl:text-3xl'>{poolName}</TextHeading>
+              <TextHeading className='font-archia flex-wrap text-xl font-semibold xl:text-3xl'>{poolName}</TextHeading>
             </div>
           </div>
         </div>
@@ -75,12 +75,12 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
           <div className='flex flex-row items-center max-xl:w-full max-xl:justify-between xl:min-w-[203px] xl:flex-col xl:gap-8 xl:pl-4'>
             <div className='flex flex-row justify-between gap-4 max-xl:w-full xl:flex-col xl:items-center'>
               <TextHeading className='text-lg font-medium max-xl:hidden'>{t('Weighted Pool')}</TextHeading>
-              <TextHeading className='font-archia text-xl font-semibold leading-6 xl:text-3xl'>
+              <TextHeading className='font-archia text-xl leading-6 font-semibold xl:text-3xl'>
                 $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
               </TextHeading>
               <div className='flex gap-3'>
                 <CoinsHandIcon className='h-5 w-5' />
-                <Paragraph className='!text-base !leading-5'>{`Fees ${fees} %`}</Paragraph>
+                <Paragraph className='text-base! leading-5!'>{`Fees ${fees} %`}</Paragraph>
               </div>
             </div>
             <PrimaryButton disabled={pending} onClick={onCreate} className='w-full max-xl:hidden'>

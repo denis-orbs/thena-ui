@@ -121,7 +121,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
             {typesData.map((ele, idx) => (
               <div
                 className={cn(
-                  'flex cursor-pointer items-center gap-4 border-b border-neutral-700 p-6 first:rounded-t-xl last:rounded-b-xl last:border-0 hover:bg-neutral-950 hover:bg-opacity-20',
+                  'flex cursor-pointer items-center gap-4 border-b border-neutral-700 p-6 first:rounded-t-xl last:rounded-b-xl last:border-0 hover:bg-neutral-950/20',
                 )}
                 key={`selector-${idx}`}
                 onClick={() => ele.onClickHandler()}

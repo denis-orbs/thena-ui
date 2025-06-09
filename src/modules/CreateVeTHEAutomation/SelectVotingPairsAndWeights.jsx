@@ -26,7 +26,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
   }, [JSON.stringify(data)])
 
   return (
-    <div className='w-full space-y-6'>
+    <div className='flex w-full flex-col gap-6'>
       <div className='flex items-center gap-1'>
         <Toggle
           checked={data.votes.isAutoVote}
@@ -36,7 +36,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
       </div>
       {data.votes.isAutoVote && (
         <>
-          <div className='space-y-3'>
+          <div className='flex flex-col gap-3'>
             <TextHeading>{t('Select Voting Pairs and Weights')}</TextHeading>
             <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
               {data.votes.pairs.map((item, index) => (
@@ -50,14 +50,14 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
               ))}
             </div>
             <OutlinedButton
-              className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
+              className='border-primary-600 text-primary-600 hover:text-primary-600 h-11 w-[130px] border p-0'
               onClick={() => handleVotingPairs('ADD_PAIR')}
             >
-              <PlusIcon className='h-4 w-4 !stroke-primary-600' />
+              <PlusIcon className='stroke-primary-600! h-4 w-4' />
               {t('Add Pair')}
             </OutlinedButton>
           </div>
-          <div className='space-y-2'>
+          <div className='flex flex-col gap-2'>
             <div className='flex flex-row justify-between'>
               <TextHeading>{t('Total Allocated')}</TextHeading>
               <span>{totalWeight}%</span>
@@ -67,7 +67,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
                 style={{
                   width: `${totalWeight > 100 ? 100 : totalWeight}%`,
                 }}
-                className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                className='block h-full rounded-md bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
               />
             </div>
           </div>

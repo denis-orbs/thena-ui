@@ -131,12 +131,12 @@ function Voting() {
 
   return (
     <>
-      <Box className={cn('flex h-full flex-col justify-between gap-2 !p-4', !veTHEs.length && 'gap-4')}>
+      <Box className={cn('flex h-full flex-col justify-between gap-2 p-4!', !veTHEs.length && 'gap-4')}>
         {veTHEs.length > 0 ? (
           <>
             <div className='flex justify-between gap-2'>
               <div className='flex flex-col'>
-                <TextHeading className='font-archia text-xl font-semibold leading-6'>
+                <TextHeading className='font-archia text-xl leading-6 font-semibold'>
                   {t('Voting for [value]', { value: formatAmount(totalRewards) })}
                 </TextHeading>
                 <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
@@ -190,8 +190,8 @@ function Voting() {
               <div className='flex flex-col gap-[9px] text-center'>
                 <Paragraph className='text-neutral-500'>{t('Empty Voting')}</Paragraph>
                 <NewTextHeading className='flex justify-center gap-1.5 text-xl leading-6 md:text-xl'>
-                  <span className='leading-6 text-primary-300'>{t('Next distribution in')}</span>
-                  <span className='leading-6 text-primary-600'>{timeDisplay}</span>
+                  <span className='text-primary-300 leading-6'>{t('Next distribution in')}</span>
+                  <span className='text-primary-600 leading-6'>{timeDisplay}</span>
                 </NewTextHeading>
               </div>
               <div className='flex flex-col gap-2'>

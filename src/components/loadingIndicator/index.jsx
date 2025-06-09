@@ -3,9 +3,9 @@ import { cn } from '@/lib/utils'
 export function LoadingIndicator({ color = 'primary', className, ...props }) {
   const colors = {
     primary:
-      'bg-[conic-gradient(from_180deg_at_50%_50%,_#CD07D2_0deg,_#CD07D2_63.24300169944763deg,_rgba(255,_255,_255,_0.00)_360deg)]',
+      'bg-[conic-gradient(from_180deg_at_50%_50%,#CD07D2_0deg,#CD07D2_63.24300169944763deg,rgba(255,255,255,0.00)_360deg)]',
     secondary:
-      'bg-[conic-gradient(from_180deg_at_50%_50%,_#0eb9df_0deg,_#0eb9df_63.24300169944763deg,_rgba(255,_255,_255,_0.00)_360deg)]',
+      'bg-[conic-gradient(from_180deg_at_50%_50%,#0eb9df_0deg,#0eb9df_63.24300169944763deg,rgba(255,255,255,0.00)_360deg)]',
   }
 
   const currentColor = colors[color]

@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
   return (
     <LayoutWithBackButton
       hiddenBackButton
-      className='!pt-6 xl:mx-12 2xl:mx-auto 2xl:w-[1344px] 3xl:w-[1464px] 3xl:!pt-8'
+      className='3xl:w-[1464px] 3xl:pt-8! pt-6! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]'
     >
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>

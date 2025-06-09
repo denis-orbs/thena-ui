@@ -115,8 +115,8 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='space-y-2 md:space-y-4 xl:space-y-6'>
-      <div className={cn('space-y-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+    <section className='flex flex-col gap-2 md:gap-4 xl:gap-6'>
+      <div className={cn('flex flex-col gap-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts
           currencyA={baseCurrency}

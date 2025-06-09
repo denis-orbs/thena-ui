@@ -25,22 +25,22 @@ function Dashboard() {
     <div
       className={cn(
         'relative flex flex-col gap-4 overflow-hidden rounded-lg md:gap-[60px]',
-        'bg-neutral-950 md:bg-gradient-to-b md:from-primary-950 md:to-zinc-900/10 md:shadow-[3px_6px_44px_0px_rgba(44,0,42,1.00)]',
+        'md:from-primary-950 bg-neutral-950 md:bg-linear-to-b md:to-zinc-900/10 md:shadow-[3px_6px_44px_0px_rgba(44,0,42,1.00)]',
       )}
     >
       <div
         className={cn(
           'absolute right-10 z-10 h-[120px] w-full max-md:right-0 md:h-[856px]',
-          'bg-[url(/images/bg-dashboard.svg)] bg-contain bg-right-top bg-no-repeat max-md:bg-primary-950 max-md:bg-cover 3xl:bg-cover 4xl:bg-center 5xl:bg-center',
+          'max-md:bg-primary-950 3xl:bg-cover 4xl:bg-center 5xl:bg-center bg-[url(/images/bg-dashboard.svg)] bg-contain bg-top-right bg-no-repeat max-md:bg-cover',
         )}
       />
-      <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-right-top opacity-50 max-md:hidden md:h-[262px]' />
+      <div className='absolute top-0 z-20 h-[120px] w-full bg-[url(/images/pillars.svg)] bg-cover bg-top-right opacity-50 max-md:hidden md:h-[262px]' />
       <HeaderRewards totalUsd={totalUsd} account={account} />
 
       <div
         className={cn(
           'z-40 flex flex-col gap-4 rounded-xl md:mx-8 md:mb-12 lg:mx-12 xl:mx-auto 2xl:mb-[180px]',
-          'xl:w-[1184px] 3xl:w-[1440px]',
+          '3xl:w-[1440px] xl:w-[1184px]',
         )}
       >
         {account && <UserAssets setPositionRewards={setPositionRewards} />}

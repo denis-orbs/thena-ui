@@ -88,7 +88,7 @@ export function Features() {
   return (
     <>
       {/* desktop view */}
-      <div className='mt-24 hidden space-x-8 lg:flex'>
+      <div className='mt-24 hidden lg:flex lg:gap-8'>
         <FeatureScroller setFeature={setFeature} currentFeatureIndex={features.findIndex(item => item === feature)} />
 
         <div
@@ -113,7 +113,7 @@ export function Features() {
               animate={{ opacity: 1, filter: 'blur(0px)' }}
               transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
               key={`${feature}-desc`}
-              className='mt-4 leading-6 text-white/[0.35]'
+              className='mt-4 leading-6 text-white/35'
             >
               {t(featuresInfo[feature].description)}
             </motion.p>
@@ -145,13 +145,13 @@ export function Features() {
                 alt='dotter grid'
                 src='/images/home/stats/stats21.png'
                 key={feature}
-                className='absolute right-0 h-[600px] w-4/6 opacity-0 transition-opacity duration-[600ms] group-hover:opacity-100'
+                className='absolute right-0 h-[600px] w-4/6 opacity-0 transition-opacity duration-600 group-hover:opacity-100'
               />
-              <div className='absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
+              <div className='absolute right-[20%] h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
             </>
           )}
-          <div className='absolute left-0 top-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
-          <div className='absolute bottom-0 right-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600 bg-opacity-[35%] blur-[220px] filter' />
+          <div className='absolute top-0 left-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
+          <div className='absolute right-0 bottom-0 h-[275px] w-[275px] rounded-full bg-fuchsia-600/35 blur-[220px] filter' />
         </div>
       </div>
 

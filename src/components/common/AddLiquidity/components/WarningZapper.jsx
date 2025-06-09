@@ -11,11 +11,11 @@ function WarningZapper() {
   const [showWarning, setShowWarning] = useState(true)
 
   return (
-    <Box className={cn('flex flex-col items-start border border-primary-800 bg-primary-950 p-4 lg:p-8')}>
+    <Box className={cn('border-primary-800 bg-primary-950 flex flex-col items-start border p-4 lg:p-8')}>
       <div className='flex w-full gap-2 md:gap-4'>
-        <InfoIcon className='size-6 min-w-6 stroke-primary-600 md:size-8 md:min-w-8' />
+        <InfoIcon className='stroke-primary-600 size-6 min-w-6 md:size-8 md:min-w-8' />
         <div className='flex w-full items-start justify-between md:items-center'>
-          <NewTextSubHeading className='text-xl leading-6 text-primary-100 md:text-2xl'>
+          <NewTextSubHeading className='text-primary-100 text-xl leading-6 md:text-2xl'>
             Important Information about Zapper
           </NewTextSubHeading>
 
@@ -46,12 +46,12 @@ function WarningZapper() {
           </Paragraph>
           <Link
             target='_blank'
-            className='flex items-start gap-2 text-primary-600 md:items-center'
+            className='text-primary-600 flex items-start gap-2 md:items-center'
             href='https://www.bnbchain.org/en/blog/protecting-users-from-sandwich-attacks-bnb-chain-introduces-mev-protection-with-several-wallets'
             rel='noreferrer'
           >
             Learn more about protection from sandwich attacks here
-            <LinkExternalPrimaryIcon className='inline-block w-4 min-w-4 !stroke-primary-600' />
+            <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block w-4 min-w-4' />
           </Link>
         </TextSubHeading>
       </motion.div>

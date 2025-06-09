@@ -207,28 +207,28 @@ function AssetsOverview({
   const migrationMessageWarning = useMemo(
     () => (
       <div className='flex flex-col gap-2'>
-        <TextHeading className='text-xl font-medium text-warn-100'>{t('Migrate your Positions')}</TextHeading>
-        <Paragraph className='flex text-base text-warn-100'>{t('Migrate desc')}</Paragraph>
+        <TextHeading className='text-warn-100 text-xl font-medium'>{t('Migrate your Positions')}</TextHeading>
+        <Paragraph className='text-warn-100 flex text-base'>{t('Migrate desc')}</Paragraph>
       </div>
     ),
     [t],
   )
 
   return (
-    <div className='space-y-6 md:px-4'>
+    <div className='flex flex-col gap-6 md:px-4'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2'>
         <div className='flex flex-col gap-4'>
           <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
             {t('Total Value Provided')}
           </NewTextHeading>
-          <NewParagraph className='space-x-4 text-3xl max-md:text-center max-md:text-primary-300 md:text-4xl'>
+          <NewParagraph className='max-md:text-primary-300 flex gap-4 text-3xl max-md:text-center md:text-4xl'>
             <span>${formatAmount(totalProvided)}</span>
             <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </NewParagraph>
           <NewTextHeading className='font-semibold max-md:hidden md:text-3xl'>
             {t('Generated Fees and Rewards')}
           </NewTextHeading>
-          <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
+          <NewTextHeading className='text-primary-600 font-semibold max-md:hidden'>
             ${formatAmount(totalRewards)}
           </NewTextHeading>
           <PrimaryButton
@@ -252,7 +252,7 @@ function AssetsOverview({
       </div>
 
       {migratePositions.length > 0 && (
-        <div className={cn('flex items-center gap-4 rounded-lg border border-warn-900 bg-warn-950 px-5 py-4')}>
+        <div className={cn('border-warn-900 bg-warn-950 flex items-center gap-4 rounded-lg border px-5 py-4')}>
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
             <WarningTriangleYellowIcon className='size-full' />
           </div>

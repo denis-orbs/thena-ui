@@ -24,11 +24,11 @@ export function PoolAttributesSection({ strategy, pair, className }) {
         <div className='flex w-full items-center justify-between gap-2 xl:w-fit'>
           <Box
             className={cn(
-              'flex h-8 items-center rounded-lg bg-neutral-900 !p-4 max-xl:w-full md:h-11 xl:h-11 xl:justify-center',
+              'flex h-8 items-center rounded-lg bg-neutral-900 p-4! max-xl:w-full md:h-11 xl:h-11 xl:justify-center',
               className,
             )}
           >
-            <NewTextSubHeading className='text-xs xl:!text-xl xl:text-neutral-500'>
+            <NewTextSubHeading className='text-xs xl:text-xl! xl:text-neutral-500'>
               {t('Pool Attributes')}
             </NewTextSubHeading>
           </Box>
@@ -65,8 +65,8 @@ export function PoolAttributesSection({ strategy, pair, className }) {
             </>
           ) : (
             <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
-              <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
-              <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+              <NewTextHeading className='text-xl!'>{t('New Deposit')}</NewTextHeading>
+              <Paragraph className='leading-5 font-medium'>{t('New Deposit CL description')}</Paragraph>
             </div>
           )}
         </div>

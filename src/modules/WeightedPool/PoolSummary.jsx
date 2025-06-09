@@ -27,24 +27,22 @@ function Attributes({ tokens, fees, isMobile }) {
         <div className='w-full text-left'>
           {/* Header */}
           <div className='flex py-6'>
-            <NewTextSubHeading className='flex-[4] text-left text-sm lg:text-lg xl:text-xl'>Token</NewTextSubHeading>
-            <NewTextSubHeading className='flex-[3] text-left text-sm lg:text-lg xl:text-xl'>
-              USD Value
-            </NewTextSubHeading>
-            <NewTextSubHeading className='flex-[3] text-right text-sm lg:text-lg xl:text-xl'>Pool %</NewTextSubHeading>
+            <NewTextSubHeading className='flex-4 text-left text-sm lg:text-lg xl:text-xl'>Token</NewTextSubHeading>
+            <NewTextSubHeading className='flex-3 text-left text-sm lg:text-lg xl:text-xl'>USD Value</NewTextSubHeading>
+            <NewTextSubHeading className='flex-3 text-right text-sm lg:text-lg xl:text-xl'>Pool %</NewTextSubHeading>
           </div>
 
           {/* Body */}
-          <div className='space-y-4'>
+          <div className='flex flex-col gap-4'>
             {(tokens || []).map(token => (
               <div className='flex' key={token.symbol}>
-                <div className='flex flex-[4] items-center gap-2 py-4'>
+                <div className='flex flex-4 items-center gap-2 py-4'>
                   <div className='flex items-center gap-3'>
                     <CircleImage className='size-6 lg:size-9' src={token.logoURI} alt={`${token.symbol} logo`} />
                     <TextHeading className='text-sm text-neutral-50 lg:text-base'>{token.symbol}</TextHeading>
                   </div>
                 </div>
-                <div className='flex flex-[3] items-center py-4'>
+                <div className='flex flex-3 items-center py-4'>
                   <Paragraph
                     className={cn(
                       'truncate text-left text-sm text-neutral-50 lg:text-base',
@@ -54,18 +52,18 @@ function Attributes({ tokens, fees, isMobile }) {
                     $ {formatAmount(token.price * (Number(token.amount) || 0))}
                   </Paragraph>
                 </div>
-                <div className='flex flex-[3] items-center justify-end py-4'>
+                <div className='flex flex-3 items-center justify-end py-4'>
                   <Paragraph className='text-sm text-neutral-50 lg:text-base'>{token.weight} %</Paragraph>
                 </div>
               </div>
             ))}
 
             {/* Total Row */}
-            <div className='mt-4 flex pb-1 pt-6'>
-              <div className='flex flex-[4] items-center gap-2'>
+            <div className='mt-4 flex pt-6 pb-1'>
+              <div className='flex flex-4 items-center gap-2'>
                 <NewTextSubHeading className='text-sm text-neutral-50 lg:text-xl'>{t('Total')}</NewTextSubHeading>
               </div>
-              <div className='flex flex-[3] items-center'>
+              <div className='flex flex-3 items-center'>
                 <NewTextSubHeading
                   className={cn(
                     'truncate text-sm text-neutral-50 lg:text-xl',
@@ -75,7 +73,7 @@ function Attributes({ tokens, fees, isMobile }) {
                   $ {formatAmount(tokens.reduce((curr, token) => curr + Number(token.amount || 0) * token.price, 0))}
                 </NewTextSubHeading>
               </div>
-              <div className='flex flex-[3] items-center justify-end'>
+              <div className='flex flex-3 items-center justify-end'>
                 <NewTextSubHeading className='text-sm text-neutral-50 lg:text-xl'>
                   {tokens.reduce((curr, token) => curr + Number(token.weight), 0)} %
                 </NewTextSubHeading>
@@ -94,8 +92,8 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
   return (
     <div className={cn('flex flex-col gap-4', !isMobile && 'lg:rounded-xl lg:bg-neutral-900 lg:p-4')}>
       <NewTextSubHeading className={cn(isMobile && 'hidden')}>{t('Pool Attributes')}</NewTextSubHeading>
-
-      <div className={cn(show ? 'max-lg:space-y-2' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
+      {/* NEED TO CHECK THIS */}
+      <div className={cn(show ? 'max-lg:gap--2 flex flex-col' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
         <div className='flex flex-row items-center justify-between gap-2'>
           <div className='h-8 w-full rounded-lg bg-neutral-900 px-4 py-1'>
             <TextHeading className='font-archia text-xs font-semibold text-neutral-50'>

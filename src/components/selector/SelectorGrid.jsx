@@ -17,7 +17,7 @@ function SelectorGrid({ data, classNames, className, canSelect = true, isGrid = 
         >
           {canSelect &&
             (ele.active ? (
-              <div className='size-5 rounded-full bg-primary-600 p-1.5'>
+              <div className='bg-primary-600 size-5 rounded-full p-1.5'>
                 <div className='h-2 w-2 rounded-full bg-white' />
               </div>
             ) : (

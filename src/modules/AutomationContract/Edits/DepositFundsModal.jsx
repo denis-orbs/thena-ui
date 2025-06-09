@@ -44,7 +44,7 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
       title='Fund Contract'
     >
       <ModalBody>
-        <div className='space-y-5'>
+        <div className='flex flex-col gap-5'>
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Contract Name')}</Paragraph>
             <TextHeading>{t('veTHE Contract [veTHEId]', { veTHEId })}</TextHeading>

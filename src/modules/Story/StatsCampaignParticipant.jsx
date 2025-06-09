@@ -27,7 +27,7 @@ function StatsItem({ title, value, tooltip = null, tooltipId = 'test' }) {
           <>
             <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id={tooltipId} />
             <CustomTooltip
-              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id={tooltipId}
               place='bottom'
             >
@@ -66,7 +66,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoadingInfo, isL
   }
   return (
     <>
-      <div className='mb-3 mt-6'>
+      <div className='mt-6 mb-3'>
         <TextHeading className='font-archia text-xl font-semibold lg:text-3xl'>{t('Global Stats')}</TextHeading>
       </div>
       {!isLoadingStats &&
@@ -98,7 +98,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoadingInfo, isL
       ) : (
         <LoadingBlock block={5} gridCols={5} />
       )}
-      <div className='mb-3 mt-6'>
+      <div className='mt-6 mb-3'>
         <TextHeading className='font-archia text-xl font-semibold lg:text-3xl'>{t('Completed Chapters')}</TextHeading>
       </div>
       {!isLoadingStats &&

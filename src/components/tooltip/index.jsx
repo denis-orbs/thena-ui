@@ -8,7 +8,7 @@ function CustomTooltip({ children, className, id, place = 'top' }) {
     <Tooltip
       id={id}
       place={place}
-      className={cn('relative !rounded-xl !bg-neutral-700 !p-3 !opacity-100 after:!bg-neutral-700', className)}
+      className={cn('relative rounded-xl! bg-neutral-700! p-3! opacity-100! after:bg-neutral-700!', className)}
     >
       {children}
     </Tooltip>

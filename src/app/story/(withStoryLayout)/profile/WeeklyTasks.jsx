@@ -77,7 +77,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
 
   return (
     <div className='mt-[63px]'>
-      <TextHeading className='block font-archia text-3xl font-semibold'>{t('Weekly Tasks')}</TextHeading>
+      <TextHeading className='font-archia block text-3xl font-semibold'>{t('Weekly Tasks')}</TextHeading>
       <TextSubHeading className='mt-2 block text-base text-neutral-300 lg:max-w-[60%]'>
         {t('Weekly task description')}
       </TextSubHeading>
@@ -107,7 +107,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
           {countDownTimeStamp ? (
             <>
               <div className='rounded-lg bg-neutral-900 px-6 py-6'>
-                <h2 className='mb-6 font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                <h2 className='font-archia mb-6 text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
                   {currentActiveChapter && t('Current Chapter Ends in')}
                   {!currentActiveChapter && countDownTimeStamp && t('Next Chapter Available in')}
                 </h2>
@@ -120,7 +120,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
                   target='_blank'
                 >
                   <PrimaryButton className='mt-4 w-full lg:mt-9'>
-                    <div className=' flex items-center justify-between'>
+                    <div className='flex items-center justify-between'>
                       <span className='mr-1 text-left'>{t('View BNB Chain')}</span>
                       <ChevronRightIcon className='size-4' />
                     </div>

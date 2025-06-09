@@ -9,6 +9,7 @@ import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
+import { cn } from '@/lib/utils'
 
 const V4_USERS = gql`
   query V4_USERS($search: String) {
@@ -82,7 +83,7 @@ export function ModalSelectUser({ popup, setPopup, selectedUsers, setSelectedUse
                 {selectedUsers.length} {t('Selected')}
               </span>
               <span
-                className='cursor-pointer text-primary-400'
+                className='text-primary-400 cursor-pointer'
                 onClick={() => {
                   if (selectedUsers.length > 0) {
                     setSelectedUsers([])
@@ -99,8 +100,10 @@ export function ModalSelectUser({ popup, setPopup, selectedUsers, setSelectedUse
             const isSelected = selectedUsers.find(ele => ele.id === user.id)
             return (
               <div
-                className={`my-1 flex cursor-pointer items-center justify-between rounded-lg px-6 py-3
-                 hover:bg-slate-800 ${isSelected ? 'bg-neutral-800' : ''} gap-5`}
+                className={cn([
+                  'my-1 flex cursor-pointer items-center justify-between rounded-lg px-6 py-3',
+                  `hover:bg-slate-800 ${isSelected ? 'bg-neutral-800' : ''} gap-5`,
+                ])}
                 onClick={() => {
                   let temp = [...selectedUsers]
                   if (isSelected) {

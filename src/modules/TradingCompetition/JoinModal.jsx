@@ -169,7 +169,7 @@ export function JoinModal({ competition, open, onClose }) {
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
       <ModalBody>
-        <p className='mt-1.5 w-full text-[15px] text-neutral-300  md:text-base md:leading-6'>{message}</p>
+        <p className='mt-1.5 w-full text-[15px] text-neutral-300 md:text-base md:leading-6'>{message}</p>
         {totalToken ? (
           <TextHeading className='my-4 block'>
             {t('This means')} <span className='underline'>{totalToken}!</span>
@@ -200,7 +200,7 @@ export function JoinModal({ competition, open, onClose }) {
                       <Image
                         alt={ef?.symbol}
                         src={ef?.logo}
-                        className='me-1 inline-block flex-shrink-0'
+                        className='me-1 inline-block shrink-0'
                         width={20}
                         height={20}
                         loading='lazy'
@@ -220,11 +220,11 @@ export function JoinModal({ competition, open, onClose }) {
                 <TextHeading className='text-lg'>
                   {t(isInvalidAmount(startingBalance) ? 'Minimum Deposit to Join' : 'Required Deposit to Join')}
                 </TextHeading>
-                <div className='mt-2 flex space-x-2'>
+                <div className='mt-2 flex gap-2'>
                   <Image
                     alt={winningToken?.name}
                     src={winningToken?.logoURI}
-                    className='flex-shrink-0'
+                    className='shrink-0'
                     width={20}
                     height={20}
                     loading='lazy'
@@ -255,7 +255,7 @@ export function JoinModal({ competition, open, onClose }) {
               onAmountChange={setInputStartingBalance}
             />
             {showAlertMinimum && (
-              <Paragraph className='ml-1 mt-1 block text-sm text-error-500'>
+              <Paragraph className='text-error-500 mt-1 ml-1 block text-sm'>
                 {t('Must Be Greater Than Minimum Balance')}
               </Paragraph>
             )}
@@ -274,7 +274,7 @@ export function JoinModal({ competition, open, onClose }) {
                   },
                 }}
               >
-                <ErrorButton className='text-nowrap p-2 text-xs'>{t('Add Balance')}</ErrorButton>
+                <ErrorButton className='p-2 text-xs text-nowrap'>{t('Add Balance')}</ErrorButton>
               </Link>
             </Alert>
           </div>

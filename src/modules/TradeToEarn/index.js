@@ -144,7 +144,7 @@ export const useGetMuonMutation = () => {
           pending: 'Request data from Muon...',
         },
         {
-          className: '!bg-white text-black',
+          className: 'bg-white! text-black',
           autoClose: 3000,
         },
       )

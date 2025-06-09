@@ -143,7 +143,7 @@ function NewListings({
               <GroupIconTokens
                 classNames={{
                   image: cn('outline-2', 'size-7'),
-                  rows: '-space-x-2',
+                  rows: '*:not-first:-ml-2',
                   toolTip: 'hidden',
                 }}
                 width={28}
@@ -181,10 +181,10 @@ function NewListings({
                 />
               </div>
 
-              <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
+              <CustomTooltip id='etherBadgeIcon' className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
               </CustomTooltip>
-              <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
+              <CustomTooltip id='eigenBadgeIcon' className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
               </CustomTooltip>
             </div>
@@ -198,7 +198,7 @@ function NewListings({
                   src='/images/GQhgnIEbUAA4gjewe.jpeg'
                 />
               </div>
-              <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+              <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
               </CustomTooltip>
             </div>
@@ -212,14 +212,14 @@ function NewListings({
                   src='/images/yieldnest_seed_3d__1__360.png'
                 />
               </div>
-              <CustomTooltip id={`pool-special-new-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+              <CustomTooltip id={`pool-special-new-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
               </CustomTooltip>
 
               <div className='size-6' data-tooltip-id={`pool-special-new-${pool.address}-tooltip2`}>
                 <NextImage className='h-full w-full rounded-full object-cover' alt='Kernel' src='/images/kernel.svg' />
               </div>
-              <CustomTooltip id={`pool-special-new-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+              <CustomTooltip id={`pool-special-new-${pool.address}-tooltip2`} className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
               </CustomTooltip>
             </div>
@@ -235,7 +235,7 @@ function NewListings({
                       src='/images/quaaloop.png'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                     <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
@@ -256,7 +256,7 @@ function NewListings({
                 </div>
                 <CustomTooltip
                   id={`pool-special-${pool.address}-BTCBmBTCAddress`}
-                  className='rounded-md !py-2'
+                  className='rounded-md py-2!'
                   place='top'
                 >
                   <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
@@ -274,7 +274,7 @@ function NewListings({
                     src='/svgs/fbtcYieldCampaign.svg'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -286,9 +286,9 @@ function NewListings({
           {(pool.token0?.isWarning || pool.token1?.isWarning) && (
             <>
               <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
-                <InfoIcon className='size-4 stroke-warn-700' />
+                <InfoIcon className='stroke-warn-700 size-4' />
               </div>
-              <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+              <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
               </CustomTooltip>
             </>
@@ -297,7 +297,7 @@ function NewListings({
       ),
       apr: (
         <div className='flex items-center gap-1'>
-          <Paragraph className='break-all text-sm font-medium md:text-base'>{pool.apr}</Paragraph>
+          <Paragraph className='text-sm font-medium break-all md:text-base'>{pool.apr}</Paragraph>
           {pool.subpools.length > 0 && (
             <InfoIcon
               className='size-4 min-w-4 stroke-neutral-400 max-md:hidden'
@@ -355,8 +355,8 @@ function NewListings({
       action: (
         <div className='flex gap-2.5'>
           <EmphasisIconButton
-            className={cn('!size-8 p-2', size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!size-9 lg:w-fit')}
-            classNames='[&>path]:group-hover:stroke-neutral-100 !size-4'
+            className={cn('size-8! p-2', size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:size-9! lg:w-fit')}
+            classNames='group-hover:[&>path]:stroke-neutral-100 size-4!'
             Icon={BarChartIcon}
             onClick={() => {
               let url = `/analytics/pairs/${pool?.address}`
@@ -367,8 +367,8 @@ function NewListings({
           />
           <EmphasisButton
             className={cn(
-              '!h-8 w-full p-2 text-xs lg:w-fit lg:text-sm',
-              size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:!h-9 lg:w-fit',
+              'h-8! w-full p-2 text-xs lg:w-fit lg:text-sm',
+              size !== 'small' && 'w-full max-lg:p-2 max-lg:text-xs lg:h-9! lg:w-fit',
             )}
             onClick={e => {
               e.stopPropagation()
@@ -383,7 +383,7 @@ function NewListings({
             }}
           >
             <Paragraph
-              className={cn('block !text-sm text-neutral-100', size === 'small' && 'hidden !text-xs md:block')}
+              className={cn('block text-sm! text-neutral-100', size === 'small' && 'hidden text-xs! md:block')}
             >
               {t('Deposit')}
             </Paragraph>

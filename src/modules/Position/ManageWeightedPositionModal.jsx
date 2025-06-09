@@ -53,17 +53,17 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
                 classNames={{
                   image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                 }}
-                className='-space-x-1'
+                className='*:not-first:-ml-1'
                 logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
                 logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
                 extendNumber={(pool?.tokens?.length || 2) - 2}
               />
               <div className='flex items-center gap-2 lg:max-w-[90%]'>
-                <div className='flex w-full flex-wrap items-center gap-1 '>
+                <div className='flex w-full flex-wrap items-center gap-1'>
                   {(pool?.tokens || []).map(token => (
                     <div className='flex items-center gap-1' key={token?.address}>
-                      <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                      <span className='text-sm font-medium leading-5 text-neutral-300 '>{token?.weight}%</span>
+                      <span className='text-[16px] leading-5 font-medium'>{token?.symbol}</span>
+                      <span className='text-sm leading-5 font-medium text-neutral-300'>{token?.weight}%</span>
                     </div>
                   ))}
                 </div>

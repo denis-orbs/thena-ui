@@ -25,7 +25,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
 
   return (
     <>
-      <Box className='space-y-4'>
+      <Box className='flex flex-col gap-4'>
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
@@ -40,7 +40,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                 <div className='flex items-center'>
                   <TextHeading
                     className={cn(
-                      ' text-xl lg:text-3xl',
+                      'text-xl lg:text-3xl',
                       userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : '',
                     )}
                   >
@@ -83,27 +83,27 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
           <div className='rounded-xl bg-neutral-800'>
-            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 pr-0 lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{userInfo.rank === null ? '-' : userInfo.rank + 1}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </div>
           <div className='rounded-xl bg-neutral-800'>
-            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 pr-0 lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
-                <RewardIconTooltip rewardType={RewardType.Point} id='user-info_earned-point' className='mb-1 mr-1' />
+                <RewardIconTooltip rewardType={RewardType.Point} id='user-info_earned-point' className='mr-1 mb-1' />
                 <TextHeading className='text-lg'>{userInfo.totalPoints ?? '-'}</TextHeading>
               </div>
               <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
             </Box>
           </div>
           <div className='rounded-xl bg-neutral-800'>
-            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 pr-0 lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
                 <RewardIconTooltip
                   rewardType={RewardType.Fragment}
                   id='user-info_earned-fragments'
-                  className='mb-1 mr-1'
+                  className='mr-1 mb-1'
                 />
                 <TextHeading className='text-lg'>{userInfo.totalFragments ?? '-'}</TextHeading>
               </div>
@@ -111,7 +111,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
             </Box>
           </div>
           <div className='rounded-xl bg-neutral-800'>
-            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 pr-0 lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>
                 {completedChapter} / {totalChapter}
               </TextHeading>
@@ -119,7 +119,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
             </Box>
           </div>
           <div className='col-span-2 rounded-xl bg-neutral-800 lg:col-span-1'>
-            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 pr-0 lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{totalSuccessfulReferral}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Successful Referrals')}</TextSubHeading>
             </Box>

@@ -101,7 +101,7 @@ export default function StoryRegister({ isRegistered }) {
         {isRegistered ? (
           <div className='flex flex-col justify-center'>
             <SuccessIcon className='mx-auto h-20 w-20' />
-            <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
+            <p className='font-archia mx-auto mb-10 max-w-[400px] text-center text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
             <PrimaryButton className='w-full' onClick={() => router.push('/story/chapters')}>

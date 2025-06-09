@@ -263,7 +263,7 @@ function RecentlyContent({ isMinted = true }) {
             <div className='mr-1 flex flex-col gap-1'>
               <TextHeading
                 className={cn(
-                  'text-nowrap text-base',
+                  'text-base text-nowrap',
                   item.owner.nameColor && !String(item.owner.nameColor).startsWith('#') ? item.owner.nameColor : '',
                 )}
               >
@@ -286,12 +286,12 @@ function RecentlyContent({ isMinted = true }) {
           </Link>
         ),
         cost: (
-          <div className='flex items-center justify-center space-x-2'>
+          <div className='flex items-center justify-center gap-2'>
             {USDTAsset?.logoURI && (
               <Image
                 alt='token'
                 src={`${USDTAsset.logoURI ?? ''}`}
-                className='flex-shrink-0'
+                className='shrink-0'
                 width={24}
                 height={24}
                 loading='lazy'

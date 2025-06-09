@@ -63,7 +63,7 @@ export function UserCompletedAchievements({ userId }) {
 
   return (
     <div>
-      <div className='space-y-3'>
+      <div className='flex flex-col gap-3'>
         <TextHeading className='text-xl'>
           {t('Completed Achievements', {
             count: sortedData.length,
@@ -78,7 +78,7 @@ export function UserCompletedAchievements({ userId }) {
           </Box>
         ) : (
           <div className='px-6'>
-            <div className='flex w-full flex-col items-center justify-center gap-4 '>
+            <div className='flex w-full flex-col items-center justify-center gap-4'>
               <Highlight>
                 <InfoCircleWhite className='h-4 w-4' />
               </Highlight>

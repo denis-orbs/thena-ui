@@ -32,7 +32,7 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                 src={token?.logoURI || UNKNOWN_LOGO}
                 alt={`token-${index}`}
                 className={cn(
-                  'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
+                  'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09*var(--size))_#1C2027]',
                 )}
                 style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                 width={width}
@@ -41,7 +41,7 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
               />
               {showToolTip && (
                 <CustomTooltip
-                  className={cn('z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500', classNames?.toolTip)}
+                  className={cn('z-40 w-fit bg-neutral-500! shadow-xl after:bg-neutral-500!', classNames?.toolTip)}
                   id={`tooltip-token-${token?.address}-${index}-${poolAddress}`}
                   place='top'
                 >
@@ -67,7 +67,7 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                   src={token?.logoURI || UNKNOWN_LOGO}
                   alt={`token-${index}`}
                   className={cn(
-                    'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
+                    'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09*var(--size))_#1C2027]',
                   )}
                   style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                   width={width}
@@ -76,7 +76,7 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                 />
                 {showToolTip && (
                   <CustomTooltip
-                    className={cn('z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500', classNames?.toolTip)}
+                    className={cn('z-40 w-fit bg-neutral-500! shadow-xl after:bg-neutral-500!', classNames?.toolTip)}
                     id={`tooltip-token-${token?.address}-${index}-${poolAddress}`}
                     place='top'
                   >

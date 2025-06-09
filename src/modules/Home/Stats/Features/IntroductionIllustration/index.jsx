@@ -121,10 +121,10 @@ export function IntroductionIllustration() {
   }, [animate])
 
   return (
-    <div ref={scope} className='grid min-w-[60vw] max-w-[500px] grid-cols-12 grid-rows-12 lg:min-w-[auto]'>
-      <FeatureCard className='relative col-start-1 col-end-11 row-start-1 row-end-8 h-fit overflow-hidden bg-[#0c0911] before:duration-500 after:bg-[linear-gradient(129.41deg,_rgba(255,_255,_255,_0.08)_0%,_rgba(255,_255,_255,_0)_38.31%)] before:group-hover:opacity-100 before:lg:opacity-0'>
-        <div className='absolute -right-10 top-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600 bg-opacity-[45%] blur-[220px] filter lg:block' />
-        <div className='absolute left-4 top-4 flex w-fit items-center gap-2 rounded-full bg-[#201424] p-1 pr-1.5 md:p-2 md:pr-3'>
+    <div ref={scope} className='grid max-w-[500px] min-w-[60vw] grid-cols-12 grid-rows-12 lg:min-w-auto'>
+      <FeatureCard className='relative col-start-1 col-end-11 row-start-1 row-end-8 h-fit overflow-hidden bg-[#0c0911] before:duration-500 group-hover:before:opacity-100 after:bg-[linear-gradient(129.41deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_38.31%)] lg:before:opacity-0'>
+        <div className='absolute top-0 -right-10 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600/45 blur-[220px] filter lg:block' />
+        <div className='absolute top-4 left-4 flex w-fit items-center gap-2 rounded-full bg-[#201424] p-1 pr-1.5 md:p-2 md:pr-3'>
           <div className='flex items-center gap-1'>
             <BNB className='h-4 w-4 md:h-5 md:w-5' width={20} height={20} />
             <Paragraph className='text-xs font-semibold tracking-[-4%] md:text-base'>BNB/THE</Paragraph>
@@ -133,9 +133,9 @@ export function IntroductionIllustration() {
         </div>
         <Image src='/images/home/stats/graph.png' className='h-full w-full' alt='graph' width={351} height={190} />
       </FeatureCard>
-      <FeatureCard className='relative col-start-4 col-end-13 row-start-5 row-end-13 h-fit min-w-[240px] overflow-hidden bg-black/25 bg-[linear-gradient(0deg,_rgba(0,_0,_0,_0.25),_rgba(0,_0,_0,_0.25))] backdrop-blur-3xl before:bg-[linear-gradient(188.68deg,_rgba(220,_1,_212,_0.45)_5.6%,_rgba(206,_79,_198,_0)_92.91%)] before:duration-500 after:bg-[linear-gradient(129.41deg,_rgba(255,_255,_255,_0.06)_0%,_rgba(255,_255,_255,_0)_38.31%)] before:group-hover:opacity-100 before:lg:opacity-0'>
-        <div className='absolute right-0 top-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600 bg-opacity-[45%] blur-[220px] filter lg:block' />
-        <div className='relative flex flex-col space-y-1.5'>
+      <FeatureCard className='relative col-start-4 col-end-13 row-start-5 row-end-13 h-fit min-w-[240px] overflow-hidden bg-black/25 bg-[linear-gradient(0deg,rgba(0,0,0,0.25),rgba(0,0,0,0.25))] backdrop-blur-3xl before:bg-[linear-gradient(188.68deg,rgba(220,1,212,0.45)_5.6%,rgba(206,79,198,0)_92.91%)] before:duration-500 group-hover:before:opacity-100 after:bg-[linear-gradient(129.41deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_38.31%)] lg:before:opacity-0'>
+        <div className='absolute top-0 right-0 hidden h-[200px] w-[200px] rounded-full bg-fuchsia-600/45 blur-[220px] filter lg:block' />
+        <div className='relative flex flex-col gap-1.5'>
           <MotionSwapableCoin
             id='swappable-coin-1'
             coin='BNB'
@@ -144,11 +144,11 @@ export function IntroductionIllustration() {
             price1={1.124}
             price2={319.58}
           />
-          <div className='pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2'>
+          <div className='pointer-events-none absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2'>
             {/* Custom glow effect */}
             <motion.div
               id='introduction-swap-icon-glow'
-              className='absolute -right-1 top-8 h-6 w-20 rounded-full bg-[linear-gradient(180deg,_rgba(63,_140,_255,_0.65)_0%,_rgba(154,_94,_255,_0.65)_5.99%)] opacity-50 blur-2xl md:h-12 md:w-24'
+              className='absolute top-8 -right-1 h-6 w-20 rounded-full bg-[linear-gradient(180deg,rgba(63,140,255,0.65)_0%,rgba(154,94,255,0.65)_5.99%)] opacity-50 blur-2xl md:h-12 md:w-24'
             />
             <SwapIcon />
           </div>

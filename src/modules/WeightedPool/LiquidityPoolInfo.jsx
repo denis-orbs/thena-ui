@@ -17,8 +17,8 @@ function LiquidityPoolInfo({ pool, isMobile = false }) {
   const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(pool ? pool.gauge.address : zeroAddress)
 
   return (
-    <div className='flex flex-col rounded-xl bg-neutral-800 '>
-      <div className='flex flex-2 flex-col gap-2 px-4 pb-4 pt-2 lg:flex-1'>
+    <div className='flex flex-col rounded-xl bg-neutral-800'>
+      <div className='flex flex-2 flex-col gap-2 px-4 pt-2 pb-4 lg:flex-1'>
         <PieChart tokens={pool?.tokens || []} bgColor='#1A121E' showTotalPercent={false} />
         <div
           className={cn(

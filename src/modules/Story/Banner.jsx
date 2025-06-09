@@ -10,7 +10,7 @@ export default function Banner({ videoRef, isMuted, settingSound, handleScroll }
   const t = useTranslations()
   return (
     <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-2 pt-2 md:px-[15px] md:pt-[15px]'>
-      <div className='lg:mb-15 relative mb-10'>
+      <div className='relative mb-10 lg:mb-15'>
         <VideoBanner
           src='/videos/TheSpaceFinal.mp4'
           width={1410}
@@ -19,10 +19,10 @@ export default function Banner({ videoRef, isMuted, settingSound, handleScroll }
           videoRef={videoRef}
           muted={isMuted}
         />
-        <OutlinedButton className='absolute right-4 top-5 border-none p-2' onClick={settingSound}>
+        <OutlinedButton className='absolute top-5 right-4 border-none p-2' onClick={settingSound}>
           {isMuted ? <SoundOffIcon className='h-8 w-6' /> : <SoundOnIcon className='h-8 w-6' />}
         </OutlinedButton>
-        <div className='absolute bottom-0 left-0 w-full p-0 text-center font-archia text-[28px] font-semibold text-white md:bottom-3 md:text-[40px] lg:bottom-6 lg:px-4 lg:pb-9 lg:text-[72px]'>
+        <div className='font-archia absolute bottom-0 left-0 w-full p-0 text-center text-[28px] font-semibold text-white md:bottom-3 md:text-[40px] lg:bottom-6 lg:px-4 lg:pb-9 lg:text-[72px]'>
           <p>{t('Get Ready for THE Story of THENA')}</p>
           <div className='mt-3 flex w-full justify-center'>
             <OutlinedButton className='hidden border-none lg:block' onClick={handleScroll}>

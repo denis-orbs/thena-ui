@@ -10,7 +10,7 @@ export function NotCompleted({ achievements }) {
   const t = useTranslations()
 
   return (
-    <div className='space-y-3'>
+    <div className='flex flex-col gap-3'>
       <TextHeading>
         {t('Not Completed Achievements', {
           count: achievements.length,

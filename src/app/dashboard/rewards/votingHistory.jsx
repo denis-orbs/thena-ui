@@ -36,11 +36,11 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
       className={cn(
         'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
-        'outline outline-2 outline-offset-4 outline-transparent',
-        'cursor-pointer rounded transition-all duration-150 ease-out',
-        'text-sm active:outline-focus',
+        'outline-2 outline-offset-4 outline-transparent outline-solid',
+        'cursor-pointer rounded-xs transition-all duration-150 ease-out',
+        'active:outline-focus text-sm',
         active && 'bg-neutral-800',
-        disabled && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+        disabled && 'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
         className,
       )}
       onClick={onClick}
@@ -59,8 +59,8 @@ function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPop
       className={cn(
         'absolute',
         showPopover ? '' : 'invisible opacity-0',
-        'left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg',
-        'border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-sm transition-opacity duration-300',
+        'top-12 left-1/2 z-10 inline-block -translate-x-1/2 rounded-lg',
+        'border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-xs transition-opacity duration-300',
       )}
     >
       <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-600 bg-neutral-700 px-3 py-2'>
@@ -68,7 +68,7 @@ function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPop
         <TextIconButton
           Icon={XIcon}
           classNames='p-[2px]'
-          className='!h-5 !w-5 stroke-neutral-400'
+          className='h-5! w-5! stroke-neutral-400'
           onClick={() => {
             setShowPopover(false)
             setInputPage('')
@@ -133,7 +133,7 @@ function Paging({
           }}
           disabled={currentPage === 1}
         >
-          <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+          <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
         </PaginateCell>
         {pageCount < 6 &&
           new Array(pageCount).fill(0).map((item, idx) => (
@@ -227,7 +227,7 @@ function Paging({
           }}
           disabled={currentPage === pageCount}
         >
-          <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
+          <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? 'stroke-gray-700' : ''}`} />
         </PaginateCell>
         {showPopoverPagination && (
           <Popover
@@ -306,7 +306,7 @@ function TitleEpoch({ epoch, open }) {
 
   return (
     <div className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
-      <div className='flex flex-[10] flex-row items-center justify-between lg:flex-[2.5]'>
+      <div className='flex flex-10 flex-row items-center justify-between lg:flex-[2.5]'>
         <div className='flex flex-row gap-1'>
           <TextHeading className='text-xl font-normal'>{t('Epoch')}</TextHeading>
           <TextHeading className='text-xl'>{formatAmount(epochNumber)}</TextHeading>
@@ -326,7 +326,7 @@ function TitleEpoch({ epoch, open }) {
           <TextHeading>{t('My Votes')}</TextHeading>
           <Paragraph>{formatAmount(epoch?.totalVetheBalance)}</Paragraph>
         </div>
-        <div className='flex flex-col gap-1  lg:items-end'>
+        <div className='flex flex-col gap-1 lg:items-end'>
           <TextHeading>{t('Total Votes')}</TextHeading>
           <Paragraph>{formatAmount(epoch?.totalVotesEpoch)}</Paragraph>
         </div>
@@ -419,7 +419,7 @@ function VotingHistory({ veTHEId }) {
       <div className='flex flex-col divide-y divide-neutral-700 rounded-xl border border-neutral-700 bg-neutral-900'>
         {[1, 2, 3].map((_, index) => (
           <div key={index} className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
-            <div className='flex flex-[10] flex-row justify-between lg:flex-[2.5]'>
+            <div className='flex flex-10 flex-row justify-between lg:flex-[2.5]'>
               <div className='flex w-full flex-row gap-1'>
                 <Skeleton className='h-6 w-[40%]' />
               </div>

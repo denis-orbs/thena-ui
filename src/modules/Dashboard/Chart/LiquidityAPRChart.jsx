@@ -251,14 +251,14 @@ function LiquidityAPRChart({
 
       return (
         <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center text-center md:top-[74px] md:justify-start md:gap-2'>
-          <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl md:leading-6'>
+          <div className='font-archia text-primary-600 text-sm font-semibold max-md:hidden md:text-xl md:leading-6'>
             {t('APR')}
           </div>
-          <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-[40px] md:leading-[40px]'>
+          <NewTextHeading className='text-primary-600 text-xl font-semibold md:text-[40px] md:leading-[40px]'>
             {aprValue?.label === 'None' ? '0' : formatAmount(aprValue?.value, true)}%
           </NewTextHeading>
           <div className='flex flex-col'>
-            <NewTextHeading className='text-sm text-primary-300 md:text-xl md:leading-6'>
+            <NewTextHeading className='text-primary-300 text-sm md:text-xl md:leading-6'>
               ${liquidityValue?.label === 'None' ? '0' : formatAmount(liquidityValue?.value, true)}
             </NewTextHeading>
             <TextSubHeading className='text-xs font-medium text-neutral-300'>{poolLabel}</TextSubHeading>
@@ -269,16 +269,16 @@ function LiquidityAPRChart({
 
     return data.length > 0 ? (
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center md:top-[106px] md:justify-start'>
-        <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-[40px] md:leading-[40px]'>
+        <NewTextHeading className='text-primary-600 text-xl font-semibold md:text-[40px] md:leading-[40px]'>
           {formatAmount(avgApr, true)}%
         </NewTextHeading>
-        <div className='text-xl font-semibold uppercase !leading-6 text-primary-300 max-md:hidden'>Average APR</div>
+        <div className='text-primary-300 text-xl leading-6! font-semibold uppercase max-md:hidden'>Average APR</div>
       </div>
     ) : (
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center'>
-        <div className='font-archia text-sm font-semibold text-primary-600 max-md:hidden md:text-xl'>{t('APR')}</div>
-        <NewTextHeading className='text-xl font-semibold text-primary-600 md:text-4xl'>0%</NewTextHeading>
-        <NewTextHeading className='text-sm text-primary-300 md:text-xl'>$0</NewTextHeading>
+        <div className='font-archia text-primary-600 text-sm font-semibold max-md:hidden md:text-xl'>{t('APR')}</div>
+        <NewTextHeading className='text-primary-600 text-xl font-semibold md:text-4xl'>0%</NewTextHeading>
+        <NewTextHeading className='text-primary-300 text-sm md:text-xl'>$0</NewTextHeading>
       </div>
     )
   }, [hoveredIndex, aprData, avgApr, t, data.length, hoveredDataSetIndex, liquidityData])

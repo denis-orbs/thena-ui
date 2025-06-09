@@ -307,12 +307,12 @@ function CompetitionDetail({ competition, isPreview = false }) {
                   )}
                   {item.dataUpdate.slice(0, 3).map(({ data, ticker }, idx) =>
                     ticker ? (
-                      <div className='flex space-x-2' key={`${idx}-${ticker}`}>
+                      <div className='flex gap-2' key={`${idx}-${ticker}`}>
                         {ticker !== 'MUSD' && (
                           <Image
                             alt={ticker}
                             src={`https://cdn.thena.fi/assets/${ticker}.png`}
-                            className='h-5 w-5 flex-shrink-0'
+                            className='h-5 w-5 shrink-0'
                             width={20}
                             height={20}
                             loading='lazy'
@@ -392,14 +392,14 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
                 .map(item => (
                   <Box
-                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    className='flex items-center gap-2.5 bg-neutral-800 px-4 py-4 md:gap-3 lg:px-4 lg:py-4'
                     key={item?.address}
                   >
                     {item?.logoURI && (
                       <Image
                         alt={_competition.name}
                         src={item?.logoURI}
-                        className='flex-shrink-0'
+                        className='shrink-0'
                         width={28}
                         height={28}
                         loading='lazy'
@@ -407,7 +407,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                     )}
                     <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
                       <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
-                      <Paragraph className='whitespace-nowrap text-sm'>{item?.name}</Paragraph>
+                      <Paragraph className='text-sm whitespace-nowrap'>{item?.name}</Paragraph>
                     </div>
                   </Box>
                 ))
@@ -415,7 +415,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ?.slice(0, viewAllTradable ? _competition.competitionRules?.pairIds?.length : 8)
                 .map(item => (
                   <Box
-                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    className='flex items-center gap-2.5 bg-neutral-800 px-4 py-4 md:gap-3 lg:px-4 lg:py-4'
                     key={item?.id}
                   >
                     <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>

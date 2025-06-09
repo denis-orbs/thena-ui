@@ -42,7 +42,7 @@ function TruncateContent({ content, className }) {
     <div>
       <div
         ref={contentRef}
-        className={cn('description whitespace-pre-line break-words', className, isTruncated ? 'show-more' : '')}
+        className={cn('description break-words whitespace-pre-line', className, isTruncated ? 'show-more' : '')}
       >
         {content}
       </div>

@@ -452,7 +452,7 @@ export function TCTradeSideBar({
                   disabled
                 />
                 <EmphasisIconButton
-                  className='z-1 absolute bottom-0 left-0 right-0 top-0 m-auto'
+                  className='absolute top-0 right-0 bottom-0 left-0 z-1 m-auto'
                   Icon={SwitchVerticalIcon}
                   onClick={() => {
                     setResetChart(true)
@@ -504,7 +504,7 @@ export function TCTradeSideBar({
                 )}
                 {priceImpact > 5 && (
                   <Alert>
-                    <InfoIcon className='h-4 w-4 stroke-error-600' />
+                    <InfoIcon className='stroke-error-600 h-4 w-4' />
                     <p>{t('Price impact too high')}</p>
                   </Alert>
                 )}

@@ -183,7 +183,7 @@ export default function SwapFusion({
 
   return (
     <>
-      <Box className='w-full !pt-0 lg:px-6'>
+      <Box className='w-full pt-0! lg:px-6'>
         <div className='mb-3 flex items-center justify-between'>
           <div />
           <div className='flex items-center gap-2'>
@@ -217,7 +217,7 @@ export default function SwapFusion({
               disabledSelect={disabledChangeOutputCurrency}
             />
             <EmphasisIconButton
-              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
               disabled={disabledChangeOutputCurrency}
               Icon={SwitchVerticalIcon}
               onClick={() => {
@@ -268,7 +268,7 @@ export default function SwapFusion({
             </div>
             {priceImpactInNumber > 5 && (
               <Alert>
-                <InfoIcon className='h-4 w-4 stroke-error-600' />
+                <InfoIcon className='stroke-error-600 h-4 w-4' />
                 <p>{t('Price impact too high')}</p>
               </Alert>
             )}

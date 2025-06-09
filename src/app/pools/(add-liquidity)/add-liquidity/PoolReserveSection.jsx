@@ -10,7 +10,7 @@ export function PoolReserveSection({ pool, className }) {
   return (
     <div className={cn('flex flex-col gap-4 rounded-md bg-neutral-900 p-4', className)}>
       <div className='flex flex-col gap-2 lg:gap-4'>
-        <NewTextSubHeading className='!text-xl'>{t('Reserve Info')}</NewTextSubHeading>
+        <NewTextSubHeading className='text-xl!'>{t('Reserve Info')}</NewTextSubHeading>
         <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
             <Paragraph className='font-medium'>
@@ -30,7 +30,7 @@ export function PoolReserveSection({ pool, className }) {
       <Divider className='my-4' />
 
       <div className='flex flex-col gap-2 lg:gap-4'>
-        <NewTextSubHeading className='!text-xl'>{t('My Info')}</NewTextSubHeading>
+        <NewTextSubHeading className='text-xl!'>{t('My Info')}</NewTextSubHeading>
         <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
             <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>

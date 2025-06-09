@@ -156,7 +156,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
               competition={competition}
               banner={competition.bannerUrl || Banner.src}
             />
-            <div className='absolute left-4 top-4 flex gap-2'>
+            <div className='absolute top-4 left-4 flex gap-2'>
               <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
                 {competition.market.toLowerCase()}
               </NeutralBadge>
@@ -173,7 +173,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
                     </NeutralBadge>
                   </div>
                   <CustomTooltip
-                    className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    className='z-999999 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
                     id={`tooltip-tags-${tag.id}`}
                     place='bottom'
                   >
@@ -186,10 +186,10 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
               )}
             </div>
             {enableEditTag && (
-              <EmphasisIconButton Icon={TagIcon} className='absolute right-[68px] top-4' onClick={onEditTag} />
+              <EmphasisIconButton Icon={TagIcon} className='absolute top-4 right-[68px]' onClick={onEditTag} />
             )}
             {enableEditBanner && (
-              <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
+              <EmphasisIconButton Icon={EditIcon} className='absolute top-4 right-4' onClick={onEditBanner} />
             )}
           </div>
           <div>
@@ -198,7 +198,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
               <div
                 className={cn(
                   'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
-                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'lg:space-x-8',
+                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'lg:gap-8',
                 )}
               >
                 {eventType !== EVENT_TYPES.ENDED && (
