@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -14,7 +13,6 @@ import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useVaults } from '@/context/vaultsContext'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import LiquidityCharts from './LiquidityCharts'
@@ -28,7 +26,6 @@ const ChartType = {
 
 export function PoolChart({ address }) {
   const { pairs, isLoading } = usePairs()
-  const vaults = useVaults()
   const { networkId } = useChainSettings()
   const t = useTranslations()
   const [chartType, setChartType] = useState(ChartType.TVL)
@@ -39,23 +36,11 @@ export function PoolChart({ address }) {
 
   const { isReverse } = useSelector(state => state.fusion)
 
-  const pair = useMemo(() => {
-    if (!pairs) return
+  const pair = useMemo(
+    () => (pairs ? pairs.find(ele => ele.address.includes(address?.toLowerCase())) : undefined),
+    [pairs, address],
+  )
 
-    const pairData = pairs.find(ele => ele.address.includes(address?.toLowerCase()))
-    if (pairData) {
-      const singleSideVault = vaults.find(v => v.algebra === pairData.address)
-      if (singleSideVault) {
-        return {
-          ...pairData,
-          tvlUSD: BigNumber(singleSideVault.gauge?.tvl || 0)
-            .plus(BigNumber(pairData.tvlUSD))
-            .toNumber(),
-        }
-      }
-    }
-    return pairData
-  }, [pairs, address, vaults])
   const { data: chartData } = useSWR(pair && ['pool/chart', pair.address], () => fetchPairChartData(networkId, pair), {
     refreshInterval: 0,
   })

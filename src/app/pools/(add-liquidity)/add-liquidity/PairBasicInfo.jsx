@@ -1,13 +1,11 @@
-import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronRightIcon } from '@/svgs'
@@ -15,28 +13,7 @@ import { ChevronRightIcon } from '@/svgs'
 export function PairBasicInfo({ pair }) {
   const t = useTranslations()
   const { isMdDown } = useMediaQuery()
-  const vaults = useVaults()
   const [isExpanded, setIsExpanded] = useState(false)
-
-  const computedPair = useMemo(() => {
-    const singleSideVault = vaults.find(v => v.algebra === pair?.address)
-    if (singleSideVault) {
-      const aprs = pair.subpools.map(sub => sub.gauge.apr).filter(item => !item.isZero())
-      const aprMin = BigNumber.min(...aprs)
-      const aprMax = BigNumber.max(...aprs)
-
-      return {
-        ...pair,
-        apr: aprMin.isEqualTo(aprMax)
-          ? `${formatAmount(aprMin)}%`
-          : `${formatAmount(aprMin)}% ~ ${formatAmount(aprMax)}%`,
-        tvlUSD: BigNumber(singleSideVault.gauge?.tvl || 0)
-          .plus(BigNumber(pair.tvlUSD))
-          .toNumber(),
-      }
-    }
-    return pair
-  }, [pair, vaults])
 
   return (
     <div className='flex justify-between gap-2'>
@@ -48,7 +25,7 @@ export function PairBasicInfo({ pair }) {
       >
         <div className='flex flex-col gap-2 md:gap-1'>
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
-            {computedPair?.apr ?? '0%'}
+            {pair?.apr ?? '0%'}
           </NewTextSubHeading>
           <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
             {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
@@ -80,7 +57,7 @@ export function PairBasicInfo({ pair }) {
             </div>
             <div className='flex flex-col gap-2 md:gap-1'>
               <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
-                ${formatAmount(computedPair?.tvlUSD)}
+                ${formatAmount(pair?.tvlUSD)}
               </NewTextSubHeading>
               <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
             </div>
@@ -96,7 +73,7 @@ export function PairBasicInfo({ pair }) {
 
         <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
           <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
-            ${formatAmount(computedPair?.tvlUSD)}
+            ${formatAmount(pair?.tvlUSD)}
           </NewTextSubHeading>
           <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
         </div>
