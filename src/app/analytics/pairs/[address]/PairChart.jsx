@@ -6,7 +6,13 @@ import useSWR from 'swr'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
-import { FUSION_MULTI_CHAIN_START_TIME, MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
+import {
+  FUSION_MULTI_CHAIN_START_TIME,
+  ICHI_SINGLE_SIDED,
+  MANUAL_TYPES,
+  PAIR_TYPES,
+  V1_MULTI_CHAIN_START_TIME,
+} from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -78,11 +84,11 @@ export const getV1ChartData = async (chainId, address, fee, skip) => {
   }
 }
 
-export const getFusionChartData = async ({ chainId, address, version = 2, skip = 0 }) => {
+export const getFusionChartData = async ({ chainId, address, version = 2, skip = 0, startTime }) => {
   try {
     const { poolDayDatas } = await fusionClient[version][chainId].request(FUSION_DAY_DATAS, {
       address,
-      startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
+      startTime: startTime || FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
     const data = poolDayDatas.map(ele => ({
@@ -134,37 +140,54 @@ export const fetchPairChartData = async (chainId, pair) => {
     )
     if (!pair?.version === 3) return fusionData
 
-    const swapFeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
-    if (!swapFeePool) return fusionData
-
     const { data: fusionDataV2 = [] } = await fetchChartData(
       getFusionChartData,
       [{ chainId, address: pair.address, version: 2 }],
       false,
     )
-    const { data: fusionFeeData = [] } = await fetchChartData(
-      getFusionChartData,
-      [{ chainId, address: swapFeePool.address, version }],
-      false,
-    )
+
+    let fusionFeeData = []
+    const swapFeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
+    if (swapFeePool) {
+      const { data } = await fetchChartData(
+        getFusionChartData,
+        [{ chainId, address: swapFeePool.address, version }],
+        false,
+      )
+      fusionFeeData = data ?? []
+    }
+
+    let ichiSingleSidedData = []
+    const ichiSingleSidedPool = pair.subpools.find(ele => ele.title === ICHI_SINGLE_SIDED)
+    if (ichiSingleSidedPool) {
+      const { data } = await fetchChartData(
+        getFusionChartData,
+        [{ chainId, address: ichiSingleSidedPool.algebraV2, startTime: 1747872000, version: 2 }],
+        false,
+      )
+      ichiSingleSidedData = data ?? []
+    }
 
     const mergedData = []
     const allDates = new Set([
       ...fusionData.map(d => d.date),
       ...fusionFeeData.map(d => d.date),
       ...fusionDataV2.map(d => d.date),
+      ...ichiSingleSidedData.map(d => d.date),
     ])
 
     allDates.forEach(date => {
       const data1 = fusionData.find(d => d.date === date)
       const data2 = fusionFeeData.find(d => d.date === date)
       const data3 = fusionDataV2.find(d => d.date === date)
+      const data4 = ichiSingleSidedData.find(d => d.date === date)
 
       mergedData.push({
         date,
-        dayFees: (data1?.dayFees ?? 0) + (data2?.dayFees ?? 0) + (data3?.dayFees ?? 0),
-        dayVolume: (data1?.dayVolume ?? 0) + (data2?.dayVolume ?? 0) + (data3?.dayVolume ?? 0),
-        tvlUSD: (data1?.tvlUSD ?? 0) + (data2?.tvlUSD ?? 0) + (data3?.tvlUSD ?? 0),
+        dayFees: (data1?.dayFees ?? 0) + (data2?.dayFees ?? 0) + (data3?.dayFees ?? 0) + (data4?.dayFees ?? 0),
+        dayVolume:
+          (data1?.dayVolume ?? 0) + (data2?.dayVolume ?? 0) + (data3?.dayVolume ?? 0) + (data4?.dayVolume ?? 0),
+        tvlUSD: (data1?.tvlUSD ?? 0) + (data2?.tvlUSD ?? 0) + (data3?.tvlUSD ?? 0) + (data4?.tvlUSD ?? 0),
       })
     })
 

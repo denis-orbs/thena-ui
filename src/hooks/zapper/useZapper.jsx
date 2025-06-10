@@ -85,6 +85,9 @@ export const useGetZapInRoutePerRange = ({
 
         const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
           params,
+          headers: {
+            'X-Client-Id': 'thenakyberid',
+          },
         })
         results[title] = response.data?.data
       }
@@ -120,6 +123,11 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
 
       const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
         params,
+        headers: {
+          headers: {
+            'X-Client-Id': 'thenakyberid',
+          },
+        },
       })
       return response.data?.data
     },

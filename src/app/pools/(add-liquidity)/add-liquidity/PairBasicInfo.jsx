@@ -14,10 +14,10 @@ import { ChevronRightIcon } from '@/svgs'
 
 export function PairBasicInfo({ pair }) {
   const t = useTranslations()
-  const [isExpanded, setIsExpanded] = useState(false)
   const { isMdDown } = useMediaQuery()
-
   const vaults = useVaults()
+  const [isExpanded, setIsExpanded] = useState(false)
+
   const computedPair = useMemo(() => {
     const singleSideVault = vaults.find(v => v.algebra === pair?.address)
     if (singleSideVault) {
@@ -30,7 +30,9 @@ export function PairBasicInfo({ pair }) {
         apr: aprMin.isEqualTo(aprMax)
           ? `${formatAmount(aprMin)}%`
           : `${formatAmount(aprMin)}% ~ ${formatAmount(aprMax)}%`,
-        tvlUSD: pair.tvlUSD,
+        tvlUSD: BigNumber(singleSideVault.gauge?.tvl || 0)
+          .plus(BigNumber(pair.tvlUSD))
+          .toNumber(),
       }
     }
     return pair
