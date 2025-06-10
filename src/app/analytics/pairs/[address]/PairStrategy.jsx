@@ -141,13 +141,18 @@ function PairStrategy({ pair }) {
 
   const setStrategy = useCallback(
     strategyInfo => {
-      onLeftRangeInput('')
-      onRightRangeInput('')
       dispatch(updateStrategy({ strategy: strategyInfo }))
       onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
     },
-    [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
+    [dispatch, onChangeLiquidityRangeType],
   )
+
+  useEffect(() => {
+    onLeftRangeInput('')
+    onRightRangeInput('')
+    dispatch(updateSelectedPreset({ preset: null }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleChooseStrategy = useCallback(
     sub => {
