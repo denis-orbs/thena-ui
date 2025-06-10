@@ -15,16 +15,6 @@ const PresetProfits = {
   HIGH: 'HIGH',
 }
 
-const stableRanges = {
-  type: Presets.STABLE,
-  title: 'Stable',
-  percent: '±1.6%',
-  min: 0.984,
-  max: 1.016,
-  risk: PresetProfits.VERY_LOW,
-  profit: PresetProfits.HIGH,
-}
-
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { APRs } = useAprStore()
@@ -32,7 +22,17 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
-      return [stableRanges]
+      return [
+        {
+          type: Presets.STABLE,
+          title: 'Stable',
+          percent: '±0.2%',
+          min: 0.998,
+          max: 1.002,
+          risk: PresetProfits.VERY_LOW,
+          profit: PresetProfits.HIGH,
+        },
+      ]
     }
 
     return [

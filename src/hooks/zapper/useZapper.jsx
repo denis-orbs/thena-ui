@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { v4 as uuidv4 } from 'uuid'
@@ -39,13 +39,26 @@ const BASE_ZAPPER_URL = 'https://zap-api.kyberswap.com/bsc/api/v1'
 // amountsIn=10000000000000000000000&
 // slippage=100
 
-export const useGetZapInRoutePerRange = (poolId, tickSpacing, presetRanges) =>
-  useQuery({
-    queryKey: ['zapInRoutePerRange', poolId, presetRanges],
+export const useGetZapInRoutePerRange = ({
+  pool,
+  poolId,
+  tickSpacing,
+  tokenIn,
+  amountIn,
+  slippage = 100,
+  presetRanges,
+}) => {
+  const [token0, token1, poolPrice] = useMemo(
+    () => [pool?.token0, pool?.token1, pool?._token0Price?.toSignificant(5)],
+    [pool],
+  )
+
+  return useQuery({
+    queryKey: ['zapInRoutePerRange', pool, poolId, tokenIn, amountIn, slippage],
     queryFn: async () => {
       const results = {}
       for (const range of presetRanges) {
-        const { title, min, max, _token0, _token1, poolPrice, tokenIn, amountIn, slippage = 100 } = range
+        const { title, min, max } = range
 
         const amount = toWei(
           new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
@@ -54,11 +67,11 @@ export const useGetZapInRoutePerRange = (poolId, tickSpacing, presetRanges) =>
         const tickLower =
           title === Presets.FULL
             ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
-            : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
+            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * min).toString())
         const tickUpper =
           title === Presets.FULL
             ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
-            : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())
+            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * max).toString())
 
         const params = {
           dex: 'DEX_THENAALGEBRAINTEGRAL',
@@ -72,18 +85,22 @@ export const useGetZapInRoutePerRange = (poolId, tickSpacing, presetRanges) =>
 
         const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
           params,
+          headers: {
+            'X-Client-Id': 'thenakyberid',
+          },
         })
         results[title] = response.data?.data
       }
       return results
     },
-    enabled: Boolean(poolId && presetRanges.length > 0),
+    enabled: Boolean(pool && tokenIn && presetRanges?.length > 0),
     staleTime: Infinity,
     cacheTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchInterval: false,
   })
+}
 
 export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amountIn, slippage = 100 }) =>
   useQuery({
@@ -106,6 +123,11 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
 
       const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
         params,
+        headers: {
+          headers: {
+            'X-Client-Id': 'thenakyberid',
+          },
+        },
       })
       return response.data?.data
     },

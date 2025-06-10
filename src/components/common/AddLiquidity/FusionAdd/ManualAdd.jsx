@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { MANUAL_TYPES } from '@/constant'
+import { useStableTokens } from '@/hooks/fusion/Tokens'
 import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
@@ -31,6 +32,7 @@ export default function ManualAdd({
 }) {
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
+  const stableAssets = useStableTokens()
 
   const errorMessage = useMemo(
     () => (position ? position.errorMessage : mintInfo.errorMessage),
@@ -45,6 +47,11 @@ export default function ManualAdd({
     () => (position ? position.parsedAmounts?.[Field.CURRENCY_B] : mintInfo.parsedAmounts[Field.CURRENCY_B]),
     [mintInfo.parsedAmounts, position],
   )
+
+  const isStablecoinPair = useMemo(() => {
+    const stablecoins = stableAssets.map(token => token.address)
+    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, quoteCurrency, stableAssets])
 
   const { startPriceTypedValue } = useV3MintState()
   const { onAlgebraAdd, pending } = useAlgebraAdd()
@@ -68,12 +75,13 @@ export default function ManualAdd({
     amount1: currencyBAmount?.quotient,
     isFarming: strategy?.title === MANUAL_TYPES[0],
     tickSpacing,
+    isStablecoinPair,
   })
 
   useEffect(() => {
     setAPRs({ ...estimateAPR, current: position ? position.apr : estimateAPR.current })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(estimateAPR), setAPRs])
+  }, [JSON.stringify(estimateAPR), position, setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {

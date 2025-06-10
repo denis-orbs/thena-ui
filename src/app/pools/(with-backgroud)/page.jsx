@@ -1,6 +1,5 @@
 'use client'
 
-import BigNumber from 'bignumber.js'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -175,37 +174,6 @@ export default function PoolsPage() {
             return checkSubStable || item.type === filter
           })
 
-    final = final.map(pool => {
-      const singleSideVault = vaults.find(v => v.algebra === pool.address)
-      let { apr } = pool
-      if (singleSideVault) {
-        const aprs = pool.subpools.map(sub => sub.gauge.apr).filter(item => !item.isZero())
-        const aprMin = BigNumber.min(...aprs)
-        const aprMax = BigNumber.max(...aprs)
-        apr = aprMin.isEqualTo(aprMax)
-          ? `${formatAmount(aprMin)}%`
-          : `${formatAmount(aprMin)}% ~ ${formatAmount(aprMax)}%`
-      }
-      return {
-        ...pool,
-        tvlUSD: singleSideVault
-          ? BigNumber(singleSideVault.gauge?.tvl || 0)
-              .plus(BigNumber(pool.tvlUSD))
-              .toNumber()
-          : pool.tvlUSD,
-        reserve0: singleSideVault
-          ? BigNumber(singleSideVault.token0?.reserve || 0)
-              .plus(BigNumber(pool.reserve0))
-              .toNumber()
-          : pool.reserve0,
-        reserve1: singleSideVault
-          ? BigNumber(singleSideVault.token1?.reserve || 0)
-              .plus(BigNumber(pool.reserve1))
-              .toNumber()
-          : pool.reserve1,
-        apr,
-      }
-    })
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
         ? final
@@ -227,7 +195,7 @@ export default function PoolsPage() {
             const searchTerms = searchText.toLowerCase().split(/[\s/,]+/)
             return searchTerms.every(term => tokens.some(token => token.includes(term)))
           })
-  }, [isInactive, filter, strategy, searchText, pairs, vaults])
+  }, [isInactive, filter, strategy, searchText, pairs])
 
   const newListingsPool = useMemo(() => filteredPools.filter(item => item.isNewListing), [filteredPools])
 

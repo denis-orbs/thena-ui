@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
+import { useMemo } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -93,34 +94,6 @@ const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, is
     .div(tvl)
 }
 
-const presetRanges = [
-  {
-    min: 0,
-    max: Infinity,
-    title: Presets.FULL,
-  },
-  {
-    min: 0.8,
-    max: 1.2,
-    title: Presets.SAFE,
-  },
-  {
-    min: 0.9,
-    max: 1.1,
-    title: Presets.NORMAL,
-  },
-  {
-    min: 0.95,
-    max: 1.05,
-    title: Presets.RISK,
-  },
-  {
-    min: 0.984,
-    max: 1.016,
-    title: Presets.STABLE,
-  },
-]
-
 /**
  * @param {import('thenafi-fusion-sdk').Pool} pool
  * @param {string} poolAddress
@@ -148,6 +121,7 @@ export const useEstimateAPR = ({
   tickSpacing = TICK_SPACING,
   poolId,
   slippage,
+  isStablecoinPair = false,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const activePreset = useActivePreset()
@@ -193,6 +167,7 @@ export const useEstimateAPR = ({
       enabled: Boolean(poolAddress),
     },
   })
+
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
@@ -200,20 +175,52 @@ export const useEstimateAPR = ({
   const poolPrice = pool?._token0Price?.toSignificant(5)
   const _token0 = pool?.token0
   const _token1 = pool?.token1
+  const _tickSpacing = tickSpacing ?? TICK_SPACING
 
-  const { data: zapAprInRanges } = useGetZapInRoutePerRange(
+  const presetRanges = useMemo(() => {
+    if (isStablecoinPair) {
+      return [
+        {
+          min: 0.998,
+          max: 1.002,
+          title: Presets.STABLE,
+        },
+      ]
+    }
+
+    return [
+      {
+        min: 0,
+        max: Infinity,
+        title: Presets.FULL,
+      },
+      {
+        min: 0.8,
+        max: 1.2,
+        title: Presets.SAFE,
+      },
+      {
+        min: 0.9,
+        max: 1.1,
+        title: Presets.NORMAL,
+      },
+      {
+        min: 0.95,
+        max: 1.05,
+        title: Presets.RISK,
+      },
+    ]
+  }, [isStablecoinPair])
+
+  const { data: zapAprInRanges } = useGetZapInRoutePerRange({
+    pool,
     poolId,
-    tickSpacing,
-    presetRanges.map(range => ({
-      ...range,
-      _token0,
-      _token1,
-      poolPrice,
-      tokenIn: token0,
-      amountIn: amount0,
-      slippage,
-    })),
-  )
+    tickSpacing: _tickSpacing,
+    tokenIn: token0 ?? token1,
+    amountIn: amount0,
+    slippage,
+    presetRanges,
+  })
 
   if (!pool) return {}
 
@@ -245,16 +252,16 @@ export const useEstimateAPR = ({
   const presetPositions = [...presetRanges, { title: 'current' }].map(({ min, max, title }) => {
     const _tickLower =
       title === Presets.FULL
-        ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
+        ? nearestUsableTick(TickMath.MIN_TICK, _tickSpacing)
         : title === 'current' || title === activePreset
           ? tickLower
-          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
+          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString(), _tickSpacing) + _tickSpacing
     const _tickUpper =
       title === Presets.FULL
-        ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
+        ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing)
         : title === 'current' || title === activePreset
           ? tickUpper
-          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())
+          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
 
     let _position = null
     if (token0 && token1) {

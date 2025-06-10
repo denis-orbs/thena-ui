@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import useSWR, { mutate } from 'swr'
 
-import { PAIR_TYPES } from '@/constant'
+import { ICHI_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { fetchTopPairs, fetchWeightedPools } from '@/lib/api'
 import { getTokenInfo } from '@/lib/helper'
@@ -121,7 +121,9 @@ const usePairs = () => {
           .filter(ele => ele.basePool.toLowerCase() === pair.address.toLowerCase())
           .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
 
-        const v3Subpools = subpools.filter(ele => ele.version === 3 && ele.title !== 'CL_SwapFee')
+        const v3Subpools = subpools.filter(
+          ele => (ele.version === 3 && ele.title !== 'CL_SwapFee') || ele.title === ICHI_SINGLE_SIDED,
+        )
         const highApr = v3Subpools.length > 0 ? v3Subpools[0].gauge.apr.toNumber() : 0
         const poolsWithApr = v3Subpools.filter(ele => ele.gauge.apr.gt(0))
         const lowApr = poolsWithApr.length > 0 ? poolsWithApr[poolsWithApr.length - 1].gauge.apr.toNumber() : 0
@@ -132,12 +134,29 @@ const usePairs = () => {
               ? `${formatAmount(highApr, true)}%`
               : `${formatAmount(lowApr, true)} ~ ${formatAmount(highApr, true)}%`
 
+        const singleSideVault = vaults.find(v => v.algebra === pair.address)
+
         return {
           ...pair,
           apr,
           lowApr,
           highApr,
           subpools,
+          tvlUSD: singleSideVault
+            ? BigNumber(singleSideVault?.gauge?.tvl || 0)
+                .plus(BigNumber(pair.tvlUSD))
+                .toNumber()
+            : pair.tvlUSD,
+          reserve0: singleSideVault
+            ? BigNumber(singleSideVault?.token0?.reserve || 0)
+                .plus(BigNumber(pair.reserve0))
+                .toNumber()
+            : pair.reserve0,
+          reserve1: singleSideVault
+            ? BigNumber(singleSideVault?.token1?.reserve || 0)
+                .plus(BigNumber(pair.reserve1))
+                .toNumber()
+            : pair.reserve1,
         }
       })
 
