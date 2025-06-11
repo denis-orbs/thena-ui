@@ -190,7 +190,7 @@ export const useGaugeAllHarvest = () => {
     const transactions = {}
     if (newGauge.size > 0) {
       transactions[harvestNewGaugeId] = {
-        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted pools`,
+        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted Pools`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -198,7 +198,7 @@ export const useGaugeAllHarvest = () => {
 
     if (manual.size > 0) {
       transactions[claimFarmId] = {
-        desc: `${t('Harvest Rewards')} Manual pools`,
+        desc: `${t('Harvest Rewards')} Manual Pools`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -207,7 +207,7 @@ export const useGaugeAllHarvest = () => {
     if (gamma.size > 0) {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma pools`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} Gamma Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -217,7 +217,7 @@ export const useGaugeAllHarvest = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi pool`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} ICHI Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -227,7 +227,7 @@ export const useGaugeAllHarvest = () => {
     if (ichiSingleSided.size > 0) {
       ichiSingleSided.forEach(_pair => {
         transactions[`ichi-v2-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Single Sided Vault`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} ICHI Single Sided Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }

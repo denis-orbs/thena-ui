@@ -202,7 +202,7 @@ export function RangeSelector({
       </div>
 
       <button
-        className='flex h-fit w-full items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit md:flex-shrink-0'
+        className='flex h-fit w-full cursor-pointer items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit md:flex-shrink-0'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}
