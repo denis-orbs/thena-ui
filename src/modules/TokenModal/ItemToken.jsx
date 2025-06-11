@@ -9,6 +9,7 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { addToken, cn, formatAmount, goScan } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
+import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon, MinusIcon, PlusCircleIcon, PlusIcon } from '@/svgs'
 
 import WarningModal from './WarningModal'
@@ -25,9 +26,10 @@ export function ItemToken({
 }) {
   const t = useTranslations()
   const [token, setToken] = useState(item)
-  const { account, chainId } = useWallet()
+  const { account } = useWallet()
   const [isWarning, setIsWarning] = useState('')
   const { addLocalToken, removeLocalToken } = useLocalTokens()
+  const { networkId } = useChainSettings()
 
   const handleAddToken = tk => {
     delete tk.isCustom
@@ -93,7 +95,7 @@ export function ItemToken({
                     onClick={e => {
                       e.stopPropagation()
                       e.preventDefault()
-                      goScan(chainId, token.address)
+                      goScan(networkId, token.address)
                     }}
                     data-tooltip-id={`contract-tooltip-${token.address}`}
                   />

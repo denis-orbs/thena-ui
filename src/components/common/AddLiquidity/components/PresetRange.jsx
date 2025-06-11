@@ -26,9 +26,9 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
         {
           type: Presets.STABLE,
           title: 'Stable',
-          percent: '±0.2%',
-          min: 0.998,
-          max: 1.002,
+          percent: '±0.05%',
+          min: 0.9995,
+          max: 1.0005,
           risk: PresetProfits.VERY_LOW,
           profit: PresetProfits.HIGH,
         },

@@ -13,7 +13,7 @@ import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/Liq
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
+import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -66,9 +66,10 @@ function PairStrategy({ pair }) {
   }, [mintInfo.invertPrice, mintInfo.price])
 
   const isStablecoinPair = useMemo(() => {
-    const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, quoteCurrency, stableAssets])
+    if (STABLE_PAIRS.includes(pair?.address?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, pair?.address, quoteCurrency, stableAssets])
 
   const sortedSubPools = useMemo(() => {
     const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }

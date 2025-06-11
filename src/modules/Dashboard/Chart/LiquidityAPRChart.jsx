@@ -7,6 +7,7 @@ import { Doughnut } from 'react-chartjs-2'
 
 import { NewTextHeading, TextSubHeading } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
+import { calculateManualAPR } from '@/state/fusion/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -32,8 +33,26 @@ function LiquidityAPRChart({
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
 
   const avgApr = useMemo(() => {
-    const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
-    const avg = totalAprWeighted ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
+    const { totalAprWeighted, countPosition } = data.reduce(
+      (acc, d) => {
+        let realApr = Number(d.apr) || 0
+        if (d.type === 'Manual') {
+          realApr = calculateManualAPR(d)
+        }
+        if (realApr > 0) {
+          return {
+            totalAprWeighted: acc.totalAprWeighted + realApr,
+            countPosition: acc.countPosition + 1,
+          }
+        }
+        return acc
+      },
+      {
+        totalAprWeighted: 0,
+        countPosition: 0,
+      },
+    )
+    const avg = totalAprWeighted ? (totalAprWeighted / countPosition).toFixed(2) : '0'
     return avg
   }, [data])
 

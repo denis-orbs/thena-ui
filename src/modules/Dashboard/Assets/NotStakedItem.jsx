@@ -275,10 +275,9 @@ function NotStakedItem({ position, isXlDown }) {
         maxPrice={priceUpper}
         positionType={position.type}
         apr={position.apr}
-        title={position.title}
       />
     ),
-    [currentPrice, priceLower, priceUpper, position.type, position.apr, position.title],
+    [currentPrice, priceLower, priceUpper, position.type, position.apr],
   )
 
   const valueCell = useMemo(

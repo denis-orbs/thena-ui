@@ -70,7 +70,7 @@ export const useRewardPosition = () => {
     if (ichi.size > 0) {
       ichi.forEach(_pair => {
         transactions[`ichi-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Ichi Pool`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} ICHI Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -80,7 +80,7 @@ export const useRewardPosition = () => {
     if (ichiSingleSided.size > 0) {
       ichiSingleSided.forEach(_pair => {
         transactions[`ichi-single-sided-${_pair.args}`] = {
-          desc: `${t('Harvest Rewards')} ${_pair.symbol} Single Sided Vault`,
+          desc: `${t('Harvest Rewards')} ${_pair.symbol} ICHI Single Sided Pool`,
           status: TXN_STATUS.START,
           hash: null,
         }

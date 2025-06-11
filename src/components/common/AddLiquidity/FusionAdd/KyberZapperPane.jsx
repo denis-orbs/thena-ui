@@ -7,7 +7,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextSubHeading } from '@/components/typography'
-import { MANUAL_TYPES } from '@/constant'
+import { MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useGetAsset, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
@@ -57,13 +57,17 @@ function KyberZapperPane({
 
   const isToken0Wbnb = useMemo(() => asset0?.symbol === 'WBNB', [asset0])
   const isToken1Wbnb = useMemo(() => asset1?.symbol === 'WBNB', [asset1])
+  const pairAddress = useMemo(
+    () => (strategy?.isFarming ? poolAddress : customPoolAddress),
+    [customPoolAddress, poolAddress, strategy?.isFarming],
+  )
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
 
   const { data, isFetching } = useGetZapInRoute({
     tickLower,
     tickUpper,
-    poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
+    poolId: pairAddress,
     tokenIn: tokenDeposit,
     amountIn: Number(amountIn) || 1,
     slippage: slippage * 100,
@@ -94,9 +98,10 @@ function KyberZapperPane({
   }, [addLiquidityAction, tokens])
 
   const isStablecoinPair = useMemo(() => {
-    const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, quoteCurrency, stableAssets])
+    if (STABLE_PAIRS.includes(pairAddress?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, pairAddress, quoteCurrency, stableAssets])
 
   const estimateAPR = useEstimateAPR({
     pool: mintInfo.pool,
@@ -110,7 +115,7 @@ function KyberZapperPane({
     isFarming: strategy?.title === MANUAL_TYPES[0],
     estimatedLiquidity: liquidityAdded,
     tickSpacing: mintInfo.tickSpacing,
-    poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
+    poolId: pairAddress,
     slippage: slippage * 100,
     isStablecoinPair,
   })

@@ -8,7 +8,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
+import { FusionRangeType, STABLE_PAIRS, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
@@ -78,9 +78,10 @@ function ManualStrategy({
   } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const isStablecoinPair = useMemo(() => {
-    const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, quoteCurrency, stableAssets])
+    if (STABLE_PAIRS.includes(mintInfo.poolAddress?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, mintInfo.poolAddress, quoteCurrency, stableAssets])
 
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
     useRangeHopCallbacks(

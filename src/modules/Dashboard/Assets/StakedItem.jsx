@@ -216,10 +216,9 @@ function StakedItem({ position, isXlDown }) {
         maxPrice={priceUpper}
         positionType={position.type}
         apr={position.gauge.apr}
-        title={position.title}
       />
     ),
-    [currentPrice, priceLower, priceUpper, position.type, position.gauge.apr, position.title],
+    [currentPrice, priceLower, priceUpper, position.type, position.gauge.apr],
   )
 
   const valueCell = useMemo(
