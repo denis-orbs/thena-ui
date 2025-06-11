@@ -360,6 +360,10 @@ export const SPECIAL_POOLS = [
   '0xf8a4cdf9efc4b9b38eaa6e27ee281cb2111fa664',
 ]
 
+export const STABLE_PAIRS = [
+  '0x7491c04dc4575e086a8ee31f7ce1c6d56fb7dcc1', // USDT/USDC
+]
+
 export const STABLE_FEE = 0.0001
 export const VOLATILE_FEE = 0.002
 export const TVL_INCREASE = 1e6

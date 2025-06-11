@@ -48,6 +48,7 @@ export const useGetZapInRoutePerRange = ({
   slippage = 100,
   presetRanges,
 }) => {
+  const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
   const [token0, token1, poolPrice] = useMemo(
     () => [pool?.token0, pool?.token1, pool?._token0Price?.toSignificant(5)],
     [pool],
@@ -66,12 +67,12 @@ export const useGetZapInRoutePerRange = ({
         )
         const tickLower =
           title === Presets.FULL
-            ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing ?? TICK_SPACING)
-            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * min).toString())
+            ? nearestUsableTick(TickMath.MIN_TICK, _tickSpacing)
+            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * min).toString(), _tickSpacing)
         const tickUpper =
           title === Presets.FULL
-            ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing ?? TICK_SPACING)
-            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * max).toString())
+            ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing)
+            : tryParseTick(token0, token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
 
         const params = {
           dex: 'DEX_THENAALGEBRAINTEGRAL',

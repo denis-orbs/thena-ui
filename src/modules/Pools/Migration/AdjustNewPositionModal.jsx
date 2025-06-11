@@ -10,6 +10,7 @@ import Input from '@/components/input'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
+import { STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
@@ -70,9 +71,10 @@ export function AdjustNewPositionModal({
   const activePreset = useActivePreset()
 
   const isStablecoinPair = useMemo(() => {
-    const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, quoteCurrency, stableAssets])
+    if (STABLE_PAIRS.includes(mintInfo.poolAddress?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, mintInfo.poolAddress, quoteCurrency, stableAssets])
 
   const price = useMemo(() => {
     if (!mintInfo?.price) return

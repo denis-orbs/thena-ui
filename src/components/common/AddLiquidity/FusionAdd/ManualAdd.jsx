@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import { MANUAL_TYPES } from '@/constant'
+import { MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useStableTokens } from '@/hooks/fusion/Tokens'
 import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
@@ -53,13 +53,14 @@ export default function ManualAdd({
     return [mintInfo.parsedAmounts[Field.CURRENCY_A], mintInfo.parsedAmounts[Field.CURRENCY_B]]
   }, [mintInfo.parsedAmounts, position])
 
-  const isStablecoinPair = useMemo(() => {
-    const stableCoins = stableAssets.map(token => token.address)
-    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, quoteCurrency, stableAssets])
-
   const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing } = mintInfo
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
+
+  const isStablecoinPair = useMemo(() => {
+    if (STABLE_PAIRS.includes(poolAddress?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, poolAddress, quoteCurrency, stableAssets])
 
   const estimateAPR = useEstimateAPR({
     pool,

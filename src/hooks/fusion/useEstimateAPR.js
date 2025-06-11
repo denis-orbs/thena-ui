@@ -181,8 +181,8 @@ export const useEstimateAPR = ({
     if (isStablecoinPair) {
       return [
         {
-          min: 0.998,
-          max: 1.002,
+          min: 0.9995,
+          max: 1.0005,
           title: Presets.STABLE,
         },
       ]
