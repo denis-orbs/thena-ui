@@ -4,12 +4,10 @@ import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
-import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { NewTextHeading, TextSubHeading } from '@/components/typography'
-import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount } from '@/lib/utils'
-import { Bound } from '@/state/fusion/actions'
+import { calculateManualAPR } from '@/state/fusion/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -39,19 +37,7 @@ function LiquidityAPRChart({
       (acc, d) => {
         let realApr = Number(d.apr) || 0
         if (d.type === 'Manual') {
-          const { tickLower, tickUpper, fusion, tickSpacing } = d
-          const _tickSpacing = tickSpacing ?? TICK_SPACING
-          const tickAtLimit = {
-            [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
-            [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
-          }
-          const currentPrice = parseFloat(fusion?.token0Price.toSignificant(6))
-          const minPrice = parseFloat(formatTickPrice(d?.token0PriceLower, tickAtLimit, Bound.LOWER))
-          const maxPrice = parseFloat(formatTickPrice(d?.token0PriceUpper, tickAtLimit, Bound.UPPER))
-          const outOfRange = currentPrice ? currentPrice < minPrice || currentPrice >= maxPrice : false
-          if (outOfRange) {
-            realApr = 0
-          }
+          realApr = calculateManualAPR(d)
         }
         if (realApr > 0) {
           return {

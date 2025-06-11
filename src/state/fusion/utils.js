@@ -1,5 +1,17 @@
+import BigNumber from 'bignumber.js'
 import { JSBI, Price } from 'thena-sdk-core'
-import { encodeSqrtRatioX96, nearestUsableTick, priceToClosestTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import {
+  encodeSqrtRatioX96,
+  nearestUsableTick,
+  Position,
+  priceToClosestTick,
+  TICK_SPACING,
+  TickMath,
+} from 'thenafi-fusion-sdk'
+
+import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+
+import { Bound } from './actions'
 
 export function tryParsePrice(baseToken, quoteToken, value) {
   if (!baseToken || !quoteToken || !value) {
@@ -53,4 +65,31 @@ export function tryParseTick(baseToken, quoteToken, feeAmount, value, tickSpacin
   }
 
   return nearestUsableTick(tick, tickSpacing ?? TICK_SPACING)
+}
+
+export function calculateManualAPR(position) {
+  const { tickLower, tickUpper, fusion, tickSpacing, type } = position
+
+  if (type !== 'Manual') return position.apr
+
+  const _tickSpacing = tickSpacing ?? TICK_SPACING
+  const tickAtLimit = {
+    [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+    [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
+  }
+  const _position = fusion
+    ? new Position({
+        pool: fusion,
+        liquidity: new BigNumber(fusion?.liquidity ?? 0).toString(10),
+        tickLower,
+        tickUpper,
+      })
+    : null
+
+  const currentPrice = parseFloat(fusion?.token0Price.toSignificant(6))
+  const minPrice = parseFloat(formatTickPrice(_position?.token0PriceLower ?? 0, tickAtLimit, Bound.LOWER))
+  const maxPrice = parseFloat(formatTickPrice(_position?.token0PriceUpper ?? 0, tickAtLimit, Bound.UPPER))
+  const outOfRange = currentPrice ? currentPrice < minPrice || currentPrice >= maxPrice : false
+
+  return outOfRange ? 0 : position.apr
 }

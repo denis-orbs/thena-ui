@@ -6,6 +6,7 @@ import { TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatNumber } from '@/lib/utils'
+import { calculateManualAPR } from '@/state/fusion/utils'
 import { ArrowDownIcon } from '@/svgs'
 
 import FarmingItem from './FarmingItem'
@@ -209,7 +210,10 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
           res = (a.symbol?.localeCompare(b.symbol) || 0) * desc
           break
         case 'apr':
-          res = (formatNumber(a.apr) - formatNumber(b.apr)) * desc
+          res =
+            (formatNumber(a.type === 'Manual' ? calculateManualAPR(a) : Number(a.apr) || 0) -
+              formatNumber(b.type === 'Manual' ? calculateManualAPR(b) : Number(b.apr) || 0)) *
+            desc
           break
         case 'value':
           res = (formatNumber(a.fiatValueOfLiquidity) - formatNumber(b.fiatValueOfLiquidity)) * desc
