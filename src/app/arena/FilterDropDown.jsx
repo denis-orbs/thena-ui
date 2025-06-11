@@ -143,6 +143,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
                 selected={filter.tag}
                 setSelected={ele => setFilter({ ...filter, tag: ele.label })}
                 isLocale={false}
+                listClassNames='z-30'
               />
             </>
           )}

@@ -583,6 +583,7 @@ export default function PoolsPage() {
                   placeHolder='Choose Category'
                   classNames={{ input: 'pl-4 py-3' }}
                   prefixClass='pr-4 py-3'
+                  listClassNames='z-1'
                 />
                 <SearchInput2
                   className='h-11! w-full text-neutral-400! lg:w-[280px]'
