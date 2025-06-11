@@ -30,36 +30,33 @@ export default function ManualAdd({
   position,
   handleBack,
 }) {
+  const t = useTranslations()
+  const stableAssets = useStableTokens()
+  const { deadline } = useSettings()
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
-  const stableAssets = useStableTokens()
+  const { startPriceTypedValue } = useV3MintState()
+  const { onAlgebraAdd, pending } = useAlgebraAdd()
+  const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
+
+  const [slippage, setSlippage] = useState(0.5)
 
   const errorMessage = useMemo(
     () => (position ? position.errorMessage : mintInfo.errorMessage),
     [mintInfo.errorMessage, position],
   )
 
-  const amountA = useMemo(
-    () => (position ? position.parsedAmounts?.[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_A]),
-    [mintInfo.parsedAmounts, position],
-  )
-  const amountB = useMemo(
-    () => (position ? position.parsedAmounts?.[Field.CURRENCY_B] : mintInfo.parsedAmounts[Field.CURRENCY_B]),
-    [mintInfo.parsedAmounts, position],
-  )
+  const [amountA, amountB] = useMemo(() => {
+    if (position) {
+      return [position.parsedAmounts?.[Field.CURRENCY_A], position.parsedAmounts?.[Field.CURRENCY_B]]
+    }
+    return [mintInfo.parsedAmounts[Field.CURRENCY_A], mintInfo.parsedAmounts[Field.CURRENCY_B]]
+  }, [mintInfo.parsedAmounts, position])
 
   const isStablecoinPair = useMemo(() => {
-    const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
   }, [baseCurrency, quoteCurrency, stableAssets])
-
-  const { startPriceTypedValue } = useV3MintState()
-  const { onAlgebraAdd, pending } = useAlgebraAdd()
-  const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
-  const { deadline } = useSettings()
-  const t = useTranslations()
-
-  const [slippage, setSlippage] = useState(0.5)
 
   const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing } = mintInfo
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts

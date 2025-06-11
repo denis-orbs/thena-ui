@@ -4,9 +4,12 @@ import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { NewTextHeading, TextSubHeading } from '@/components/typography'
+import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount } from '@/lib/utils'
+import { Bound } from '@/state/fusion/actions'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -32,8 +35,38 @@ function LiquidityAPRChart({
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
 
   const avgApr = useMemo(() => {
-    const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
-    const avg = totalAprWeighted ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
+    const { totalAprWeighted, countPosition } = data.reduce(
+      (acc, d) => {
+        let realApr = Number(d.apr) || 0
+        if (d.type === 'Manual') {
+          const { tickLower, tickUpper, fusion, tickSpacing } = d
+          const _tickSpacing = tickSpacing ?? TICK_SPACING
+          const tickAtLimit = {
+            [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
+            [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
+          }
+          const currentPrice = parseFloat(fusion?.token0Price.toSignificant(6))
+          const minPrice = parseFloat(formatTickPrice(d?.token0PriceLower, tickAtLimit, Bound.LOWER))
+          const maxPrice = parseFloat(formatTickPrice(d?.token0PriceUpper, tickAtLimit, Bound.UPPER))
+          const outOfRange = currentPrice ? currentPrice < minPrice || currentPrice >= maxPrice : false
+          if (outOfRange) {
+            realApr = 0
+          }
+        }
+        if (realApr > 0) {
+          return {
+            totalAprWeighted: acc.totalAprWeighted + realApr,
+            countPosition: acc.countPosition + 1,
+          }
+        }
+        return acc
+      },
+      {
+        totalAprWeighted: 0,
+        countPosition: 0,
+      },
+    )
+    const avg = totalAprWeighted ? (totalAprWeighted / countPosition).toFixed(2) : '0'
     return avg
   }, [data])
 
