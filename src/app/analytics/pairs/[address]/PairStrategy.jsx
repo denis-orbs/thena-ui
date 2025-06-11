@@ -229,9 +229,10 @@ function PairStrategy({ pair }) {
 
   const estimateAPRs = useMemo(() => {
     if (Object.values(estimateAPR).every(apr => Number(apr) === 0)) return '0%'
+    if (isStablecoinPair) return `${formatAmount(estimateAPR[Presets.STABLE], true)}%`
     return `${formatAmount(estimateAPR[Presets.FULL], true)} ~ ${formatAmount(estimateAPR[Presets.RISK], true)}%`
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(estimateAPR)])
+  }, [JSON.stringify(estimateAPR), isStablecoinPair])
 
   useEffect(() => {
     setAPRs(estimateAPR)
