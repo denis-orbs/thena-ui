@@ -65,7 +65,7 @@ function CreateVeTHEAutomation() {
                       href={`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}&swapType=1`}
                       target='_blank'
                     >
-                      <TextHeading className='text-primary-500 cursor-pointer hover:underline'>$LINK</TextHeading>
+                      <TextHeading className='text-primary-500 cursor-pointer hover:underline'>LINK</TextHeading>
                     </Link>{' '}
                     in your wallet for minimum deposit.
                   </li>
@@ -141,7 +141,7 @@ function CreateVeTHEAutomation() {
                             push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)
                           }}
                         >
-                          $LINK
+                          LINK
                         </TextHeading>{' '}
                         in your wallet for minimum deposit.
                       </li>

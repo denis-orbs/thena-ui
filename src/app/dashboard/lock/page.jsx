@@ -15,6 +15,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useWithdrawLock } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
@@ -93,6 +94,7 @@ export default function LockPage() {
   const selected = useMemo(() => veTHEs.find(veTHE => veTHE.id === selectedId), [veTHEs, selectedId])
   const { onWithdrawLock, pending } = useWithdrawLock()
   const t = useTranslations()
+  const { isLgDown } = useMediaQuery()
 
   const scrollRef = useRef(null)
 
@@ -262,6 +264,7 @@ export default function LockPage() {
                 setSort={setSort}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
+                tableBasic={!isLgDown}
               />
             ) : (
               <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
