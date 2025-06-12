@@ -21,7 +21,9 @@ const ZOOM_LEVEL = {
 function ChartEmptyContent({ children, label, height, t }) {
   return (
     <div className='flex w-full flex-col'>
-      {label && <NewTextHeading className='items-start text-base md:text-xl'>{t(label)}</NewTextHeading>}
+      {label && (
+        <NewTextHeading className='xl:text-5 items-start text-base md:text-xl xl:leading-6'>{t(label)}</NewTextHeading>
+      )}
       <div className='flex items-center justify-center' style={{ height: `${height}px` }}>
         {children}
       </div>

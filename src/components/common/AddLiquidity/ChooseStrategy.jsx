@@ -303,7 +303,7 @@ export default function ChooseStrategy({
             </div>
           </div>
         )}
-        <div className='mt-2 max-md:mt-4'>
+        <div className='mt-2 max-md:mt-4 xl:mt-0'>
           {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
           {!isAutomatic && (
@@ -375,7 +375,7 @@ function StrategyTitle({
     <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>
       <div
         className={cn(
-          'flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between',
+          'flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between xl:mb-2',
           !hasToggle && 'md:justify-end',
         )}
       >
@@ -416,7 +416,7 @@ function StrategyTitle({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
+        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4 xl:mt-0 xl:mb-4')}>
           <Paragraph className='mb-4 block text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>

@@ -143,7 +143,11 @@ export default function ManualAdd({
           {t('Cancel')}
         </EmphasisButton>
         {account ? (
-          <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
+          <PrimaryButton
+            disabled={pending || isPendingIncrease}
+            onClick={onAddLiquidity}
+            className='w-full xl:font-medium'
+          >
             {t('Deposit')}
           </PrimaryButton>
         ) : (

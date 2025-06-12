@@ -72,6 +72,7 @@ export default function ChartPriceRangeInput({
   height = 300,
   idChart = 'chart-price-range',
   label = 'Liquidity range',
+  classNames,
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
@@ -379,7 +380,9 @@ export default function ChartPriceRangeInput({
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className='text-base md:text-xl'>{t(label ?? 'Your Range against the Price')}</NewTextHeading>
+        <NewTextHeading className={cn('text-base md:text-xl', classNames?.title)}>
+          {t(label ?? 'Your Range against the Price')}
+        </NewTextHeading>
         <div className='flex items-center gap-4 max-md:justify-between'>
           {showPeriod && <Tabs data={periods} />}
           <div className='flex gap-1'>

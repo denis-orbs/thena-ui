@@ -164,12 +164,12 @@ function ManualStrategy({
             <WarningStartingPrice />
 
             <div className='flex items-end justify-between gap-2 md:gap-8'>
-              <div className='flex w-full max-w-72 flex-col gap-1'>
+              <div className='flex w-full max-w-72 flex-col gap-1 xl:gap-2'>
                 <div className='flex items-center justify-between'>
-                  <Paragraph className='text-xs font-medium text-neutral-50 md:text-base'>
+                  <Paragraph className='xl:text-4 text-xs font-medium text-neutral-50 md:text-base xl:leading-5'>
                     {t('Initialization Price')}
                   </Paragraph>
-                  <Paragraph className='text-base font-normal text-neutral-300'>
+                  <Paragraph className='xl:text-4 text-base font-normal text-neutral-300 xl:leading-5'>
                     {t('[symbolA] per [symbolB]', {
                       symbolA: quoteCurrency?.symbol,
                       symbolB: baseCurrency?.symbol,
@@ -178,7 +178,7 @@ function ManualStrategy({
                 </div>
                 <Input
                   classNames={{
-                    input: 'leading-5',
+                    input: 'leading-5 xl:py-0 xl:h-11',
                   }}
                   val={startPriceTypedValue}
                   min={0}
@@ -192,7 +192,7 @@ function ManualStrategy({
                 />
               </div>
 
-              <div className='flex h-[46px] items-center gap-4'>
+              <div className='flex h-[46px] items-center gap-4 xl:h-11'>
                 <CircleImage
                   className='size-6 outline-[#1C2027] outline-solid md:size-9'
                   src={quoteCurrency?.logoURI ?? UNKNOWN_LOGO}
@@ -214,7 +214,7 @@ function ManualStrategy({
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4')}>
+          <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4 xl:mb-2')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
               <WarningTriangleYellowIcon className='stroke-warn-600 size-full' />
             </div>
@@ -227,11 +227,11 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'bg-opacity-50 mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4',
+                'bg-opacity-50 mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4 xl:mt-0',
                 showToggle ? '' : 'hidden',
               )}
             >
-              <div className='flex items-center gap-1 md:gap-3'>
+              <div className='flex items-center gap-1 md:gap-3 xl:gap-2'>
                 {isEarnFees ? (
                   <IconGroup
                     className='*:not-first:-ml-2'
@@ -252,27 +252,27 @@ function ManualStrategy({
                 {/* <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading> */}
-                <div className='flex flex-col'>
-                  <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl md:leading-6'>
+                <div className='flex flex-col xl:gap-1'>
+                  <NewTextSubHeading className='text-primary-100 xl:text-5 text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
                     {isEarnFees ? 'Fees' : '$THE'}
                   </NewTextSubHeading>
-                  <Paragraph className='text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
+                  <Paragraph className='xl:text-4 text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
                     {t('Earn')}
                   </Paragraph>
                 </div>
               </div>
 
-              <div className='flex flex-col'>
-                <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl md:leading-6'>
+              <div className='flex flex-col xl:gap-1'>
+                <NewTextSubHeading className='text-primary-100 xl:text-5 text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
-                <Paragraph className='md:eading-5 text-xs font-medium text-neutral-300 md:text-base'>
+                <Paragraph className='md:eading-5 xl:text-4 text-xs font-medium text-neutral-300 md:text-base xl:leading-5'>
                   {t('TVL')}
                 </Paragraph>
               </div>
 
-              <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-gradient-primary-start text-end text-xs font-bold md:text-xl md:leading-6'>
+              <div className='flex flex-col justify-end xl:gap-1'>
+                <NewTextSubHeading className='xl:text-5 bg-[linear-gradient(90deg,_#B386FF_0%,_#FF86FA_100%)] bg-clip-text text-end text-xs font-bold text-transparent md:text-xl md:leading-6 xl:leading-7'>
                   {formatAmount(
                     APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
                       ? strategy?.apr
@@ -280,7 +280,7 @@ function ManualStrategy({
                   )}
                   %
                 </NewTextSubHeading>
-                <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5'>
+                <Paragraph className='xl:text-4 text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
                   {t(isEarnFees ? 'Historical Weekly APR' : 'Estimated APR')}
                 </Paragraph>
               </div>
