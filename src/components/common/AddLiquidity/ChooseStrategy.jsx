@@ -14,7 +14,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
@@ -259,7 +259,7 @@ export default function ChooseStrategy({
                   <Paragraph className='text-xs text-neutral-400 lg:text-xs'>{t('Deposit')}</Paragraph>
                 </div>
               )}
-              {NARROW_TYPES.includes(sub.title) && (
+              {GAMMA_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
                     className='*:not-first:-ml-2'
