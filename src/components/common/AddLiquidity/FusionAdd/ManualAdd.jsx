@@ -26,6 +26,7 @@ export default function ManualAdd({
   setBaseCurrency,
   setQuoteCurrency,
   mintInfo,
+  currentPrice,
   onShowModalSuccess,
   position,
   handleBack,
@@ -53,7 +54,7 @@ export default function ManualAdd({
     return [mintInfo.parsedAmounts[Field.CURRENCY_A], mintInfo.parsedAmounts[Field.CURRENCY_B]]
   }, [mintInfo.parsedAmounts, position])
 
-  const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing } = mintInfo
+  const { strategy, ticks, pool, poolAddress, parsedAmounts, tickSpacing, invertPrice } = mintInfo
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
 
   const isStablecoinPair = useMemo(() => {
@@ -74,6 +75,8 @@ export default function ManualAdd({
     isFarming: strategy?.title === MANUAL_TYPES[0],
     tickSpacing,
     isStablecoinPair,
+    currentPrice,
+    invertPrice,
   })
 
   useEffect(() => {

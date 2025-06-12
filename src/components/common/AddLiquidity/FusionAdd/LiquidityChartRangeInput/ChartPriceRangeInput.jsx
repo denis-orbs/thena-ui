@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { batch, useSelector } from 'react-redux'
+import { batch, useDispatch, useSelector } from 'react-redux'
 
 import { Warning } from '@/components/alert'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -11,7 +11,7 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
-import { Bound } from '@/state/fusion/actions'
+import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
@@ -78,6 +78,7 @@ export default function ChartPriceRangeInput({
   const zoomRef = useRef(null)
   const windowSize = useWindowSize()
   const { startPriceTypedValue } = useV3MintState()
+  const dispatch = useDispatch()
   const { isReverse } = useSelector(state => state.fusion)
 
   const [zoomFactor, setZoomFactor] = useState(1)
@@ -239,6 +240,7 @@ export default function ChartPriceRangeInput({
             leftRangeValue > 0
           ) {
             onLeftRangeInput(leftRangeValue.toFixed(6))
+            dispatch(updateSelectedPreset({ preset: null }))
           }
 
           if ((!ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER] || mode === 'reset') && rightRangeValue > 0) {
@@ -246,12 +248,13 @@ export default function ChartPriceRangeInput({
             // sometimes fails to parse to tick.
             if (rightRangeValue < 1e35) {
               onRightRangeInput(rightRangeValue.toFixed(6))
+              dispatch(updateSelectedPreset({ preset: null }))
             }
           }
         })
       }
     },
-    [boundaryPrices, handleShow, ticksAtLimit, isSorted, onLeftRangeInput, onRightRangeInput],
+    [boundaryPrices, handleShow, ticksAtLimit, isSorted, onLeftRangeInput, dispatch, onRightRangeInput],
   )
 
   // eslint-disable-next-line unused-imports/no-unused-vars

@@ -258,7 +258,7 @@ export const fetchStats = async () => {
 /**
  * @param {address} owner
  * @param {number} chainId
- * @returns {Record<position_id, Record<token_address, amount>>}
+ * @returns {Promise<Record<position_id, Record<token_address, amount>>>}
  */
 export const getCollectedRewards = async (owner, chainId) => {
   const { rewards = [] } = await fusionFarmingClient[chainId].request(

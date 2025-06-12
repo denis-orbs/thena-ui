@@ -33,6 +33,7 @@ export function Chart({
   showZoom = true,
   isFixed = false,
   chartHeight = 221,
+  isStablecoinPair = false,
 }) {
   const t = useTranslations()
   const zoomRef = useRef(null)
@@ -41,6 +42,14 @@ export function Chart({
   const [zoom, setZoom] = useState(null)
 
   const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
+
+  const initZoomLevels = useMemo(
+    () => ({
+      min: isStablecoinPair ? zoomLevels.stableMin : zoomLevels.initialMin,
+      max: isStablecoinPair ? zoomLevels.stableMax : zoomLevels.initialMax,
+    }),
+    [isStablecoinPair, zoomLevels.initialMax, zoomLevels.initialMin, zoomLevels.stableMax, zoomLevels.stableMin],
+  )
 
   const [innerHeight, innerWidth] = useMemo(
     () => [height - margins.top - margins.bottom, width - margins.left - margins.right],
@@ -65,9 +74,9 @@ export function Chart({
       midPrice = filteredSeries[midIndex].price0
     }
 
-    return [midPrice * zoomLevels.initialMin, midPrice * zoomLevels.initialMax]
+    return [midPrice * initZoomLevels.min, midPrice * initZoomLevels.max]
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, JSON.stringify(series), zoomLevels.initialMax, zoomLevels.initialMin])
+  }, [current, JSON.stringify(series), initZoomLevels.min, initZoomLevels.max])
 
   const { xScale, yScale } = useMemo(() => {
     const scales = {
@@ -87,7 +96,7 @@ export function Chart({
 
   const { brushXScale } = useMemo(() => {
     const scales = scaleLinear()
-      .domain([current * zoomLevels.initialMin, current * zoomLevels.initialMax])
+      .domain([current * initZoomLevels.min, current * initZoomLevels.max])
       .range([0, innerWidth])
 
     if (zoom) {
@@ -96,7 +105,7 @@ export function Chart({
     }
 
     return { brushXScale: scales }
-  }, [current, zoomLevels.initialMin, zoomLevels.initialMax, innerWidth, zoom])
+  }, [current, initZoomLevels.min, initZoomLevels.max, innerWidth, zoom])
 
   useEffect(() => {
     // reset zoom as necessary

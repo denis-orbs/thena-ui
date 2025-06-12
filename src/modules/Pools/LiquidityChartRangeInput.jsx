@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 
 const ZOOM_LEVEL = {
+  stableMin: 0.9995,
+  stableMax: 1.0005,
   initialMin: 0.95,
   initialMax: 1.05,
   min: 0.00001,
@@ -58,6 +60,7 @@ export default function LiquidityChartRangeInput({
   isFixed = false,
   width = 576,
   height = 221,
+  isStablecoinPair = false,
 }) {
   const t = useTranslations()
 
@@ -170,6 +173,7 @@ export default function LiquidityChartRangeInput({
             showZoom={showZoom}
             chartHeight={height}
             isFixed={isFixed}
+            isStablecoinPair={isStablecoinPair}
           />
         </div>
       )}

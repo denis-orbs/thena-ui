@@ -362,6 +362,7 @@ export const SPECIAL_POOLS = [
 
 export const STABLE_PAIRS = [
   '0x7491c04dc4575e086a8ee31f7ce1c6d56fb7dcc1', // USDT/USDC
+  '0x368416031518556f9dc0996c4b8abb36c8b4c35e', // BNB/BNBx
 ]
 
 export const STABLE_FEE = 0.0001

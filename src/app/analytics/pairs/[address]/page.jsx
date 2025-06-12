@@ -11,7 +11,7 @@ import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import IconGroup from '@/components/icongroup'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { goScan } from '@/lib/utils'
@@ -25,18 +25,29 @@ import PoolAttributesAnalytic from './PoolAttributesAnalytic'
 import WeightedTransactionTable from './WeightedPairTransaction'
 
 export default function PairDetailPage({ params }) {
+  const t = useTranslations()
+  const { push } = useRouter()
   const { address } = params
   const { pairs, isLoading } = usePairs()
-  const t = useTranslations()
   const { networkId } = useChainSettings()
+  const backUrl = useBackURL()
 
   const pair = useMemo(
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
   )
 
-  const { push } = useRouter()
-  const backUrl = useBackURL()
+  const pairAddress = useMemo(() => {
+    if (
+      pair &&
+      pair.type === PAIR_TYPES.LSD &&
+      pair.subpools.length === 1 &&
+      pair.subpools[0].title === MANUAL_TYPES[1]
+    ) {
+      return pair.subpools[0].address
+    }
+    return pair?.address
+  }, [pair])
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
@@ -71,7 +82,7 @@ export default function PairDetailPage({ params }) {
                 <NewTextHeading className='text-wrap break-all whitespace-normal'>{pair.symbol}</NewTextHeading>
                 <LinkExternalIcon
                   className='mb-1 size-6 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100'
-                  onClick={() => goScan(networkId, pair.address)}
+                  onClick={() => goScan(networkId, pairAddress)}
                   data-tooltip-id='contract-tooltip'
                 />
               </div>

@@ -15,6 +15,7 @@ import { ZapperIcon } from '@/svgs'
 
 export default function AddLiquidityCLPane({
   mintInfo,
+  currentPrice,
   baseCurrency,
   quoteCurrency,
   setBaseCurrency,
@@ -101,6 +102,7 @@ export default function AddLiquidityCLPane({
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}
                 mintInfo={mintInfo}
+                currentPrice={currentPrice}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
                 handleBack={handleBack}
@@ -112,6 +114,7 @@ export default function AddLiquidityCLPane({
                 setBaseCurrency={setBaseCurrency}
                 setQuoteCurrency={setQuoteCurrency}
                 mintInfo={mintInfo}
+                currentPrice={currentPrice}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
                 position={position}

@@ -127,13 +127,13 @@ export const getWeightedChartData = async (chainId, address, skip) => {
 
 export const fetchPairChartData = async (chainId, pair) => {
   if (pair.type === PAIR_TYPES.WEIGHTED) {
-    const { data: fusiondata = [] } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
-    return fusiondata
+    const { data: weightedData = [] } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
+    return weightedData
   }
 
   if (pair.type === PAIR_TYPES.LSD) {
     const version = pair?.version
-    const { data: fusionData } = await fetchChartData(
+    const { data: fusionData = [] } = await fetchChartData(
       getFusionChartData,
       [{ chainId, address: pair?.address, version }],
       false,
