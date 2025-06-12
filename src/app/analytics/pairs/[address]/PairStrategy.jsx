@@ -61,7 +61,6 @@ function PairStrategy({ pair }) {
 
   const price = useMemo(() => {
     if (!mintInfo.price) return
-
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo.invertPrice, mintInfo.price])
 
@@ -225,6 +224,8 @@ function PairStrategy({ pair }) {
     isFarming: strategy?.isFarming,
     tickSpacing: mintInfo.tickSpacing,
     isStablecoinPair,
+    currentPrice: price,
+    invertPrice: mintInfo.invertPrice,
   })
 
   const estimateAPRs = useMemo(() => {

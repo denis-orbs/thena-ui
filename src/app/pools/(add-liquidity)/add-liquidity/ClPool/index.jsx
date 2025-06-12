@@ -10,8 +10,8 @@ import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { PAIR_TYPES, STABLE_PAIRS, UNKNOWN_LOGO } from '@/constant'
+import { useCurrency, useGetAsset, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
@@ -32,6 +32,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy, startPriceTypedValue } = useV3MintState()
+  const stableAssets = useStableTokens()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
@@ -86,6 +87,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
     type: PAIR_TYPES.LSD,
     poolAddress,
   })
+
+  const isStablecoinPair = useMemo(() => {
+    if (STABLE_PAIRS.includes(poolAddress?.toLowerCase())) return true
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
+  }, [baseCurrency, poolAddress, quoteCurrency, stableAssets])
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
@@ -175,6 +182,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
             setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
             setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
             mintInfo={mintInfo}
+            currentPrice={currentPrice}
             position={position}
             handleBack={handleBack}
           />
@@ -281,6 +289,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 width={chartWidth}
                 height={chartHeight}
                 isFixed={!!position}
+                isStablecoinPair={isStablecoinPair}
               />
             )}
           </div>

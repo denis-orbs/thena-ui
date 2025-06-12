@@ -27,6 +27,7 @@ function KyberZapperPane({
   quoteCurrency,
   deadline,
   mintInfo,
+  currentPrice,
   strategy,
   onShowModalSuccess,
   handleBack,
@@ -118,6 +119,8 @@ function KyberZapperPane({
     poolId: pairAddress,
     slippage: slippage * 100,
     isStablecoinPair,
+    currentPrice,
+    invertPrice: mintInfo.invertPrice,
   })
 
   useEffect(() => {

@@ -48,16 +48,19 @@ function RangePart({
 
   const handleOnBlur = useCallback(() => {
     onUserInput(localTokenValue)
-  }, [onUserInput, localTokenValue])
+    dispatch(updateSelectedPreset({ preset: null }))
+  }, [onUserInput, localTokenValue, dispatch])
 
   // for button clicks
   const handleDecrement = useCallback(() => {
     onUserInput(decrement())
-  }, [decrement, onUserInput])
+    dispatch(updateSelectedPreset({ preset: null }))
+  }, [decrement, dispatch, onUserInput])
 
   const handleIncrement = useCallback(() => {
     onUserInput(increment())
-  }, [increment, onUserInput])
+    dispatch(updateSelectedPreset({ preset: null }))
+  }, [increment, dispatch, onUserInput])
 
   const activePreset = useActivePreset()
 

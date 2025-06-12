@@ -122,6 +122,8 @@ export const useEstimateAPR = ({
   poolId,
   slippage,
   isStablecoinPair = false,
+  currentPrice,
+  invertPrice,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const activePreset = useActivePreset()
@@ -172,7 +174,7 @@ export const useEstimateAPR = ({
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
-  const poolPrice = pool?._token0Price?.toSignificant(5)
+  const poolPrice = currentPrice ?? pool?._token0Price?.toSignificant(5)
   const _token0 = pool?.token0
   const _token1 = pool?.token1
   const _tickSpacing = tickSpacing ?? TICK_SPACING
@@ -255,13 +257,18 @@ export const useEstimateAPR = ({
         ? nearestUsableTick(TickMath.MIN_TICK, _tickSpacing)
         : title === 'current' || title === activePreset
           ? tickLower
-          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString(), _tickSpacing) + _tickSpacing
+          : !currentPrice || !invertPrice
+            ? tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString(), _tickSpacing)
+            : tryParseTick(_token1, _token0, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
+
     const _tickUpper =
       title === Presets.FULL
         ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing)
         : title === 'current' || title === activePreset
           ? tickUpper
-          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
+          : !currentPrice || !invertPrice
+            ? tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
+            : tryParseTick(_token1, _token0, 3000, (Number(poolPrice) * min).toString(), _tickSpacing)
 
     let _position = null
     if (token0 && token1) {
