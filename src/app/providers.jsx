@@ -22,7 +22,13 @@ import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
 import enMessage from '@/lang/en.json'
-import zhMessage from '@/lang/zh.json'
+import jaMessage from '@/lang/ja.json'
+import koMessage from '@/lang/ko.json'
+import thMessage from '@/lang/th.json'
+import viMessage from '@/lang/vi.json'
+// import zhMessage from '@/lang/zh.json'
+import zhCNMessage from '@/lang/zh_cn.json'
+import zhTWMessage from '@/lang/zh_tw.json'
 import { swrGCMiddleware } from '@/lib/swrMiddlewares'
 import store from '@/state'
 import { useLocaleSettings } from '@/state/settings/hooks'
@@ -58,8 +64,27 @@ function ContextProviders({ children }) {
 
 function IntlProvider({ children }) {
   const { locale } = useLocaleSettings()
-
-  const messages = useMemo(() => (locale === LOCALES.en ? enMessage : zhMessage), [locale])
+  // (locale === LOCALES.en ? enMessage : zhMessage)
+  const messages = useMemo(() => {
+    switch (locale) {
+      case LOCALES.en:
+        return enMessage
+      case LOCALES.zh_CN:
+        return zhCNMessage
+      case LOCALES.zh_TW:
+        return zhTWMessage
+      case LOCALES.vi:
+        return viMessage
+      case LOCALES.th:
+        return thMessage
+      case LOCALES.ja:
+        return jaMessage
+      case LOCALES.ko:
+        return koMessage
+      default:
+        return enMessage
+    }
+  }, [locale])
   return (
     <NextIntlClientProvider locale={locale} messages={messages} timeZone='America/Los_Angeles'>
       {children}

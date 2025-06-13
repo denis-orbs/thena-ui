@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -14,7 +15,7 @@ import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mutate, fee, outOfRange }) {
   const { tokenId, isFarming, key } = pool
   const { pending, onAlgebraClaim } = useAlgebraClaim(pool?.version ?? 3)
-
+  const t = useTranslations()
   return (
     <Modal
       isOpen={popup}
@@ -64,7 +65,7 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
 
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>
-          Cancel
+          {t('Cancel')}
         </TextButton>
         <PrimaryButton
           className='w-full'
@@ -85,7 +86,7 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
             )
           }}
         >
-          Claim
+          {t('Claim')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

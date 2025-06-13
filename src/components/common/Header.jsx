@@ -50,7 +50,13 @@ const chains = [
 
 const langs = [
   { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
+  // { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
+  { img: '/images/zh.png', lang: LOCALES.zh_CN, label: '简体中文' },
+  { img: '/images/zh.png', lang: LOCALES.zh_TW, label: '繁體中文' },
+  { img: '/images/ko.png', lang: LOCALES.ko, label: '한국어' },
+  { img: '/images/vi.png', lang: LOCALES.vi, label: 'Tiếng Việt' },
+  { img: '/images/th.png', lang: LOCALES.th, label: 'ภาษาไทย' },
+  { img: '/images/ja.png', lang: LOCALES.ja, label: '日本語' },
 ]
 
 function BridgeMaintainModal({ show, onClose }) {
@@ -987,7 +993,7 @@ function Header() {
               )}
             </div>
             <ChainSelect t={t} />
-            {/* <LanguageSelect /> */}
+            <LanguageSelect />
             <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
