@@ -354,6 +354,7 @@ function LanguageSelect({ className }) {
 }
 
 function V3Banner({ onClose }) {
+  const t = useTranslations()
   const router = useRouter()
   const { push } = router
   useEffect(() => {
@@ -369,10 +370,10 @@ function V3Banner({ onClose }) {
       className='fixed top-0 left-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
     >
       <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
-        <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
+        <span className='min-w-fit font-semibold'>{`🔥 ${t('THENA V3,3 is Launched')}!`}</span>
         <span className='text-center font-normal'>
           {new Date() >= new Date('2025-05-29')
-            ? 'Migrate your liquidity now to continue earning rewards.'
+            ? `${t('Migrate your liquidity now to continue earning rewards')}.`
             : 'Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.'}
         </span>
         <div className='flex'>
@@ -380,12 +381,12 @@ function V3Banner({ onClose }) {
             className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'
             onClick={() => push('/dashboard')}
           >
-            Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
+            {t('Migrate Now')} <ArrowRightIcon className='ml-1 h-4 w-4' />
           </TertiaryButton>
           {new Date() >= new Date('2025-05-29') && (
             <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
               <TertiaryButton className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'>
-                Learn More <ArrowRightIcon className='ml-1 h-4 w-4' />
+                {t('Learn More')} <ArrowRightIcon className='ml-1 h-4 w-4' />
               </TertiaryButton>
             </Link>
           )}
@@ -411,7 +412,7 @@ function V3Banner({ onClose }) {
             clipRule='evenodd'
           />
         </svg>
-        <span className='sr-only'>Close</span>
+        <span className='sr-only'>{t('Close')}</span>
       </button>
     </div>
   )
@@ -962,7 +963,7 @@ function Header() {
       <header
         className={cn(
           'shadow-primary fixed top-0 z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b border-b-neutral-600 max-md:bg-neutral-900 md:h-[92px] md:border-b-[2px] md:backdrop-blur-[24px]',
-          showBannerMigrate && 'top-[124px] md:top-[54px]',
+          showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >
         <div

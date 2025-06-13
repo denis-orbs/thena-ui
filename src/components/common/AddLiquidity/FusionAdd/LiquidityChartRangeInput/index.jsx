@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 import { batch } from 'react-redux'
 
@@ -42,6 +43,7 @@ export default function LiquidityChartRangeInput({
   interactive,
   handleShow = true,
 }) {
+  const t = useTranslations()
   const isSorted = useMemo(
     () => currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped),
     [currencyA, currencyB],
@@ -115,13 +117,13 @@ export default function LiquidityChartRangeInput({
   return (
     <div className='flex min-h-[280px] w-full items-center justify-center'>
       {isUninitialized ? (
-        <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>{t('Your position will appear here')}</TextHeading>
       ) : isLoading ? (
         <Spinner />
       ) : error ? (
-        <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>{t('Liquidity data not available')}</TextHeading>
       ) : !formattedData || formattedData.length === 0 || !price ? (
-        <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>{t('There is no liquidity data')}</TextHeading>
       ) : (
         <div className='relative w-full'>
           <Chart

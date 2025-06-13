@@ -1,4 +1,5 @@
 import { brushY, select } from 'd3'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
@@ -48,6 +49,7 @@ export const Brush2 = ({
   setLiveLocalBrushExtent = () => {},
   setCurrentHover = () => {},
 }) => {
+  const t = useTranslations()
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
 
@@ -386,7 +388,7 @@ export const Brush2 = ({
                   transform='scale(1,-1)'
                   color='#F199EE'
                 >
-                  range out of view
+                  {t('range out of view')}
                 </text>
               </g>
             )}
@@ -415,7 +417,7 @@ export const Brush2 = ({
                   fontFamily='Archia'
                   color='#F199EE'
                 >
-                  range out of view
+                  {t('range out of view')}
                 </text>
               </g>
             )}
@@ -431,11 +433,11 @@ export const Brush2 = ({
       height,
       showSouthArrow,
       id,
+      interactive,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
       flipNorthHandle,
-      interactive,
       southHandleColor,
       disableColor.line.south,
       disableColor.handle.south,
@@ -444,6 +446,7 @@ export const Brush2 = ({
       southHandleInView,
       flipSouthHandle,
       northHandleColor,
+      t,
     ],
   )
 }

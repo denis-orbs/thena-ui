@@ -418,22 +418,16 @@ function StrategyTitle({
       >
         <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
           <Paragraph className='mb-4 block text-base'>
-            Depending on the Assets you chose, you will get different Strategies to chose on.
+            {t('Depending on the Assets you chose, you will get different Strategies to chose on')}
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 block text-xl'>Manual Strategy</NewTextSubHeading>
+          <NewTextSubHeading className='mb-2 block text-xl'>{t('Manual Strategy')}</NewTextSubHeading>
           <Paragraph className='text-base'>
-            Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
-            and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
-            not earn any reward until you re-adjust your position accordingly.
+            {t('Only use if you are experienced in providing concentrated liquidity')}
           </Paragraph>
 
-          <NewTextSubHeading className='mt-4 mb-2 block text-xl'>Automatic Strategy</NewTextSubHeading>
-          <Paragraph className='text-base'>
-            If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
-            Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
-            provide liquidity, you will begin earning emissions.
-          </Paragraph>
+          <NewTextSubHeading className='mt-4 mb-2 block text-xl'>{t('Automatic Strategy')}</NewTextSubHeading>
+          <Paragraph className='text-base'>{t('If you are new to concentrated liquidity')}</Paragraph>
         </div>
       </motion.div>
     </article>

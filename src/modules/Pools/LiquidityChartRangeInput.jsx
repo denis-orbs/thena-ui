@@ -138,7 +138,7 @@ export default function LiquidityChartRangeInput({
     <div className={cn('flex w-full items-center justify-center overflow-hidden', `min-h-[${height}px]`)}>
       {isUninitialized ? (
         <ChartEmptyContent t={t} label={label} height={height}>
-          <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
+          <TextHeading className='text-sm lg:text-base'>{t('Your position will appear here')}</TextHeading>
         </ChartEmptyContent>
       ) : isLoading ? (
         <ChartEmptyContent t={t} label={label} height={height}>
@@ -146,11 +146,11 @@ export default function LiquidityChartRangeInput({
         </ChartEmptyContent>
       ) : error ? (
         <ChartEmptyContent t={t} label={label} height={height}>
-          <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
+          <TextHeading className='text-sm lg:text-base'>{t('Liquidity data not available')}</TextHeading>
         </ChartEmptyContent>
       ) : !formattedData || formattedData.length === 0 || !price ? (
         <ChartEmptyContent t={t} label={label} height={height}>
-          <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
+          <TextHeading className='text-sm lg:text-base'>{t('There is no liquidity data')}</TextHeading>
         </ChartEmptyContent>
       ) : (
         <div className='relative w-full'>

@@ -705,6 +705,7 @@ export default function PoolsPage() {
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
               back={1}
+              tableBasic={!isLgDown}
             />
           )}
 
@@ -716,6 +717,7 @@ export default function PoolsPage() {
               sortOptions={sortOptions}
               listPoolAddressSpecial={SPECIAL_POOLS}
               back={1}
+              tableBasic={!isLgDown}
             />
           )}
           <Table

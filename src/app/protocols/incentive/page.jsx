@@ -139,7 +139,7 @@ export default function IncentivePage() {
 
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
         <div className={cn('rounded-xl bg-neutral-900 p-5', isConfirmState && 'hidden')}>
-          <h2 className='font-archia text-3xl'>Add Incentive</h2>
+          <h2 className='font-archia text-3xl'>{t('Add Incentive')}</h2>
 
           <div className='flex flex-col gap-4 pt-8'>
             <div className='flex flex-col gap-2'>
@@ -406,9 +406,9 @@ export default function IncentivePage() {
         </div>
 
         <div className='rounded-xl bg-neutral-900 p-5'>
-          <h2 className='font-archia mb-2 text-2xl'>Total Incentives</h2>
+          <h2 className='font-archia mb-2 text-2xl'>{t('Total Incentives')}</h2>
           <Paragraph className={cn('mb-5 block border-b border-neutral-700 pb-5 text-sm')}>
-            Select a pair to view the total rewards deposited.
+            {t('Select a pair to view the total rewards deposited')}
           </Paragraph>
 
           {pair && (

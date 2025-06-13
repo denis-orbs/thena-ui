@@ -300,8 +300,8 @@ export default function LiquidityCharts({
       <CustomTooltip id='management-tooltip' className='max-w-[320px]'>
         <div className='flex flex-col gap-2'>
           <TextHeading className='text-sm'>{t('How to Choose a Strategy')}</TextHeading>
-          <Paragraph className='text-xs'>{t('Automatic Strategy')}</Paragraph>
-          <Paragraph className='text-xs'>{t('Manual Strategy')}</Paragraph>
+          <Paragraph className='text-xs'>{t('Automatic Strategy description')}</Paragraph>
+          <Paragraph className='text-xs'>{t('Manual Strategy description')}</Paragraph>
         </div>
       </CustomTooltip>
     </>
