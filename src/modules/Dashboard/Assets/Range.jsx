@@ -74,10 +74,11 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 className='absolute top-0 z-30 h-[18px] w-full -translate-x-1/2 transform'
               >
                 <div
-                  className={cn(
-                    'absolute h-full w-full rounded-[5px] transition-opacity duration-200',
-                    'bg-[linear-gradient(90deg,rgba(131,0,126,0)_31%,rgba(189,96,186,0.5)_52%,rgba(143,20,138,0)_75%)]',
-                  )}
+                  className={cn('absolute h-full w-full rounded-[5px]')}
+                  style={{
+                    background:
+                      'linear-gradient(90deg, rgba(131, 0, 126, 0) 25%, rgba(189, 96, 186, 0.5) 50%, rgba(143, 20, 138, 0) 75%)',
+                  }}
                 />
               </div>
             </div>
@@ -111,12 +112,12 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div
                   className='absolute -top-5.5 z-40'
                   style={{
-                    left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth}%` : '0%',
+                    left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth > 80 ? 80 : 100 - rangeBarWidth}%` : '0%',
                   }}
                 >
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Lower: {formatAmount(minPrice)}
+                      Lower: {minPrice > 1e9 ? '> 1B' : formatAmount(minPrice)}
                     </span>
                   </div>
                 </div>
@@ -126,12 +127,14 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div
                   className='absolute -top-5.5 z-40'
                   style={{
-                    right: outOfRangePosition.isBelow ? '0%' : `${100 - rangeBarWidth}%`,
+                    right: outOfRangePosition.isBelow
+                      ? '0%'
+                      : `${100 - rangeBarWidth > 80 ? 80 : 100 - rangeBarWidth}%`,
                   }}
                 >
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Upper: {formatAmount(maxPrice, true)}
+                      Upper: {maxPrice > 1e9 ? '> 1B' : formatAmount(maxPrice)}
                     </span>
                   </div>
                 </div>
@@ -156,7 +159,8 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               >
                 <HalfPolygonIcon
                   className={cn(
-                    'hover:text-warn-500 stroke-warn-600 absolute bottom-[2px] left-0 z-40 size-4 cursor-pointer text-transparent',
+                    'stroke-warn-600 text-warn-800/85 absolute bottom-[2px] left-0 z-40 h-4 w-4 cursor-pointer',
+                    'hover:text-warn-500 hover:stroke-warn-900',
                   )}
                   onMouseEnter={() => setCurrentHover('min-price')}
                   onMouseLeave={() => setCurrentHover(null)}
@@ -164,8 +168,8 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
 
                 <HalfPolygonIcon
                   className={cn(
-                    'hover:text-warn-500 stroke-warn-600 absolute top-[1px] right-0',
-                    'z-40 size-4 rotate-180 cursor-pointer text-transparent',
+                    'stroke-warn-600 text-warn-800/85 absolute top-[1px] right-0',
+                    'hover:text-warn-500 hover:stroke-warn-900 z-40 size-4 rotate-180 cursor-pointer',
                   )}
                   onMouseEnter={() => setCurrentHover('max-price')}
                   onMouseLeave={() => setCurrentHover(null)}
@@ -174,7 +178,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               {/* Current price indicator */}
               <div
                 style={{
-                  left: `clamp(8px, ${outOfRangePosition.percent}%, calc(100% - 8px))`,
+                  left: `clamp(4px, ${outOfRangePosition.percent}%, calc(100% - 4px))`,
                   transform: 'translateX(-50%)',
                 }}
                 className={cn('absolute top-0 z-30 flex h-full transform items-center justify-center')}
@@ -190,11 +194,13 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               </div>
               {/* Out of range indicator */}
               <div
-                style={{ left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth}%` : '0%' }}
-                className='absolute top-5.5 flex items-center gap-2 text-xs leading-4'
+                style={{
+                  left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth > 65 ? 65 : 100 - rangeBarWidth}%` : '0%',
+                }}
+                className='absolute top-5.5 flex flex-nowrap items-center gap-2 text-xs leading-4'
               >
                 <InfoCircleSmall className='stroke-warn-700 size-3' />
-                <span className='text-warn-700'>Out of Range</span>
+                <span className='text-warn-700 text-nowrap'>Out of Range</span>
               </div>
             </div>
           </div>
@@ -209,10 +215,11 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 className='absolute top-0 h-full w-full -translate-x-1/2 transform'
               >
                 <div
-                  className={cn(
-                    'absolute h-full w-full transition-opacity duration-200',
-                    'bg-[linear-gradient(90deg,rgba(131,0,126,0)_31%,rgba(189,96,186,0.5)_52%,rgba(143,20,138,0)_75%)]',
-                  )}
+                  className={cn('absolute h-full w-full')}
+                  style={{
+                    background:
+                      'linear-gradient(90deg, rgba(131, 0, 126, 0) 25%, rgba(189, 96, 186, 0.5) 50%, rgba(143, 20, 138, 0) 75%)',
+                  }}
                 />
               </div>
             </div>
@@ -244,7 +251,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div style={{ left: 0 }} className={cn('absolute -top-5.5 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Lower: {isFullRange ? '0' : formatAmount(minPrice)}
+                      Lower: {isFullRange ? '0' : minPrice > 1e9 ? '> 1B' : formatAmount(minPrice)}
                     </span>
                   </div>
                 </div>
@@ -253,7 +260,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div style={{ right: 0 }} className={cn('absolute -top-5.5 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Upper: {isFullRange ? '∞' : formatAmount(maxPrice, true)}
+                      Upper: {isFullRange ? '∞' : maxPrice > 1e9 ? '> 1B' : formatAmount(maxPrice)}
                     </span>
                   </div>
                 </div>
@@ -262,14 +269,15 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <HalfPolygonIcon
                   className={cn(
                     'absolute bottom-[2px] left-0 z-20 size-4! cursor-pointer',
-                    'justify-items-start stroke-neutral-500 text-transparent hover:text-neutral-300',
+                    'justify-items-start stroke-neutral-500 text-neutral-500/60 hover:text-neutral-300',
                   )}
                   onMouseEnter={() => setCurrentHover('min-price')}
                   onMouseLeave={() => setCurrentHover(null)}
                 />
                 <HalfPolygonIcon
                   className={cn(
-                    'absolute top-[1px] right-0 z-20 size-4! rotate-180 cursor-pointer justify-items-end stroke-neutral-500 text-transparent hover:text-neutral-300',
+                    'absolute top-[1px] right-0 z-20 size-4! rotate-180 cursor-pointer justify-items-end',
+                    'stroke-neutral-500 text-neutral-500/60 hover:text-neutral-300',
                   )}
                   onMouseEnter={() => setCurrentHover('max-price')}
                   onMouseLeave={() => setCurrentHover(null)}
@@ -278,7 +286,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               {/* Current price indicator for in-range */}
               <div
                 style={{
-                  left: `clamp(8px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 8px))`,
+                  left: `clamp(4px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 4px))`,
                   transform: 'translateX(-50%)',
                 }}
                 className={cn('absolute top-0 flex h-full transform items-center justify-center')}

@@ -6,7 +6,7 @@ import { UNKNOWN_LOGO } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import { CoinUSDIcon } from '@/svgs'
 
-export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position }) {
+export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, isFullRange }) {
   const t = useTranslations()
 
   return (
@@ -92,7 +92,9 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             })}
           </Paragraph>
           <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.minPrice}</TextHeading>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>
+              {isFullRange ? '0' : position.minPrice}
+            </TextHeading>
           </div>
         </div>
 
@@ -104,7 +106,9 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             })}
           </Paragraph>
           <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.maxPrice}</TextHeading>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>
+              {isFullRange ? '∞' : position.maxPrice}
+            </TextHeading>
           </div>
         </div>
       </div>

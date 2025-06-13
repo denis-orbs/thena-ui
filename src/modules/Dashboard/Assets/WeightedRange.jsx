@@ -17,7 +17,7 @@ function WeightedRange({ weighted }) {
             <div
               key={token.address}
               className={cn(
-                'bg-full-range relative flex h-full cursor-pointer items-center justify-center',
+                'bg-full-range bg-full-range-weighted relative flex h-full cursor-pointer items-center justify-center',
                 'font-medium text-white transition-all duration-200 hover:brightness-110',
                 index === 0 && 'rounded-l-[5px]',
                 index === totalTokens.length - 1 && 'rounded-r-[5px]',
@@ -35,7 +35,7 @@ function WeightedRange({ weighted }) {
               )}
 
               <div className='pointer-events-none flex h-full items-center justify-center'>
-                <span className='text-xs leading-4 text-neutral-500'>
+                <span className={cn('text-xs leading-4 text-neutral-500', hoveredToken === token && 'text-neutral-50')}>
                   {totalTokens.length < 3 ? token.weight : index + 1}
                 </span>
               </div>

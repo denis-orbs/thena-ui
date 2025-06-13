@@ -774,7 +774,7 @@
     );
   }
 
-  .bg-full-range:hover {
+  .bg-full-range-weighted:hover {
     background: linear-gradient(
         90deg,
         rgba(131, 0, 126, 0.066) 0.22%,
