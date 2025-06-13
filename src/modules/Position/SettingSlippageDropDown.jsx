@@ -39,7 +39,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className, position
           >
             <Paragraph
               className={cn(
-                'hover:text-primary-600 text-base font-medium text-neutral-400 hover:underline',
+                'hover:text-primary-600 text-base font-medium text-neutral-400 hover:underline xl:leading-5',
                 isHovered && 'text-primary-600 underline',
               )}
             >

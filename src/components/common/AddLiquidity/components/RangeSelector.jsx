@@ -91,7 +91,7 @@ function RangePart({
         <div className='flex min-w-0 flex-1 flex-col gap-1.5 p-0 pr-2'>
           <input
             type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base'
+            className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base xl:font-medium'
             placeholder='0.0'
             value={localTokenValue}
             onChange={e => {

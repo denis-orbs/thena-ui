@@ -101,6 +101,7 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
       />
       <TokenAmountCard
         currency={currencyB}
@@ -114,6 +115,7 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
       />
     </div>
   )
