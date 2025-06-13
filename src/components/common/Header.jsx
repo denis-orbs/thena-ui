@@ -27,7 +27,7 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, InfoNeutralIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, InfoNeutralIcon, LanguageIcon } from '@/svgs'
 import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
@@ -49,14 +49,13 @@ const chains = [
 ]
 
 const langs = [
-  { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  // { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
-  { img: '/images/zh.png', lang: LOCALES.zh_CN, label: '简体中文' },
-  { img: '/images/zh.png', lang: LOCALES.zh_TW, label: '繁體中文' },
-  { img: '/images/ko.png', lang: LOCALES.ko, label: '한국어' },
-  { img: '/images/vi.png', lang: LOCALES.vi, label: 'Tiếng Việt' },
-  { img: '/images/th.png', lang: LOCALES.th, label: 'ภาษาไทย' },
-  { img: '/images/ja.png', lang: LOCALES.ja, label: '日本語' },
+  { iso: 'en', lang: LOCALES.en, label: 'English' },
+  { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
+  { iso: 'zh', lang: LOCALES.zh_TW, label: '繁體中文' },
+  { iso: 'ja', lang: LOCALES.ja, label: '日本語' },
+  { iso: 'ko', lang: LOCALES.ko, label: '한국어' },
+  { iso: 'th', lang: LOCALES.th, label: 'ภาษาไทย' },
+  { iso: 'vi', lang: LOCALES.vi, label: 'Tiếng Việt' },
 ]
 
 function BridgeMaintainModal({ show, onClose }) {
@@ -289,13 +288,15 @@ function LanguageSelect() {
   const selected = useMemo(() => langs.find(ele => ele.lang === locale), [locale])
 
   return (
-    <div className={cn('relative')} ref={wrapperRef}>
-      <CircleImage
-        alt='lang'
-        className='mx-2 h-5 w-5 cursor-pointer'
-        src={selected.img}
+    <div className={cn('relative cursor-pointer')} ref={wrapperRef}>
+      <div
+        className='flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs leading-5 font-medium text-neutral-100 uppercase hover:bg-neutral-700 xl:px-4 xl:py-3 xl:text-base'
         onClick={() => setOpen(!open)}
-      />
+      >
+        <LanguageIcon className={cn('h-5 w-5 cursor-pointer max-xl:hidden')} />
+
+        {selected.iso}
+      </div>
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
@@ -319,7 +320,6 @@ function LanguageSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
               <TextHeading className='text-nowrap'>{item.label}</TextHeading>
               {locale === item.lang && <div className='bg-primary-600 h-2 w-2 rounded-full' />}
             </div>
@@ -882,7 +882,7 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start backdrop-blur-2xl md:h-[92px]',
+          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start shadow-[0px_7px_32px_0px_#2C002A] backdrop-blur-[24px] md:h-[92px]',
           showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >

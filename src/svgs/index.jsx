@@ -76,6 +76,7 @@ import InfoNeutralIcon from '~/svgs/info-neutral-400.svg'
 import InstagramColorIcon from '~/svgs/instagram-color.svg'
 import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
+import LanguageIcon from '~/svgs/language.svg'
 import LinkExternalIcon from '~/svgs/link-external.svg'
 import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 import LockIcon from '~/svgs/lock.svg'
@@ -229,6 +230,7 @@ export {
   InstagramColorIcon,
   InstagramNoColorIcon,
   LangIcon,
+  LanguageIcon,
   LinkExternalIcon,
   LinkExternalPrimaryIcon,
   Lock2Icon,
