@@ -31,6 +31,7 @@ import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import {
   ArrowRightIcon,
+  ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
   HamburgerIcon,
@@ -145,7 +146,7 @@ function ChainSelect({ className, t }) {
       <div
         className={cn(
           'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-          'rounded-md p-2 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50 md:p-3',
+          'rounded-md p-2 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50 lg:p-3',
         )}
         key={`dropdown-${idx}-${item.chainId}`}
         onClick={async () => {
@@ -156,8 +157,8 @@ function ChainSelect({ className, t }) {
         }}
       >
         <div className='flex w-full items-center gap-2'>
-          <CircleImage src={item.img} alt='' className='size-4 md:size-5' />
-          <TextHeading className='!text-xs text-nowrap md:!text-base'>{t(item.label)}</TextHeading>
+          <CircleImage src={item.img} alt='' className='size-4 lg:size-5' />
+          <TextHeading className='!text-xs text-nowrap lg:!text-base'>{t(item.label)}</TextHeading>
         </div>
       </div>
     ),
@@ -167,17 +168,21 @@ function ChainSelect({ className, t }) {
   return (
     <div className={cn('relative', className)} ref={wrapperRef}>
       <div
-        className='flex cursor-pointer items-center gap-1 rounded-md border border-neutral-700 bg-neutral-700 px-2 py-[7px] md:gap-2 md:px-3 md:py-[11px] lg:rounded-lg'
+        className={cn(
+          'group flex cursor-pointer items-center gap-1 rounded-md bg-neutral-700 p-2 hover:bg-neutral-600 md:gap-2 lg:rounded-lg lg:px-3 lg:py-3',
+          open && 'bg-neutral-600',
+        )}
         onClick={() => setOpen(!open)}
       >
         <CircleImage src={selected.img} alt='' className='size-4 lg:size-5' />
-        <ChevronDownIcon
+        <ChevronDownColorIcon
           className={cn(
-            'transfrom size-4 transition-all duration-150 ease-out lg:size-5',
-            open ? 'rotate-180' : 'rotate-0',
+            'size-4 stroke-neutral-100 transition-all duration-150 ease-out group-hover:stroke-neutral-200 md:stroke-neutral-400 lg:size-5',
+            open ? 'rotate-180 !stroke-neutral-200' : 'rotate-0',
           )}
         />
       </div>
+
       <div
         className={cn(
           'visible absolute z-10 mt-2 flex-col items-start justify-start gap-1 max-md:left-0 md:right-0',
@@ -305,7 +310,7 @@ function LanguageSelect({ className }) {
       <div
         className={cn(
           'flex items-center gap-1 rounded-md px-2 py-1.5 text-xs leading-5 font-medium text-neutral-400 uppercase hover:text-neutral-100 max-md:bg-neutral-700 max-md:text-neutral-100 md:gap-2 lg:rounded-lg',
-          'hover:bg-neutral-700 md:px-4 md:py-2.5 lg:text-base',
+          'hover:bg-neutral-700 lg:px-4 lg:py-2.5 lg:text-base',
           open && 'bg-neutral-700 text-neutral-100',
         )}
         onClick={() => setOpen(!open)}
@@ -1001,7 +1006,7 @@ function Header() {
                     >
                       <span
                         className={cn(
-                          'flex h-11 cursor-pointer items-center justify-center',
+                          'flex h-8 cursor-pointer items-center justify-center lg:h-11',
                           'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
                           'outline-2 outline-offset-4 outline-transparent outline-solid',
                           'transition-all duration-150 ease-out',
@@ -1032,7 +1037,7 @@ function Header() {
                         className={cn(
                           'visible absolute w-[344px] flex-col items-start justify-start gap-1',
                           'shadow-custom-primary rounded-xl bg-neutral-800 p-3 opacity-100',
-                          'mt-3 transition-all duration-150 ease-out',
+                          'mt-1.5 transition-all duration-150 ease-out lg:mt-3',
                           openMenu !== item.label && 'invisible opacity-0',
                         )}
                       >
@@ -1077,13 +1082,15 @@ function Header() {
             </OutlinedButton> */}
             <ConnectButton
               className={cn(
-                'flex p-2 text-xs md:px-4 md:py-2.5 lg:text-base',
-                spaceIdName || userInfo?.username ? 'flex' : 'max-md:hidden',
+                'flex p-2 text-xs text-nowrap lg:px-4 lg:py-2.5 lg:text-base',
+                spaceIdName || userInfo?.username ? 'flex max-md:bg-transparent' : 'max-md:hidden',
+                !account && isMdDown && 'size-8 max-md:flex',
               )}
               isHeader
+              isMini={!account && isMdDown}
             />
             <div
-              className='flex size-8 items-center justify-center rounded-md bg-neutral-700 p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 md:hidden'
+              className='flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700 md:hidden'
               onClick={() => setIsOpen(true)}
             >
               <HamburgerIcon className='size-4 stroke-neutral-400' />
@@ -1136,7 +1143,7 @@ function Header() {
             </EmphasisButton>
           }
         >
-          <div className='inline-flex w-full flex-col items-start justify-start gap-1 px-4'>
+          <div className='mt-3 inline-flex w-full flex-col items-start justify-start gap-1 px-4'>
             {menus.map((menu, idx) => (
               <React.Fragment key={`menu-${idx}`}>
                 <div
@@ -1211,7 +1218,7 @@ function Header() {
 
       {/* Back to Top Button */}
       <motion.button
-        className='fixed bottom-11 left-1/2 z-50 flex h-11 -translate-x-1/2 items-center justify-center rounded-lg bg-transparent px-4 py-3 md:hidden'
+        className='fixed bottom-11 left-1/2 z-[9999] flex h-11 -translate-x-1/2 items-center justify-center rounded-lg bg-neutral-700 px-4 py-3 shadow-lg lg:hidden'
         onClick={scrollToTop}
         initial={{ opacity: 0, scale: 0.8, y: 20 }}
         animate={{
@@ -1224,8 +1231,10 @@ function Header() {
         transition={{ duration: 0.3 }}
         aria-label='Back to top'
       >
-        <ChevronDownIcon className='size-6 rotate-180 stroke-neutral-400' />
-        <span className='ml-2 font-medium text-neutral-400'>{t('Back to Top')}</span>
+        <div className='flex h-5'>
+          <ChevronDownIcon className='size-5 rotate-180 stroke-neutral-400' />
+          <span className='ml-2 text-base leading-5 font-medium text-neutral-400'>{t('Back to Top')}</span>
+        </div>
       </motion.button>
       {pathname.includes('/arena') && (
         <div

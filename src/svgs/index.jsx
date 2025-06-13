@@ -26,6 +26,7 @@ import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
 import Check2Icon from '~/svgs/check2.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
+import ChevronDownColorIcon from '~/svgs/cheveron-down-color.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronDownWhiteIcon from '~/svgs/chevron-down-white.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
@@ -98,6 +99,7 @@ import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
+import PowerCircleIcon from '~/svgs/power-icon.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
@@ -182,6 +184,7 @@ export {
   CheckIcon,
   CheckPurpleIcon,
   CheckPurpleLargeIcon,
+  ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
   ChevronRightIcon,
@@ -253,6 +256,7 @@ export {
   PolygonSmallIcon,
   PoolCoinsIcon,
   PoolGroupIcon,
+  PowerCircleIcon,
   PowerIcon,
   PriceCupIcon as PriceCup,
   PublicIcon,
