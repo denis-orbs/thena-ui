@@ -81,7 +81,13 @@ function ManualItem({ position, isXlDown }) {
   const [reward0, reward1] = rewards
 
   const _tickSpacing = useMemo(() => tickSpacing ?? TICK_SPACING, [tickSpacing])
-
+  if (position?.symbol === 'USDC/THE') {
+    console.log({ tickLower, tickUpper, _tickSpacing })
+    console.log({
+      lower: nearestUsableTick(TickMath.MIN_TICK, _tickSpacing),
+      upper: nearestUsableTick(TickMath.MAX_TICK, _tickSpacing),
+    })
+  }
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, _tickSpacing) : undefined,
@@ -214,6 +220,7 @@ function ManualItem({ position, isXlDown }) {
           <Range
             position={position}
             currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+            isFullRange={tickAtLimit[Bound.LOWER] && tickAtLimit[Bound.UPPER]}
             minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
             maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             liquidity={liquidity}
