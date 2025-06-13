@@ -33,7 +33,7 @@ function WarningStartingPrice() {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className={cn('overflow-hidden max-xl:hidden')}
         >
-          <Info className={cn('mt-2 flex-col items-start gap-0 px-5 py-4 xl:gap-1')}>
+          <Info className={cn('mt-2 flex-col items-start gap-0 py-2 pr-2 pl-3 xl:gap-1 xl:px-5 xl:py-4 xl:pl-4')}>
             <div className='flex w-full items-center gap-4'>
               <InfoIcon className='stroke-primary-600! size-5 min-w-5' />
 
@@ -49,7 +49,7 @@ function WarningStartingPrice() {
         </motion.div>
       </div>
 
-      <Info className={cn('mt-4 flex-col items-start gap-0 px-3 py-2 md:px-5 md:py-4 xl:hidden')}>
+      <Info className={cn('mt-2 flex-col items-start gap-0 px-3 py-2 md:px-5 md:py-4 xl:mt-4 xl:hidden')}>
         <div className='flex w-full items-center gap-2 md:gap-4'>
           <InfoIcon className='stroke-primary-600! size-4 min-w-4 md:size-5 md:min-w-5' />
 

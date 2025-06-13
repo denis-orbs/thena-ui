@@ -135,7 +135,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
       <div className='flex flex-col'>
         <div className='flex flex-row items-center gap-4 md:gap-8'>
           <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
-          <NewTextHeading className='xl:text-[36px] xl:leading-[40px]'> {t('Add Liquidity')}</NewTextHeading>
+          <NewTextHeading className='md:text-[36px] md:leading-[40px]'> {t('Add Liquidity')}</NewTextHeading>
         </div>
       </div>
       <section className='grid w-full grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-8'>

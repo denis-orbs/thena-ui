@@ -107,7 +107,7 @@ export function TokenAmountCard({
   }, [value, maxAmount])
 
   return (
-    <div className={cn('w-full', locked && !showOutsideWarning && 'xl:hidden')}>
+    <div className={cn('w-full', locked && !showOutsideWarning && 'hidden')}>
       {locked ? (
         showOutsideWarning && (
           <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>

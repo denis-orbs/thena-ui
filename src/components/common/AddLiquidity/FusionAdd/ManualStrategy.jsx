@@ -214,7 +214,7 @@ function ManualStrategy({
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4 xl:mb-2')}>
+          <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4 max-sm:mt-4 xl:mb-2')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
               <WarningTriangleYellowIcon className='stroke-warn-600 size-full' />
             </div>
@@ -227,7 +227,7 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'bg-opacity-50 mt-2 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 md:mt-2 md:px-5 md:py-4 xl:mt-0',
+                'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 max-sm:mt-2 md:mt-2 md:px-5 md:py-4 xl:mt-0',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -252,7 +252,7 @@ function ManualStrategy({
                 {/* <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading> */}
-                <div className='flex flex-col xl:gap-1'>
+                <div className='flex flex-col gap-1'>
                   <NewTextSubHeading className='text-primary-100 xl:text-5 text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
                     {isEarnFees ? 'Fees' : '$THE'}
                   </NewTextSubHeading>
@@ -292,7 +292,7 @@ function ManualStrategy({
       {strategy && (
         <div className={cn('flex flex-col gap-2 md:gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
-            <div className='mt-4 flex flex-col xl:hidden'>
+            <div className='mt-2 flex flex-col xl:hidden'>
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
