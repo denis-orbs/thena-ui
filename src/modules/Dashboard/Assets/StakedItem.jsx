@@ -196,7 +196,7 @@ function StakedItem({ position, isXlDown }) {
         ) : (
           <div
             className={cn(
-              'relative flex h-8 items-center justify-center overflow-hidden md:h-11',
+              'relative flex h-5 items-center justify-center overflow-hidden',
               'bg-full-range rounded-md border border-neutral-600 px-2 text-base text-neutral-300',
             )}
           >

@@ -62,6 +62,7 @@ import FingerprintIcon from '~/svgs/fingerprint.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import GiftIcon from '~/svgs/gift.svg'
 import GiftArenaIcon from '~/svgs/gift-arena.svg'
+import HalfPolygonIcon from '~/svgs/half-polygon.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfinityIcon from '~/svgs/infinity.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
@@ -69,6 +70,7 @@ import Info2Icon from '~/svgs/info-circle-2.svg'
 import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
 import InfoCirclePrimary from '~/svgs/info-circle-primary.svg'
+import InfoCircleSmall from '~/svgs/info-circle-small.svg'
 import InfoCircleWhite from '~/svgs/info-circle-white.svg'
 import InfoNeutralIcon from '~/svgs/info-neutral-400.svg'
 import InstagramColorIcon from '~/svgs/instagram-color.svg'
@@ -90,6 +92,8 @@ import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
+import PolygonIcon from '~/svgs/polygon.svg'
+import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
@@ -211,12 +215,14 @@ export {
   FirstPrizeIcon,
   GiftArenaIcon,
   GiftIcon,
+  HalfPolygonIcon,
   HamburgerIcon,
   InfinityIcon,
   Info2Icon,
   InfoCirCleDisableIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
+  InfoCircleSmall,
   InfoCircleWhite,
   InfoIcon,
   InfoNeutralIcon,
@@ -240,6 +246,8 @@ export {
   PiggySecondIcon,
   PlusCircleIcon,
   PlusIcon,
+  PolygonIcon,
+  PolygonSmallIcon,
   PoolCoinsIcon,
   PoolGroupIcon,
   PowerIcon,
