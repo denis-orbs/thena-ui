@@ -461,8 +461,8 @@
   "Select veTHE": "Select veTHE",
   "Select ID": "Select ID",
   "Manage Position": "Manage Position",
-  "Trade Perps": "Trade Perps",
-  "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
+  "Perps Trade": "Perps Trade",
+  "Easy & user-friendly trading interface": "Easy & user-friendly trading interface",
   "Backed by": "Backed by",
   "Total [symbol] Locked": "Total {symbol} Locked",
   "ID": "ID",
@@ -1579,5 +1579,8 @@
   "Liquidity range": "Liquidity range",
   "Removal": "Removal",
   "Addition": "Addition",
-  "Historical Weekly APR": "Historical Weekly APR"
+  "Historical Weekly APR": "Historical Weekly APR",
+  "Trade": "Trade",
+  "Trade with advantages like graph etc": "Trade with advantages like graph etc",
+  "Back to Top": "Back to Top"
 }

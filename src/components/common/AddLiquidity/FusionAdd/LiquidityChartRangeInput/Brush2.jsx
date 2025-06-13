@@ -211,11 +211,11 @@ export const Brush2 = ({
       <>
         <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
         {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
-
-        <rect x='0' y={height} width='100%' height={padding - 14} fill='#0D090F' />
+        <rect x='0' y={height} width='100%' height={padding - 15} fill='#0D090F' />
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
         )}
+        W
         <defs>
           <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
             <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
@@ -227,7 +227,6 @@ export const Brush2 = ({
             <rect x={0} y='0' width={width} height={height} />
           </clipPath>
         </defs>
-
         {/* will host the d3 brush */}
         <g
           ref={brushRef}
@@ -235,7 +234,6 @@ export const Brush2 = ({
           pointerEvents={interactive ? 'all' : 'none'}
           style={{ cursor: interactive ? 'default' : 'not-allowed' }}
         />
-
         {/* custom brush handles */}
         {normalizedBrushExtent && (
           <>
@@ -410,7 +408,7 @@ export const Brush2 = ({
 
                 <text
                   x={30}
-                  y={5}
+                  y={2}
                   fill={northHandleColor}
                   fontSize={20}
                   fontWeight={600}

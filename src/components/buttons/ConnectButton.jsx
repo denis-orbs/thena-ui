@@ -13,12 +13,12 @@ import { useSignWallet } from '@/hooks/useSignWallet'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
-import { formatAddress } from '@/lib/utils'
+import { cn, formatAddress } from '@/lib/utils'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 import NextImage from '../image/NextImage'
 
-export default function ConnectButton({ className }) {
+export default function ConnectButton({ className, isHeader = false, isMobile = false }) {
   const { openConnectModal } = useConnectModal()
   const { openAccountModal } = useAccountModal()
   const { openChainModal } = useChainModal()
@@ -93,6 +93,19 @@ export default function ConnectButton({ className }) {
           openAccountModal()
         }}
       >
+        {isHeader && (
+          <NextImage
+            className={cn('size-4 cursor-pointer rounded-full lg:size-5', isMobile && '!size-5')}
+            alt='particle icon'
+            src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/avatar-header.png'}
+            onClick={() => {
+              openWallet({
+                windowSize: 'small',
+                topMenuType: 'close',
+              })
+            }}
+          />
+        )}
         <span
           style={{
             color: userInfo?.nameColor ? (String(userInfo?.nameColor).startsWith('#') ? userInfo?.nameColor : '') : '',

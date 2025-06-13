@@ -17,8 +17,8 @@ function TabItem({ className, item, size, disabled }) {
       <div
         type='button'
         className={cn(
-          'cursor-pointer rounded-lg px-4 py-2.5',
-          'rounded-xs px-3 py-2 text-xs',
+          'cursor-pointer rounded-lg px-4 py-2.5 text-nowrap',
+          'rounded px-3 py-2 text-xs',
           size === SizeTypes.Medium && 'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
           'font-medium text-neutral-200',
           'outline-2 outline-offset-4 outline-transparent outline-solid',
@@ -38,8 +38,8 @@ function TabItem({ className, item, size, disabled }) {
     <button
       type='button'
       className={cn(
-        'cursor-pointer rounded-lg px-4 py-2.5',
-        'rounded-xs px-3 py-2 text-xs',
+        'cursor-pointer rounded-lg px-4 py-2.5 text-nowrap',
+        'rounded px-3 py-2 text-xs',
         size === SizeTypes.Medium && 'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
         'font-medium text-neutral-200',
         'outline-2 outline-offset-4 outline-transparent outline-solid',

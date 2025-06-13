@@ -461,8 +461,8 @@
   "Select veTHE": "選擇 veTHE",
   "Select ID": "Select ID",
   "Manage Position": "管理倉位",
-  "Trade Perps": "交易永續合約",
-  "Trade perpetual contracts with leverage": "使用槓桿交易永續合約",
+  "Perps Trade": "交易永續合約",
+  "Easy & user-friendly trading interface": "使用槓桿交易永續合約",
   "Backed by": "Backed by",
   "Total [symbol] Locked": "總 {symbol} 鎖倉數量",
   "ID": "ID",
@@ -1578,5 +1578,8 @@
   "Orders": "Orders",
   "Liquidity range": "Liquidity range",
   "Removal": "Removal",
-  "Addition": "Addition"
+  "Addition": "Addition",
+  "Trade": "Trade",
+  "Trade with advantages like graph etc": "Trade with advantages like graph etc",
+  "Back to Top": "Back to Top"
 }

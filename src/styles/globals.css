@@ -209,7 +209,7 @@
   /* #endregion  /**======== Typography =========== */
 
   .layout {
-    @apply 3xl:w-[1464px] mx-4 mt-[64px] max-w-[1464px] pt-6 pb-[150px] lg:mx-[40px] lg:mt-[92px] lg:pt-16 lg:pb-20 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1312px];
+    @apply mx-4 mt-[72px] max-w-[1464px] pb-[150px] pt-6 md:mt-[92px] lg:mx-[40px] lg:pb-20 lg:pt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1312px] 3xl:w-[1464px];
   }
 
   .layout-add-liquidity {
@@ -217,11 +217,11 @@
   }
 
   .layout-top {
-    @apply mt-[64px] lg:mt-[92px];
+    @apply mt-[64px] md:mt-[92px];
   }
 
   .layout-container {
-    @apply mx-4 mt-[128px] max-w-[1440px] pt-0 pb-[150px] lg:mx-[40px] lg:mt-[176px] lg:pt-10 lg:pb-20 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1344px];
+    @apply mx-4 mt-[134px] max-w-[1440px] pb-[150px] pt-0 md:mt-[176px] lg:mx-[40px] lg:pb-20 lg:pt-10 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1344px];
   }
 
   .layout-menu-container {
@@ -234,7 +234,7 @@
   }
 
   .layout-dashboard {
-    @apply mt-[64px] md:mt-[92px];
+    @apply mt-[72px] md:mt-[92px];
   }
 
   body.has-v3-banner .layout-dashboard {
@@ -242,7 +242,7 @@
   }
 
   body.has-v3-banner .layout-container {
-    @apply mt-[128px] md:mt-[84px];
+    @apply mt-[128px] md:mt-[92px];
   }
 
   body.has-v3-banner {

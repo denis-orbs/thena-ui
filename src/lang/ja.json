@@ -461,8 +461,8 @@
   "Select veTHE": "veTHE を選択",
   "Select ID": "Select ID",
   "Manage Position": "ポジション管理",
-  "Trade Perps": "永久契約を取引",
-  "Trade perpetual contracts with leverage": "レバレッジを使って永久契約を取引",
+  "Perps Trade": "永久契約を取引",
+  "Easy & user-friendly trading interface": "レバレッジを使って永久契約を取引",
   "Backed by": "Backed by",
   "Total [symbol] Locked": "ロックされた {symbol} の合計",
   "ID": "ID",
@@ -1578,5 +1578,8 @@
   "Orders": "Orders",
   "Liquidity range": "Liquidity range",
   "Removal": "Removal",
-  "Addition": "Addition"
+  "Addition": "Addition",
+  "Trade": "Trade",
+  "Trade with advantages like graph etc": "Trade with advantages like graph etc",
+  "Back to Top": "Back to Top"
 }
