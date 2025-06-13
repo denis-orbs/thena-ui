@@ -169,7 +169,7 @@ function ChainSelect({ className, t }) {
     <div className={cn('relative', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'group flex cursor-pointer items-center gap-1 rounded-md bg-neutral-700 p-2 hover:bg-neutral-600 md:gap-2 lg:rounded-lg lg:px-3 lg:py-3',
+          'group 2sm:gap-2 2sm:px-3 2sm:py-2 flex cursor-pointer items-center gap-1 rounded-md bg-neutral-700 p-2 hover:bg-neutral-600 lg:gap-4 lg:rounded-lg lg:px-4 lg:py-3',
           open && 'bg-neutral-600',
         )}
         onClick={() => setOpen(!open)}
@@ -177,7 +177,7 @@ function ChainSelect({ className, t }) {
         <CircleImage src={selected.img} alt='' className='size-4 lg:size-5' />
         <ChevronDownColorIcon
           className={cn(
-            'size-4 stroke-neutral-100 transition-all duration-150 ease-out group-hover:stroke-neutral-200 md:stroke-neutral-400 lg:size-5',
+            '2sm:stroke-neutral-400 size-4 stroke-neutral-100 transition-all duration-150 ease-out group-hover:stroke-neutral-200 lg:size-5',
             open ? 'rotate-180 !stroke-neutral-200' : 'rotate-0',
           )}
         />
@@ -309,15 +309,15 @@ function LanguageSelect({ className }) {
     <div className={cn('relative cursor-pointer', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'flex items-center gap-1 rounded-md px-2 py-1.5 text-xs leading-5 font-medium text-neutral-400 uppercase hover:text-neutral-100 max-md:bg-neutral-700 max-md:text-neutral-100 md:gap-2 lg:rounded-lg',
-          'hover:bg-neutral-700 lg:px-4 lg:py-2.5 lg:text-base',
+          'max-2sm:bg-neutral-700 max-2sm:text-neutral-100 2sm:gap-2 flex items-center gap-1 rounded-md px-2 py-2 text-xs !leading-4 font-medium text-neutral-400 uppercase hover:text-neutral-100 lg:rounded-lg lg:!leading-5',
+          'hover:bg-neutral-700 lg:px-4 lg:py-3 lg:text-base',
           open && 'bg-neutral-700 text-neutral-100',
         )}
         onClick={() => setOpen(!open)}
       >
         <LanguageIcon
           className={cn(
-            'size-4 cursor-pointer stroke-neutral-400 hover:stroke-neutral-100 max-md:stroke-neutral-100 lg:size-5',
+            'max-2sm:stroke-neutral-100 2sm:hidden size-4 cursor-pointer stroke-neutral-400 hover:stroke-neutral-100 lg:block lg:size-5',
             open && 'stroke-neutral-100',
           )}
         />
@@ -326,7 +326,7 @@ function LanguageSelect({ className }) {
       </div>
       <div
         className={cn(
-          'visible absolute z-50 mt-1.5 flex-col items-start justify-start max-md:left-0 md:right-0',
+          'max-2sm:left-0 2sm:right-0 visible absolute z-50 mt-1.5 flex-col items-start justify-start',
           'rounded-lg border border-neutral-600 bg-neutral-800 p-2',
           'transition-all duration-150 ease-out',
           '!shadow-custom-primary w-[129px]',
@@ -424,7 +424,7 @@ function V3Banner({ onClose }) {
 }
 
 function Header() {
-  const { isMdDown } = useMediaQuery()
+  const { isViewDown: is2SmDown } = useMediaQuery('down', 744)
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -967,22 +967,24 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'shadow-primary fixed top-0 z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b border-b-neutral-600 max-md:bg-neutral-900 md:h-[92px] md:border-b-[2px] md:backdrop-blur-[24px]',
+          'shadow-primary max-2sm:bg-neutral-900 2sm:border-b-[2px] 2sm:backdrop-blur-[24px] fixed top-0',
+          'z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b',
+          '2sm:h-[80px] border-b-neutral-600 md:h-[92px]',
           showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >
         <div
           className={cn(
-            'flex h-[72px] items-center justify-between self-stretch rounded-b-xl p-4 md:h-[92px] md:p-6 md:backdrop-blur-xl lg:px-12',
+            '2sm:backdrop-blur-xl 2sm:h-[80px] 2sm:p-6 flex h-[72px] items-center justify-between self-stretch rounded-b-xl p-4 md:h-[92px] lg:px-12',
           )}
         >
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
-            {isMdDown ? (
+            {is2SmDown ? (
               <LogoMobile className='h-10 w-10 cursor-pointer' onClick={() => onLogoClick()} />
             ) : (
               <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             )}
-            <div className='relative hidden items-center justify-center gap-1 text-xs md:inline-flex lg:text-base'>
+            <div className='2sm:inline-flex relative hidden items-center justify-center gap-1 text-xs lg:text-base'>
               {menus.map((item, idx) => (
                 <div key={`tab-${idx}`}>
                   <div
@@ -1007,8 +1009,8 @@ function Header() {
                       <span
                         className={cn(
                           'flex h-8 cursor-pointer items-center justify-center lg:h-11',
-                          'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
-                          'outline-2 outline-offset-4 outline-transparent outline-solid',
+                          'rounded-lg px-3 py-2 font-medium text-neutral-200 lg:px-4 lg:py-3',
+                          'outline-2 outline-offset-4 outline-transparent',
                           'transition-all duration-150 ease-out',
                           !item.isHighlight && 'hover:bg-neutral-800',
                           !item.isHighlight && item.active && 'bg-neutral-800',
@@ -1067,30 +1069,32 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='flex items-center gap-2 rounded-lg p-2 md:hidden lg:flex lg:py-2.5 xl:px-3'>
+            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-3 xl:flex'>
               <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
               {prices.THE > 0 ? (
-                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+                <Paragraph className='text-xs !leading-4 font-medium lg:text-base lg:!leading-5'>
+                  ${formatAmount(prices.THE)}
+                </Paragraph>
               ) : (
                 <Skeleton className='h-5 w-10' />
               )}
             </div>
-            <LanguageSelect className='hidden md:block' />
-            <ChainSelect t={t} className='hidden md:block' />
+            <LanguageSelect className='2sm:block hidden' />
+            <ChainSelect t={t} className='2sm:block hidden' />
             {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
             <ConnectButton
               className={cn(
-                'flex p-2 text-xs text-nowrap lg:px-4 lg:py-2.5 lg:text-base',
-                spaceIdName || userInfo?.username ? 'flex max-md:bg-transparent' : 'max-md:hidden',
-                !account && isMdDown && 'size-8 max-md:flex',
+                'flex px-3 py-2 text-xs !leading-4 text-nowrap lg:px-4 lg:py-3 lg:text-base lg:!leading-5',
+                spaceIdName || userInfo?.username ? 'max-2sm:bg-transparent flex' : 'max-2sm:hidden',
+                !account && is2SmDown && 'max-2sm:flex size-8',
               )}
               isHeader
-              isMini={!account && isMdDown}
+              isMini={!account && is2SmDown}
             />
             <div
-              className='flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700 md:hidden'
+              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700'
               onClick={() => setIsOpen(true)}
             >
               <HamburgerIcon className='size-4 stroke-neutral-400' />
@@ -1098,7 +1102,7 @@ function Header() {
           </div>
         </div>
         <Modal
-          isOpen={isOpen && isMdDown}
+          isOpen={isOpen && is2SmDown}
           closeModal={() => {
             setIsOpen(false)
           }}
@@ -1218,13 +1222,14 @@ function Header() {
 
       {/* Back to Top Button */}
       <motion.button
-        className='fixed bottom-11 left-1/2 z-[9999] flex h-11 -translate-x-1/2 items-center justify-center rounded-lg bg-neutral-700 px-4 py-3 shadow-lg lg:hidden'
+        className='fixed bottom-11 z-[9999] flex h-11 items-center justify-center rounded-lg bg-neutral-700 px-4 py-3 shadow-lg lg:hidden'
         onClick={scrollToTop}
-        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        initial={{ opacity: 0, scale: 0.8, y: 20, x: '-50%', left: '50%' }}
         animate={{
           opacity: showBackToTop ? 1 : 0,
           scale: showBackToTop ? 1 : 0.8,
           x: '-50%',
+          left: '50%',
           y: showBackToTop ? 0 : 20,
           pointerEvents: showBackToTop ? 'auto' : 'none',
         }}
@@ -1244,12 +1249,12 @@ function Header() {
           )}
         >
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
-            {toggleSearch && isMdDown ? (
-              <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={isMdDown} />
+            {toggleSearch && is2SmDown ? (
+              <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
             ) : (
               <>
                 <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
-                <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={isMdDown} />
+                <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
               </>
             )}
           </div>
@@ -1258,8 +1263,8 @@ function Header() {
       {pathname.startsWith('/story') && isRegistered && (
         <div
           className={cn(
-            'fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll md:top-[92px] lg:py-5',
-            showBannerMigrate && 'top-[180px] lg:top-[146px]',
+            '2sm:top-[80px] fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll md:top-[92px] lg:py-5',
+            showBannerMigrate && '2sm:top-[188px] top-[180px] lg:top-[146px]',
           )}
         >
           <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>

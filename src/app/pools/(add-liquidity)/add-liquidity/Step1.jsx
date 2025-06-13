@@ -149,11 +149,11 @@ export default function Step1() {
 
   const handleNext = useCallback(() => {
     if (pairType === PAIR_TYPES.WEIGHTED) {
-      errorToast(t('Creation of Weighted pools is currently unavailable'))
+      errorToast('Creation of Weighted pools is currently unavailable')
       return
     }
     updateSearchParams({ step: 2 }, true)
-  }, [pairType, t, updateSearchParams])
+  }, [pairType, updateSearchParams])
 
   return (
     <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
