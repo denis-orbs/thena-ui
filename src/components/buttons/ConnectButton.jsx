@@ -97,7 +97,7 @@ export default function ConnectButton({ className, isHeader = false, isMobile = 
           <NextImage
             className={cn('size-4 cursor-pointer rounded-full lg:size-5', isMobile && '!size-5')}
             alt='particle icon'
-            src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/avatar-header.png'}
+            src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/svgs/wallet-fold.svg'}
             onClick={() => {
               openWallet({
                 windowSize: 'small',

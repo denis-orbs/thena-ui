@@ -215,7 +215,6 @@ export const Brush2 = ({
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
         )}
-        W
         <defs>
           <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
             <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />

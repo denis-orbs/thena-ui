@@ -304,13 +304,18 @@ function LanguageSelect({ className }) {
     <div className={cn('relative cursor-pointer', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'flex items-center gap-1 rounded-md px-2 py-1.5 text-xs leading-5 font-medium text-neutral-100 uppercase max-md:bg-neutral-700 md:gap-2 lg:rounded-lg',
-          'hover:bg-neutral-700 md:px-4 md:py-[11px] lg:text-base',
-          open && 'bg-neutral-700',
+          'flex items-center gap-1 rounded-md px-2 py-1.5 text-xs leading-5 font-medium text-neutral-400 uppercase hover:text-neutral-100 max-md:bg-neutral-700 max-md:text-neutral-100 md:gap-2 lg:rounded-lg',
+          'hover:bg-neutral-700 md:px-4 md:py-2.5 lg:text-base',
+          open && 'bg-neutral-700 text-neutral-100',
         )}
         onClick={() => setOpen(!open)}
       >
-        <LanguageIcon className={cn('size-4 cursor-pointer lg:size-5')} />
+        <LanguageIcon
+          className={cn(
+            'size-4 cursor-pointer stroke-neutral-400 hover:stroke-neutral-100 max-md:stroke-neutral-100 lg:size-5',
+            open && 'stroke-neutral-100',
+          )}
+        />
 
         {selected.iso}
       </div>
@@ -413,12 +418,14 @@ function V3Banner({ onClose }) {
 }
 
 function Header() {
-  const { isMdDown } = useMediaQuery('down', 1024)
+  const { isMdDown } = useMediaQuery()
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
   const [toggleSearch, setToggleSearch] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const lastScrollYRef = useRef(0)
+  const hideTimeoutRef = useRef(null)
 
   const router = useRouter()
   const { push } = router
@@ -439,18 +446,45 @@ function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 300) {
+      const currentScrollY = window.scrollY
+      const lastScrollY = lastScrollYRef.current
+
+      if (currentScrollY < lastScrollY && currentScrollY > 300) {
         setShowBackToTop(true)
+
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current)
+        }
+
+        // Hide the button after 3 seconds of inactivity
+        hideTimeoutRef.current = setTimeout(() => {
+          setShowBackToTop(false)
+          hideTimeoutRef.current = null
+        }, 3000)
       } else {
         setShowBackToTop(false)
+
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current)
+          hideTimeoutRef.current = null
+        }
       }
+
+      lastScrollYRef.current = currentScrollY
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+      }
+    }
   }, [])
 
   const scrollToTop = () => {
+    setShowBackToTop(false)
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
@@ -605,7 +639,7 @@ function Header() {
         onClickHandler: () => push('/analytics'),
       },
       {
-        label: 'More',
+        label: t('More'),
         subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
         sub:
@@ -927,13 +961,13 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'shadow-primary fixed top-0 z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b border-b-neutral-600 backdrop-blur-[24px] md:h-[92px] md:border-b-[2px]',
+          'shadow-primary fixed top-0 z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b border-b-neutral-600 max-md:bg-neutral-900 md:h-[92px] md:border-b-[2px] md:backdrop-blur-[24px]',
           showBannerMigrate && 'top-[124px] md:top-[54px]',
         )}
       >
         <div
           className={cn(
-            'flex h-[72px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] md:p-6 lg:px-12',
+            'flex h-[72px] items-center justify-between self-stretch rounded-b-xl p-4 md:h-[92px] md:p-6 md:backdrop-blur-xl lg:px-12',
           )}
         >
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
@@ -1035,14 +1069,14 @@ function Header() {
                 <Skeleton className='h-5 w-10' />
               )}
             </div>
-            <ChainSelect t={t} className='hidden md:block' />
             <LanguageSelect className='hidden md:block' />
+            <ChainSelect t={t} className='hidden md:block' />
             {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
             <ConnectButton
               className={cn(
-                'flex p-2 text-xs md:px-4 md:py-[11px] lg:text-base',
+                'flex p-2 text-xs md:px-4 md:py-2.5 lg:text-base',
                 spaceIdName || userInfo?.username ? 'flex' : 'max-md:hidden',
               )}
               isHeader
@@ -1061,16 +1095,11 @@ function Header() {
             setIsOpen(false)
           }}
           title={
-            selected ? (
-              selected.label
-            ) : (
-              <div className='flex items-center gap-1'>
-                <ChainSelect t={t} />
-                <LanguageSelect />
-              </div>
-            )
+            <div className='flex items-center gap-1'>
+              <ChainSelect t={t} />
+              <LanguageSelect />
+            </div>
           }
-          isBack={!!selected}
           onClickHandler={() => {
             if (selected) {
               setSelected(null)
@@ -1078,7 +1107,7 @@ function Header() {
               onLogoClick()
             }
           }}
-          isIntl={!selected}
+          isIntl
           classNames={{ header: '!pt-4', closeButton: 'bg-neutral-700' }}
           background='#281B2E'
           backgroundColor='#281B2E'
@@ -1108,10 +1137,9 @@ function Header() {
         >
           <div className='inline-flex w-full flex-col items-start justify-start gap-1 px-4'>
             {menus.map((menu, idx) => (
-              <>
+              <React.Fragment key={`menu-${idx}`}>
                 <div
                   className='inline-flex cursor-pointer items-center justify-between self-stretch rounded p-3 transition-all hover:bg-neutral-800'
-                  key={`menu-${idx}`}
                   onClick={() => {
                     if (menu.onClickHandler) {
                       menu.onClickHandler()
@@ -1172,7 +1200,7 @@ function Header() {
                     ))}
                   </motion.div>
                 )}
-              </>
+              </React.Fragment>
             ))}
             <ConnectButton className='w-full' isHeader isMobile />
           </div>
@@ -1182,13 +1210,14 @@ function Header() {
 
       {/* Back to Top Button */}
       <motion.button
-        className='fixed bottom-11 left-1/2 z-50 flex h-11 -translate-x-1/2 items-center justify-center rounded-lg bg-transparent px-4 py-3 backdrop-blur-sm'
+        className='fixed bottom-11 left-1/2 z-50 flex h-11 -translate-x-1/2 items-center justify-center rounded-lg bg-transparent px-4 py-3 md:hidden'
         onClick={scrollToTop}
-        initial={{ opacity: 0, scale: 0.8, x: '-50%' }}
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
         animate={{
           opacity: showBackToTop ? 1 : 0,
           scale: showBackToTop ? 1 : 0.8,
           x: '-50%',
+          y: showBackToTop ? 0 : 20,
           pointerEvents: showBackToTop ? 'auto' : 'none',
         }}
         transition={{ duration: 0.3 }}
