@@ -269,7 +269,8 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 />
                 <HalfPolygonIcon
                   className={cn(
-                    'absolute top-[1px] right-0 z-20 size-4! rotate-180 cursor-pointer justify-items-end stroke-neutral-500 text-transparent hover:text-neutral-300',
+                    'absolute top-[1px] right-0 z-20 size-4! rotate-180 cursor-pointer justify-items-end',
+                    'stroke-neutral-500 text-transparent hover:text-neutral-300',
                   )}
                   onMouseEnter={() => setCurrentHover('max-price')}
                   onMouseLeave={() => setCurrentHover(null)}

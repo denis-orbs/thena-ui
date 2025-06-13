@@ -189,6 +189,7 @@ function FarmingItem({ position, isXlDown }) {
             minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
             maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             liquidity={liquidity}
+            isFullRange={tickAtLimit[Bound.LOWER] && tickAtLimit[Bound.UPPER]}
           />
         )}
       </div>
