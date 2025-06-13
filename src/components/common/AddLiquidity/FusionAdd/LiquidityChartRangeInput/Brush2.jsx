@@ -212,7 +212,7 @@ export const Brush2 = ({
         <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
         {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
 
-        <rect x='0' y={height} width='100%' height={padding - 14} fill='#0D090F' />
+        <rect x='0' y={height} width='100%' height={padding - 15} fill='#0D090F' />
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
         )}
