@@ -26,6 +26,7 @@ import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
 import Check2Icon from '~/svgs/check2.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
+import ChevronDownColorIcon from '~/svgs/cheveron-down-color.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronDownWhiteIcon from '~/svgs/chevron-down-white.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
@@ -76,6 +77,7 @@ import InfoNeutralIcon from '~/svgs/info-neutral-400.svg'
 import InstagramColorIcon from '~/svgs/instagram-color.svg'
 import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
+import LanguageIcon from '~/svgs/language.svg'
 import LinkExternalIcon from '~/svgs/link-external.svg'
 import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 import LockIcon from '~/svgs/lock.svg'
@@ -97,6 +99,7 @@ import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
+import PowerCircleIcon from '~/svgs/power-icon.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
@@ -144,6 +147,7 @@ import User from '~/svgs/user.svg'
 import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
+import WalletFoldIcon from '~/svgs/wallet-fold.svg'
 import WarningTriangleYellowIcon from '~/svgs/warn-triangle-yellow.svg'
 import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
 import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
@@ -180,6 +184,7 @@ export {
   CheckIcon,
   CheckPurpleIcon,
   CheckPurpleLargeIcon,
+  ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
   ChevronRightIcon,
@@ -229,6 +234,7 @@ export {
   InstagramColorIcon,
   InstagramNoColorIcon,
   LangIcon,
+  LanguageIcon,
   LinkExternalIcon,
   LinkExternalPrimaryIcon,
   Lock2Icon,
@@ -250,6 +256,7 @@ export {
   PolygonSmallIcon,
   PoolCoinsIcon,
   PoolGroupIcon,
+  PowerCircleIcon,
   PowerIcon,
   PriceCupIcon as PriceCup,
   PublicIcon,
@@ -298,6 +305,7 @@ export {
   User,
   UserIcon,
   Verified,
+  WalletFoldIcon,
   WalletIcon,
   WarningTriangleIcon,
   WarningTriangleYellowIcon,

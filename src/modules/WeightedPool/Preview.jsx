@@ -35,7 +35,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
 
   const onCreate = useCallback(() => {
     if (blockCreated) {
-      errorToast('Creation of Weighted pools is currently unavailable. Please check again later.')
+      errorToast('Creation of Weighted pools is currently unavailable')
       return
     }
 

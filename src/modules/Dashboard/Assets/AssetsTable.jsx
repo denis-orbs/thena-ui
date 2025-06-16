@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 
@@ -61,6 +62,7 @@ const columns = [
 ]
 
 function TableHeader({ sort, setSort, searchText, setSearchText }) {
+  const t = useTranslations()
   return (
     <thead className='border-b border-neutral-800'>
       <tr>
@@ -87,7 +89,9 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
               <NewSearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             ) : (
               <div className='flex items-center gap-2'>
-                <TextHeading className='text-base 2xl:text-[17px]'>{column.label}</TextHeading>
+                <TextHeading className='text-base 2xl:text-[17px]'>
+                  {column.label !== '' ? t(column.label) : column.label}
+                </TextHeading>
                 <div className='size-4'>
                   {sort.value === column.value && !column.disabled && (
                     <ArrowDownIcon

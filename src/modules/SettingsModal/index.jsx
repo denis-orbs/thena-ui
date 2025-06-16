@@ -113,7 +113,7 @@ function LiquidityHubSettings() {
       </div>
       <div className='mt-[9px] flex items-center gap-2.5'>
         <p className='inline text-sm text-neutral-300'>
-          {locale === LOCALES.en ? (
+          {locale !== LOCALES.zh_TW && locale !== LOCALES.zh_CN ? (
             <>
               <OrbsLogo /> <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>, powered by{' '}
               <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink>

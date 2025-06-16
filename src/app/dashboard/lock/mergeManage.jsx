@@ -61,7 +61,7 @@ export default function MergeManage({ selected, isAutomation }) {
               data={filtered}
               selected={veTHE ? `veTHE #${veTHE.id}` : ''}
               setSelected={setVeTHE}
-              placeHolder='Make a selection'
+              placeHolder={t('Make a selection')}
               isLocale={false}
               listClassNames='z-60'
             />

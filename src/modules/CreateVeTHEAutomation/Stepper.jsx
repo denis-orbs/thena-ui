@@ -1,9 +1,11 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Box from '@/components/box'
 import { cn } from '@/lib/utils'
 
 function Stepper({ steps, currentStep, setCurrentStep, isEdit }) {
+  const t = useTranslations()
   return (
     <Box className='flex flex-col gap-6'>
       {steps.map((step, index) => (
@@ -20,7 +22,9 @@ function Stepper({ steps, currentStep, setCurrentStep, isEdit }) {
           >
             {index + 1}
           </div>
-          <span className={('ml-4', currentStep === index + 1 ? 'text-neutral-50' : 'text-neutral-500')}>{step}</span>
+          <span className={('ml-4', currentStep === index + 1 ? 'text-neutral-50' : 'text-neutral-500')}>
+            {t(step)}
+          </span>
         </div>
       ))}
     </Box>

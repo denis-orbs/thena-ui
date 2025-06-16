@@ -250,7 +250,7 @@ function PairStrategy({ pair }) {
       <div className='w-full 2xl:w-[25%]'>
         <div className={cn('flex items-center justify-between py-4 lg:h-[92px]')}>
           <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
-            Automatic Strategy
+            {t('Automatic Strategy')}
           </NewTextSubHeading>
 
           <EmphasisIconButton
@@ -274,7 +274,7 @@ function PairStrategy({ pair }) {
         <div className={cn('bg-primary-950/50 flex items-center justify-between gap-2 rounded-xl p-4 lg:px-6')}>
           <div className='flex items-center gap-4 lg:gap-8'>
             <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
-              Manual Strategy
+              {t('Manual Strategy')}
             </NewTextSubHeading>
             <EmphasisIconButton
               Icon={ArrowRightIcon}

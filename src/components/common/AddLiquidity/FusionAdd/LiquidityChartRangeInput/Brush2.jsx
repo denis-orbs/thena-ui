@@ -1,4 +1,5 @@
 import { brushY, select } from 'd3'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
@@ -48,6 +49,7 @@ export const Brush2 = ({
   setLiveLocalBrushExtent = () => {},
   setCurrentHover = () => {},
 }) => {
+  const t = useTranslations()
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
 
@@ -211,7 +213,6 @@ export const Brush2 = ({
       <>
         <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
         {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
-
         <rect x='0' y={height} width='100%' height={padding - 15} fill='#0D090F' />
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
@@ -227,7 +228,6 @@ export const Brush2 = ({
             <rect x={0} y='0' width={width} height={height} />
           </clipPath>
         </defs>
-
         {/* will host the d3 brush */}
         <g
           ref={brushRef}
@@ -235,7 +235,6 @@ export const Brush2 = ({
           pointerEvents={interactive ? 'all' : 'none'}
           style={{ cursor: interactive ? 'default' : 'not-allowed' }}
         />
-
         {/* custom brush handles */}
         {normalizedBrushExtent && (
           <>
@@ -389,7 +388,7 @@ export const Brush2 = ({
                   transform='scale(1,-1)'
                   color='#F199EE'
                 >
-                  range out of view
+                  {t('range out of view')}
                 </text>
               </g>
             )}
@@ -410,7 +409,7 @@ export const Brush2 = ({
 
                 <text
                   x={30}
-                  y={5}
+                  y={2}
                   fill={northHandleColor}
                   fontSize={20}
                   fontWeight={600}
@@ -418,7 +417,7 @@ export const Brush2 = ({
                   fontFamily='Archia'
                   color='#F199EE'
                 >
-                  range out of view
+                  {t('range out of view')}
                 </text>
               </g>
             )}
@@ -434,11 +433,11 @@ export const Brush2 = ({
       height,
       showSouthArrow,
       id,
+      interactive,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
       flipNorthHandle,
-      interactive,
       southHandleColor,
       disableColor.line.south,
       disableColor.handle.south,
@@ -447,6 +446,7 @@ export const Brush2 = ({
       southHandleInView,
       flipSouthHandle,
       northHandleColor,
+      t,
     ],
   )
 }

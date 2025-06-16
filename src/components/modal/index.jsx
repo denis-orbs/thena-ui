@@ -30,9 +30,12 @@ function Modal({
   fontSizeTitle = '',
   showIconX = true,
   style = {},
+  styles,
   showHeadModal = true,
   backgroundColor = undefined,
   background,
+  closeButton,
+  classNames,
   ...rest
 }) {
   const t = useTranslations()
@@ -47,6 +50,7 @@ function Modal({
         bottom: 0,
         backgroundColor: 'rgba(13, 9, 15, 0.8)',
         zIndex: zIndex ?? 60,
+        ...(styles?.overlay ? styles.overlay : {}),
       },
       content: isSmallScreen()
         ? {
@@ -61,6 +65,7 @@ function Modal({
             height: 'fit-content',
             maxHeight: '90%',
             overflow: 'auto',
+            ...(styles?.smallScreen ? styles.smallScreen : {}),
           }
         : {
             top: '50%',
@@ -78,9 +83,10 @@ function Modal({
             backgroundColor: backgroundColor ?? '#1A121E',
             padding: '0 0 24px',
             overflow: 'auto',
+            ...(styles?.largeScreen ? styles.largeScreen : {}),
           },
     }),
-    [background, backgroundColor, width, zIndex],
+    [background, backgroundColor, width, zIndex, styles],
   )
 
   return (
@@ -94,7 +100,9 @@ function Modal({
       {...rest}
     >
       {showHeadModal && (
-        <div className='inline-flex w-full items-center justify-between px-4 pt-6 pb-3 lg:px-6'>
+        <div
+          className={cn('inline-flex w-full items-center justify-between px-4 pt-6 pb-3 lg:px-6', classNames?.header)}
+        >
           <div className='flex items-center'>
             {isBack && (
               <TextIconButton
@@ -107,7 +115,13 @@ function Modal({
               {isIntl ? title : title && typeof title === 'string' && t(title)}
             </div>
           </div>
-          {showIconX && <TextIconButton Icon={XIcon} onClick={closeModal} />}
+          {showIconX && (
+            <>
+              {closeButton || (
+                <TextIconButton className={cn(classNames?.closeButton)} Icon={XIcon} onClick={closeModal} />
+              )}
+            </>
+          )}
         </div>
       )}
       {children}

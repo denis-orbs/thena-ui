@@ -662,8 +662,8 @@
   "Change avatar": "更改头贴",
   "Are you sure you want to admin": "您确定要将 {type} 设置为此用户的管理员吗？",
   "Win Amount": "奖励金额",
-  "Trade Perps": "交易永续合约",
-  "Trade perpetual contracts with leverage": "使用杠杆交易永续合约",
+  "Perps Trade": "交易永续合约",
+  "Easy & user-friendly trading interface": "使用杠杆交易永续合约",
   "Backed by": "获得",
   "Total [symbol] Locked": "总 {symbol}锁定数量",
   "ID": "ID",
@@ -1570,5 +1570,8 @@
   "Liquidity range": "Liquidity range",
   "Removal": "Removal",
   "Addition": "Addition",
-  "Historical Weekly APR": "Historical Weekly APR"
+  "Historical Weekly APR": "Historical Weekly APR",
+  "Trade": "Trade",
+  "Trade with advantages like graph etc": "Trade with advantages like graph etc",
+  "Back to Top": "Back to Top"
 }

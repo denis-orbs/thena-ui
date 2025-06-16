@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import Box from '@/components/box'
@@ -8,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { ChevronUpIcon, InfoIcon, LinkExternalPrimaryIcon } from '@/svgs'
 
 function WarningZapper() {
+  const t = useTranslations()
   const [showWarning, setShowWarning] = useState(true)
 
   return (
@@ -17,8 +19,8 @@ function WarningZapper() {
       <div className='flex w-full gap-2 md:gap-4'>
         <InfoIcon className='stroke-primary-600 size-6 min-w-6 md:size-8 md:min-w-8' />
         <div className='flex w-full items-start justify-between md:items-center'>
-          <NewTextSubHeading className='text-primary-100 text-xl leading-6 md:text-2xl xl:text-[20px] xl:leading-7'>
-            Important Information about Zapper
+          <NewTextSubHeading className='text-primary-100 text-xl leading-6 md:text-2xl xl:text-xl! xl:leading-7'>
+            {t('Important Information about Zapper')}
           </NewTextSubHeading>
 
           <ChevronUpIcon
@@ -39,21 +41,17 @@ function WarningZapper() {
       >
         <TextSubHeading className='mt-2 flex flex-col gap-2 pl-8 text-sm md:mt-4 md:gap-4 md:pl-12 md:text-base xl:mt-2 xl:gap-2'>
           <Paragraph className='text-primary-100'>
-            This feature is incompatible with tokens that have buy/sell tax implementation.
+            {t('This feature is incompatible with tokens that have buy/sell tax implementation')}.
           </Paragraph>
-          <Paragraph className='text-primary-100'>
-            If you are zapping a considerable amount of funds, please ensure to use protection against sandwich attacks
-            to safeguard your investment. This precaution helps protecting your transaction from potential front-running
-            and other malicious activities.
-          </Paragraph>
+          <Paragraph className='text-primary-100'>{t('If you are zapping a considerable amount of funds')}</Paragraph>
           <Link
             target='_blank'
             className='text-primary-600 flex items-start gap-2 md:items-center'
             href='https://www.bnbchain.org/en/blog/protecting-users-from-sandwich-attacks-bnb-chain-introduces-mev-protection-with-several-wallets'
             rel='noreferrer'
           >
-            Learn more about protection from sandwich attacks here
-            <LinkExternalPrimaryIcon className='stroke-primary-600! inline-block w-4 min-w-4' />
+            {t('Learn more about protection from sandwich attacks here')}
+            <LinkExternalPrimaryIcon className='!stroke-primary-600 inline-block w-4 min-w-4' />
           </Link>
         </TextSubHeading>
       </motion.div>

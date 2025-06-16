@@ -37,7 +37,12 @@ export const CHAINLINK_ADDRESS = '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd'
 
 export const LOCALES = {
   en: 'en',
-  zh: 'zh',
+  zh_CN: 'zh-CN', // Mandarin (Simplified)
+  zh_TW: 'zh-TW', // Mandarin (Traditional)
+  vi: 'vi', // Vietnamese
+  th: 'th', // Thai
+  ja: 'ja', // Japanese
+  ko: 'ko', // Korean
 }
 
 export const SCAN_URLS = {
