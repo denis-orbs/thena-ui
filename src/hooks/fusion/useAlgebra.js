@@ -122,7 +122,7 @@ export const useAlgebraAdd = () => {
 
         if (isFarming) {
           transactions[approveNft] = {
-            desc: `${t('Approve Approve For Farming')}`,
+            desc: `${t('Approve For Farming')}`,
             status: TXN_STATUS.START,
             hash: null,
           }
