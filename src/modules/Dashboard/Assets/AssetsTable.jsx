@@ -89,7 +89,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
               <NewSearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             ) : (
               <div className='flex items-center gap-2'>
-                <TextHeading className='text-base 2xl:text-[17px]'>
+                <TextHeading className='3xl:text-[17px] text-base'>
                   {column.label !== '' ? t(column.label) : column.label}
                 </TextHeading>
                 <div className='size-4'>

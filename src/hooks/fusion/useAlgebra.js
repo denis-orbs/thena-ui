@@ -284,18 +284,9 @@ export const useAlgebraClaim = (version = 3) => {
         }
 
         const farmingCenter = getFarmingCenterContract(chainId)
-        const collectData = encodeFunctionData({
-          abi: farmingCenter.abi,
-          functionName: 'collectRewards',
-          args: [poolkey, tokenId],
-        })
-        const claimRewardData = encodeFunctionData({
-          abi: farmingCenter.abi,
-          functionName: 'claimReward',
-          args: [Contracts.THE[chainId], account, maxUint256],
-        })
+        const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
 
-        if (!(await writeTxn(key, claimFarmId, farmingCenter, 'multicall', [[collectData, claimRewardData]]))) {
+        if (!(await writeTxn(key, claimFarmId, farmingCenter, 'multicall', [calldata]))) {
           setPending(false)
           return
         }
