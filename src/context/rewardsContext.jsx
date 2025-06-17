@@ -22,8 +22,12 @@ const rewardsContext = React.createContext({
 })
 
 const V3_GET_USER_REWARDS = gql`
-  query V3_GET_USER_REWARDS($user: Bytes = "") {
-    userRewards(where: { user: $user, votingIncentive_: { isActive: true } }) {
+  query V3_GET_USER_REWARDS($user: Bytes = "", $first: Int = 1000, $skip: Int = 0) {
+    userRewards(
+      where: { user: $user, votingIncentive_: { isActive: true }, rewardAmount_gt: 0 }
+      first: $first
+      skip: $skip
+    ) {
       id
       lastUpdate
       pool {
@@ -39,27 +43,42 @@ const V3_GET_USER_REWARDS = gql`
     }
   }
 `
-
 const fetchUserRewards = async (userId, chainId) => {
-  try {
-    const { userRewards } = await voterSubgraph[chainId].request(V3_GET_USER_REWARDS, {
-      user: userId,
-    })
+  const allRewards = []
+  const PAGE_SIZE = 1000
+  let skip = 0
+  let hasMore = true
 
-    const flattenedRewards = (userRewards || []).map(reward => ({
-      id: reward.id,
-      lastUpdate: reward.lastUpdate,
-      pool: reward.pool,
-      rewardAmount: reward.rewardAmount,
-      rewardToken: reward.rewardToken,
-      user: reward.user,
-      votingIncentives: reward.pool?.votingIncentive || null,
-    }))
-    return flattenedRewards
-  } catch (e) {
-    console.error(e)
-    return []
+  while (hasMore) {
+    try {
+      const { userRewards } = await voterSubgraph[chainId].request(V3_GET_USER_REWARDS, {
+        user: userId,
+        first: PAGE_SIZE,
+        skip,
+      })
+
+      const rewards = (userRewards || []).map(reward => ({
+        id: reward.id,
+        lastUpdate: reward.lastUpdate,
+        pool: reward.pool,
+        rewardAmount: reward.rewardAmount,
+        rewardToken: reward.rewardToken,
+        user: reward.user,
+        votingIncentives: reward.pool?.votingIncentive || null,
+      }))
+
+      allRewards.push(...rewards)
+      if (rewards.length < PAGE_SIZE) {
+        hasMore = false
+      } else {
+        skip += PAGE_SIZE
+      }
+    } catch (e) {
+      console.error('Error fetching userRewards:', e)
+      hasMore = false
+    }
   }
+  return allRewards
 }
 
 function RewardsContextProvider({ children }) {
