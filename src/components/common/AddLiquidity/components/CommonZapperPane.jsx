@@ -207,6 +207,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             asset={tokenDeposit}
             maxBalance={tokenDeposit?.balance}
             autoFocus
+            singleMode
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={[]}
