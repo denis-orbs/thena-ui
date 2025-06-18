@@ -113,7 +113,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
           <V1Add
             pool={pool}
-            pairType={pair?.type}
+            pairType={pair?.type || pairType}
             firstAsset={firstAsset}
             secondAsset={secondAsset}
             setFirstAddress={setFirstAddress}
