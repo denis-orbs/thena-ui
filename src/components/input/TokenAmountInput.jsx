@@ -39,6 +39,7 @@ export function TokenAmountInput({
   classNames,
   isSmall = false,
   isSwapChainLink = false,
+  singleMode = false,
 }) {
   const assets = useAssets()
   const t = useTranslations()
@@ -199,7 +200,7 @@ export function TokenAmountInput({
                   dropdownAlign='right'
                   optionWidth={optionWidth}
                   style={SELECT_TOKEN_STYLE.BADGE}
-                  allowDouble={Boolean(maxBalance) && !isSwapChainLink}
+                  allowDouble={!singleMode && Boolean(maxBalance) && !isSwapChainLink}
                   assetOptions={assetsSelect}
                   classNames={{ dropdown: '2xl:grid-cols-2' }}
                 />
