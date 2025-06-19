@@ -120,7 +120,7 @@ export default function ConnectButton({ className, isHeader = false, isMobile = 
 
   return (
     <PrimaryButton className={cn('leading-5', className)} onClick={() => openConnectModal()}>
-      {isHeader && isMini ? <PowerCircleIcon className='size-4' /> : t('Connect Wallet')}
+      {isHeader && isMini ? <PowerCircleIcon className='!size-4' /> : t('Connect Wallet')}
     </PrimaryButton>
   )
 }
