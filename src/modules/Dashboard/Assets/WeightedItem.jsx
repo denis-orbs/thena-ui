@@ -15,6 +15,7 @@ import {
   useGaugeHarvestWeighted,
   useGaugeStakeWeighted,
   useGaugeUnstakeWeighted,
+  useWithdrawUserBalanceWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
@@ -34,6 +35,7 @@ function WeightedItem({ position, isStake, isXlDown }) {
   const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
   const { gaugeBalance } = useGaugeBalance(position.gauge.address)
   const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
+  const { onWithdrawUserBalance, pending: withdrawPending } = useWithdrawUserBalanceWeighted()
 
   const { claimableFee, depositValue } = position
 
@@ -163,8 +165,18 @@ function WeightedItem({ position, isStake, isXlDown }) {
     [claimableFee?.total, position?.address, isStake, t, renderRewardTokens],
   )
 
-  const actionCell = useMemo(
-    () => (
+  const actionCell = useMemo(() => {
+    const disableActions = true // TODO: temporary disable all actions
+    if (disableActions) {
+      return (
+        <div className='grid w-full grid-cols-1 justify-center gap-2'>
+          <EmphasisButton disabled={withdrawPending} className='flex-1 px-1' onClick={() => onWithdrawUserBalance()}>
+            {t('Withdraw')}
+          </EmphasisButton>
+        </div>
+      )
+    }
+    return (
       <div className='grid w-full grid-cols-3 justify-center gap-2'>
         {isStake ? (
           <>
@@ -218,21 +230,22 @@ function WeightedItem({ position, isStake, isXlDown }) {
           </>
         )}
       </div>
-    ),
-    [
-      claimableFee.total,
-      isStake,
-      onClaim,
-      onGaugeHarvest,
-      pendingClaimFees,
-      pendingHarvest,
-      position,
-      push,
-      stakePending,
-      t,
-      unstakePending,
-    ],
-  )
+    )
+  }, [
+    claimableFee.total,
+    isStake,
+    onClaim,
+    onGaugeHarvest,
+    onWithdrawUserBalance,
+    pendingClaimFees,
+    pendingHarvest,
+    position,
+    push,
+    stakePending,
+    t,
+    unstakePending,
+    withdrawPending,
+  ])
 
   return (
     <>

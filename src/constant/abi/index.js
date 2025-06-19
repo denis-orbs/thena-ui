@@ -44,6 +44,7 @@ import veTHEApiAbi from './veTHEAPI.json'
 import voterAbi from './voter.json'
 import voterV2Abi from './voterV2.json'
 import wbnbAbi from './wbnb.json'
+import emergencyRouterAbi from './weighted-pool/emergencyRouter.json'
 import weightedGaugeAbi from './weighted-pool/gauge.json'
 import weightedPoolRouterAbi from './weighted-pool/router.json'
 import weightedPoolRouterSimulatorAbi from './weighted-pool/routerSimulator.json'
@@ -63,6 +64,7 @@ export {
   dibsAbi,
   dibsLotteryAbi,
   dibsRewarderAbi,
+  emergencyRouterAbi,
   emojiClubAbi,
   emojiNumeralAbi,
   ERC20Abi,

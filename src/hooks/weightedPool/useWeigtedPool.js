@@ -14,6 +14,7 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { batchCallMulti, callMulti, readCall, waitCall } from '@/lib/contractActions'
 import {
+  getEmergencyRouterContract,
   getERC20Contract,
   getGaugeContract,
   getWBNBContract,
@@ -1698,4 +1699,43 @@ export const useGaugeHarvestWeighted = () => {
   )
 
   return { onGaugeHarvest, pending }
+}
+
+export const useWithdrawUserBalanceWeighted = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onWithdrawUserBalance = useCallback(async () => {
+    const key = uuidv4()
+    const withdrawuuid = uuidv4()
+
+    setPending(true)
+
+    startTxn({
+      key,
+      title: 'Withdraw User Balance',
+      transactions: {
+        [withdrawuuid]: {
+          desc: t('Withdraw User Balance'),
+          status: TXN_STATUS.START,
+          hash: null,
+        },
+      },
+    })
+    const emergencyRouterContract = getEmergencyRouterContract(chainId)
+    if (!(await writeTxn(key, withdrawuuid, emergencyRouterContract, 'withdrawUserBalance', []))) {
+      setPending(false)
+      return
+    }
+
+    endTxn({
+      key,
+      final: 'Withdraw Successful',
+    })
+    setPending(false)
+  }, [chainId, startTxn, writeTxn, endTxn, t])
+
+  return { onWithdrawUserBalance, pending }
 }
