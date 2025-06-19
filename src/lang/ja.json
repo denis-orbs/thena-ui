@@ -1605,5 +1605,9 @@
   "Total Incentives": "Total Incentives",
   "Creation of Weighted pools is currently unavailable": "Creation of Weighted pools is currently unavailable. Please check again later.",
   "range out of view": "価格範囲は現在の表示に含まれていません",
-  "Pool Token": "プールトークン"
+  "Pool Token": "プールトークン",
+  "Claim Rebases": "Claim Rebases",
+  "Claim Voting Rewards V3": "Claim Voting Rewards V3",
+  "Claim Voting Rewards V2": "Claim Voting Rewards V2",
+  "Harvest Farmed Rewards": "Harvest Farmed Rewards"
 }

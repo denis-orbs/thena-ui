@@ -428,7 +428,9 @@ function StrategyTitle({
             {t('Only use if you are experienced in providing concentrated liquidity')}
           </Paragraph>
 
-          <NewTextSubHeading className='mt-4 mb-2 block text-xl'>{t('Automatic Strategy')}</NewTextSubHeading>
+          <NewTextSubHeading className='text-5! my-2 block leading-6! font-semibold xl:text-[18px] xl:leading-7!'>
+            {t('Automatic Strategy')}
+          </NewTextSubHeading>
           <Paragraph className='text-base'>{t('If you are new to concentrated liquidity')}</Paragraph>
         </div>
       </motion.div>

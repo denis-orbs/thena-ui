@@ -1605,5 +1605,9 @@
   "Total Incentives": "Total Incentives",
   "Creation of Weighted pools is currently unavailable": "Creation of Weighted pools is currently unavailable. Please check again later.",
   "range out of view": "價格區間未顯示於當前視圖中",
-  "Pool Token": "池子代幣"
+  "Pool Token": "池子代幣",
+  "Claim Rebases": "Claim Rebases",
+  "Claim Voting Rewards V3": "Claim Voting Rewards V3",
+  "Claim Voting Rewards V2": "Claim Voting Rewards V2",
+  "Harvest Farmed Rewards": "Harvest Farmed Rewards"
 }
