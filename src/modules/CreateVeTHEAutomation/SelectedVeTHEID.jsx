@@ -60,16 +60,16 @@ function SelectedVeTHEID({ veTHESelected }) {
           <TextHeading className='text-neutral-300'>{id}</TextHeading>
         </div>
         <div className='flex flex-col gap-1'>
-          <TextHeading>Lock Expire</TextHeading>
+          <TextHeading>{t('Lock Expire')}</TextHeading>
           <TextHeading className='text-neutral-300'>{dayjs.unix(lockedEnd).format('MMM D, YYYY')}</TextHeading>
         </div>
         <div className='flex flex-col gap-1'>
-          <TextHeading>Lock Value</TextHeading>
+          <TextHeading>{t('Lock Value')}</TextHeading>
           <TextHeading className='text-neutral-300'>{formatAmount(voting_amount)}</TextHeading>
           <Paragraph className='text-sm text-neutral-500'>${formatAmount(voting_amount * prices.THE)}</Paragraph>
         </div>
         <div className='flex flex-col gap-1'>
-          <TextHeading>Locked Amount</TextHeading>
+          <TextHeading>{t('Locked Amount')}</TextHeading>
           <TextHeading className='text-neutral-300'>{formatAmount(amount)}</TextHeading>
           <Paragraph className='text-sm text-neutral-500'>${formatAmount(amount * prices.THE)}</Paragraph>
         </div>

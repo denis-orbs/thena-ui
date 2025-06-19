@@ -34,6 +34,7 @@ export function TokenAmountCard({
   showPercent = true,
   showOutsideWarning = true,
   isSmall = false,
+  classNames,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -106,7 +107,7 @@ export function TokenAmountCard({
   }, [value, maxAmount])
 
   return (
-    <div className='w-full'>
+    <div className={cn('w-full', locked && !showOutsideWarning && 'hidden')}>
       {locked ? (
         showOutsideWarning && (
           <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -137,7 +138,10 @@ export function TokenAmountCard({
               <input
                 ref={inputRefer}
                 type='number'
-                className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+                className={cn(
+                  'w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400',
+                  classNames?.input,
+                )}
                 placeholder='0.0'
                 value={value}
                 disabled={locked}
@@ -197,7 +201,11 @@ export function TokenAmountCard({
                 </span>
                 <span
                   onClick={() => handleInput(maxAmount?.toExact())}
-                  className={cn('text-primary-600 cursor-pointer', maxAmount?.toExact() === '0' && 'hidden')}
+                  className={cn(
+                    'text-primary-600 cursor-pointer',
+                    maxAmount?.toExact() === '0' && 'hidden',
+                    classNames?.maxBtn,
+                  )}
                 >
                   {t('Max')}
                 </span>

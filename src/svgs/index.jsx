@@ -26,6 +26,7 @@ import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
 import Check2Icon from '~/svgs/check2.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
+import ChevronDownColorIcon from '~/svgs/cheveron-down-color.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronDownWhiteIcon from '~/svgs/chevron-down-white.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
@@ -62,6 +63,7 @@ import FingerprintIcon from '~/svgs/fingerprint.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import GiftIcon from '~/svgs/gift.svg'
 import GiftArenaIcon from '~/svgs/gift-arena.svg'
+import HalfPolygonIcon from '~/svgs/half-polygon.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfinityIcon from '~/svgs/infinity.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
@@ -69,11 +71,13 @@ import Info2Icon from '~/svgs/info-circle-2.svg'
 import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
 import InfoCirclePrimary from '~/svgs/info-circle-primary.svg'
+import InfoCircleSmall from '~/svgs/info-circle-small.svg'
 import InfoCircleWhite from '~/svgs/info-circle-white.svg'
 import InfoNeutralIcon from '~/svgs/info-neutral-400.svg'
 import InstagramColorIcon from '~/svgs/instagram-color.svg'
 import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
+import LanguageIcon from '~/svgs/language.svg'
 import LinkExternalIcon from '~/svgs/link-external.svg'
 import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 import LockIcon from '~/svgs/lock.svg'
@@ -90,9 +94,12 @@ import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
+import PolygonIcon from '~/svgs/polygon.svg'
+import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
+import PowerCircleIcon from '~/svgs/power-icon.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
@@ -140,6 +147,7 @@ import User from '~/svgs/user.svg'
 import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
+import WalletFoldIcon from '~/svgs/wallet-fold.svg'
 import WarningTriangleYellowIcon from '~/svgs/warn-triangle-yellow.svg'
 import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
 import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
@@ -176,6 +184,7 @@ export {
   CheckIcon,
   CheckPurpleIcon,
   CheckPurpleLargeIcon,
+  ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
   ChevronRightIcon,
@@ -211,18 +220,21 @@ export {
   FirstPrizeIcon,
   GiftArenaIcon,
   GiftIcon,
+  HalfPolygonIcon,
   HamburgerIcon,
   InfinityIcon,
   Info2Icon,
   InfoCirCleDisableIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
+  InfoCircleSmall,
   InfoCircleWhite,
   InfoIcon,
   InfoNeutralIcon,
   InstagramColorIcon,
   InstagramNoColorIcon,
   LangIcon,
+  LanguageIcon,
   LinkExternalIcon,
   LinkExternalPrimaryIcon,
   Lock2Icon,
@@ -240,8 +252,11 @@ export {
   PiggySecondIcon,
   PlusCircleIcon,
   PlusIcon,
+  PolygonIcon,
+  PolygonSmallIcon,
   PoolCoinsIcon,
   PoolGroupIcon,
+  PowerCircleIcon,
   PowerIcon,
   PriceCupIcon as PriceCup,
   PublicIcon,
@@ -290,6 +305,7 @@ export {
   User,
   UserIcon,
   Verified,
+  WalletFoldIcon,
   WalletIcon,
   WarningTriangleIcon,
   WarningTriangleYellowIcon,

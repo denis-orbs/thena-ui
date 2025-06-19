@@ -2,6 +2,7 @@
 
 import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
 import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
+import { motion } from 'framer-motion'
 import { compact } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -13,26 +14,36 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { OutlinedButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
-import { TextIconButton } from '@/components/buttons/IconButton'
+import { EmphasisButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
+import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, InfoNeutralIcon } from '@/svgs'
+import {
+  ArrowRightIcon,
+  ChevronDownColorIcon,
+  ChevronDownIcon,
+  ChevronDownWhiteIcon,
+  HamburgerIcon,
+  InfoNeutralIcon,
+  LanguageIcon,
+  XIcon,
+} from '@/svgs'
 import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
+import LogoMobile from '~/logo-mobile.svg'
 
-import { Notification } from './Notification'
 import ConnectButton from '../buttons/ConnectButton'
 import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
@@ -49,8 +60,13 @@ const chains = [
 ]
 
 const langs = [
-  { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
+  { iso: 'en', lang: LOCALES.en, label: 'English' },
+  { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
+  { iso: 'zh', lang: LOCALES.zh_TW, label: '繁體中文' },
+  { iso: 'ja', lang: LOCALES.ja, label: '日本語' },
+  { iso: 'ko', lang: LOCALES.ko, label: '한국어' },
+  { iso: 'th', lang: LOCALES.th, label: 'ภาษาไทย' },
+  { iso: 'vi', lang: LOCALES.vi, label: 'Tiếng Việt' },
 ]
 
 function BridgeMaintainModal({ show, onClose }) {
@@ -101,7 +117,7 @@ function BridgeMaintainModal({ show, onClose }) {
   )
 }
 
-function ChainSelect({ t }) {
+function ChainSelect({ className, t }) {
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
@@ -130,7 +146,7 @@ function ChainSelect({ t }) {
       <div
         className={cn(
           'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-          'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+          'rounded-md p-2 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50 lg:p-3',
         )}
         key={`dropdown-${idx}-${item.chainId}`}
         onClick={async () => {
@@ -141,8 +157,8 @@ function ChainSelect({ t }) {
         }}
       >
         <div className='flex w-full items-center gap-2'>
-          <CircleImage src={item.img} alt='' className='h-5 w-5' />
-          <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
+          <CircleImage src={item.img} alt='' className='size-4 lg:size-5' />
+          <TextHeading className='!text-xs text-nowrap lg:!text-base'>{t(item.label)}</TextHeading>
         </div>
       </div>
     ),
@@ -150,20 +166,27 @@ function ChainSelect({ t }) {
   )
 
   return (
-    <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
-      <div
-        className='flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pr-4 pl-3 lg:pr-2.5 lg:pl-1.5 xl:pr-4 xl:pl-3'
-        onClick={() => setOpen(!open)}
-      >
-        <CircleImage src={selected.img} alt='' className='h-5 w-5' />
-        <ChevronDownIcon
-          className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-        />
-      </div>
+    <div className={cn('relative', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
+          'group 2sm:gap-2 2sm:px-3 2sm:py-2 flex cursor-pointer items-center gap-1 rounded-md bg-neutral-700 p-2 hover:bg-neutral-600 lg:gap-4 lg:rounded-lg lg:px-4 lg:py-3',
+          open && 'bg-neutral-600',
+        )}
+        onClick={() => setOpen(!open)}
+      >
+        <CircleImage src={selected.img} alt='' className='size-4 lg:size-5' />
+        <ChevronDownColorIcon
+          className={cn(
+            '2sm:stroke-neutral-400 size-4 stroke-neutral-100 transition-all duration-150 ease-out group-hover:stroke-neutral-200 lg:size-5',
+            open ? 'rotate-180 !stroke-neutral-200' : 'rotate-0',
+          )}
+        />
+      </div>
+
+      <div
+        className={cn(
+          'visible absolute z-10 mt-2 flex-col items-start justify-start gap-1 max-md:left-0 md:right-0',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
         )}
@@ -193,6 +216,7 @@ function ChainSelect({ t }) {
   )
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function ChainMobileSelect({ t }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -218,7 +242,7 @@ function ChainMobileSelect({ t }) {
   return (
     <div className={cn('relative block w-full lg:hidden')} ref={wrapperRef}>
       <div
-        className='flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pr-4 pl-3'
+        className='flex cursor-pointer items-center justify-between rounded-lg border border-neutral-700 bg-neutral-700 py-3 pr-4 pl-3 md:gap-2'
         onClick={() => setOpen(!open)}
       >
         <div className='flex items-center gap-2'>
@@ -262,8 +286,7 @@ function ChainMobileSelect({ t }) {
   )
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
-function LanguageSelect() {
+function LanguageSelect({ className }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const { locale, updateLanguage } = useLocaleSettings()
@@ -283,18 +306,30 @@ function LanguageSelect() {
   const selected = useMemo(() => langs.find(ele => ele.lang === locale), [locale])
 
   return (
-    <div className={cn('relative')} ref={wrapperRef}>
-      <CircleImage
-        alt='lang'
-        className='mx-2 h-5 w-5 cursor-pointer'
-        src={selected.img}
-        onClick={() => setOpen(!open)}
-      />
+    <div className={cn('relative cursor-pointer', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow-xs',
+          'max-2sm:bg-neutral-700 max-2sm:text-neutral-100 2sm:gap-2 flex items-center gap-1 rounded-md px-2 py-2 text-xs !leading-4 font-medium text-neutral-400 uppercase hover:text-neutral-100 lg:rounded-lg lg:!leading-5',
+          'hover:bg-neutral-700 lg:px-4 lg:py-3 lg:text-base',
+          open && 'bg-neutral-700 text-neutral-100',
+        )}
+        onClick={() => setOpen(!open)}
+      >
+        <LanguageIcon
+          className={cn(
+            'max-2sm:stroke-neutral-100 2sm:hidden size-4 cursor-pointer stroke-neutral-400 hover:stroke-neutral-100 lg:block lg:size-5',
+            open && 'stroke-neutral-100',
+          )}
+        />
+
+        {selected.iso}
+      </div>
+      <div
+        className={cn(
+          'max-2sm:left-0 2sm:right-0 visible absolute z-50 mt-1.5 flex-col items-start justify-start',
+          'rounded-lg border border-neutral-600 bg-neutral-800 p-2',
           'transition-all duration-150 ease-out',
+          '!shadow-custom-primary w-[129px]',
           !open && 'invisible opacity-0',
         )}
       >
@@ -302,7 +337,7 @@ function LanguageSelect() {
           <div
             className={cn(
               'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+              'rounded-md px-3 py-2 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50 lg:p-3',
             )}
             key={`dropdown-${idx}`}
             onClick={async () => {
@@ -313,8 +348,7 @@ function LanguageSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
-              <TextHeading className='text-nowrap'>{item.label}</TextHeading>
+              <TextHeading className='!text-xs text-nowrap lg:!text-base lg:leading-5'>{item.label}</TextHeading>
               {locale === item.lang && <div className='bg-primary-600 h-2 w-2 rounded-full' />}
             </div>
           </div>
@@ -325,6 +359,7 @@ function LanguageSelect() {
 }
 
 function V3Banner({ onClose }) {
+  const t = useTranslations()
   const router = useRouter()
   const { push } = router
   useEffect(() => {
@@ -340,10 +375,10 @@ function V3Banner({ onClose }) {
       className='fixed top-0 left-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
     >
       <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
-        <span className='min-w-fit font-semibold'>🔥 THENA V3,3 is Launched!</span>
+        <span className='min-w-fit font-semibold'>{`🔥 ${t('THENA V3,3 is Launched')}!`}</span>
         <span className='text-center font-normal'>
           {new Date() >= new Date('2025-05-29')
-            ? 'Migrate your liquidity now to continue earning rewards.'
+            ? `${t('Migrate your liquidity now to continue earning rewards')}.`
             : 'Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.'}
         </span>
         <div className='flex'>
@@ -351,12 +386,12 @@ function V3Banner({ onClose }) {
             className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'
             onClick={() => push('/dashboard')}
           >
-            Migrate Now <ArrowRightIcon className='ml-1 h-4 w-4' />
+            {t('Migrate Now')} <ArrowRightIcon className='ml-1 h-4 w-4' />
           </TertiaryButton>
           {new Date() >= new Date('2025-05-29') && (
             <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
               <TertiaryButton className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'>
-                Learn More <ArrowRightIcon className='ml-1 h-4 w-4' />
+                {t('Learn More')} <ArrowRightIcon className='ml-1 h-4 w-4' />
               </TertiaryButton>
             </Link>
           )}
@@ -382,17 +417,21 @@ function V3Banner({ onClose }) {
             clipRule='evenodd'
           />
         </svg>
-        <span className='sr-only'>Close</span>
+        <span className='sr-only'>{t('Close')}</span>
       </button>
     </div>
   )
 }
 
 function Header() {
+  const { isViewDown: is2SmDown } = useMediaQuery('down', 744)
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
   const [toggleSearch, setToggleSearch] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
+  const lastScrollYRef = useRef(0)
+  const hideTimeoutRef = useRef(null)
 
   const router = useRouter()
   const { push } = router
@@ -405,11 +444,58 @@ function Header() {
   const { connect } = useConnect()
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
-  const { width } = useWindowSize()
+  const { spaceIdName } = useSpaceIdBNB(account)
 
   const [showBannerMigrate, setShowBannerMigrate] = useState(
     !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22'),
   )
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const lastScrollY = lastScrollYRef.current
+
+      if (currentScrollY < lastScrollY && currentScrollY > 300) {
+        setShowBackToTop(true)
+
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current)
+        }
+
+        // Hide the button after 3 seconds of inactivity
+        hideTimeoutRef.current = setTimeout(() => {
+          setShowBackToTop(false)
+          hideTimeoutRef.current = null
+        }, 3000)
+      } else {
+        setShowBackToTop(false)
+
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current)
+          hideTimeoutRef.current = null
+        }
+      }
+
+      lastScrollYRef.current = currentScrollY
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  const scrollToTop = () => {
+    setShowBackToTop(false)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
   const handleCloseV3Banner = () => {
     localStorage.setItem(NotShowBannerV3, 'true')
     window.dispatchEvent(new Event('local-storage-changed'))
@@ -471,7 +557,8 @@ function Header() {
   const menus = useMemo(
     () => [
       {
-        label: t('Swap'),
+        label: t('Trade'),
+        subheading: t('Easy and user-friendly trading interface'),
         active: pathname.includes('/swap'),
         sub: [
           {
@@ -480,8 +567,8 @@ function Header() {
             onClickHandler: () => push('/swap'),
           },
           {
-            heading: t('Trade Perps'),
-            subheading: t('Trade perpetual contracts with leverage'),
+            heading: t('Perps Trade'),
+            subheading: t('Easy & user-friendly trading interface'),
             onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
           },
           {
@@ -512,6 +599,7 @@ function Header() {
       {
         label: t('Pools'),
         active: pathname.includes('/pools'),
+        subheading: t('Trade with advantages like graph etc'),
         onClickHandler: () => {
           push('/pools')
         },
@@ -519,6 +607,7 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
+        subheading: t('Trade across different blockchains'),
         sub: [
           {
             heading: t('veTHE'),
@@ -551,11 +640,13 @@ function Header() {
       },
       {
         label: t('Analytics'),
+        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/analytics'),
         onClickHandler: () => push('/analytics'),
       },
       {
-        label: 'More',
+        label: t('More'),
+        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
@@ -876,28 +967,28 @@ function Header() {
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
-          'fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start backdrop-blur-2xl md:h-[92px]',
+          'shadow-primary max-2sm:bg-neutral-900 2sm:border-b-[2px] 2sm:backdrop-blur-[24px] fixed top-0',
+          'z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b',
+          '2sm:h-[80px] border-b-neutral-600 md:h-[92px]',
           showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >
         <div
           className={cn(
-            'flex h-[64px] items-center justify-between self-stretch p-4 backdrop-blur-xl md:h-[92px] lg:px-10 lg:pt-6 lg:pb-6',
-            !pathname.includes('/add-liquidity') && 'lg:pt-3',
+            '2sm:backdrop-blur-xl 2sm:h-[80px] 2sm:p-6 flex h-[72px] items-center justify-between self-stretch rounded-b-xl p-4 md:h-[92px] lg:px-12',
           )}
         >
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
-            <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
-            <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
-              {/* {!pathname.includes('/add-liquidity') ? (
-
-              ) : (
-                <></>
-              )} */}
+            {is2SmDown ? (
+              <LogoMobile className='h-10 w-10 cursor-pointer' onClick={() => onLogoClick()} />
+            ) : (
+              <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
+            )}
+            <div className='2sm:inline-flex relative hidden items-center justify-center gap-1 text-xs lg:text-base'>
               {menus.map((item, idx) => (
                 <div key={`tab-${idx}`}>
                   <div
-                    className='flex items-center justify-center py-3'
+                    className='flex items-center justify-center'
                     onMouseEnter={() => {
                       setOpenMenu(item.label)
                     }}
@@ -917,9 +1008,9 @@ function Header() {
                     >
                       <span
                         className={cn(
-                          'flex h-11 cursor-pointer items-center justify-center',
-                          'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
-                          'outline-2 outline-offset-4 outline-transparent outline-solid',
+                          'flex h-8 cursor-pointer items-center justify-center lg:h-11',
+                          'rounded-lg px-3 py-2 font-medium text-neutral-200 lg:px-4 lg:py-3',
+                          'outline-2 outline-offset-4 outline-transparent',
                           'transition-all duration-150 ease-out',
                           !item.isHighlight && 'hover:bg-neutral-800',
                           !item.isHighlight && item.active && 'bg-neutral-800',
@@ -947,8 +1038,8 @@ function Header() {
                       <div
                         className={cn(
                           'visible absolute w-[344px] flex-col items-start justify-start gap-1',
-                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow-xs',
-                          'transition-all duration-150 ease-out',
+                          'shadow-custom-primary rounded-xl bg-neutral-800 p-3 opacity-100',
+                          'mt-1.5 transition-all duration-150 ease-out lg:mt-3',
                           openMenu !== item.label && 'invisible opacity-0',
                         )}
                       >
@@ -978,37 +1069,49 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
+            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-3 xl:flex'>
               <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
               {prices.THE > 0 ? (
-                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+                <Paragraph className='text-xs !leading-4 font-medium lg:text-base lg:!leading-5'>
+                  ${formatAmount(prices.THE)}
+                </Paragraph>
               ) : (
                 <Skeleton className='h-5 w-10' />
               )}
             </div>
-            <ChainSelect t={t} />
-            {/* <LanguageSelect /> */}
-            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+            <LanguageSelect className='2sm:block hidden' />
+            <ChainSelect t={t} className='2sm:block hidden' />
+            {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
-            </OutlinedButton>
-            {!isSmallScreen() && <ConnectButton className='flex' />}
-            {!pathname.includes('/add-liquidity') || width < 1024 ? (
-              <>
-                {!pathname.includes('/add-liquidity') && <Notification />}
-                <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
-              </>
-            ) : (
-              <></>
-            )}
+            </OutlinedButton> */}
+            <ConnectButton
+              className={cn(
+                'flex px-3 py-2 text-xs !leading-4 text-nowrap lg:px-4 lg:py-3 lg:text-base lg:!leading-5',
+                spaceIdName || userInfo?.username ? 'max-2sm:bg-transparent flex' : 'max-2sm:hidden',
+                !account && is2SmDown && 'max-2sm:flex size-8! p-2!',
+              )}
+              isHeader
+              isMini={!account && is2SmDown}
+            />
+            <div
+              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700'
+              onClick={() => setIsOpen(true)}
+            >
+              <HamburgerIcon className='size-4 stroke-neutral-400' />
+            </div>
           </div>
         </div>
         <Modal
-          isOpen={isOpen}
+          isOpen={isOpen && is2SmDown}
           closeModal={() => {
             setIsOpen(false)
           }}
-          title={selected ? selected.label : <Logo className='h-6 w-[106px] cursor-pointer' />}
-          isBack={!!selected}
+          title={
+            <div className='flex items-center gap-1'>
+              <ChainSelect t={t} />
+              <LanguageSelect />
+            </div>
+          }
           onClickHandler={() => {
             if (selected) {
               setSelected(null)
@@ -1016,96 +1119,142 @@ function Header() {
               onLogoClick()
             }
           }}
-          isIntl={!selected}
+          isIntl
+          classNames={{ header: '!pt-4', closeButton: 'bg-neutral-700' }}
+          background='#281B2E'
+          backgroundColor='#281B2E'
+          width='100%'
+          styles={{
+            smallScreen: {
+              inset: '0px',
+              borderRight: '1px solid #422D4C',
+              borderLeft: '1px solid #422D4C',
+              borderBottom: '2px solid #422D4C',
+              borderRadius: '0 0 12px 12px',
+              backgroundColor: '#281B2E',
+              padding: '0 0 12px 0',
+              overflow: 'auto',
+              boxShadow: '0px 7px 32px 0px #2C002A',
+            },
+            overlay: {
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+            },
+          }}
+          closeButton={
+            <EmphasisButton onClick={() => setIsOpen(false)} className='size-8 bg-neutral-700 !p-2'>
+              <XIcon className='stroke-neutral-200' />
+            </EmphasisButton>
+          }
         >
-          {selected ? (
-            <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
-              {selected &&
-                selected.sub.map((submenu, idx) => (
-                  <div
-                    className='flex h-[68px] cursor-pointer flex-col items-start justify-center gap-1 self-stretch rounded-lg p-3 transition-all hover:bg-neutral-800'
-                    key={`submenu-${idx}`}
-                    onClick={() => {
-                      if (submenu.onClickHandler) {
-                        submenu.onClickHandler()
-                        setIsOpen(false)
-                      }
-                    }}
-                  >
-                    <TextHeading>{submenu.heading}</TextHeading>
-                    <TextSubHeading>{submenu.subheading}</TextSubHeading>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <>
-              <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
-                {menus.map((menu, idx) => (
-                  <div
-                    className='inline-flex cursor-pointer items-center justify-between self-stretch rounded-sm p-3 transition-all hover:bg-neutral-800'
-                    key={`menu-${idx}`}
-                    onClick={() => {
-                      if (menu.onClickHandler) {
-                        menu.onClickHandler()
-                        setIsOpen(false)
-                      } else {
-                        setSelected(menu)
-                      }
-                    }}
-                  >
+          <div className='mt-3 inline-flex w-full flex-col items-start justify-start gap-1 px-4'>
+            {menus.map((menu, idx) => (
+              <React.Fragment key={`menu-${idx}`}>
+                <div
+                  className='inline-flex cursor-pointer items-center justify-between self-stretch rounded p-3 transition-all hover:bg-neutral-800'
+                  onClick={() => {
+                    if (menu.onClickHandler) {
+                      menu.onClickHandler()
+                      setIsOpen(false)
+                    } else {
+                      setSelected(menu)
+                    }
+                  }}
+                >
+                  <div className='flex flex-col gap-1'>
                     <p className='font-medium text-neutral-200'>{menu.label}</p>
-                    {menu.sub && (
-                      <ArrowRightIcon
-                        onClick={e => {
-                          e.stopPropagation()
-                          e.preventDefault()
-                          setSelected(menu)
-                        }}
-                        className='h-4 w-4'
-                      />
-                    )}
+                    <TextSubHeading>{menu.subheading}</TextSubHeading>
                   </div>
-                ))}
-              </div>
-              <ModalFooter className='flex flex-col gap-2'>
-                <ChainMobileSelect t={t} />
-                <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
-                  {t('Enter ALPHA')}
-                </OutlinedButton>
-                <ConnectButton className='w-full' />
-              </ModalFooter>
-            </>
-          )}
+                  {menu.sub && (
+                    <ChevronDownWhiteIcon
+                      onClick={e => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        if (selected?.label === menu.label) {
+                          setSelected(null)
+                        } else {
+                          setSelected(menu)
+                        }
+                      }}
+                      className={cn(
+                        'size-4 !stroke-neutral-200 transition-transform duration-300 ease-in-out',
+                        selected?.label === menu.label ? 'rotate-0' : 'rotate-180',
+                      )}
+                    />
+                  )}
+                </div>
+                {menu.sub && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={
+                      selected?.label === menu.label
+                        ? { opacity: 1, y: 0, height: 'auto' }
+                        : { opacity: 0, y: 0, height: 0 }
+                    }
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className='ml-4 flex flex-col gap-4 overflow-hidden'
+                  >
+                    {menu.sub.map((subitem, subidx) => (
+                      <div
+                        key={`submenu-${subidx}`}
+                        className='cursor-pointer rounded px-4 py-2 hover:bg-neutral-800'
+                        onClick={() => {
+                          if (subitem.onClickHandler) {
+                            subitem.onClickHandler()
+                            setIsOpen(false)
+                          }
+                        }}
+                      >
+                        <p className='font-medium text-neutral-200'>{subitem.heading}</p>
+                        <TextSubHeading>{subitem.subheading}</TextSubHeading>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </React.Fragment>
+            ))}
+            <ConnectButton className='w-full' isHeader isMobile />
+          </div>
         </Modal>
         <TxnModal />
       </header>
-      {/* {pathname.startsWith('/dashboard') && (
-        <div className='fixed top-[64px] z-45 w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
-          <Tabs data={submenus} size={SizeTypes.Medium} />
+
+      {/* Back to Top Button */}
+      <motion.button
+        className='fixed bottom-11 z-[9999] flex h-11 items-center justify-center rounded-lg bg-neutral-700 px-4 py-3 shadow-lg lg:hidden'
+        onClick={scrollToTop}
+        initial={{ opacity: 0, scale: 0.8, y: 20, x: '-50%', left: '50%' }}
+        animate={{
+          opacity: showBackToTop ? 1 : 0,
+          scale: showBackToTop ? 1 : 0.8,
+          x: '-50%',
+          left: '50%',
+          y: showBackToTop ? 0 : 20,
+          pointerEvents: showBackToTop ? 'auto' : 'none',
+        }}
+        transition={{ duration: 0.3 }}
+        aria-label='Back to top'
+      >
+        <div className='flex h-5'>
+          <ChevronDownIcon className='size-5 rotate-180 stroke-neutral-400' />
+          <span className='ml-2 text-base leading-5 font-medium text-neutral-400'>{t('Back to Top')}</span>
         </div>
-      )} */}
+      </motion.button>
       {pathname.includes('/arena') && (
         <div
           className={cn(
-            'fixed top-[64px] z-45 w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5',
+            'fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl md:top-[92px] lg:py-5',
             showBannerMigrate && 'top-[180px] lg:top-[146px]',
           )}
         >
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
-            {toggleSearch && isSmallScreen() ? (
-              <HeaderSearch
-                setToggleSearch={setToggleSearch}
-                toggleSearch={toggleSearch}
-                isSmallScreen={isSmallScreen()}
-              />
+            {toggleSearch && is2SmDown ? (
+              <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
             ) : (
               <>
                 <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
-                <HeaderSearch
-                  setToggleSearch={setToggleSearch}
-                  toggleSearch={toggleSearch}
-                  isSmallScreen={isSmallScreen()}
-                />
+                <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
               </>
             )}
           </div>
@@ -1114,8 +1263,8 @@ function Header() {
       {pathname.startsWith('/story') && isRegistered && (
         <div
           className={cn(
-            'fixed top-[64px] z-45 w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5',
-            showBannerMigrate && 'top-[180px] lg:top-[146px]',
+            '2sm:top-[80px] fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll md:top-[92px] lg:py-5',
+            showBannerMigrate && '2sm:top-[188px] top-[180px] lg:top-[146px]',
           )}
         >
           <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>

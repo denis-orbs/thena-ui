@@ -20,7 +20,9 @@ function StoryPage() {
         }`}
       />
       <section
-        className={`layout-container relative pb-0! ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}
+        className={`layout-container relative !pb-0 ${
+          !isRegistered ? 'layout-top' : '2sm:mt-[164px] mt-[144px] md:mt-[176px]'
+        }`}
       >
         <Box className='border-primary-800 bg-primary-950 mb-[30px] gap-4 border'>
           <TextHeading className='block text-center text-neutral-100'>

@@ -255,8 +255,8 @@ function NotStakedItem({ position, isXlDown }) {
         ) : (
           <div
             className={cn(
-              'relative flex h-8 items-center justify-center overflow-hidden md:h-11',
-              'bg-full-range rounded-md border border-neutral-600 px-2 text-base text-neutral-300',
+              'relative flex h-5 items-center justify-center overflow-hidden',
+              'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
             )}
           >
             {t('Full Range')}

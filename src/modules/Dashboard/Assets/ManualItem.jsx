@@ -214,6 +214,7 @@ function ManualItem({ position, isXlDown }) {
           <Range
             position={position}
             currentPrice={parseFloat(_fusion?.token0Price.toSignificant(6))}
+            isFullRange={tickAtLimit[Bound.LOWER] && tickAtLimit[Bound.UPPER]}
             minPrice={parseFloat(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
             maxPrice={parseFloat(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             liquidity={liquidity}

@@ -30,8 +30,9 @@ function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }
     <div
       className={cn(
         'flex flex-col',
-        showBannerMigrate && 'max-md:mt-8',
-        !showBannerMigrate && 'mt-[64px] lg:mt-[92px]',
+        showBannerMigrate && 'mt-2 max-md:mt-[72px]',
+        !showBannerMigrate && 'mt-[72px] lg:mt-[100px]',
+        hiddenBackButton && 'lg:mt-[92px]',
       )}
     >
       {!hiddenBackButton && (

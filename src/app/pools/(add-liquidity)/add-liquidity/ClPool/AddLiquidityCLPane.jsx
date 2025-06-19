@@ -10,6 +10,7 @@ import ManualPositionInfo from '@/components/common/AddLiquidity/FusionAdd/Manua
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { Bound } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ZapperIcon } from '@/svgs'
 
@@ -67,6 +68,13 @@ export default function AddLiquidityCLPane({
     }
   }, [strategy?.isFarming])
 
+  const { ticksAtLimit } = position || {}
+
+  const isFullRange = useMemo(
+    () => (ticksAtLimit ? ticksAtLimit[Bound.LOWER] && ticksAtLimit[Bound.UPPER] : false),
+    [ticksAtLimit],
+  )
+
   if (!strategy) return <div />
 
   return (
@@ -80,7 +88,7 @@ export default function AddLiquidityCLPane({
             isSmall={!isXlDown}
           />
         ) : (
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-4 xl:gap-2'>
             {!mintInfo?.noLiquidity && !position && (
               <Selection
                 className='w-full items-stretch md:h-11'
@@ -94,7 +102,12 @@ export default function AddLiquidityCLPane({
             )}
 
             {position && (
-              <ManualPositionInfo baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} position={position} />
+              <ManualPositionInfo
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                position={position}
+                isFullRange={isFullRange}
+              />
             )}
 
             {isZapper ? (

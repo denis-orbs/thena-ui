@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import useSWR, { mutate } from 'swr'
-import { zeroAddress } from 'viem'
 
 import { ICHI_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -122,9 +121,10 @@ const usePairs = () => {
           .filter(ele => ele.basePool.toLowerCase() === pair.address.toLowerCase())
           .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
 
+        const hasCLFarming = subpools.some(sub => sub.title === 'CL_Farming')
         const v3Subpools = subpools.filter(ele => {
           const isV3 = ele.version === 3
-          const isNotCLSwapFee = ele.gauge.address !== zeroAddress ? ele.title !== 'CL_SwapFee' : true
+          const isNotCLSwapFee = hasCLFarming ? ele.title !== 'CL_SwapFee' : true
           const isSingleSided = ele.title === ICHI_SINGLE_SIDED
           return (isV3 && isNotCLSwapFee) || isSingleSided
         })

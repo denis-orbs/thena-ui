@@ -6,50 +6,54 @@ import { UNKNOWN_LOGO } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import { CoinUSDIcon } from '@/svgs'
 
-export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position }) {
+export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, isFullRange }) {
   const t = useTranslations()
 
   return (
-    <div className='mt-4 md:mt-0 xl:space-y-2'>
-      <TextHeading className='!text-xl !leading-6 max-md:hidden'>{t('Your Deposit')}</TextHeading>
+    <div className='mt-4 md:mt-0 xl:flex xl:flex-col xl:gap-2'>
+      <TextHeading className='font-archia !text-xl !leading-6 max-md:hidden xl:font-semibold'>
+        {t('Your Deposit')}
+      </TextHeading>
       <article
         className={cn(
-          'grid grid-cols-2 items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4',
+          'grid grid-cols-2 items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4 xl:px-5 xl:py-4',
         )}
       >
         <div className='col-span-2 flex flex-row gap-2 max-md:items-center md:col-span-1 md:flex-col lg:justify-start'>
-          <div className='flex gap-2'>
+          <div className='flex items-center gap-2'>
             <div className='size-6 min-w-6 md:size-8 md:min-w-8'>
               <CoinUSDIcon className='size-full' />
             </div>
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
               ${position.depositInUSD}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>${position.depositInUSD}</Paragraph>
-            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
+            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
+              ${position.depositInUSD}
+            </Paragraph>
+            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
               {t('Deposit Value in USD')}
             </Paragraph>
           </div>
         </div>
 
         <div className='flex flex-row gap-2 max-md:items-center md:flex-col lg:justify-start'>
-          <div className='flex gap-2'>
+          <div className='flex items-center gap-2'>
             <CircleImage
               className='size-6 min-w-6 md:size-8 md:min-w-8'
               src={baseCurrency.logoURI ?? UNKNOWN_LOGO}
               alt='base token'
             />
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
               {formatAmount(position.amountAsset0)}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
+            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset0)}
             </Paragraph>
-            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
+            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
@@ -59,21 +63,21 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         </div>
 
         <div className='flex flex-row gap-2 max-md:items-center md:flex-col md:items-end'>
-          <div className='flex gap-2'>
+          <div className='flex items-center gap-2'>
             <CircleImage
               className='size-6 min-w-6 md:size-8 md:min-w-8'
               src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
               alt='quote token'
             />
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl'>
+            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
               {formatAmount(position.amountAsset1)}
             </Paragraph>
           </div>
           <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-primary-100 text-xs md:hidden md:!text-xl'>
+            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
               {formatAmount(position.amountAsset1)}
             </Paragraph>
-            <Paragraph className='text-primary-100 text-xs text-nowrap md:!text-base md:!leading-5'>
+            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),
@@ -83,28 +87,32 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         </div>
       </article>
 
-      <div className='mt-8 flex flex-col gap-2 lg:flex-row'>
+      <div className='mt-8 flex flex-col gap-4 lg:flex-row xl:mt-6 xl:pb-[12px]'>
         <div className='flex w-full flex-col gap-2'>
-          <Paragraph className='text-xs text-neutral-500'>
+          <Paragraph className='text-xs text-neutral-500 xl:text-xs'>
             {t('Min [symbolA] per [symbolB] price', {
               symbolA: baseCurrency.symbol,
               symbolB: quoteCurrency.symbol,
             })}
           </Paragraph>
           <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.minPrice}</TextHeading>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>
+              {isFullRange ? '0' : position.minPrice}
+            </TextHeading>
           </div>
         </div>
 
         <div className='flex w-full flex-col gap-2'>
-          <Paragraph className='text-xs text-neutral-500'>
+          <Paragraph className='text-xs text-neutral-500 xl:text-xs'>
             {t('Max [symbolA] per [symbolB] price', {
               symbolA: baseCurrency.symbol,
               symbolB: quoteCurrency.symbol,
             })}
           </Paragraph>
           <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.maxPrice}</TextHeading>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>
+              {isFullRange ? '∞' : position.maxPrice}
+            </TextHeading>
           </div>
         </div>
       </div>

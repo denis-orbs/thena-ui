@@ -149,7 +149,7 @@ export default function Step1() {
 
   const handleNext = useCallback(() => {
     if (pairType === PAIR_TYPES.WEIGHTED) {
-      errorToast('Creation of Weighted pools is currently unavailable. Please check again later.')
+      errorToast('Creation of Weighted pools is currently unavailable')
       return
     }
     updateSearchParams({ step: 2 }, true)

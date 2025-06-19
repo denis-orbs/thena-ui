@@ -72,6 +72,7 @@ export default function ChartPriceRangeInput({
   height = 300,
   idChart = 'chart-price-range',
   label = 'Liquidity range',
+  classNames,
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
@@ -379,7 +380,9 @@ export default function ChartPriceRangeInput({
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className='text-base md:text-xl'>{t(label ?? 'Your Range against the Price')}</NewTextHeading>
+        <NewTextHeading className={cn('text-base md:text-xl', classNames?.title)}>
+          {t(label ?? 'Your Range against the Price')}
+        </NewTextHeading>
         <div className='flex items-center gap-4 max-md:justify-between'>
           {showPeriod && <Tabs data={periods} />}
           <div className='flex gap-1'>
@@ -410,11 +413,11 @@ export default function ChartPriceRangeInput({
       <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
         <div className='relative flex h-[235px] w-full items-center justify-center'>
           {isUninitialized ? (
-            <TextHeading>Your position will appear here.</TextHeading>
+            <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading ? (
             <Skeleton className={cn('absolute w-full', `h-[${height}px]`)} />
           ) : error ? (
-            <TextHeading>Liquidity data not available.</TextHeading>
+            <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
             <div className={cn('flex h-full w-full flex-col', `max-h-[${height}px}]`)} ref={containerRef}>
               <div className='flex h-full w-full flex-col gap-8'>
