@@ -144,7 +144,10 @@ export default function PoolsPage() {
         subpools = ele.subpools.filter(sub => sub.version === 3)
       }
       if (ele.type === PAIR_TYPES.LSD) {
-        subpools = ele.subpools.filter(sub => sub.title !== 'CL_SwapFee')
+        const hasCLFarming = ele.subpools.some(sub => sub.title === 'CL_Farming')
+        if (hasCLFarming) {
+          subpools = ele.subpools.filter(sub => sub.title !== 'CL_SwapFee')
+        }
       }
       return { ...ele, subpools }
     })
