@@ -17,13 +17,6 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
     return 0
   }, [currentPrice, maxPrice, minPrice, outOfRange])
 
-  // const [tickLowerPercent, tickUpperPercent] = useMemo(() => {
-  //   if (currentPrice) {
-  //     return [((minPrice - currentPrice) / currentPrice) * 100, ((maxPrice - currentPrice) / currentPrice) * 100]
-  //   }
-  //   return [0, 0]
-  // }, [currentPrice, maxPrice, minPrice])
-
   // Fixed out of range logic
   const outOfRangePosition = useMemo(() => {
     if (!outOfRange) return { percent: 0, isBelow: false, isAbove: false }
