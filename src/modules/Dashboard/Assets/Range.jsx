@@ -286,7 +286,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               {/* Current price indicator for in-range */}
               <div
                 style={{
-                  left: `clamp(4px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 4px))`,
+                  left: `clamp(8px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 8px))`,
                   transform: 'translateX(-50%)',
                 }}
                 className={cn('absolute top-0 flex h-full transform items-center justify-center')}
