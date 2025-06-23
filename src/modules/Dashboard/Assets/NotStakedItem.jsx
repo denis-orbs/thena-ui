@@ -253,13 +253,15 @@ function NotStakedItem({ position, isXlDown }) {
         {position.type === PAIR_TYPES.LSD ? (
           <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
         ) : (
-          <div
-            className={cn(
-              'relative flex h-5 items-center justify-center overflow-hidden',
-              'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
-            )}
-          >
-            {t('Full Range')}
+          <div className='flex h-15 w-full items-center'>
+            <div
+              className={cn(
+                'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+              )}
+            >
+              {t('Full Range')}
+            </div>
           </div>
         )}
       </div>
