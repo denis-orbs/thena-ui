@@ -14,7 +14,7 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { EmphasisButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
+import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
@@ -45,6 +45,7 @@ import Logo from '~/logo.svg'
 import LogoMobile from '~/logo-mobile.svg'
 
 import ConnectButton from '../buttons/ConnectButton'
+import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
@@ -1142,9 +1143,7 @@ function Header() {
             },
           }}
           closeButton={
-            <EmphasisButton onClick={() => setIsOpen(false)} className='size-8 bg-neutral-700 !p-2'>
-              <XIcon className='stroke-neutral-200' />
-            </EmphasisButton>
+            <TextIconButton className='size-8 bg-neutral-700 !p-2' Icon={XIcon} onClick={() => setIsOpen(false)} />
           }
         >
           <div className='mt-3 inline-flex w-full flex-col items-start justify-start gap-1 px-4'>

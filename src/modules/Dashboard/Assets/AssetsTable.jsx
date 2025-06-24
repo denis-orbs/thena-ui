@@ -148,7 +148,7 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFro
         <tr
           key={`table-row-${index}`}
           id={`table-row-${index}`}
-          className='position-item h-[60px] rounded-md hover:bg-neutral-800 [&>td]:h-[60px] [&>td]:p-2'
+          className='position-item my-1 h-[76px] rounded-md hover:bg-neutral-800 [&>td]:px-2'
           onMouseEnter={() => {
             setIsHoverFromChart(false)
             setCurrentHoverTableRow(position.positionId)

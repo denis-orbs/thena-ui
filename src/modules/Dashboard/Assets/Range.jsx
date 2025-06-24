@@ -17,13 +17,6 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
     return 0
   }, [currentPrice, maxPrice, minPrice, outOfRange])
 
-  // const [tickLowerPercent, tickUpperPercent] = useMemo(() => {
-  //   if (currentPrice) {
-  //     return [((minPrice - currentPrice) / currentPrice) * 100, ((maxPrice - currentPrice) / currentPrice) * 100]
-  //   }
-  //   return [0, 0]
-  // }, [currentPrice, maxPrice, minPrice])
-
   // Fixed out of range logic
   const outOfRangePosition = useMemo(() => {
     if (!outOfRange) return { percent: 0, isBelow: false, isAbove: false }
@@ -64,7 +57,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
           {t('Closed')}
         </div>
       ) : outOfRange ? (
-        <div className='flex h-[54px] flex-col items-center justify-center'>
+        <div className='flex h-15 flex-col items-center justify-center'>
           {/* Range bar */}
           <div className='relative h-5 w-full rounded-md border border-neutral-600 !px-2'>
             <div className='absolute inset-0 h-[18px] w-full overflow-hidden rounded-[5px]'>
@@ -87,7 +80,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               {currentHover === 'current-price' && (
                 <div
                   className={cn(
-                    'absolute -top-5.5 z-20',
+                    'absolute -top-6 z-20',
                     outOfRangePosition.percent <= 10
                       ? 'left-0'
                       : outOfRangePosition.percent >= 90
@@ -110,7 +103,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               )}
               {currentHover === 'min-price' && (
                 <div
-                  className='absolute -top-5.5 z-40'
+                  className='absolute -top-6 z-40'
                   style={{
                     left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth > 80 ? 80 : 100 - rangeBarWidth}%` : '0%',
                   }}
@@ -125,7 +118,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
 
               {currentHover === 'max-price' && (
                 <div
-                  className='absolute -top-5.5 z-40'
+                  className='absolute -top-6 z-40'
                   style={{
                     right: outOfRangePosition.isBelow
                       ? '0%'
@@ -197,16 +190,16 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 style={{
                   left: outOfRangePosition.isBelow ? `${100 - rangeBarWidth > 65 ? 65 : 100 - rangeBarWidth}%` : '0%',
                 }}
-                className='absolute top-5.5 flex flex-nowrap items-center gap-2 text-xs leading-4'
+                className='absolute top-6 flex flex-nowrap items-center gap-2 text-xs leading-4'
               >
                 <InfoCircleSmall className='stroke-warn-700 size-3' />
-                <span className='text-warn-700 text-nowrap'>Out of Range</span>
+                <span className='text-warn-700 text-nowrap'>{t('Out of Range')}</span>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className='flex h-[54px] items-center justify-center gap-1'>
+        <div className='flex h-15 items-center justify-center gap-1'>
           <div className='relative h-5 w-full rounded-md border border-neutral-600 !px-2'>
             <div className='absolute inset-0 h-[18px] w-full overflow-hidden rounded-[5px]'>
               {/* Background gradient for in-range */}
@@ -229,7 +222,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div
                   style={{ left: `${currentPercent}%` }}
                   className={cn(
-                    'absolute -top-5.5 z-20',
+                    'absolute -top-6 z-20',
                     currentPercent < 90 && currentPercent > 10 && '-translate-x-1/2',
                     currentPercent > 90 && 'right-0 -translate-x-0',
                     currentPercent < 10 && 'left-0 translate-x-0',
@@ -248,7 +241,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 </div>
               )}
               {currentHover === 'min-price' && (
-                <div style={{ left: 0 }} className={cn('absolute -top-5.5 z-20')}>
+                <div style={{ left: 0 }} className={cn('absolute -top-6 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
                       Lower: {isFullRange ? '0' : minPrice > 1e9 ? '> 1B' : formatAmount(minPrice)}
@@ -257,7 +250,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 </div>
               )}
               {currentHover === 'max-price' && (
-                <div style={{ right: 0 }} className={cn('absolute -top-5.5 z-20')}>
+                <div style={{ right: 0 }} className={cn('absolute -top-6 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
                       Upper: {isFullRange ? '∞' : maxPrice > 1e9 ? '> 1B' : formatAmount(maxPrice)}
@@ -286,7 +279,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
               {/* Current price indicator for in-range */}
               <div
                 style={{
-                  left: `clamp(4px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 4px))`,
+                  left: `clamp(8px, ${isFullRange ? '50' : currentPercent}%, calc(100% - 8px))`,
                   transform: 'translateX(-50%)',
                 }}
                 className={cn('absolute top-0 flex h-full transform items-center justify-center')}

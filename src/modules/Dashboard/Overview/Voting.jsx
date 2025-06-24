@@ -201,7 +201,7 @@ function Voting() {
                   target='_blank'
                 >
                   <TextButton className='h-11 w-full max-md:h-8'>
-                    <Paragraph>Learn about voting</Paragraph>
+                    <Paragraph>{t('Learn about voting')}</Paragraph>
                     <ExternalIcon className='size-4 stroke-neutral-100 md:size-5' />
                   </TextButton>
                 </Link>
