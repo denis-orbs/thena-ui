@@ -197,5 +197,8 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xd09a674bb59f8154f0754f2bc3cb161767b2db9f',
     [CHAIN_ID.TEST_BSC]: '0x2beE534A1b7C8e790F0bB56af4a5a6460B643079',
   },
+  emergencyRouter: {
+    [CHAIN_ID.BSC]: '0xd7afb093fe61f43773539d475388876fab0ed356',
+  },
 }
 export default Contracts

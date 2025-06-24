@@ -7,6 +7,7 @@ import {
   dibsAbi,
   dibsLotteryAbi,
   dibsRewarderAbi,
+  emergencyRouterAbi,
   ERC20Abi,
   farmCenterAbi,
   gaugeAbi,
@@ -284,6 +285,8 @@ export const getWeightedPoolRouterSimulatorContract = chainId =>
 export const getWeightedPoolFeesContract = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
 
 export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)
+
+export const getEmergencyRouterContract = chainId => getContract(emergencyRouterAbi, Contracts.emergencyRouter, chainId)
 
 /** ******************************************************************************************************
                                           veTHE Automation
