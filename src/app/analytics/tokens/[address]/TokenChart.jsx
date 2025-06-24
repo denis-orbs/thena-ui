@@ -7,7 +7,7 @@ import useSWR from 'swr'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
-import { FUSION_MULTI_CHAIN_START_TIME, V1_MULTI_CHAIN_START_TIME } from '@/constant'
+import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -119,7 +119,10 @@ const fetchTokenChartData = async (chainId, token) => {
   const firstData = isFusionFirst ? fusionData : v1data
   const secondData = isFusionFirst ? v1data : fusionData
 
-  return firstData.map(ele => {
+  const minDate = firstData[0]?.date ?? 0
+  const maxDate = Math.floor(Date.now() / 1000)
+
+  const mergedData = firstData.map(ele => {
     const found = secondData.find(item => item.date === ele.date)
     return {
       date: ele.date,
@@ -128,6 +131,31 @@ const fetchTokenChartData = async (chainId, token) => {
       priceUSD: ele && ele.priceUSD ? ele.priceUSD : found && found.priceUSD ? found.priceUSD : 0,
     }
   })
+  const byDate = Object.fromEntries(mergedData.map(d => [d.date, d]))
+  if (minDate) {
+    const result = []
+    let lastTVL = 0
+    let lastPrice = 0
+
+    for (let date = minDate; date <= maxDate; date += ONE_DAY_UNIX) {
+      const item = byDate[date]
+      if (item) {
+        lastTVL = item.tvlUSD
+        lastPrice = item.priceUSD
+        result.push(item)
+      } else {
+        result.push({
+          date,
+          tvlUSD: lastTVL,
+          dailyVolumeUSD: 0,
+          priceUSD: lastPrice,
+        })
+      }
+    }
+
+    return result
+  }
+  return mergedData
 }
 
 export default function TokenChart({ token }) {
