@@ -44,6 +44,16 @@ const toBytes32 = hexString => {
   return finalBytes
 }
 
+const getUserWithdrawStatus = async (account, chainId) => {
+  try {
+    if (!account) return false
+    return await readCall(Contracts.emergencyRouter, 'hasWithdrawn', [account], chainId)
+  } catch (error) {
+    console.error('Failed to fetch user withdraw status:', error)
+    return false
+  }
+}
+
 const getBalance = async (contract, account, chainId) => {
   try {
     if (!account) return new BigNumber(0)
@@ -1431,6 +1441,10 @@ export const useWeightedPositionList = () => {
   const { weightedPools = [] } = usePairs()
 
   const getWeightedHasPositions = useCallback(async () => {
+    const withdrawn = getUserWithdrawStatus(account, chainId)
+    if (withdrawn) {
+      return []
+    }
     const results = []
     for (let i = 0; i < weightedPools.length; i++) {
       const pool = weightedPools[i]
