@@ -136,6 +136,10 @@ export const formatPrice = (price, decimals = 5) => {
 
   const [intPart, decPart = ''] = price.toString().split('.')
 
+  if (intPart.length > 3) {
+    return `${intPart}.${decPart.slice(0, 2)}`
+  }
+
   if (decPart.length > decimals) {
     return `${intPart}.${decPart.slice(0, decimals)}`
   }

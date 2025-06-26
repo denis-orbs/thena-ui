@@ -315,7 +315,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
     position: pool,
     poolAddress: subpool?.address,
     totalLiquidity: _fusion?.liquidity,
-    tvl: Number(depositInUSD ?? 0),
+    tvl: Number(fiatValueOfLiquidity || 0),
   })
 
   return position
