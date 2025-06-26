@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import { HalfPolygonIcon, InfoCircleSmall, PolygonIcon } from '@/svgs'
 
 function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = false }) {
@@ -97,7 +97,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                   }}
                 >
                   <div className={cn('relative flex items-center justify-center')}>
-                    <span className='text-xs leading-4 text-nowrap text-neutral-50'>{formatAmount(currentPrice)}</span>
+                    <span className='text-xs leading-4 text-nowrap text-neutral-50'>{formatPrice(currentPrice)}</span>
                   </div>
                 </div>
               )}
@@ -110,7 +110,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 >
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Lower: {minPrice > 1e9 ? '> 1B' : formatAmount(minPrice)}
+                      Lower: {formatPrice(minPrice)}
                     </span>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 >
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Upper: {maxPrice > 1e9 ? '> 1B' : formatAmount(maxPrice)}
+                      Upper: {formatPrice(maxPrice)}
                     </span>
                   </div>
                 </div>
@@ -236,7 +236,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                       currentPercent < 10 && 'left-0 translate-x-0',
                     )}
                   >
-                    <span className='text-xs leading-4 text-nowrap text-neutral-50'>{formatAmount(currentPrice)}</span>
+                    <span className='text-xs leading-4 text-nowrap text-neutral-50'>{formatPrice(currentPrice)}</span>
                   </div>
                 </div>
               )}
@@ -244,7 +244,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div style={{ left: 0 }} className={cn('absolute -top-6 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Lower: {isFullRange ? '0' : minPrice > 1e9 ? '> 1B' : formatAmount(minPrice)}
+                      Lower: {isFullRange ? '0' : formatPrice(minPrice)}
                     </span>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = fals
                 <div style={{ right: 0 }} className={cn('absolute -top-6 z-20')}>
                   <div className={cn('relative flex items-center justify-center')}>
                     <span className='text-xs leading-4 text-nowrap text-neutral-50'>
-                      Upper: {isFullRange ? '∞' : maxPrice > 1e9 ? '> 1B' : formatAmount(maxPrice)}
+                      Upper: {isFullRange ? '∞' : formatPrice(maxPrice)}
                     </span>
                   </div>
                 </div>
