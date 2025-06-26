@@ -48,7 +48,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
           src={isString(banner) ? banner : URL.createObjectURL(banner)}
           fill
           priority
-          className='absolute top-0 right-0 bottom-0 left-0 -z-1 rounded-xl object-fill'
+          className='absolute top-0 right-0 bottom-0 left-0 rounded-xl object-fill'
         />
       ) : (
         currentPrizePoolUpdate?.length && (
