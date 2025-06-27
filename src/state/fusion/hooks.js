@@ -21,7 +21,7 @@ import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getGammaUNIProxyContract } from '@/lib/contracts'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
-import { toWei } from '@/lib/utils'
+import { toDecimalString, toWei } from '@/lib/utils'
 
 import {
   Bound,
@@ -249,7 +249,7 @@ export const useV3DerivedMintInfo = (
   const price = useMemo(() => {
     // if no liquidity use typed value
     if (noLiquidity) {
-      const parsedQuoteAmount = tryParseAmount(startPriceTypedValue, invertPrice ? token0 : token1)
+      const parsedQuoteAmount = tryParseAmount(toDecimalString(startPriceTypedValue), invertPrice ? token0 : token1)
       if (parsedQuoteAmount && token0 && token1) {
         const baseAmount = tryParseAmount('1', invertPrice ? token1 : token0)
         const baseprice =

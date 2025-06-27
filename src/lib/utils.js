@@ -399,3 +399,8 @@ export const formatNumber = num => {
 }
 
 export const rewriteS3Host = (host, rewrite = 'amazonaws.com/') => (host ? host.split(rewrite)[1] : null)
+
+export const toDecimalString = num => {
+  const decimal = Number(num).toFixed(30)
+  return decimal
+}
