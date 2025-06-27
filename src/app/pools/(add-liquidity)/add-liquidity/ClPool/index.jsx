@@ -147,8 +147,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
           </div>
 
           <ChooseStrategy
-            firstAsset={firstAsset}
-            secondAsset={secondAsset}
+            firstAsset={currencyA}
+            secondAsset={currencyB}
             mintInfo={mintInfo}
             pair={pair}
             position={position}
