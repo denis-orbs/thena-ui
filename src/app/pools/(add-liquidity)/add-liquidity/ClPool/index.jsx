@@ -97,6 +97,14 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onStartPriceInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  useEffect(() => {
+    if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
+      setBaseCurrency(firstCurrency)
+    }
+    if (!quoteCurrency && secondCurrency && mintInfo.noLiquidity) {
+      setQuoteCurrency(secondCurrency)
+    }
+  }, [baseCurrency, firstCurrency, quoteCurrency, secondCurrency, mintInfo.noLiquidity])
 
   const currentPrice = useMemo(() => {
     if (position) {
