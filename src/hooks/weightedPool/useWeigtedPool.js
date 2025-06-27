@@ -47,7 +47,8 @@ const toBytes32 = hexString => {
 const getUserWithdrawStatus = async (account, chainId) => {
   try {
     if (!account) return false
-    return await readCall(Contracts.emergencyRouter, 'hasWithdrawn', [account], chainId)
+    const contract = getEmergencyRouterContract(chainId)
+    return await readCall(contract, 'hasWithdrawn', [account], chainId)
   } catch (error) {
     console.error('Failed to fetch user withdraw status:', error)
     return false

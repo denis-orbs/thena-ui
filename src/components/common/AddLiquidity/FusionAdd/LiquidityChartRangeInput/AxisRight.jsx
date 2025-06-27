@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react'
 
 import './style.css'
 
-import { formatAmount } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 const labelWidth = 55
 const labelHeight = 28
@@ -28,7 +28,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
     if (str.includes('.')) {
       decimal = Number(`0.${str.split('.')[1]}`)
     }
-    return `${decimal <= 1e-3 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+    return `${decimal <= 1e-5 ? d.toExponential(0) : formatPrice(d)}`
   }, [])
 
   const axisGenerator = useMemo(() => {
@@ -44,10 +44,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   }, [current, max, min, yScale])
 
   const currentLabel = useMemo(
-    () =>
-      current !== undefined
-        ? `${current <= 1e-3 ? current.toExponential(0) : formatAmount(current, true, 5, false)}`
-        : '',
+    () => (current !== undefined ? `${current <= 1e-5 ? current.toExponential(0) : formatPrice(current)}` : ''),
     [current],
   )
 
@@ -132,7 +129,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
                 fill='#292929'
               />
               <text x={(5 + labelWidth) / 2} y={minY + paddingY / 2} textAnchor='middle' fontSize='12' fill='#F199EE'>
-                {min <= 1e-3 ? min.toExponential(0) : formatAmount(min, true, 5, false)}
+                {min <= 1e-5 ? min.toExponential(0) : formatPrice(min)}
               </text>
             </g>
           </>
@@ -150,7 +147,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
               fill='#292929'
             />
             <text x={(5 + labelWidth) / 2} y={maxY + paddingY / 2} textAnchor='middle' fontSize='12' fill='#F199EE'>
-              {max <= 1e-3 ? max.toExponential(0) : formatAmount(max, true, 5, false)}
+              {max <= 1e-3 ? max.toExponential(0) : formatPrice(max)}
             </text>
           </g>
         )}

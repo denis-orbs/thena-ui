@@ -8,7 +8,7 @@ import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { formatAmount, formatAmountLP } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
 
 import { useCurrency } from './fusion/Tokens'
@@ -267,7 +267,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
 
   const currentPrice = useMemo(() => {
     const price = _fusion?.token0Price ? _fusion.token0Price.toSignificant(6) : 0
-    return Number(formatAmountLP(price))
+    return Number(price)
   }, [_fusion])
 
   const depositInUSD = useMemo(() => formatAmount(fiatValueOfLiquidity), [fiatValueOfLiquidity])
@@ -315,7 +315,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
     position: pool,
     poolAddress: subpool?.address,
     totalLiquidity: _fusion?.liquidity,
-    tvl: Number(depositInUSD ?? 0),
+    tvl: Number(fiatValueOfLiquidity || 0),
   })
 
   return position

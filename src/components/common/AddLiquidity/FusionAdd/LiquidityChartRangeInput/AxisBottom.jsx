@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 
 import './style.css'
 
-import { formatAmount } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 function Axis({ axisGenerator }) {
   const axisRef = axis => {
@@ -25,7 +25,7 @@ const tickFormat = d => {
   if (str.includes('.')) {
     decimal = Number(`0.${str.split('.')[1]}`)
   }
-  return `${decimal <= 1e-5 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+  return `${decimal <= 1e-5 ? d.toExponential(0) : formatPrice(d, 5)}`
 }
 
 export const AxisBottom = ({ xScale, innerHeight, offset = 0 }) =>

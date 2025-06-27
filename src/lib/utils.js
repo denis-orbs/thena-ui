@@ -115,6 +115,38 @@ export const formatAmountLP = (amount = null, fixed = 13) => {
   return bigAmount.dp(fixed).toFormat()
 }
 
+/**
+ * Format price with exponential notation if price is too small
+ *
+ * @param {number} price
+ * @param {number} [decimals=5]
+ * @returns {string}
+ */
+export const formatPrice = (price, decimals = 5) => {
+  if (typeof price !== 'number' || isNaN(price)) return 'NaN'
+
+  if (price > 1e9) {
+    return '> 1B'
+  }
+
+  const minThreshold = 10 ** -decimals
+  if (price > 0 && price < minThreshold) {
+    return `${price.toExponential(decimals)}`
+  }
+
+  const [intPart, decPart = ''] = price.toString().split('.')
+
+  if (intPart.length > 3) {
+    return `${intPart}.${decPart.slice(0, 2)}`
+  }
+
+  if (decPart.length > decimals) {
+    return `${intPart}.${decPart.slice(0, decimals)}`
+  }
+
+  return `${price}`
+}
+
 export const formatPriceForChart = num => {
   if (num < 0.001) {
     return num.toFixed(8)
@@ -367,3 +399,8 @@ export const formatNumber = num => {
 }
 
 export const rewriteS3Host = (host, rewrite = 'amazonaws.com/') => (host ? host.split(rewrite)[1] : null)
+
+export const toDecimalString = num => {
+  const decimal = Number(num).toFixed(30)
+  return decimal
+}
