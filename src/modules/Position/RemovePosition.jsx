@@ -74,6 +74,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
     } else if (ICHI_TYPES.includes(strategy.title)) {
       onIchiRemove({
         pool: strategy,
+        isStaked,
         amount,
         version,
         callback,
