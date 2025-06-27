@@ -31,11 +31,10 @@ export function ItemToken({
   const { addLocalToken, removeLocalToken } = useLocalTokens()
   const { networkId } = useChainSettings()
 
-  const handleAddToken = tk => {
+  const handleAddToken = async tk => {
     delete tk.isCustom
     delete tk.balance
     tk.isFromStorage = true
-
     addLocalToken(tk)
 
     // Automatically select the token after adding it

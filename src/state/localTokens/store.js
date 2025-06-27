@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -7,6 +8,7 @@ import { persist } from 'zustand/middleware'
 import { ERC20Abi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
+import { getTokenCurrentUSDPrice } from '@/modules/SwapChart/fetch'
 
 export const useTokensState = create()(
   persist(
@@ -48,14 +50,25 @@ export const useLocalTokens = () => {
     },
   })
 
+  // Get prices
+  const { data: tokenPrices = [] } = useQuery({
+    queryKey: ['tokenPrices', localTokens.map(t => t.address).join(',')],
+    queryFn: async () => {
+      const prices = await Promise.all(localTokens.map(token => getTokenCurrentUSDPrice(token, token.chainId)))
+      return prices // array of numbers
+    },
+    enabled: localTokens.length > 0,
+    staleTime: 60 * 1000, // cache for 1 min
+  })
+
   const localTokensWithBalances = useMemo(
     () =>
       localTokens.map((tk, index) => ({
         ...tk,
-        price: 0,
+        price: tokenPrices?.[index] ?? tk.price ?? 0,
         balance: fromWei(balances?.[index]?.result || 0n, tk.decimals),
       })),
-    [balances, localTokens],
+    [balances, localTokens, tokenPrices],
   )
 
   return {

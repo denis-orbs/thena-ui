@@ -8,6 +8,7 @@ import { codexClient, fusionGraphUrl, v1GraphUrl } from '@/lib/graphql'
 import {
   getAdvanceChartDataCodexQuery,
   getCurrentPriceCodexQuery,
+  getCurrentPriceUSDCodexQuery,
   getSimpleChartDataCodexQuery,
   getTVL,
 } from './queries'
@@ -131,6 +132,20 @@ export const getCurrentprice = async (tokenA, tokenB, networkId) => {
   } catch (error) {
     console.log({ error })
     return []
+  }
+}
+
+export const getTokenCurrentUSDPrice = async (token, networkId) => {
+  try {
+    const { getTokenPrices = [] } = await codexClient.request(getCurrentPriceUSDCodexQuery(token, networkId), null, {
+      'Content-Type': 'application/json',
+      Authorization: process.env.NEXT_PUBLIC_CODEX_API_KEY,
+    })
+
+    return getTokenPrices?.[0]?.priceUsd ?? 0
+  } catch (error) {
+    console.log({ error })
+    return 0
   }
 }
 
