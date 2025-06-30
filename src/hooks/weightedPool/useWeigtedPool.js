@@ -1442,7 +1442,8 @@ export const useWeightedPositionList = () => {
   const { weightedPools = [] } = usePairs()
 
   const getWeightedHasPositions = useCallback(async () => {
-    const withdrawn = getUserWithdrawStatus(account, chainId)
+    const withdrawn = await getUserWithdrawStatus(account, chainId)
+
     if (withdrawn) {
       return []
     }
