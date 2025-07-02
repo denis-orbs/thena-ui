@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { min } from 'lodash'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -97,32 +98,43 @@ const fetchTokenChartData = async (chainId, token) => {
   const v1FirstDate = (v1data && v1data[0]?.date) ?? 0
 
   const fusionData = []
-  const allDates = new Set([...fusiondata.map(d => d.date), ...fusiondatav3.map(d => d.date)])
-
-  allDates.forEach(date => {
-    const data1 = fusiondata.find(d => d.date === date)
-    const data2 = fusiondatav3.find(d => d.date === date)
-
-    if (data1 && data2) {
-      fusionData.push({
-        date,
-        tvlUSD: (data1.tvlUSD ?? 0) + (data2.tvlUSD ?? 0),
-        dailyVolumeUSD: (data1.dailyVolumeUSD ?? 0) + (data2.dailyVolumeUSD ?? 0),
-        priceUSD: data2.priceUSD ?? data1.priceUSD ?? 0,
-      })
-    } else {
-      fusionData.push(data1 || data2)
-    }
-  })
+  const allDates = [...v1data.map(d => d.date), ...fusiondata.map(d => d.date), ...fusiondatav3.map(d => d.date)]
 
   const isFusionFirst = !v1FirstDate || (!!fusionFirstDate && fusionFirstDate <= v1FirstDate)
   const firstData = isFusionFirst ? fusionData : v1data
   const secondData = isFusionFirst ? v1data : fusionData
 
-  const minDate = firstData[0]?.date ?? 0
+  const minDate = allDates.length ? min(allDates) : null
   const maxDate = Math.floor(Date.now() / 1000)
 
-  const mergedData = firstData.map(ele => {
+  if (minDate) {
+    const result = []
+    let lastTVL = 0
+    let lastPrice = 0
+
+    for (let date = minDate; date <= maxDate; date += ONE_DAY_UNIX) {
+      const data1 = v1data.find(d => d.date === date)
+      const fusionItem = fusiondata.find(d => d.date === date)
+      const fusionV3Item = fusiondatav3.find(d => d.date === date)
+
+      const item = {
+        date,
+        tvlUSD:
+          !data1 && !fusionItem && !fusionV3Item
+            ? lastTVL
+            : (data1?.tvlUSD ?? 0) + (fusionItem?.tvlUSD ?? 0) + (fusionV3Item?.tvlUSD ?? 0),
+        dailyVolumeUSD:
+          (data1?.dailyVolumeUSD ?? 0) + (fusionItem?.dailyVolumeUSD ?? 0) + (fusionV3Item?.dailyVolumeUSD ?? 0),
+        priceUSD: fusionV3Item?.priceUSD ?? fusionItem?.priceUSD ?? data1?.priceUSD ?? lastPrice ?? 0,
+      }
+      lastTVL = item.tvlUSD
+      lastPrice = item.priceUSD
+      result.push(item)
+    }
+
+    return result
+  }
+  return firstData.map(ele => {
     const found = secondData.find(item => item.date === ele.date)
     return {
       date: ele.date,
@@ -131,31 +143,6 @@ const fetchTokenChartData = async (chainId, token) => {
       priceUSD: ele && ele.priceUSD ? ele.priceUSD : found && found.priceUSD ? found.priceUSD : 0,
     }
   })
-  const byDate = Object.fromEntries(mergedData.map(d => [d.date, d]))
-  if (minDate) {
-    const result = []
-    let lastTVL = 0
-    let lastPrice = 0
-
-    for (let date = minDate; date <= maxDate; date += ONE_DAY_UNIX) {
-      const item = byDate[date]
-      if (item) {
-        lastTVL = item.tvlUSD
-        lastPrice = item.priceUSD
-        result.push(item)
-      } else {
-        result.push({
-          date,
-          tvlUSD: lastTVL,
-          dailyVolumeUSD: 0,
-          priceUSD: lastPrice,
-        })
-      }
-    }
-
-    return result
-  }
-  return mergedData
 }
 
 export default function TokenChart({ token }) {

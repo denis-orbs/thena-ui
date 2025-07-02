@@ -9,7 +9,7 @@ import { FeatureCard } from '../FeatureCard'
 
 const MotionFeatureCard = motion(FeatureCard)
 
-function StakeAndEarnCard({ className, coinPair, arr, netReturn, tvl, netReturn30d }) {
+function StakeAndEarnCard({ className, coinPair, apr, netReturn, tvl, netReturn30d }) {
   return (
     <MotionFeatureCard
       className={cn(
@@ -29,8 +29,8 @@ function StakeAndEarnCard({ className, coinPair, arr, netReturn, tvl, netReturn3
       </div>
       <div className='mt-4 border-t border-t-[#281B2D] pt-4'>
         <div className='flex flex-col items-center justify-between gap-2'>
-          <Paragraph className='text-[10px] text-white'>ARR</Paragraph>
-          <Paragraph className='text-xs font-medium text-[#26E222]'>{arr}%</Paragraph>
+          <Paragraph className='text-[10px] text-white'>APR</Paragraph>
+          <Paragraph className='text-xs font-medium text-[#26E222]'>{apr}%</Paragraph>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-[10px] text-white'>Net return</Paragraph>
@@ -144,7 +144,7 @@ export function StakeAndEarn({ noAnimation }) {
           'stake-and-earn-card-1',
           'translate-x-[calc(var(--x-multiplier)*18px)] translate-y-[calc(var(--y-multiplier)*12px)] -rotate-2',
         )}
-        arr={2.1}
+        apr={33}
         netReturn={123.45}
         tvl='16.4M'
         netReturn30d={12.33}
@@ -159,7 +159,7 @@ export function StakeAndEarn({ noAnimation }) {
             </>
           ),
         }}
-        arr={2.1}
+        apr={33}
         netReturn={123.45}
         tvl='16.4M'
         netReturn30d={12.33}
@@ -178,7 +178,7 @@ export function StakeAndEarn({ noAnimation }) {
             </>
           ),
         }}
-        arr={2.1}
+        apr={33}
         netReturn={123.45}
         tvl='16.4M'
         netReturn30d={12.33}
@@ -197,7 +197,7 @@ export function StakeAndEarn({ noAnimation }) {
             </>
           ),
         }}
-        arr={2.1}
+        apr={33}
         netReturn={123.45}
         tvl='16.4M'
         netReturn30d={12.33}
