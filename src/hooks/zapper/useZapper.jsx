@@ -177,11 +177,11 @@ export const useZapperAddLiquidity = () => {
               sender: getAddress(account),
               route,
               deadline,
-              source: 'zap-docs',
+              source: 'thenakyberid',
             },
             {
               headers: {
-                'x-client-id': 'zap-docs',
+                'x-client-id': 'thenakyberid',
               },
             },
           )
