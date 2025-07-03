@@ -110,11 +110,13 @@ function RewardsContextProvider({ children }) {
         if (userPoolRewards && userPoolRewards.length) {
           userPoolRewards.forEach(userPoolReward => {
             const { rewardAmount, rewardToken } = userPoolReward
+            const token = assets.find(asset => asset.address.toLowerCase() === rewardToken.toLowerCase())
+            const decimals = token?.decimals
             result[rewardToken] = {
               address: rewardToken,
               amount: !result[rewardToken]
-                ? fromWei(rewardAmount)
-                : result[rewardToken].amount.plus(fromWei(rewardAmount)),
+                ? fromWei(rewardAmount, decimals)
+                : result[rewardToken].amount.plus(fromWei(rewardAmount, decimals)),
             }
           })
         }
