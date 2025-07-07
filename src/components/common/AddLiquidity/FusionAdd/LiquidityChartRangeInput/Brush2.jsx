@@ -58,6 +58,10 @@ export const Brush2 = ({
 
   const [brushInProgress, setBrushInProgress] = useState(false)
 
+  // Animation state for north/south out-of-view
+  const [showNorthAnimated, setShowNorthAnimated] = useState(false)
+  const [showSouthAnimated, setShowSouthAnimated] = useState(false)
+
   useEffect(() => {
     if (brushInProgress) return
     setLocalBrushExtent(brushExtent)
@@ -207,6 +211,25 @@ export const Brush2 = ({
       setIsOutOfView(false)
     }
   }, [setIsOutOfView, showNorthArrow, showSouthArrow])
+
+  useEffect(() => {
+    let northTimeout
+    let southTimeout
+    if (showNorthArrow || isFullRange) {
+      northTimeout = setTimeout(() => setShowNorthAnimated(true), 200)
+    } else {
+      setShowNorthAnimated(false)
+    }
+    if (showSouthArrow || isFullRange) {
+      southTimeout = setTimeout(() => setShowSouthAnimated(true), 200)
+    } else {
+      setShowSouthAnimated(false)
+    }
+    return () => {
+      clearTimeout(northTimeout)
+      clearTimeout(southTimeout)
+    }
+  }, [showNorthArrow, showSouthArrow, isFullRange])
 
   return useMemo(
     () => (
@@ -367,7 +390,10 @@ export const Brush2 = ({
             ) : null}
 
             {(showNorthArrow || isFullRange) && (
-              <g transform='translate(18, -10) scale(1,-1)'>
+              <g
+                transform='translate(18, -10) scale(1,-1)'
+                style={{ opacity: showNorthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
+              >
                 <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M11 1.5L6 6.5L1 1.5'
@@ -395,8 +421,11 @@ export const Brush2 = ({
             {isFullRange && (
               <rect x='0' y='0' width={width} height={height} fill={`url(#${id}-gradient-selection)`} opacity={0.8} />
             )}
-            {(showSouthArrow || isFullRange) && (
-              <g transform={`translate(18, ${height + 10}) `}>
+            {showSouthAnimated && (
+              <g
+                transform={`translate(18, ${height + 10}) `}
+                style={{ opacity: showSouthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
+              >
                 <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M11 1.5L6 6.5L1 1.5'
@@ -447,6 +476,8 @@ export const Brush2 = ({
       flipSouthHandle,
       northHandleColor,
       t,
+      showNorthAnimated,
+      showSouthAnimated,
     ],
   )
 }
