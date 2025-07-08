@@ -12,7 +12,8 @@ import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
-import { useActivePreset } from '@/state/fusion/hooks'
+import { Field } from '@/state/fusion/actions'
+import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { tryParseTick } from '@/state/fusion/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -124,6 +125,7 @@ export const useEstimateAPR = ({
   isStablecoinPair = false,
   currentPrice,
   invertPrice,
+  isZapper = false,
 }) => {
   const { networkId: chainId } = useChainSettings()
   const activePreset = useActivePreset()
@@ -145,6 +147,8 @@ export const useEstimateAPR = ({
     staleTime: Infinity,
   })
   const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData
+
+  const { independentField, typedValue } = useV3MintState()
 
   const tokenReward = useGetAsset(rewardToken)
   const tokenBonus = useGetAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
@@ -251,6 +255,7 @@ export const useEstimateAPR = ({
     _amount1 = currency1?.price ? toWei(50 / currency1.price, currency1.decimals) : BigNumber(0)
   }
 
+  const isRevert = _token0.address.toLowerCase() === currency0.address.toLowerCase()
   const presetPositions = [...presetRanges, { title: 'current' }].map(({ min, max, title }) => {
     const _tickLower =
       title === Presets.FULL
@@ -274,8 +279,31 @@ export const useEstimateAPR = ({
     if (token0 && token1) {
       if (!_tickUpper || !_tickLower || _tickUpper <= _tickLower) {
         _position = { liquidity: 0 }
+      } else if (typedValue && title !== 'current' && !isZapper) {
+        const independentCurrency = independentField === Field.CURRENCY_A ? currency0 : currency1
+
+        const independentAmount = toWei(
+          BigNumber(typedValue)
+            .decimalPlaces(independentCurrency?.decimals ?? 18, BigNumber.ROUND_DOWN)
+            .toString(),
+          currency1?.decimals ?? 18,
+        )
+        _position =
+          independentField === Field.CURRENCY_A
+            ? Position.fromAmount1({
+                pool,
+                tickLower: _tickLower,
+                tickUpper: _tickUpper,
+                amount1: Math.round(independentAmount.toNumber()),
+              })
+            : Position.fromAmount0({
+                pool,
+                tickLower: _tickLower,
+                tickUpper: _tickUpper,
+                amount0: Math.round(independentAmount.toNumber()),
+                useFullPrecision: true, // we want full precision for the theoretical position
+              })
       } else {
-        const isRevert = _token0.address.toLowerCase() === currency0.address.toLowerCase()
         _position = Position.fromAmounts({
           pool,
           tickLower: _tickLower,
@@ -308,9 +336,13 @@ export const useEstimateAPR = ({
     if (!p) {
       acc[title] = BigNumber(0)
     } else {
+      const positionTvl = BigNumber((isRevert ? p.amount0 : p.amount1)?.toExact() ?? 0)
+        .times(currency0?.price)
+        .plus(BigNumber((isRevert ? p.amount1 : p.amount0)?.toExact() ?? 0).times(currency1?.price ?? 0))
+
       acc[title] = calAPR({
         reward,
-        tvl,
+        tvl: isZapper ? tvl : positionTvl,
         poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
         positionLiquidity: p.liquidity,
         isFarming,

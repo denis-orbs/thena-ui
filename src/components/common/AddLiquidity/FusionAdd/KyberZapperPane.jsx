@@ -121,6 +121,7 @@ function KyberZapperPane({
     isStablecoinPair,
     currentPrice,
     invertPrice: mintInfo.invertPrice,
+    isZapper: true,
   })
 
   useEffect(() => {
