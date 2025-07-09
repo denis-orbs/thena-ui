@@ -255,7 +255,7 @@ export const useEstimateAPR = ({
     _amount1 = currency1?.price ? toWei(50 / currency1.price, currency1.decimals) : BigNumber(0)
   }
 
-  const isRevert = _token0.address.toLowerCase() === currency0.address.toLowerCase()
+  const isRevert = _token0?.address?.toLowerCase() === currency0?.address?.toLowerCase()
   const presetPositions = [...presetRanges, { title: 'current' }].map(({ min, max, title }) => {
     const _tickLower =
       title === Presets.FULL
