@@ -14,11 +14,12 @@ import {
   V1_MULTI_CHAIN_START_TIME,
 } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
+import { fetchHistoricalTokensPrice } from '@/lib/api'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
-  query v1PairCharts($address: String!, $startTime: Int!, $skip: Int!) {
+  query v1PairCharts($address: String!, $startTime: Int!, $tokens: [String!]!, $skip: Int!) {
     pairDayDatas(
       first: 1000
       skip: $skip
@@ -29,9 +30,24 @@ const V1_DAY_DATAS = gql`
       date
       dailyVolumeUSD
       reserveUSD
+      dailyVolumeToken0
+      dailyVolumeToken1
+      reserve0
+      reserve1
+    }
+    tokens(where: { id_in: $tokens }) {
+      derivedETH
     }
   }
 `
+
+// const FUSION_TOKEN_DATAS = gql`
+//   query fusionPairCharts($tokens: [String!]!) {
+//     tokens(where: { id_in: $tokens }) {
+//       derivedBNB
+//     }
+//   }
+// `
 
 const FUSION_DAY_DATAS = gql`
   query fusionPairCharts($address: String!, $startTime: Int!, $skip: Int!) {
@@ -47,6 +63,10 @@ const FUSION_DAY_DATAS = gql`
       volumeUSD
       untrackedVolumeUSD
       tvlUSD
+      dailyVolumeToken0
+      dailyVolumeToken1
+      feesToken0
+      feesToken1
     }
   }
 `
@@ -64,13 +84,83 @@ const WEIGHTED_DAY_DATA = gql`
   }
 `
 
-export const getV1ChartData = async (chainId, address, fee, skip) => {
+export const getHistoricalTokenPrice = async ({ chainId, tokenAddresses, startTime }) => {
+  const result = []
+  const PAGE_SIZE = 1000
+  let page = 1
+  let hasMore = true
+
+  while (hasMore) {
+    try {
+      const { data } = await fetchHistoricalTokensPrice({
+        chainId,
+        tokenAddresses,
+        page,
+        limit: PAGE_SIZE,
+        startDate: startTime,
+      })
+
+      result.push(...data)
+      if (data.length < PAGE_SIZE) {
+        hasMore = false
+      } else {
+        page++
+      }
+    } catch (e) {
+      console.error('Error fetching HistoricalTokensPrice:', e)
+      hasMore = false
+    }
+  }
+  return result
+}
+
+// export const checkFusionTokensData = async tokenAddresses => {
+//   try {
+//     const { tokens } = await fusionClient[version][chainId].request(FUSION_TOKEN_DATAS, {
+//       tokens: tokenAddresses,
+//     })
+//     return tokens.some(token => Number(token.derivedETH ?? 0) === 0)
+//   } catch (error) {
+//     console.error('Failed to fetch fusion token', error)
+//     return true
+//   }
+// }
+
+export const getV1ChartData = async ({ chainId, tokens: tokensParam, address, fee }, skip) => {
   try {
-    const { pairDayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
+    const { pairDayDatas, tokens } = await v1Client[chainId].request(V1_DAY_DATAS, {
       address,
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
+      tokens: tokensParam,
     })
+
+    if (tokens.some(token => Number(token.derivedETH ?? 0) === 0)) {
+      const priceData = await getHistoricalTokenPrice({
+        chainId,
+        tokenAddresses: tokensParam,
+        startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+      })
+      const data = pairDayDatas.map(ele => {
+        const datePrice0 = priceData.find(item => item.date === ele.date && tokensParam[0] === item.address)
+        const datePrice1 = priceData.find(item => item.date === ele.date && tokensParam[1] === item.address)
+
+        const tvlUSD = parseFloat(
+          ele.reserve0 * (datePrice0?.priceUSD ?? 0) + ele.reserve1 * (datePrice1?.priceUSD ?? 0),
+        )
+        const dayVolume = parseFloat(
+          ele.dailyVolumeToken0 * (datePrice0?.priceUSD ?? 0) + ele.dailyVolumeToken1 * (datePrice1?.priceUSD ?? 0),
+        )
+        return {
+          date: ele.date,
+          tvlUSD,
+          dayVolume,
+          dayFees: (dayVolume * fee) / 100,
+        }
+      })
+      return { data, error: false }
+    }
+
     const data = pairDayDatas.map(ele => ({
       date: ele.date,
       tvlUSD: parseFloat(ele.reserveUSD),
@@ -84,18 +174,30 @@ export const getV1ChartData = async (chainId, address, fee, skip) => {
   }
 }
 
-export const getFusionChartData = async ({ chainId, address, version = 2, skip = 0, startTime }) => {
+export const getFusionChartData = async ({
+  chainId,
+  tokens: tokensParam,
+  address,
+  version = 2,
+  skip = 0,
+  startTime,
+}) => {
   try {
     const { poolDayDatas } = await fusionClient[version][chainId].request(FUSION_DAY_DATAS, {
       address,
       startTime: startTime || FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
+      tokens: tokensParam,
     })
     const data = poolDayDatas.map(ele => ({
       date: ele.date,
       dayVolume: parseFloat(ele.volumeUSD) || parseFloat(ele.untrackedVolumeUSD),
       tvlUSD: parseFloat(ele.tvlUSD),
       dayFees: parseFloat(ele.feesUSD),
+      dailyVolumeToken0: parseFloat(ele.dailyVolumeToken0),
+      dailyVolumeToken1: parseFloat(ele.dailyVolumeToken1),
+      feesToken0: parseFloat(ele.feesToken0),
+      feesToken1: parseFloat(ele.feesToken1),
     }))
     return { data, error: false }
   } catch (error) {
@@ -133,6 +235,17 @@ export const fetchPairChartData = async (chainId, pair) => {
 
   if (pair.type === PAIR_TYPES.LSD) {
     const version = pair?.version
+    // const needFetchHistoricalPrice = await checkFusionTokensData([pair.token0.address, pair.token1.address])
+
+    // let priceData = null
+    // if (needFetchHistoricalPrice) {
+    //   priceData = await getHistoricalTokenPrice({
+    //     chainId,
+    //     tokenAddresses: tokensParam,
+    //     startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+    //   })
+    // }
+
     const { data: fusionData = [] } = await fetchChartData(
       getFusionChartData,
       [{ chainId, address: pair?.address, version }],
@@ -162,7 +275,14 @@ export const fetchPairChartData = async (chainId, pair) => {
     if (ichiSingleSidedPool) {
       const { data } = await fetchChartData(
         getFusionChartData,
-        [{ chainId, address: ichiSingleSidedPool.algebraV2, startTime: 1747872000, version: 2 }],
+        [
+          {
+            chainId,
+            address: ichiSingleSidedPool.algebraV2,
+            startTime: 1747872000,
+            version: 2,
+          },
+        ],
         false,
       )
       ichiSingleSidedData = data ?? []
@@ -181,20 +301,55 @@ export const fetchPairChartData = async (chainId, pair) => {
       const data2 = fusionFeeData.find(d => d.date === date)
       const data3 = fusionDataV2.find(d => d.date === date)
       const data4 = ichiSingleSidedData.find(d => d.date === date)
-
-      mergedData.push({
+      const dateData = {
         date,
         dayFees: (data1?.dayFees ?? 0) + (data2?.dayFees ?? 0) + (data3?.dayFees ?? 0) + (data4?.dayFees ?? 0),
         dayVolume:
           (data1?.dayVolume ?? 0) + (data2?.dayVolume ?? 0) + (data3?.dayVolume ?? 0) + (data4?.dayVolume ?? 0),
         tvlUSD: (data1?.tvlUSD ?? 0) + (data2?.tvlUSD ?? 0) + (data3?.tvlUSD ?? 0) + (data4?.tvlUSD ?? 0),
-      })
+      }
+
+      // if (priceData) {
+      //   const datePrice0 = priceData.find(item => item.date === ele.date && tokensParam[0] === item.address)
+      //   const datePrice1 = priceData.find(item => item.date === ele.date && tokensParam[1] === item.address)
+
+      //   const dailyVolumeToken0 =
+      //     (data1?.dailyVolumeToken0 ?? 0) +
+      //     (data2?.dailyVolumeToken0 ?? 0) +
+      //     (data3?.dailyVolumeToken0 ?? 0) +
+      //     (data4?.dailyVolumeToken0 ?? 0)
+      //   const dailyVolumeToken1 =
+      //     (data1?.dailyVolumeToken1 ?? 0) +
+      //     (data2?.dailyVolumeToken1 ?? 0) +
+      //     (data3?.dailyVolumeToken1 ?? 0) +
+      //     (data4?.dailyVolumeToken1 ?? 0)
+      //   const feesToken0 =
+      //     (data1?.feesToken0 ?? 0) + (data2?.feesToken0 ?? 0) + (data3?.feesToken0 ?? 0) + (data4?.feesToken0 ?? 0)
+      //   const feesToken1 =
+      //     (data1?.feesToken1 ?? 0) + (data2?.feesToken1 ?? 0) + (data3?.feesToken1 ?? 0) + (data4?.feesToken1 ?? 0)
+
+      //   dateData.dayVolume = dailyVolumeToken0 * datePrice0.priceUSD + dailyVolumeToken1 * datePrice1.priceUSD
+      //   dateData.dayFees = feesToken0 * datePrice0.priceUSD + feesToken1 * datePrice1.priceUSD
+      // }
+
+      mergedData.push(dateData)
     })
 
     return mergedData
   }
 
-  const { data: v1data } = await fetchChartData(getV1ChartData, [chainId, pair.address, pair.fee], false)
+  const { data: v1data } = await fetchChartData(
+    getV1ChartData,
+    [
+      {
+        chainId,
+        tokens: [pair.token0.address, pair.token1.address],
+        address: pair.address,
+        fee: pair.fee,
+      },
+    ],
+    false,
+  )
   return v1data
 }
 

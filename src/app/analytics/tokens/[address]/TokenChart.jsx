@@ -11,6 +11,7 @@ import LineChart from '@/components/charts/LineChart'
 import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
+// import { getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
 
 const V1_DAY_DATAS = gql`
   query v1TokenCharts($address: String!, $startTime: Int!, $skip: Int!) {
@@ -26,6 +27,9 @@ const V1_DAY_DATAS = gql`
       dailyVolumeUSD
       priceUSD
     }
+    tokens(where: { id: $address }) {
+      derivedETH
+    }
   }
 `
 
@@ -36,6 +40,37 @@ const getV1ChartData = async (chainId, address, skip = 0) => {
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
+
+    // if (tokens.some(token => Number(token.derivedETH ?? 0) === 0)) {
+    //   const priceData = await getHistoricalTokenPrice({
+    //     chainId,
+    //     tokenAddresses: [address],
+    //     startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+    //   })
+    //   console.log(tokenDayDatas)
+    // const data = tokenDayDatas.map(ele => {
+    //   const datePrice = priceData.find(item => item.date === ele.date)
+
+    //   const priceUSD = ele.priceUSD ?? datePrice?.priceUSD ?? 0
+
+    //   const tvlUSD = parseFloat(ele.derivedETH * priceUSD)
+    //   const dayVolume = parseFloat(ele.dailyVolumeToken * priceUSD)
+
+    //   return {
+    //     date: Number(ele.date),
+    //     tvlUSD: parseFloat(ele.totalLiquidityUSD),
+    //     dailyVolumeUSD: parseFloat(ele.dailyVolumeUSD),
+    //     priceUSD,
+
+    //     // date: ele.date,
+    //     // tvlUSD,
+    //     // dayVolume,
+    //     // dayFees: (dayVolume * fee) / 100,
+    //   }
+    // })
+    // return { data, error: false }
+    // }
+
     const data = tokenDayDatas.map(ele => ({
       date: Number(ele.date),
       tvlUSD: parseFloat(ele.totalLiquidityUSD),
@@ -93,6 +128,7 @@ const fetchTokenChartData = async (chainId, token) => {
   console.log('fetch token chart data ======================')
   const { data: fusiondata } = await getFusionChartData(chainId, token.address)
   const { data: fusiondatav3 } = await getFusionChartData(chainId, token.address, 0, 3)
+
   const { data: v1data } = await getV1ChartData(chainId, token.address)
   const fusionFirstDate = (fusiondata && fusiondata[0]?.date) ?? 0
   const v1FirstDate = (v1data && v1data[0]?.date) ?? 0
