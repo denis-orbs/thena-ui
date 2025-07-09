@@ -86,7 +86,9 @@ export default function TokenPairs({ token }) {
   )
   const filteredPairs = useMemo(() => {
     if (!data || !pairs) return []
-    return pairs.filter(ele => data.includes(ele.address))
+    return pairs.filter(
+      ele => data.includes(ele.address) || (ele.subpools || []).some(pool => data.includes(pool.address)),
+    )
   }, [data, pairs])
 
   return (
