@@ -76,6 +76,9 @@ const sortOptions = [
   },
 ]
 
+const docLink =
+  'https://docs.thena.fi/thena/the-tokenomics/tokens-the-vethe-thenft#vethe-erc-721-governance-token-in-the-form-of-an-nft-non-fungible-token'
+
 export default function LockPage() {
   const [sort, setSort] = useState({})
   const { push } = useRouter()
@@ -229,10 +232,7 @@ export default function LockPage() {
                   <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
                   <p>{t('Lock THE Desciption')}</p>
                 </div>
-                <TertiaryButton
-                  className='max-sm:w-full sm:min-w-fit'
-                  onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
-                >
+                <TertiaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => goToDoc(docLink)}>
                   {t('Learn More')}
                 </TertiaryButton>
               </Info>
