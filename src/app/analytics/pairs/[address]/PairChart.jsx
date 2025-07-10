@@ -126,6 +126,24 @@ export const getHistoricalTokenPrice = async ({ chainId, tokenAddresses, startTi
 //   }
 // }
 
+export function findNearestPrice(historicalPrices, targetTimestamp, address) {
+  let nearest = null
+  let minDiff = Infinity
+  const found = historicalPrices.find(item => item.date === targetTimestamp && address === item.address)
+  if (found) return found.priceUSD
+  for (const datePrice of historicalPrices) {
+    if (datePrice.address.toLowerCase() === address.toLowerCase()) {
+      const diff = Math.abs(Number(datePrice.date) - Number(targetTimestamp))
+      if (diff < minDiff) {
+        nearest = datePrice.priceUSD
+        minDiff = diff
+      }
+    }
+  }
+
+  return nearest
+}
+
 export const getV1ChartData = async ({ chainId, tokens: tokensParam, address, fee }, skip) => {
   try {
     const { pairDayDatas, tokens } = await v1Client[chainId].request(V1_DAY_DATAS, {
@@ -142,14 +160,12 @@ export const getV1ChartData = async ({ chainId, tokens: tokensParam, address, fe
         startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       })
       const data = pairDayDatas.map(ele => {
-        const datePrice0 = priceData.find(item => item.date === ele.date && tokensParam[0] === item.address)
-        const datePrice1 = priceData.find(item => item.date === ele.date && tokensParam[1] === item.address)
+        const datePrice0 = findNearestPrice(priceData, ele.date, tokensParam[0])
+        const datePrice1 = findNearestPrice(priceData, ele.date, tokensParam[1])
 
-        const tvlUSD = parseFloat(
-          ele.reserve0 * (datePrice0?.priceUSD ?? 0) + ele.reserve1 * (datePrice1?.priceUSD ?? 0),
-        )
+        const tvlUSD = parseFloat(ele.reserve0 * (datePrice0 ?? 0) + ele.reserve1 * (datePrice1 ?? 0))
         const dayVolume = parseFloat(
-          ele.dailyVolumeToken0 * (datePrice0?.priceUSD ?? 0) + ele.dailyVolumeToken1 * (datePrice1?.priceUSD ?? 0),
+          ele.dailyVolumeToken0 * (datePrice0 ?? 0) + ele.dailyVolumeToken1 * (datePrice1 ?? 0),
         )
         return {
           date: ele.date,

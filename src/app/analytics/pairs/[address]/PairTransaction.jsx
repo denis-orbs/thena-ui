@@ -15,7 +15,7 @@ import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { getHistoricalTokenPrice } from './PairChart'
+import { findNearestPrice, getHistoricalTokenPrice } from './PairChart'
 
 export const TXN_TYPE = {
   All: 'All',
@@ -185,23 +185,6 @@ const formatTime = unix => {
     return `${inMinutes} ${inMinutes === 1 ? 'minute' : 'minutes'} ago`
   }
   return `${inSeconds} ${inSeconds === 1 ? 'second' : 'seconds'} ago`
-}
-
-function findNearestPrice(historicalPrices, targetTimestamp, address) {
-  let nearest = null
-  let minDiff = Infinity
-
-  for (const datePrice of historicalPrices) {
-    if (datePrice.address.toLowerCase() === address.toLowerCase()) {
-      const diff = Math.abs(Number(datePrice.date) - Number(targetTimestamp))
-      if (diff < minDiff) {
-        nearest = datePrice.priceUSD
-        minDiff = diff
-      }
-    }
-  }
-
-  return nearest
 }
 
 const getV1Transactions = async (chainId, pairs, tokens) => {

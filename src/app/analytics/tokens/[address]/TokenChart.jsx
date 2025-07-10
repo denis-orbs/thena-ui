@@ -12,7 +12,7 @@ import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME 
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
+import { findNearestPrice, getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
 
 const V1_DAY_DATAS = gql`
   query v1TokenCharts($address: String!, $startTime: Int!, $skip: Int!) {
@@ -26,6 +26,7 @@ const V1_DAY_DATAS = gql`
       date
       totalLiquidityUSD
       dailyVolumeUSD
+      dailyVolumeToken
       priceUSD
       totalLiquidityToken
       totalLiquidityETH
@@ -51,16 +52,17 @@ const getV1ChartData = async (chainId, address, skip = 0) => {
         startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       })
       const data = tokenDayDatas.map(ele => {
-        const datePrice = priceData.find(item => item.date === ele.date)
+        const datePrice = findNearestPrice(priceData, ele.date, address)
 
-        const priceUSD = parseFloat(datePrice?.priceUSD ?? ele.priceUSD ?? 0)
+        const priceUSD = parseFloat(datePrice ?? ele.priceUSD ?? 0)
 
         const tvlUSD = parseFloat(ele.totalLiquidityToken) * priceUSD
+        const dailyVolumeUSD = parseFloat(ele.dailyVolumeToken) * priceUSD
 
         return {
           date: Number(ele.date),
-          tvlUSD: tvlUSD ?? parseFloat(ele.totalLiquidityUSD),
-          dailyVolumeUSD: parseFloat(ele.dailyVolumeUSD),
+          tvlUSD: tvlUSD || parseFloat(ele.totalLiquidityUSD),
+          dailyVolumeUSD: dailyVolumeUSD || parseFloat(ele.dailyVolumeUSD),
           priceUSD,
         }
       })
@@ -189,13 +191,14 @@ export default function TokenChart({ token }) {
       refreshInterval: 0,
     },
   )
+
   const stats = useMemo(
     () => ({
-      tvlUSD: token?.liquidity,
-      dailyVolumeUSD: token?.volume,
-      priceUSD: token?.price,
+      tvlUSD: token?.liquidity || chartData?.[chartData.length - 1]?.tvlUSD,
+      dailyVolumeUSD: token?.volume || chartData?.[chartData.length - 1]?.dailyVolumeUSD,
+      priceUSD: token?.price || chartData?.[chartData.length - 1]?.priceUSD,
     }),
-    [token],
+    [token, chartData],
   )
   return (
     <div className='flex flex-col gap-6'>
