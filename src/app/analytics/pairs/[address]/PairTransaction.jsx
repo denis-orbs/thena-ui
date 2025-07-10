@@ -9,11 +9,13 @@ import useSWR from 'swr'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
-import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+
+import { getHistoricalTokenPrice } from './PairChart'
 
 export const TXN_TYPE = {
   All: 'All',
@@ -23,7 +25,7 @@ export const TXN_TYPE = {
 }
 
 const V1_TRANSATIONS = gql`
-  query v1Transactions($pairs: [String]!) {
+  query v1Transactions($tokens: [String!]!, $pairs: [String]!) {
     mints(first: 50, where: { pair_in: $pairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
@@ -88,6 +90,9 @@ const V1_TRANSATIONS = gql`
       amount1Out
       amountUSD
       to
+    }
+    tokens(where: { id_in: $tokens }) {
+      derivedETH
     }
   }
 `
@@ -182,13 +187,39 @@ const formatTime = unix => {
   return `${inSeconds} ${inSeconds === 1 ? 'second' : 'seconds'} ago`
 }
 
-const getV1Transactions = async (chainId, pairs) => {
+function findNearestPrice(historicalPrices, targetTimestamp, address) {
+  let nearest = null
+  let minDiff = Infinity
+
+  for (const datePrice of historicalPrices) {
+    if (datePrice.address.toLowerCase() === address.toLowerCase()) {
+      const diff = Math.abs(Number(datePrice.date) - Number(targetTimestamp))
+      if (diff < minDiff) {
+        nearest = datePrice.priceUSD
+        minDiff = diff
+      }
+    }
+  }
+
+  return nearest
+}
+
+const getV1Transactions = async (chainId, pairs, tokens) => {
   const transactions = {}
   const newTxns = []
   try {
     const result = await v1Client[chainId].request(V1_TRANSATIONS, {
       pairs,
+      tokens,
     })
+    let priceData = null
+    if (tokens.some(token => Number(token.derivedETH ?? 0) === 0)) {
+      priceData = await getHistoricalTokenPrice({
+        chainId,
+        tokenAddresses: tokens,
+        startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+      })
+    }
     transactions.mints = result.mints
     transactions.burns = result.burns
     transactions.swaps = result.swaps
@@ -203,7 +234,13 @@ const getV1Transactions = async (chainId, pairs) => {
         newTxn.account = mint.to
         newTxn.token0Symbol = formatTokenSymbol(mint.pair.token0.symbol)
         newTxn.token1Symbol = formatTokenSymbol(mint.pair.token1.symbol)
-        newTxn.amountUSD = mint.amountUSD
+        const priceToken0 = findNearestPrice(priceData || [], mint.transaction.timestamp, mint.pair.token0.id)
+        const priceToken1 = findNearestPrice(priceData || [], mint.transaction.timestamp, mint.pair.token1.id)
+        newTxn.amountUSD =
+          mint.amountUSD === '0'
+            ? parseFloat(priceToken0 ?? 0) * parseFloat(mint.amount0 ?? 0) +
+              parseFloat(priceToken1 ?? 0) * parseFloat(mint.amount1 ?? 0)
+            : mint.amountUSD
         return newTxns.push(newTxn)
       })
     }
@@ -218,7 +255,13 @@ const getV1Transactions = async (chainId, pairs) => {
         newTxn.account = burn.sender
         newTxn.token0Symbol = formatTokenSymbol(burn.pair.token0.symbol)
         newTxn.token1Symbol = formatTokenSymbol(burn.pair.token1.symbol)
-        newTxn.amountUSD = burn.amountUSD
+        const priceToken0 = findNearestPrice(priceData || [], burn.transaction.timestamp, burn.pair.token0.id)
+        const priceToken1 = findNearestPrice(priceData || [], burn.transaction.timestamp, burn.pair.token1.id)
+        newTxn.amountUSD =
+          burn.amountUSD === '0'
+            ? parseFloat(priceToken0 ?? 0) * parseFloat(burn.amount0 ?? 0) +
+              parseFloat(priceToken1 ?? 0) * parseFloat(burn.amount1 ?? 0)
+            : burn.amountUSD
         return newTxns.push(newTxn)
       })
     }
@@ -244,7 +287,14 @@ const getV1Transactions = async (chainId, pairs) => {
         newTxn.hash = swap.transaction.id
         newTxn.timestamp = swap.transaction.timestamp
         newTxn.type = TXN_TYPE.SWAP
-        newTxn.amountUSD = swap.amountUSD
+        const priceToken0 = findNearestPrice(priceData || [], swap.transaction.timestamp, swap.pair.token0.id)
+        const priceToken1 = findNearestPrice(priceData || [], swap.transaction.timestamp, swap.pair.token1.id)
+        newTxn.amountUSD =
+          swap.amountUSD === '0'
+            ? (parseFloat(priceToken0 ?? 0) * Math.abs(netToken0) +
+                parseFloat(priceToken1 ?? 0) * Math.abs(netToken1)) /
+              2
+            : swap.amountUSD
         newTxn.account = swap.to
         return newTxns.push(newTxn)
       })
@@ -370,7 +420,9 @@ const fetchPairTransaction = async (chainId, pair) => {
     return fusiondata
   }
 
-  const { data: v1data } = await getV1Transactions(chainId, [pair.address])
+  const tokenAddresses = [pair.token0.address, pair.token1.address]
+
+  const { data: v1data } = await getV1Transactions(chainId, [pair.address], tokenAddresses)
   return v1data
 }
 
