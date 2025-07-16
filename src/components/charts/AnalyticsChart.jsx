@@ -206,8 +206,6 @@ function AnalyticsChart({
     [t],
   )
 
-  console.log({ title, formattedData })
-
   return (
     <Box className={cn('bg-chart-gradient border border-[#422D4C]', (isMinimum || !isExpanded) && 'p-4!', className)}>
       <div className={cn('flex flex-col gap-3', (!isExpanded || isMinimum) && 'gap-1')}>
@@ -261,7 +259,7 @@ function AnalyticsChart({
                   />
                 )}
               </div>
-              <div className='flex items-start justify-between gap-1'>
+              <div className='flex min-h-8 items-start justify-between gap-1'>
                 {!isExpanded && (
                   <div className='flex h-6 flex-row gap-2'>
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
@@ -278,7 +276,7 @@ function AnalyticsChart({
                     )}
                   </div>
                 )}
-                {properties ? (
+                {properties && (
                   <Selection
                     className={cn(
                       'items-stretch bg-transparent md:h-11',
@@ -293,20 +291,12 @@ function AnalyticsChart({
                     }}
                     data={properties}
                   />
-                ) : (
-                  <Selection
-                    className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
-                    classNames={{
-                      items: cn('md:text-sm text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
-                    }}
-                    data={periods}
-                  />
                 )}
               </div>
             </>
           )}
         </div>
-        <Divider />
+        <Divider className={cn(!properties && 'hidden md:block')} />
         {isMinimum ? (
           <>
             <Selection
@@ -343,8 +333,8 @@ function AnalyticsChart({
               )}
             </div>
 
-            {properties && (
-              <div className={cn('flex items-center justify-between gap-1', !isExpanded && 'w-full')}>
+            <div className={cn('flex items-center justify-between gap-1', !isExpanded && 'w-full')}>
+              <div>
                 {!!epochData?.length && !isExpanded && (
                   <Toggle
                     className='hidden lg:flex'
@@ -354,15 +344,15 @@ function AnalyticsChart({
                     label='Per Epoch'
                   />
                 )}
-                <Selection
-                  className={cn('items-stretch bg-transparent md:h-11!', !isExpanded && 'h-8!')}
-                  classNames={{
-                    items: cn('md:text-sm text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
-                  }}
-                  data={periods}
-                />
               </div>
-            )}
+              <Selection
+                className={cn('items-center bg-transparent md:h-11!', !isExpanded && 'h-8!')}
+                classNames={{
+                  items: cn('md:text-sm text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+                }}
+                data={periods}
+              />
+            </div>
           </div>
         )}
       </div>
