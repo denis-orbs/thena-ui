@@ -135,6 +135,7 @@ function AnalyticsReChart({
     return (
       <ChartContainer config={chartConfig}>
         <AreaChart
+          margin={{ top: 10, right: 10, bottom: 0, left: 0 }}
           data={data}
           onMouseMove={state => {
             const { activeIndex } = state
@@ -195,6 +196,7 @@ function AnalyticsReChart({
   return (
     <ChartContainer config={chartConfig}>
       <BarChart
+        margin={{ top: 10, right: 10, bottom: 0, left: 0 }}
         accessibilityLayer
         data={data}
         onMouseLeave={() => {

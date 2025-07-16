@@ -306,7 +306,7 @@ function AnalyticsChart({
             </>
           )}
         </div>
-        {properties && <Divider />}
+        <Divider />
         {isMinimum ? (
           <>
             <Selection
