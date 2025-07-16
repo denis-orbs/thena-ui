@@ -4,17 +4,18 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
 import { Area, AreaChart, Bar, BarChart, ReferenceLine, XAxis, YAxis } from 'recharts'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
-import { ChartContainer } from '../ui/chart'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart'
 
 function CustomPriceLabel({ viewBox, value }) {
   const { x, y, width } = viewBox
 
   const labelWidth = (value.length + 1) * 7 + 12
   const labelHeight = 20
-  const labelX = x + width + 4
+  const labelX = x + width + 8
   const labelY = y - labelHeight / 2
 
   return (
@@ -22,6 +23,34 @@ function CustomPriceLabel({ viewBox, value }) {
       <rect x={labelX} y={labelY} width={labelWidth} height={labelHeight} fill='#F299EE' rx={8} ry={8} />
       <text x={labelX + 6} y={labelY + 14} fill='#0D090F' fontSize='12' fontWeight='bold' textAnchor='start'>
         ${value}
+      </text>
+    </g>
+  )
+}
+
+function CustomXAxisTick(props) {
+  const { isLgDown } = useMediaQuery()
+  const { x, y, payload, index } = props
+  let displayValue = payload.value
+  const dx = index === 0 && displayValue instanceof Date ? (isLgDown ? 20 : 15) : 0
+  if (displayValue instanceof Date) {
+    displayValue = dayjs(displayValue).format('MMM D')
+  }
+  return (
+    <g transform={`translate(${x + dx},${y})`}>
+      <text x={0} y={0} dy={16} textAnchor='middle' fill='#685770' fontSize={14}>
+        {displayValue}
+      </text>
+    </g>
+  )
+}
+
+function CustomYAxisTick(props) {
+  const { x, y, payload } = props
+  return (
+    <g transform={`translate(${x + 50},${y})`}>
+      <text x={0} y={0} dy={4} textAnchor='end' fill='#A1A1AA' fontSize={12}>
+        {`$${formatAmount(payload.value, true)}`}
       </text>
     </g>
   )
@@ -38,6 +67,10 @@ function AnalyticsReChart({
   setHoverDate,
   currentPrice,
   showCurrentPrice,
+  chartTooltipFormatter,
+  desiredTicks = 12,
+  xAxisLine = false,
+  showTooltip = false,
 }) {
   const t = useTranslations()
   const { locale } = useLocaleSettings()
@@ -66,6 +99,18 @@ function AnalyticsReChart({
     [chartItemConfigs, locale, setHoverDate, setHoverValue, t, useEpoch],
   )
 
+  const customLabelFormatter = (label, payload) => {
+    if (!payload || !payload.length) return null
+    const entry = payload[0]?.payload
+    if (useEpoch) {
+      return `${t('Epoch')} ${entry?.epoch ?? label}`
+    }
+    const date = entry?.time || label
+    return dayjs(date).format('MMM D, YYYY')
+  }
+
+  const xInterval = data && data.length > desiredTicks ? Math.ceil(data.length / desiredTicks) - 1 : 0
+
   if (chartType === 'area') {
     return (
       <ChartContainer config={chartConfig}>
@@ -88,15 +133,12 @@ function AnalyticsReChart({
             dataKey={xAsisKey}
             tickLine={false}
             tickMargin={10}
-            axisLine={false}
+            axisLine={xAxisLine ? { stroke: '#F299EE', strokeWidth: 2 } : false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
+            interval={xInterval}
+            tick={<CustomXAxisTick />}
           />
-          <YAxis
-            orientation='right'
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={value => `$${formatAmount(value, true)}`}
-          />
+          <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
           <defs>
             <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
@@ -111,6 +153,7 @@ function AnalyticsReChart({
               type={item.type ?? 'natural'}
               fill={item.fill}
               stroke={item.stroke}
+              strokeWidth={item.strokeWidth ?? 2}
               stackId='a'
             />
           ))}
@@ -142,19 +185,16 @@ function AnalyticsReChart({
           dataKey={xAsisKey}
           tickLine={false}
           tickMargin={8}
-          axisLine={false}
+          axisLine={xAxisLine ? { stroke: '#35243D', strokeWidth: 1 } : false}
           tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
+          interval={xInterval}
+          tick={<CustomXAxisTick />}
         />
-        <YAxis
-          orientation='right'
-          axisLine={false}
-          tickLine={false}
-          tickFormatter={value => `$${formatAmount(value, true)}`}
-        />
+        <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
         <defs>
           <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
             <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
-            <stop offset='95%' stopColor='#F199EE' stopOpacity={0} />
+            <stop offset='95%' stopColor='#F199EE' stopOpacity={0.05} />
           </linearGradient>
         </defs>
         {chartItemConfigs.map(item => (
@@ -169,6 +209,16 @@ function AnalyticsReChart({
             {...item}
           />
         ))}
+        {showTooltip && (
+          <ChartTooltip
+            className='border-neutral-600 bg-neutral-900'
+            content={<ChartTooltipContent />}
+            cursor={false}
+            defaultIndex={1}
+            formatter={chartTooltipFormatter}
+            labelFormatter={customLabelFormatter}
+          />
+        )}
         {showCurrentPrice && (
           <ReferenceLine
             y={Number(currentPrice)}

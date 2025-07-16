@@ -132,22 +132,22 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
       return [
         {
           ...sortOptions[0],
-          width: 'w-[21%]',
+          width: 'w-[20%]',
           disabled: true,
         },
         {
           ...sortOptions[1],
-          width: 'w-[34%]',
+          width: 'w-[30%]',
           disabled: true,
         },
         {
           ...sortOptions[2],
-          width: 'w-[27%]',
+          width: 'w-[30%]',
           disabled: true,
         },
         {
           ...sortOptions[4],
-          width: 'w-[18%]',
+          width: 'w-[20%]',
           disabled: true,
         },
       ]
@@ -175,7 +175,7 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
         tableContainer: 'max-md:p-0',
         cellItemContent: 'max-md:h-11 pl-0.5 flex-row items-center',
         paginationContainer: 'max-md:px-0 border-none pt-0 mx-auto w-full',
-        paginationList: 'max-md:py-0 mx-auto',
+        paginationList: 'max-md:p-0 mx-auto',
       }}
       tableBasic
     />

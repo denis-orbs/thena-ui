@@ -7,7 +7,6 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import AnalyticsChart from '@/components/charts/AnalyticsChart'
-import SingleBarReChart from '@/components/charts/SingleBarReChart'
 import Collapsible from '@/components/collapse/Collapse2'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Highlight from '@/components/highlight'
@@ -147,10 +146,10 @@ export default function AnalyticsPage() {
           <h2>{t('Analytics')}</h2>
           {isLgDown ? (
             <>
+              {/* TVL chart */}
               <Collapsible
-                title='TVL'
+                title={<span className='font-archia text-xl leading-6 font-semibold'>{t('TVL')}</span>}
                 subtitle={<span className='block h-4'>${formatAmount(tvlSubTitle)}</span>}
-                // eslint-disable-next-line @next/next/no-img-element
                 previewContent={
                   <div className='h-[143px] w-full overflow-hidden bg-[url("/images/line-chart.png")] bg-[length:100%_143px] bg-center bg-no-repeat' />
                 }
@@ -178,8 +177,10 @@ export default function AnalyticsPage() {
                       dataKey: 'tvlUSD',
                       fill: 'url(#fillGradient)',
                       stroke: '#F299EE',
+                      strokeWidth: 2,
                     },
                   ]}
+                  defaultProperty='tvlUSD'
                   chartType='area'
                   isMinimum
                   onHoverChange={value => setTvlSubTitle(value)}
@@ -188,7 +189,7 @@ export default function AnalyticsPage() {
 
               {/* Volume chart */}
               <Collapsible
-                title='Volume'
+                title={<span className='font-archia text-xl leading-6 font-semibold'>{t('Volume')}</span>}
                 subtitle={<span className='block h-4'>${formatAmount(volumeSubTitle)}</span>}
                 // eslint-disable-next-line @next/next/no-img-element
                 // <img className='h-auto w-full' src='/images/barchart.svg' alt='tvl' />
@@ -196,7 +197,11 @@ export default function AnalyticsPage() {
                   <div className='h-[143px] w-full bg-[url("/images/barchart.png")] bg-[length:auto_100%] bg-repeat-x' />
                 }
                 className='min-h-[197px]! px-0!'
-                classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+                classNames={{
+                  preview: 'px-0!',
+                  content: 'pt-0 pb-4 pr-2 pl-0!',
+                  headerClosed: 'border-t border-t-neutral-700 -mt-[2px]! h-[63px] pt-0 px-4',
+                }}
               >
                 <AnalyticsChart
                   className='border-none! bg-transparent p-0!'
@@ -215,24 +220,33 @@ export default function AnalyticsPage() {
                     {
                       dataKey: 'volumeUSD',
                       fill: 'url(#fillGradient)',
-                      shape: SingleBarReChart,
+                      radius: [4, 4, 0, 0],
                     },
                   ]}
                   onExpand={() => setIsExpanded('volume')}
                   isExpanded={false}
                   onHoverChange={value => setVolumeSubTitle(value)}
                   isMinimum
+                  xAxisLine
                 />
               </Collapsible>
+
+              {/* Fees chart */}
               <Collapsible
-                title={<span className='text-neutral-50'>{t('Fees')}</span>}
+                title={<span className='font-archia text-xl leading-6 font-semibold'>{t('Fees')}</span>}
+                defaultTitle={<span className='font-archia text-xl leading-6 font-semibold'>{t('Total Revenue')}</span>}
                 subtitle={<span className='block h-4'>${formatAmount(feesSubTitle)}</span>}
+                defaultSubtitle={`$${formatAmount(dataRevenue?.revenueData)}`}
                 // eslint-disable-next-line @next/next/no-img-element
                 previewContent={
                   <div className='h-[143px] w-full bg-[url("/images/barchart-stack.png")] bg-[length:auto_100%] bg-repeat-x' />
                 }
                 className='min-h-[197px]! px-0!'
-                classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+                classNames={{
+                  preview: 'px-0!',
+                  content: 'pt-0 pb-4 pr-2 pl-0!',
+                  headerClosed: 'border-t border-t-neutral-700 -mt-[2px]! h-[63px] pt-0 px-4',
+                }}
               >
                 <AnalyticsChart
                   className='border-none! bg-transparent p-0!'
@@ -266,6 +280,7 @@ export default function AnalyticsPage() {
                     {
                       dataKey: 'veTheUSD',
                       fill: '#F199EE',
+                      radius: [4, 4, 0, 0],
                     },
                   ]}
                   onHoverChange={value => setFeesSubTitle(value)}
@@ -309,6 +324,7 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        radius: [4, 4, 0, 0],
                       },
                     ]}
                     isExpanded
@@ -320,7 +336,7 @@ export default function AnalyticsPage() {
                     className='bg-chart-gradient rounded-xl border border-[#422D4C]'
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
-                    title='TVL'
+                    title='Total Value Locked'
                     protocolData={totalStats}
                     protocolProperty='tvlUSD'
                     chartId='tvlUSD'
@@ -334,6 +350,7 @@ export default function AnalyticsPage() {
                         dataKey: 'tvlUSD',
                         fill: 'url(#fillGradient)',
                         stroke: '#F299EE',
+                        strokeWidth: 2,
                       },
                     ]}
                     chartType='area'
@@ -357,11 +374,14 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'volumeUSD',
                         fill: 'url(#fillGradient)',
-                        stroke: '#F299EE',
-                        shape: SingleBarReChart,
+                        // stroke: '#F299EE',
+                        // shape: SingleBarReChart,
+
+                        radius: [4, 4, 0, 0],
                       },
                     ]}
                     isExpanded
+                    xAxisLine
                   />
                 )}
               </div>
@@ -398,6 +418,7 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        radius: [4, 4, 0, 0],
                       },
                     ]}
                     isExpanded={false}
@@ -423,6 +444,7 @@ export default function AnalyticsPage() {
                         dataKey: 'tvlUSD',
                         fill: 'url(#fillGradient)',
                         stroke: '#F299EE',
+                        strokeWidth: 2,
                       },
                     ]}
                     chartType='area'
@@ -461,6 +483,7 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        radius: [4, 4, 0, 0],
                       },
                     ]}
                     epochData={groupEpochData}
@@ -486,11 +509,13 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'volumeUSD',
                         fill: 'url(#fillGradient)',
-                        shape: SingleBarReChart,
+                        // shape: SingleBarReChart,
+                        radius: [4, 4, 0, 0],
                       },
                     ]}
                     onExpand={() => setIsExpanded('volume')}
                     isExpanded={false}
+                    xAxisLine
                   />
                 )}
               </div>

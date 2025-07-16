@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
+import { ChevronDownWhiteIcon } from '@/svgs'
+
+import Divider from '../divider'
 
 function Collapsible({
   title,
+  defaultTitle,
   subtitle,
+  defaultSubtitle,
   children,
   previewContent,
   keepPreview = false,
@@ -131,26 +135,39 @@ function Collapsible({
               <div className={cn(classNames?.preview)}>{previewContent}</div>
             </div>
           )}
-          <h3 className={cn('text-xl font-medium text-neutral-50 transition-all duration-300 ease-out')}>{title}</h3>
+          {typeof title === 'string' ? (
+            <h3 className={cn('text-xl font-medium text-neutral-50 transition-all duration-300 ease-out')}>
+              {isOpen ? title : defaultTitle ?? title}
+            </h3>
+          ) : isOpen ? (
+            title
+          ) : (
+            defaultTitle ?? title
+          )}
           {subtitle && (
             <p
               className={cn(
-                'text-xs text-neutral-500 transition-all duration-300 ease-out',
+                'text-sm text-neutral-500 transition-all duration-300 ease-out',
                 isOpen ? 'text-neutral-300' : 'text-neutral-400',
+                classNames?.subtitle,
               )}
             >
-              {subtitle}
+              {isOpen ? subtitle : defaultSubtitle ?? subtitle}
             </p>
           )}
         </div>
-        <ChevronDownIcon
+        <ChevronDownWhiteIcon
           className={cn(
             'absolute right-4 bottom-4 size-5 text-neutral-50 transition-all duration-300 ease-out',
-            isOpen ? 'rotate-180' : 'rotate-0',
+            !isOpen ? 'rotate-180' : 'rotate-0',
           )}
         />
       </div>
-
+      {isOpen && (
+        <div className='w-full px-2'>
+          <Divider className='w-full bg-neutral-700' />
+        </div>
+      )}
       {/* Content with smooth height animation */}
       <div
         ref={contentRef}

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { pick } from 'lodash'
 import { useTranslations } from 'next-intl'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import Toggle from '@/components/toggle'
 import { cn, formatAmount } from '@/lib/utils'
@@ -34,9 +34,11 @@ function AnalyticsChart({
   onHoverChange,
   isMinimum = false,
   valueDefault,
+  xAxisLine = false,
+  defaultProperty = 'all',
 }) {
   const [groupPerEpoch, setGroupPerEpoch] = useState(false)
-  const [property, setProperty] = useState('all')
+  const [property, setProperty] = useState(defaultProperty)
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
@@ -45,6 +47,10 @@ function AnalyticsChart({
   useEffect(() => {
     setHover(undefined)
   }, [protocolData])
+
+  useEffect(() => {
+    setProperty(prev => (prev === 'all' ? prev : defaultProperty))
+  }, [defaultProperty])
 
   useEffect(() => {
     if (protocolData) {
@@ -165,8 +171,43 @@ function AnalyticsChart({
     return lastDataPoint[activeConfigs[0]?.dataKey]
   }, [formattedData, chartItemConfigs, property])
 
+  const chartTooltipFormatter = useCallback(
+    (value, name, entry) => {
+      let label = ''
+      switch (name) {
+        case 'tvlUSD':
+          label = t('TVL')
+          break
+        case 'volumeUSD':
+          label = t('Volume (24h)')
+          break
+        case 'veTheUSD':
+          label = t('veTHE')
+          break
+        case 'customPoolFeesUSD':
+          label = t('LP')
+          break
+        case 'theNftUSD':
+          label = t('theNFT')
+          break
+        default:
+          break
+      }
+
+      return (
+        <div className='flex items-center gap-2'>
+          <div className='size-2.5 rounded-[2px]' style={{ backgroundColor: entry?.color || entry?.fill }} />
+          <Paragraph className='text-xs! font-normal text-neutral-50'>
+            {`${label} $${formatAmount(value, true)}`}
+          </Paragraph>
+        </div>
+      )
+    },
+    [t],
+  )
+
   return (
-    <Box className={cn('bg-chart-gradient border border-[#422D4C]', className)}>
+    <Box className={cn('bg-chart-gradient border border-[#422D4C]', (isMinimum || !isExpanded) && 'p-4!', className)}>
       <div className={cn('flex flex-col gap-3', (!isExpanded || isMinimum) && 'gap-1')}>
         <div className={cn('flex justify-between', !isExpanded && 'flex-col gap-1')}>
           {isMinimum ? (
@@ -185,7 +226,13 @@ function AnalyticsChart({
             <>
               <div className={cn('flex flex-col gap-2', !isExpanded && 'flex-row items-center justify-between')}>
                 {Number(hover) > -1 && typeof hover !== 'undefined' ? (
-                  <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
+                  <Paragraph
+                    className={cn(
+                      'text-base font-semibold text-neutral-50 lg:text-3xl',
+                      isExpanded && 'text-3xl! leading-9!',
+                      classNames?.title,
+                    )}
+                  >
                     {t(title)}
                   </Paragraph>
                 ) : (
@@ -271,12 +318,14 @@ function AnalyticsChart({
                 <div className='flex h-[56px] flex-col gap-1'>
                   <>
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
-                      <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
+                      <TextHeading className='text-3xl! leading-9!'>${formatAmount(hover)}</TextHeading>
                     ) : (
                       <>
                         {properties && (
                           <>
-                            <TextHeading className={cn('text-2xl')}>${formatAmount(valueDefault)}</TextHeading>
+                            <TextHeading className={cn('text-3xl! leading-9!')}>
+                              ${formatAmount(valueDefault)}
+                            </TextHeading>
                             <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
                           </>
                         )}
@@ -325,6 +374,10 @@ function AnalyticsChart({
           chartType={chartType}
           currentPrice={currentPrice}
           showCurrentPrice
+          chartTooltipFormatter={chartTooltipFormatter}
+          desiredTicks={isMinimum || !isExpanded ? 4 : 12}
+          xAxisLine={xAxisLine}
+          showTooltip={Boolean(properties)}
         />
       </div>
       {!!epochData?.length && isMinimum && (
