@@ -338,7 +338,7 @@ export default function AnalyticsPage() {
                 {isExpanded === 'tvl' && (
                   <AnalyticsChart
                     className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
+                    classNames={{ title: 'lg:text-xl font-semibold font-archia leading-6' }}
                     rawData={rawData}
                     title='Total Value Locked'
                     protocolData={totalStats}
@@ -389,7 +389,7 @@ export default function AnalyticsPage() {
                   />
                 )}
               </div>
-              <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
+              <div className='lg:bg-chart-gradient grid grid-cols-1 gap-4 rounded-xl bg-none lg:grid-cols-2'>
                 {isExpanded === 'tvl' ? (
                   <AnalyticsChart
                     epochData={groupEpochData}

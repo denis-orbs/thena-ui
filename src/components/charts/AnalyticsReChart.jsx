@@ -60,6 +60,21 @@ function CustomCursor({ ...rest }) {
   return <rect {...rest} fill='#422d4c' opacity={0.15} rx={4} ry={4} cursor='pointer' />
 }
 
+function generateRightAlignedTicks(data, desiredTicks, xAsisKey = 'date') {
+  if (!data?.length) return []
+
+  const total = data.length
+  const step = Math.ceil(total / desiredTicks)
+  const ticks = []
+
+  for (let i = total - 1; i >= 0; i -= step) {
+    ticks.unshift(data[i][xAsisKey]) // insert at start
+    if (ticks.length >= desiredTicks) break
+  }
+
+  return ticks
+}
+
 function AnalyticsReChart({
   data,
   xAsisKey,
@@ -113,7 +128,8 @@ function AnalyticsReChart({
     return dayjs(date).format('MMM D, YYYY')
   }
 
-  const xInterval = data && data.length > desiredTicks ? Math.ceil(data.length / desiredTicks) - 1 : 0
+  // const xInterval = data && data.length > desiredTicks ? Math.ceil(data.length / desiredTicks) - 1 : 0
+  const xTicks = generateRightAlignedTicks(data, desiredTicks, xAsisKey)
 
   if (chartType === 'area') {
     return (
@@ -139,7 +155,8 @@ function AnalyticsReChart({
             tickMargin={10}
             axisLine={xAxisLine ? { stroke: '#F299EE', strokeWidth: 2 } : false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
-            interval={xInterval}
+            // interval={xInterval}
+            ticks={xTicks}
             tick={<CustomXAxisTick />}
           />
           <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
@@ -191,8 +208,9 @@ function AnalyticsReChart({
           tickMargin={8}
           axisLine={xAxisLine ? { stroke: '#35243D', strokeWidth: 1 } : false}
           tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
-          interval={xInterval}
+          // interval={xInterval}
           tick={<CustomXAxisTick />}
+          ticks={xTicks}
         />
         <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
         <defs>

@@ -278,7 +278,11 @@ function AnalyticsChart({
                 )}
                 {properties ? (
                   <Selection
-                    className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
+                    className={cn(
+                      'items-stretch bg-transparent md:h-11',
+                      !isExpanded && 'h-8!',
+                      !!epochData?.length && isExpanded && 'mt-9',
+                    )}
                     classNames={{
                       items: cn(
                         'md:text-sm text-x! flex-1 w-fit text-nowrap',
