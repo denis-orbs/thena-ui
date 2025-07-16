@@ -165,12 +165,17 @@ export default function AnalyticsPage() {
                 }}
                 chartItemConfigs={[
                   {
-                    dataKey: 'feesUSD',
+                    dataKey: 'customPoolFeesUSD',
                     fill: '#BD60BA',
+                    stroke: '#EA66E5',
+                    strokeWidth: 2,
+                    shape: SingleBarReChart,
                   },
                   {
-                    dataKey: 'customPoolFeesUSD',
+                    dataKey: 'feesUSD',
                     fill: '#F199EE',
+                    stroke: '#F199EE',
+                    shape: SingleBarReChart,
                   },
                 ]}
                 isExpanded
@@ -218,8 +223,8 @@ export default function AnalyticsPage() {
                   {
                     dataKey: 'volumeUSD',
                     fill: 'url(#fillGradient)',
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    shape: props => <SingleBarReChart {...props} borderColor='#F299EE' />,
+                    stroke: '#F299EE',
+                    shape: SingleBarReChart,
                   },
                 ]}
                 isExpanded
@@ -230,6 +235,7 @@ export default function AnalyticsPage() {
             {isExpanded === 'tvl' ? (
               <AnalyticsChart
                 rawData={rawData}
+                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
                 classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
                 title='Fee'
                 protocolData={totalStats}
@@ -245,12 +251,17 @@ export default function AnalyticsPage() {
                 }}
                 chartItemConfigs={[
                   {
-                    dataKey: 'feesUSD',
+                    dataKey: 'customPoolFeesUSD',
                     fill: '#BD60BA',
+                    stroke: '#EA66E5',
+                    strokeWidth: 2,
+                    shape: SingleBarReChart,
                   },
                   {
-                    dataKey: 'customPoolFeesUSD',
+                    dataKey: 'feesUSD',
                     fill: '#F199EE',
+                    stroke: '#F199EE',
+                    shape: SingleBarReChart,
                   },
                 ]}
                 showPerEpoch={false}
@@ -301,12 +312,17 @@ export default function AnalyticsPage() {
                 }}
                 chartItemConfigs={[
                   {
-                    dataKey: 'feesUSD',
+                    dataKey: 'customPoolFeesUSD',
                     fill: '#BD60BA',
+                    stroke: '#EA66E5',
+                    strokeWidth: 2,
+                    shape: SingleBarReChart,
                   },
                   {
-                    dataKey: 'customPoolFeesUSD',
+                    dataKey: 'feesUSD',
                     fill: '#F199EE',
+                    stroke: '#F199EE',
+                    shape: SingleBarReChart,
                   },
                 ]}
                 isExpanded={false}
@@ -314,7 +330,6 @@ export default function AnalyticsPage() {
               />
             ) : (
               <AnalyticsChart
-                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
                 classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
                 rawData={rawData}
                 title='Volume (24h)'
@@ -330,6 +345,8 @@ export default function AnalyticsPage() {
                   {
                     dataKey: 'volumeUSD',
                     fill: 'url(#fillGradient)',
+                    stroke: '#F299EE',
+                    shape: SingleBarReChart,
                   },
                 ]}
                 onExpand={() => setIsExpanded('volume')}

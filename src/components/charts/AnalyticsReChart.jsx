@@ -6,7 +6,7 @@ import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from 'recharts'
 
 import { useLocaleSettings } from '@/state/settings/hooks'
 
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart'
+import { ChartContainer } from '../ui/chart'
 
 function AnalyticsReChart({
   data,
@@ -49,6 +49,14 @@ function AnalyticsReChart({
       <ChartContainer config={chartConfig}>
         <AreaChart
           data={data}
+          onMouseMove={state => {
+            const { activeIndex } = state
+            if (!activeIndex) return
+            const entry = data[Number(activeIndex)]
+            if (entry) {
+              onHoverEntry(entry)
+            }
+          }}
           onMouseLeave={() => {
             if (setHoverValue) setHoverValue(undefined)
             if (setHoverDate) setHoverDate(undefined)
@@ -61,8 +69,7 @@ function AnalyticsReChart({
             axisLine={false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
           />
-          <YAxis orientation='right' />
-          <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+          <YAxis orientation='right' axisLine={false} tickLine={false} />
           <defs>
             <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
@@ -77,7 +84,6 @@ function AnalyticsReChart({
               fill={item.fill}
               stroke={item.stroke}
               stackId='a'
-              onMouseOver={onHoverEntry}
             />
           ))}
         </AreaChart>
@@ -103,15 +109,21 @@ function AnalyticsReChart({
           tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
         />
         <YAxis orientation='right' axisLine={false} tickLine={false} />
-        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-        {chartItemConfigs.map(item => (
+        <defs>
+          <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
+            <stop offset='95%' stopColor='#F199EE' stopOpacity={0.1} />
+          </linearGradient>
+        </defs>
+        {chartItemConfigs.map((item, index) => (
           <Bar
-            {...item}
             dataKey={item.dataKey}
             stackId='a'
             fill={item.fill}
-            radius={item.radius ?? [4, 4, 0, 0]}
+            radius={item.radius ?? index === chartItemConfigs.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
             onMouseOver={onHoverEntry}
+            activeBar={false}
+            {...item}
           />
         ))}
       </BarChart>
