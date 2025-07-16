@@ -12,14 +12,14 @@ function CheckBox({ className, checked, setChecked = () => {}, ...rest }) {
         'outline-2 outline-offset-2 outline-transparent outline-solid',
         'rounded-xs transition-all duration-150 ease-out',
         'active:outline-focus disabled:bg-neutral-700',
-        checked && 'bg-primary-600 hover:bg-primary-700',
-        !checked && 'border-neutral-600 hover:border-neutral-400',
+        Boolean(checked) && 'bg-primary-600 hover:bg-primary-700',
+        Boolean(!checked) && 'border-neutral-600 hover:border-neutral-400',
         className,
       )}
       onClick={() => setChecked(!checked)}
       {...rest}
     >
-      {checked && <CheckIcon className='h-4 w-4 stroke-white disabled:stroke-neutral-600' />}
+      {Boolean(checked) && <CheckIcon className='h-4 w-4 stroke-white disabled:stroke-neutral-600' />}
     </button>
   )
 }

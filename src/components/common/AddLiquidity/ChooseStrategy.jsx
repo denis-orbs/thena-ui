@@ -303,7 +303,7 @@ export default function ChooseStrategy({
             </div>
           </div>
         )}
-        <div className='mt-0'>
+        <div className='mt-2 max-md:mt-4 xl:mt-0'>
           {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
           {!isAutomatic && (

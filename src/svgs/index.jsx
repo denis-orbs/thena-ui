@@ -108,6 +108,7 @@ import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
+import ResetIcon from '~/svgs/reset.svg'
 import ReverseIcon from '~/svgs/reverse.svg'
 import RightInIcon from '~/svgs/right-in.svg'
 import RightOutIcon from '~/svgs/right-out.svg'
@@ -270,6 +271,7 @@ export {
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
+  ResetIcon,
   ReverseIcon,
   RightInIcon,
   RightOutIcon,

@@ -61,7 +61,9 @@ export function PairBasicInfo({ pair, className }) {
         <Swiper slidesPerView={1.1} spaceBetween={8} grabCursor>
           <SwiperSlide>
             <Box
-              className={cn('flex h-[84px] w-full items-center gap-x-4 border border-neutral-600 bg-transparent p-4!')}
+              className={cn(
+                'flex h-[84px] w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4!',
+              )}
               style={{
                 background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
                  linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
@@ -84,7 +86,9 @@ export function PairBasicInfo({ pair, className }) {
 
           <SwiperSlide>
             <Box
-              className={cn('flex h-[84px] w-full items-center gap-x-4 border border-neutral-600 bg-transparent p-4!')}
+              className={cn(
+                'flex h-[84px] w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4!',
+              )}
               style={{
                 background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
                  linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,

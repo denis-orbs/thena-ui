@@ -29,7 +29,7 @@ const toPriceExtent = (selection, yScale) => [yScale.invert(selection[1]), yScal
 
 const normalizeExtent = extent => (extent[0] < extent[1] ? extent : [extent[1], extent[0]])
 
-export const Brush2 = ({
+const Brush2 = ({
   id,
   yScale,
   interactive,
@@ -547,3 +547,5 @@ export const Brush2 = ({
     ],
   )
 }
+
+export default Brush2

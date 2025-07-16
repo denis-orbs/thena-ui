@@ -16,7 +16,7 @@ import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { RefreshIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
+import { ResetIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
 import ChartPrice from './ChartPrice'
@@ -437,7 +437,7 @@ export default function ChartPriceRangeInput({
               setRange(2)
             }}
           >
-            <RefreshIcon className='h-4 w-4 stroke-neutral-50' />
+            <ResetIcon className='h-4 w-4' />
             {t('Reset')}
           </EmphasisButton>
         </div>

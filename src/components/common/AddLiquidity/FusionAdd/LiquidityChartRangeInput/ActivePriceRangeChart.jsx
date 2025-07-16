@@ -5,7 +5,7 @@ import CheckBox from '@/components/checkbox'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 import { AxisRight } from './AxisRight'
-import { Brush2 } from './Brush2'
+import Brush2 from './Brush2'
 import { HorizontalLine } from './HorizontalLine'
 import { LiquidityBars } from './LiquidityBars'
 
@@ -59,7 +59,7 @@ export default function ActivePriceRangeChart({
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} ref={svgRef}>
+      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} className='z-10' ref={svgRef}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>
             <rect x='0' y='0' width={width} height={height} />
@@ -156,10 +156,12 @@ export default function ActivePriceRangeChart({
           />
         </g>
       </svg>
-      <label className='absolute right-4 -bottom-2 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
-        <CheckBox className='size-5!' checked={showLiquidity} setChecked={() => setShowLiquidity(prev => !prev)} />
-        Show Liquidity
-      </label>
+      <div className='absolute right-4 -bottom-2 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+        <CheckBox className='size-5!' checked={showLiquidity} setChecked={setShowLiquidity} />
+        <span className='cursor-pointer select-none' onClick={() => setShowLiquidity(prev => !prev)}>
+          Show Liquidity
+        </span>
+      </div>
     </div>
   )
 }

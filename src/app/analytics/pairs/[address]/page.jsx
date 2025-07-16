@@ -119,7 +119,6 @@ export default function PairDetailPage({ params }) {
       const _strategy = pair?.subpools.find(item =>
         shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
       )
-      console.log({ _strategy })
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     },
     [handleChooseStrategy, pair?.subpools],
