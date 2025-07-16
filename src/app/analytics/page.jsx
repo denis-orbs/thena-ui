@@ -2,22 +2,29 @@
 
 import { groupBy } from 'lodash'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
-import PercentBadge from '@/components/badges/PercentBadge'
 import AnalyticsChart from '@/components/charts/AnalyticsChart'
 import SingleBarReChart from '@/components/charts/SingleBarReChart'
+import Collapsible from '@/components/collapse/Collapse2'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
+import Highlight from '@/components/highlight'
+import { SearchInput2 } from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { NotShowBannerV3 } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useTokens } from '@/context/tokensContext'
 import { useAnalyticsChartData } from '@/hooks/useGraph'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { fetchStats } from '@/lib/api'
-import { formatAmount } from '@/lib/utils'
+import { fetchStats as fetchStatsRevenue } from '@/lib/subgraph'
+import { cn, formatAmount } from '@/lib/utils'
+import SummaryAnalyticsInfo from '@/modules/Analytics/SummaryAnalyticsInfo'
 import { useChainSettings } from '@/state/settings/hooks'
+import { InfoCircleWhite } from '@/svgs'
 
 import PairsTable from './pairs/PairsTable'
 import TokensTable from './tokens/TokensTable'
@@ -25,10 +32,18 @@ import TokensTable from './tokens/TokensTable'
 export default function AnalyticsPage() {
   const { networkId } = useChainSettings()
   const [isExpanded, setIsExpanded] = useState('feeDistribution')
+  const [searchTextTokens, setSearchTextTokens] = useState('')
+  const [searchTextPairs, setSearchTextPairs] = useState('')
+  const [tvlSubTitle, setTvlSubTitle] = useState(0)
+  const [volumeSubTitle, setVolumeSubTitle] = useState(0)
+  const [feesSubTitle, setFeesSubTitle] = useState(0)
 
-  const { pairs } = usePairs()
+  const { isLgDown } = useMediaQuery()
+
+  const { data: dataRevenue } = useSWR('thena total stats', () => fetchStatsRevenue())
+  const { pairs, isLoading: isLoadingPairs } = usePairs()
   // const { push } = useRouter()
-  const { tokens } = useTokens()
+  const { tokens, isLoading: isLoadingTokens } = useTokens()
   const t = useTranslations()
   const { data: stats } = useSWR(
     'stats api',
@@ -81,306 +96,483 @@ export default function AnalyticsPage() {
     return stats.find(ele => ele.type === 'op-total')
   }, [networkId, stats])
 
+  const filteredTokens = useMemo(
+    () => (tokens ? tokens.filter(token => token.symbol.toLowerCase().includes(searchTextTokens.toLowerCase())) : []),
+    [tokens, searchTextTokens],
+  )
+
+  const filteredPairs = useMemo(() => {
+    if (!searchTextPairs) return pairs
+    const searchTerms = searchTextPairs
+      .toLowerCase()
+      .split(/[\s/,]+/)
+      .map(term => term.trim())
+
+    return pairs.filter(pool => {
+      const poolSymbols = (pool.symbol || '').toLowerCase().split('/')
+
+      if (searchTerms.length === 2 && poolSymbols.length === 2) {
+        return (
+          (poolSymbols[0].includes(searchTerms[0]) && poolSymbols[1].includes(searchTerms[1])) ||
+          (poolSymbols[0].includes(searchTerms[1]) && poolSymbols[1].includes(searchTerms[0]))
+        )
+      }
+
+      return pool.symbol.toLowerCase().includes(searchTextPairs.toLowerCase())
+    })
+  }, [pairs, searchTextPairs])
+
+  const [showBannerMigrate, setShowBannerMigrate] = useState(false)
+
+  useEffect(() => {
+    const updateBanner = () => {
+      const shouldShow = !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22')
+      setShowBannerMigrate(shouldShow)
+    }
+
+    updateBanner()
+
+    window.addEventListener('local-storage-changed', updateBanner)
+    return () => window.removeEventListener('local-storage-changed', updateBanner)
+  }, [])
+
   return (
     <LayoutWithBackButton
       hiddenBackButton
-      className='3xl:w-[1464px] 3xl:pt-8! pt-6! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]'
+      className={cn(
+        '3xl:w-[1464px] 3xl:mt-8! mt-6 max-md:mx-4! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]',
+        showBannerMigrate && 'lg:-mt-8!',
+      )}
     >
-      <div className='flex flex-col gap-10'>
-        <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-4 lg:gap-8'>
+        <SummaryAnalyticsInfo totalStats={totalStats} />
+        <div className='flex flex-col gap-2 lg:gap-4'>
           <h2>{t('Analytics')}</h2>
-          <div className='lg:bg-chart-gradient item-center flex gap-8 px-8 py-4 lg:justify-between lg:rounded-xl lg:border lg:border-[#422D4C]'>
-            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
-              <div className='flex items-start justify-between gap-4'>
-                {totalStats ? (
-                  <>
-                    <TextHeading className='text-gradient-pink text-3xl'>
-                      ${formatAmount(totalStats.tvlUSD)}
-                    </TextHeading>
-                    <PercentBadge value={totalStats.tvlChange} />
-                  </>
-                ) : (
-                  <>
-                    <Skeleton className='h-[32px] w-[160px]' />
-                    <Skeleton className='h-[24px] w-[80px]' />
-                  </>
-                )}
-              </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
-            </div>
-            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
-              <div className='flex items-start justify-between gap-4'>
-                {totalStats ? (
-                  <>
-                    <TextHeading className='text-gradient-pink text-3xl'>
-                      ${formatAmount(totalStats.volumeUSD)}
-                    </TextHeading>
-                    <PercentBadge value={totalStats.volumeChange} />
-                  </>
-                ) : (
-                  <>
-                    <Skeleton className='h-[32px] w-[160px]' />
-                    <Skeleton className='h-[24px] w-[80px]' />
-                  </>
-                )}
-              </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
-            </div>
-            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
-              <div className='flex items-start justify-between gap-4'>
-                {totalStats ? (
-                  <>
-                    <TextHeading className='text-gradient-pink text-3xl'>
-                      ${formatAmount(totalStats.feesUSD)}
-                    </TextHeading>
-                    <PercentBadge value={totalStats.feesChange} />
-                  </>
-                ) : (
-                  <>
-                    <Skeleton className='h-[32px] w-[160px]' />
-                    <Skeleton className='h-[24px] w-[80px]' />
-                  </>
-                )}
-              </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
-            </div>
-          </div>
-          <div className='grid grid-cols-1 gap-6'>
-            {isExpanded === 'feeDistribution' && (
-              <AnalyticsChart
-                epochData={groupEpochData}
-                defaultDateHover='Total Revenue'
-                rawData={rawData}
-                title='Fee'
-                protocolData={totalStats}
-                protocolProperty='revenueData'
-                chartId='Fee Distribution'
-                chartConfig={{
-                  feesUSD: {
-                    label: t('veTHE owners'),
-                  },
-                  customPoolFeesUSD: {
-                    label: t("Manual LP'ers"),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'customPoolFeesUSD',
-                    fill: '#BD60BA',
-                    stroke: '#EA66E5',
-                    strokeWidth: 2,
-                    shape: SingleBarReChart,
-                  },
-                  {
-                    dataKey: 'feesUSD',
-                    fill: '#F199EE',
-                    stroke: '#F199EE',
-                    shape: SingleBarReChart,
-                  },
-                ]}
-                isExpanded
-              />
-            )}
-            {isExpanded === 'tvl' && (
-              <AnalyticsChart
-                className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                rawData={rawData}
+          {isLgDown ? (
+            <>
+              <Collapsible
                 title='TVL'
-                protocolData={totalStats}
-                protocolProperty='tvlUSD'
-                chartId='tvlUSD'
-                chartConfig={{
-                  tvlUSD: {
-                    label: t('Total Volume'),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'tvlUSD',
-                    fill: 'url(#fillGradient)',
-                    stroke: '#F299EE',
-                  },
-                ]}
-                chartType='area'
-                isExpanded
-              />
-            )}
-            {isExpanded === 'volume' && (
-              <AnalyticsChart
-                className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                rawData={rawData}
-                title='Volume (24h)'
-                protocolData={totalStats}
-                protocolProperty='volumeUSD'
-                chartId='Volume (24h)'
-                chartConfig={{
-                  volumeUSD: {
-                    label: t('Volume (24h)'),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'volumeUSD',
-                    fill: 'url(#fillGradient)',
-                    stroke: '#F299EE',
-                    shape: SingleBarReChart,
-                  },
-                ]}
-                isExpanded
-              />
-            )}
-          </div>
-          <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
-            {isExpanded === 'tvl' ? (
-              <AnalyticsChart
-                rawData={rawData}
-                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                title='Fee'
-                protocolData={totalStats}
-                protocolProperty='revenueData'
-                chartId='Fee Distribution'
-                chartConfig={{
-                  feesUSD: {
-                    label: t('veTHE owners'),
-                  },
-                  customPoolFeesUSD: {
-                    label: t("Manual LP'ers"),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'customPoolFeesUSD',
-                    fill: '#BD60BA',
-                    stroke: '#EA66E5',
-                    strokeWidth: 2,
-                    shape: SingleBarReChart,
-                  },
-                  {
-                    dataKey: 'feesUSD',
-                    fill: '#F199EE',
-                    stroke: '#F199EE',
-                    shape: SingleBarReChart,
-                  },
-                ]}
-                showPerEpoch={false}
-                isExpanded={false}
-                onExpand={() => setIsExpanded('feeDistribution')}
-              />
+                subtitle={<span className='block h-4'>${formatAmount(tvlSubTitle)}</span>}
+                // eslint-disable-next-line @next/next/no-img-element
+                previewContent={<img className='h-auto w-full' src='/images/line-chart.svg' alt='tvl' />}
+                className='px-0!'
+                classNames={{ preview: 'px-0!', content: 'pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+              >
+                <AnalyticsChart
+                  className='border-none! bg-transparent p-0!'
+                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                  rawData={rawData}
+                  title='TVL'
+                  protocolData={totalStats}
+                  protocolProperty='tvlUSD'
+                  chartId='tvlUSD'
+                  chartConfig={{
+                    tvlUSD: {
+                      label: t('Total Volume'),
+                    },
+                  }}
+                  chartItemConfigs={[
+                    {
+                      dataKey: 'tvlUSD',
+                      fill: 'url(#fillGradient)',
+                      stroke: '#F299EE',
+                    },
+                  ]}
+                  chartType='area'
+                  isMinimum
+                  onHoverChange={value => setTvlSubTitle(value)}
+                />
+              </Collapsible>
+
+              {/* Volume chart */}
+              <Collapsible
+                title='Volume'
+                subtitle={<span className='block h-4'>${formatAmount(volumeSubTitle)}</span>}
+                // eslint-disable-next-line @next/next/no-img-element
+                previewContent={<img className='h-auto w-full' src='/images/barchart.svg' alt='tvl' />}
+                className='px-0!'
+                classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+              >
+                <AnalyticsChart
+                  className='border-none! bg-transparent p-0!'
+                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                  rawData={rawData}
+                  title='Volume'
+                  protocolData={totalStats}
+                  protocolProperty='volumeUSD'
+                  chartId='Volume (24h)'
+                  chartConfig={{
+                    volumeUSD: {
+                      label: t('Volume (24h)'),
+                    },
+                  }}
+                  chartItemConfigs={[
+                    {
+                      dataKey: 'volumeUSD',
+                      fill: 'url(#fillGradient)',
+                    },
+                  ]}
+                  onExpand={() => setIsExpanded('volume')}
+                  isExpanded={false}
+                  onHoverChange={value => setVolumeSubTitle(value)}
+                  isMinimum
+                />
+              </Collapsible>
+              <Collapsible
+                title={<span className='text-neutral-50'>{t('Fees')}</span>}
+                subtitle={<span className='block h-4'>${formatAmount(feesSubTitle)}</span>}
+                // eslint-disable-next-line @next/next/no-img-element
+                previewContent={<img className='h-auto w-full' src='/images/barchart-stack.svg' alt='tvl' />}
+                className='px-0!'
+                classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+              >
+                <AnalyticsChart
+                  className='border-none! bg-transparent p-0!'
+                  epochData={groupEpochData}
+                  defaultDateHover='Total Revenue'
+                  rawData={rawData}
+                  title='Fee'
+                  protocolData={totalStats}
+                  protocolProperty='feesUSD'
+                  chartId='Fee Distribution'
+                  chartConfig={{
+                    feesUSD: {
+                      label: t('veTHE owners'),
+                    },
+                    customPoolFeesUSD: {
+                      label: t("Manual LP'ers"),
+                    },
+                  }}
+                  chartItemConfigs={[
+                    {
+                      dataKey: 'feesUSD',
+                      fill: '#BD60BA',
+                    },
+                    {
+                      dataKey: 'customPoolFeesUSD',
+                      fill: '#F199EE',
+                    },
+                  ]}
+                  onHoverChange={value => setFeesSubTitle(value)}
+                  valueDefault={dataRevenue?.revenueData}
+                  isMinimum
+                />
+              </Collapsible>
+            </>
+          ) : (
+            <>
+              <div className='grid grid-cols-1 gap-6'>
+                {isExpanded === 'feeDistribution' && (
+                  <AnalyticsChart
+                    epochData={groupEpochData}
+                    defaultDateHover='Total Revenue'
+                    rawData={rawData}
+                    title='Fee'
+                    protocolData={totalStats}
+                    protocolProperty='feesUSD'
+                    chartId='Fee Distribution'
+                    chartConfig={{
+                      feesUSD: {
+                        label: t('veTHE owners'),
+                      },
+                      customPoolFeesUSD: {
+                        label: t("Manual LP'ers"),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'feesUSD',
+                        fill: '#BD60BA',
+                      },
+                      {
+                        dataKey: 'customPoolFeesUSD',
+                        fill: '#F199EE',
+                      },
+                    ]}
+                    isExpanded
+                    valueDefault={dataRevenue?.revenueData}
+                  />
+                )}
+                {isExpanded === 'tvl' && (
+                  <AnalyticsChart
+                    className='bg-chart-gradient rounded-xl border border-[#422D4C]'
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    rawData={rawData}
+                    title='TVL'
+                    protocolData={totalStats}
+                    protocolProperty='tvlUSD'
+                    chartId='tvlUSD'
+                    chartConfig={{
+                      tvlUSD: {
+                        label: t('Total Volume'),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'tvlUSD',
+                        fill: 'url(#fillGradient)',
+                        stroke: '#F299EE',
+                      },
+                    ]}
+                    chartType='area'
+                    isExpanded
+                  />
+                )}
+                {isExpanded === 'volume' && (
+                  <AnalyticsChart
+                    className='bg-chart-gradient rounded-xl border border-[#422D4C]'
+                    rawData={rawData}
+                    title='Volume (24h)'
+                    protocolData={totalStats}
+                    protocolProperty='volumeUSD'
+                    chartId='Volume (24h)'
+                    chartConfig={{
+                      volumeUSD: {
+                        label: t('Volume (24h)'),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'volumeUSD',
+                        fill: 'url(#fillGradient)',
+                        // eslint-disable-next-line react/no-unstable-nested-components
+                        shape: props => <SingleBarReChart {...props} borderColor='#F299EE' />,
+                      },
+                    ]}
+                    isExpanded
+                  />
+                )}
+              </div>
+              <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
+                {isExpanded === 'tvl' ? (
+                  <AnalyticsChart
+                    rawData={rawData}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    title='Fee'
+                    protocolData={totalStats}
+                    protocolProperty='revenueData'
+                    chartId='Fee Distribution'
+                    chartConfig={{
+                      feesUSD: {
+                        label: t('veTHE owners'),
+                      },
+                      customPoolFeesUSD: {
+                        label: t("Manual LP'ers"),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'feesUSD',
+                        fill: '#BD60BA',
+                      },
+                      {
+                        dataKey: 'customPoolFeesUSD',
+                        fill: '#F199EE',
+                      },
+                    ]}
+                    showPerEpoch={false}
+                    isExpanded={false}
+                    onExpand={() => setIsExpanded('feeDistribution')}
+                  />
+                ) : (
+                  <AnalyticsChart
+                    className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    rawData={rawData}
+                    title='TVL'
+                    protocolData={totalStats}
+                    protocolProperty='tvlUSD'
+                    chartId='tvlUSD'
+                    chartConfig={{
+                      tvlUSD: {
+                        label: t('Total Volume'),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'tvlUSD',
+                        fill: 'url(#fillGradient)',
+                        stroke: '#F299EE',
+                      },
+                    ]}
+                    chartType='area'
+                    isExpanded={false}
+                    onExpand={() => setIsExpanded('tvl')}
+                  />
+                )}
+                {isExpanded === 'volume' ? (
+                  <AnalyticsChart
+                    rawData={rawData}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    title='Fee'
+                    protocolData={totalStats}
+                    protocolProperty='revenueData'
+                    chartId='Fee Distribution'
+                    chartConfig={{
+                      feesUSD: {
+                        label: t('veTHE owners'),
+                      },
+                      customPoolFeesUSD: {
+                        label: t("Manual LP'ers"),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'feesUSD',
+                        fill: '#BD60BA',
+                      },
+                      {
+                        dataKey: 'customPoolFeesUSD',
+                        fill: '#F199EE',
+                      },
+                    ]}
+                    isExpanded={false}
+                    onExpand={() => setIsExpanded('feeDistribution')}
+                  />
+                ) : (
+                  <AnalyticsChart
+                    className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    rawData={rawData}
+                    title='Volume (24h)'
+                    protocolData={totalStats}
+                    protocolProperty='volumeUSD'
+                    chartId='Volume (24h)'
+                    chartConfig={{
+                      volumeUSD: {
+                        label: t('Volume (24h)'),
+                      },
+                    }}
+                    chartItemConfigs={[
+                      {
+                        dataKey: 'volumeUSD',
+                        fill: 'url(#fillGradient)',
+                      },
+                    ]}
+                    onExpand={() => setIsExpanded('volume')}
+                    isExpanded={false}
+                  />
+                )}
+              </div>
+            </>
+          )}
+        </div>
+        {isLgDown ? (
+          <Collapsible
+            title={t('Top Assets')}
+            subtitle={`${t('Price')} / ${t('Volume (24h)')}`}
+            classNames={{ content: 'px-4 flex flex-col gap-4 pt-3 pb-4' }}
+          >
+            <SearchInput2
+              val={searchTextTokens}
+              setVal={setSearchTextTokens}
+              className='h-11 lg:min-w-[339px]'
+              classNames={{ input: 'h-11 px-4 py-3' }}
+            />
+            {filteredTokens.length > 0 ? (
+              <TokensTable backUrlNumber={3} data={filteredTokens} />
+            ) : isLoadingTokens ? (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <Skeleton className='h-full w-full' />
+              </div>
             ) : (
-              <AnalyticsChart
-                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                rawData={rawData}
-                title='TVL'
-                protocolData={totalStats}
-                protocolProperty='tvlUSD'
-                chartId='tvlUSD'
-                chartConfig={{
-                  tvlUSD: {
-                    label: t('Total Volume'),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'tvlUSD',
-                    fill: 'url(#fillGradient)',
-                    stroke: '#F299EE',
-                  },
-                ]}
-                chartType='area'
-                isExpanded={false}
-                onExpand={() => setIsExpanded('tvl')}
-              />
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <div className='flex flex-col items-center gap-4'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <Paragraph className='text-sm text-neutral-500'>{t('No tokens found')}</Paragraph>
+                </div>
+              </div>
             )}
-            {isExpanded === 'volume' ? (
-              <AnalyticsChart
-                rawData={rawData}
-                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                title='Fee'
-                protocolData={totalStats}
-                protocolProperty='revenueData'
-                chartId='Fee Distribution'
-                chartConfig={{
-                  feesUSD: {
-                    label: t('veTHE owners'),
-                  },
-                  customPoolFeesUSD: {
-                    label: t("Manual LP'ers"),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'customPoolFeesUSD',
-                    fill: '#BD60BA',
-                    stroke: '#EA66E5',
-                    strokeWidth: 2,
-                    shape: SingleBarReChart,
-                  },
-                  {
-                    dataKey: 'feesUSD',
-                    fill: '#F199EE',
-                    stroke: '#F199EE',
-                    shape: SingleBarReChart,
-                  },
-                ]}
-                isExpanded={false}
-                onExpand={() => setIsExpanded('feeDistribution')}
+          </Collapsible>
+        ) : (
+          <div className='flex flex-col gap-4'>
+            <div className='flex items-center justify-between'>
+              <TextHeading className='text-2xl text-neutral-50'>{t('Top Assets')}</TextHeading>
+              <SearchInput2
+                val={searchTextTokens}
+                setVal={setSearchTextTokens}
+                className='h-11 lg:min-w-[339px]'
+                classNames={{ input: 'h-11 px-4 py-3' }}
               />
+            </div>
+            {filteredTokens.length > 0 ? (
+              <TokensTable backUrlNumber={3} data={filteredTokens} />
+            ) : isLoadingTokens ? (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <Skeleton className='h-full w-full' />
+              </div>
             ) : (
-              <AnalyticsChart
-                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                rawData={rawData}
-                title='Volume (24h)'
-                protocolData={totalStats}
-                protocolProperty='volumeUSD'
-                chartId='Volume (24h)'
-                chartConfig={{
-                  volumeUSD: {
-                    label: t('Volume (24h)'),
-                  },
-                }}
-                chartItemConfigs={[
-                  {
-                    dataKey: 'volumeUSD',
-                    fill: 'url(#fillGradient)',
-                    stroke: '#F299EE',
-                    shape: SingleBarReChart,
-                  },
-                ]}
-                onExpand={() => setIsExpanded('volume')}
-                isExpanded={false}
-              />
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <div className='flex flex-col items-center gap-4'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <Paragraph className='text-sm text-neutral-500'>{t('No tokens found')}</Paragraph>
+                </div>
+              </div>
             )}
           </div>
-        </div>
-        <div className='flex flex-col gap-4'>
-          <div className='flex items-center justify-between'>
-            <TextHeading className='text-2xl text-neutral-50'>{t('Top Assets')}</TextHeading>
-            {/* <EmphasisButton
-              onClick={() => {
-                push('/analytics/tokens?back=3')
-              }}
-            >
-              {t('View All')}
-            </EmphasisButton> */}
+        )}
+        {isLgDown ? (
+          <Collapsible
+            title={t('Top Pairs')}
+            subtitle={`${t('Liquidity')} / ${t('Volume (24h)')} / ${t('Fees (24h)')}`}
+            classNames={{ content: 'px-4 flex flex-col gap-4 pt-3 pb-4' }}
+          >
+            <SearchInput2
+              val={searchTextPairs}
+              setVal={setSearchTextPairs}
+              className='h-11 lg:min-w-[339px]'
+              classNames={{ input: 'h-11 px-4 py-3' }}
+            />
+            {filteredPairs.length > 0 ? (
+              <PairsTable backUrlNumber={3} data={filteredPairs} />
+            ) : isLoadingPairs ? (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <Skeleton className='h-full w-full' />
+              </div>
+            ) : (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <div className='flex flex-col items-center gap-4'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <Paragraph className='text-sm text-neutral-500'>{t('No pairs found')}</Paragraph>
+                </div>
+              </div>
+            )}
+          </Collapsible>
+        ) : (
+          <div className='flex flex-col gap-4'>
+            <div className='flex items-center justify-between'>
+              <TextHeading className='text-2xl text-neutral-50'>{t('Top Pairs')}</TextHeading>
+              <SearchInput2
+                val={searchTextPairs}
+                setVal={setSearchTextPairs}
+                className='h-11 lg:min-w-[339px]'
+                classNames={{ input: 'h-11 px-4 py-3' }}
+              />
+            </div>
+            {filteredPairs.length > 0 ? (
+              <PairsTable backUrlNumber={3} data={filteredPairs} />
+            ) : isLoadingPairs ? (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <Skeleton className='h-full w-full' />
+              </div>
+            ) : (
+              <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
+                <div className='flex flex-col items-center gap-4'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <Paragraph className='text-sm text-neutral-500'>{t('No pairs found')}</Paragraph>
+                </div>
+              </div>
+            )}
           </div>
-          <TokensTable backUrlNumber={3} data={tokens} />
-        </div>
-        <div className='flex flex-col gap-4'>
-          <div className='flex items-center justify-between'>
-            <TextHeading className='text-2xl text-neutral-50'>{t('Top Pairs')}</TextHeading>
-            {/* <EmphasisButton
-              onClick={() => {
-                push('/analytics/pairs?back=3')
-              }}
-            >
-              {t('View All')}
-            </EmphasisButton> */}
-          </div>
-          <PairsTable backUrlNumber={3} data={pairs} />
-        </div>
+        )}
       </div>
     </LayoutWithBackButton>
   )

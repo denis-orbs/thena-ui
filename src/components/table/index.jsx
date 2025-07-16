@@ -230,6 +230,7 @@ function Table({
                       option.width,
                       option.justify,
                       option.minWidth,
+                      classNames?.headerItem,
                     )}
                     key={`header-${idx}`}
                     onClick={() => {
@@ -341,6 +342,7 @@ function Table({
                                   'flex flex-col text-nowrap lg:flex-row',
                                   cell.justify,
                                   classNames?.cellItem,
+                                  classNames?.cellItemContent,
                                   cell?.className,
                                 )}
                               >
@@ -480,7 +482,12 @@ function Table({
         )}
       </div>
       {((!loading && pageCount > 1 && !hidePagination) || showNumberOfPage) && (
-        <div className='flex flex-col justify-between gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5'>
+        <div
+          className={cn(
+            'flex flex-col justify-between gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5',
+            classNames?.paginationContainer,
+          )}
+        >
           {showNumberOfPage && (
             <Dropdown
               className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
@@ -502,7 +509,12 @@ function Table({
           )}
           {!loading && pageCount > 1 && !hidePagination && (
             <div className='flex justify-center sm:justify-end'>
-              <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
+              <ul
+                className={cn(
+                  'relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end',
+                  classNames?.paginationList,
+                )}
+              >
                 <PaginateCell
                   onClick={() => {
                     if (currentPage !== 1) {
