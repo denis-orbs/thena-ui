@@ -19,8 +19,6 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 function AnalyticsChart({
   epochData,
   rawData,
-  protocolData,
-  protocolProperty,
   defaultDateHover,
   title,
   className,
@@ -33,7 +31,7 @@ function AnalyticsChart({
   chartType = 'bar',
   onHoverChange,
   isMinimum = false,
-  valueDefault,
+  defaultValue,
   xAxisLine = false,
   defaultProperty = 'all',
 }) {
@@ -43,44 +41,20 @@ function AnalyticsChart({
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
   const t = useTranslations()
-  // Getting latest data to display on top of chart when not hovered
-  useEffect(() => {
-    setHover(undefined)
-  }, [protocolData])
 
   useEffect(() => {
     setProperty(prev => (prev === 'all' ? prev : defaultProperty))
   }, [defaultProperty])
 
-  useEffect(() => {
-    if (protocolData) {
-      setHover(protocolData[protocolProperty])
-      setDateHover(defaultDateHover)
-    }
-  }, [protocolData, protocolProperty, defaultDateHover])
-
-  useEffect(() => {
-    setHover(protocolData?.[protocolProperty] || undefined)
-    setDateHover(defaultDateHover)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title])
-
-  useEffect(() => {
-    if (typeof hover === 'undefined' && protocolData && !valueDefault) {
-      setHover(protocolData[protocolProperty])
-      setDateHover()
-    }
-  }, [protocolData, hover, protocolProperty, valueDefault])
-
   const chartData = useMemo(() => (groupPerEpoch ? epochData : rawData), [rawData, groupPerEpoch, epochData])
   useEffect(() => {
     if (!onHoverChange) return
     if (hover === undefined) {
-      onHoverChange(valueDefault || protocolData?.[protocolProperty])
+      onHoverChange(defaultValue ?? 0)
       return
     }
     onHoverChange(hover)
-  }, [hover, onHoverChange, protocolData, protocolProperty, valueDefault])
+  }, [hover, onHoverChange, defaultValue])
 
   const formattedData = useMemo(
     () =>
@@ -237,7 +211,7 @@ function AnalyticsChart({
                   </Paragraph>
                 ) : (
                   <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
-                    {t('Total Revenue')}
+                    {t(defaultDateHover ?? title)}
                   </Paragraph>
                 )}
                 {!!epochData?.length && isExpanded && (
@@ -266,11 +240,13 @@ function AnalyticsChart({
                       <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(hover)}</TextHeading>
                     ) : (
                       <>
-                        <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(valueDefault)}</TextHeading>
+                        <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(defaultValue)}</TextHeading>
                       </>
                     )}
                     {dateHover ? (
                       <TextSubHeading className='leading-6!'>{dateHover}</TextSubHeading>
+                    ) : defaultDateHover && isExpanded ? (
+                      <TextSubHeading className='leading-6!'>{defaultDateHover}</TextSubHeading>
                     ) : (
                       <div className='h-5' />
                     )}
@@ -316,19 +292,14 @@ function AnalyticsChart({
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
                       <TextHeading className='text-3xl! leading-9!'>${formatAmount(hover)}</TextHeading>
                     ) : (
-                      <>
-                        {properties && (
-                          <>
-                            <TextHeading className={cn('text-3xl! leading-9!')}>
-                              ${formatAmount(valueDefault)}
-                            </TextHeading>
-                            <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
-                          </>
-                        )}
-                      </>
+                      <TextHeading className={cn('text-3xl! leading-9!')}>${formatAmount(defaultValue)}</TextHeading>
                     )}
                   </>
-                  {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
+                  {dateHover || defaultDateHover ? (
+                    <TextSubHeading>{dateHover || defaultDateHover}</TextSubHeading>
+                  ) : (
+                    <div className='h-5' />
+                  )}
                 </div>
               )}
             </div>
