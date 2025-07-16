@@ -129,13 +129,6 @@ function AnalyticsChart({
     () =>
       Object.keys(chartConfig).length > 1
         ? [
-            {
-              label: 'All',
-              active: property === 'all',
-              onClickHandler: () => {
-                setProperty('all')
-              },
-            },
             ...Object.keys(chartConfig).map(key => ({
               label: chartConfig[key].label ?? '',
               active: property === key,
@@ -143,6 +136,13 @@ function AnalyticsChart({
                 setProperty(key)
               },
             })),
+            {
+              label: 'All',
+              active: property === 'all',
+              onClickHandler: () => {
+                setProperty('all')
+              },
+            },
           ]
         : null,
     [property, chartConfig],
