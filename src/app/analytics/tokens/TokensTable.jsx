@@ -137,7 +137,7 @@ export default function TokensTable({ data, hidePagination = false, backUrlNumbe
       setNumberOfPage={setItemsPerPage}
       pageSize={itemsPerPage}
       tableBasic
-      className='max-md:bg-transparent max-md:px-0 max-md:py-0'
+      className='max-lg:bg-transparent max-md:px-0 max-md:py-0'
       classNames={{
         headerItem: 'max-md:h-5! max-md:[&>div]:pt-0! max-md:[&>div]:px-1! max-md:[&>div]:pb-2!',
         tableContainer: 'max-md:p-0',

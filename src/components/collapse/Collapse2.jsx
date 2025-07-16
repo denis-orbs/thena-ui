@@ -145,13 +145,7 @@ function Collapsible({
             defaultTitle ?? title
           )}
           {subtitle && (
-            <p
-              className={cn(
-                'text-sm text-neutral-500 transition-all duration-300 ease-out',
-                isOpen ? 'text-neutral-300' : 'text-neutral-400',
-                classNames?.subtitle,
-              )}
-            >
+            <p className={cn('text-sm text-neutral-500 transition-all duration-300 ease-out', classNames?.subtitle)}>
               {isOpen ? subtitle : defaultSubtitle ?? subtitle}
             </p>
           )}

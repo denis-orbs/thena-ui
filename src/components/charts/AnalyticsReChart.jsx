@@ -56,6 +56,10 @@ function CustomYAxisTick(props) {
   )
 }
 
+function CustomCursor({ ...rest }) {
+  return <rect {...rest} fill='#422d4c' opacity={0.15} rx={4} ry={4} cursor='pointer' />
+}
+
 function AnalyticsReChart({
   data,
   xAsisKey,
@@ -145,9 +149,9 @@ function AnalyticsReChart({
               <stop offset='95%' stopColor='#F199EE' stopOpacity={0} />
             </linearGradient>
           </defs>
-          {chartItemConfigs.map(item => (
+          {chartItemConfigs.map((item, index) => (
             <Area
-              key={item.dataKey}
+              key={`${item.dataKey}_${index}`}
               {...item}
               dataKey={item.dataKey}
               type={item.type ?? 'natural'}
@@ -197,23 +201,25 @@ function AnalyticsReChart({
             <stop offset='95%' stopColor='#F199EE' stopOpacity={0.05} />
           </linearGradient>
         </defs>
-        {chartItemConfigs.map(item => (
+        {chartItemConfigs.map((item, index) => (
           <Bar
-            key={item.dataKey}
-            dataKey={item.dataKey}
+            key={`${item.dataKey}_${index}`}
+            dataKey={`${item.dataKey}_${index}`}
             stackId='a'
             fill={item.fill}
-            radius={item.radius ?? [0, 0, 0, 0]}
+            opacity={item.opacity ?? 1}
             onMouseOver={onHoverEntry}
             activeBar={false}
             {...item}
+            radius={chartItemConfigs.length - 1 === index ? item.radius : [0, 0, 0, 0]}
+            cursor='pointer'
           />
         ))}
         {showTooltip && (
           <ChartTooltip
             className='border-neutral-600 bg-neutral-900'
             content={<ChartTooltipContent />}
-            cursor={false}
+            cursor={<CustomCursor />}
             defaultIndex={1}
             formatter={chartTooltipFormatter}
             labelFormatter={customLabelFormatter}

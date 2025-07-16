@@ -191,8 +191,6 @@ export default function AnalyticsPage() {
               <Collapsible
                 title={<span className='font-archia text-xl leading-6 font-semibold'>{t('Volume')}</span>}
                 subtitle={<span className='block h-4'>${formatAmount(volumeSubTitle)}</span>}
-                // eslint-disable-next-line @next/next/no-img-element
-                // <img className='h-auto w-full' src='/images/barchart.svg' alt='tvl' />
                 previewContent={
                   <div className='h-[143px] w-full bg-[url("/images/barchart.png")] bg-[length:auto_100%] bg-repeat-x' />
                 }
@@ -272,14 +270,17 @@ export default function AnalyticsPage() {
                     {
                       dataKey: 'customPoolFeesUSD',
                       fill: '#BD60BA',
+                      radius: [4, 4, 0, 0],
                     },
                     {
                       dataKey: 'theNftUSD',
                       fill: '#EA66E5',
+                      radius: [4, 4, 0, 0],
                     },
                     {
                       dataKey: 'veTheUSD',
                       fill: '#F199EE',
+                      opacity: 0.85,
                       radius: [4, 4, 0, 0],
                     },
                   ]}
@@ -316,14 +317,17 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'theNftUSD',
                         fill: '#EA66E5',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        opacity: 0.85,
                         radius: [4, 4, 0, 0],
                       },
                     ]}
@@ -410,14 +414,17 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'theNftUSD',
                         fill: '#EA66E5',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        opacity: 0.85,
                         radius: [4, 4, 0, 0],
                       },
                     ]}
@@ -475,14 +482,17 @@ export default function AnalyticsPage() {
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'theNftUSD',
                         fill: '#EA66E5',
+                        radius: [4, 4, 0, 0],
                       },
                       {
                         dataKey: 'veTheUSD',
                         fill: '#F199EE',
+                        opacity: 0.85,
                         radius: [4, 4, 0, 0],
                       },
                     ]}
