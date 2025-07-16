@@ -288,7 +288,7 @@ const Brush2 = ({
                   pointerEvents='none'
                   cursor={interactive ? 'ns-resize' : 'default'}
                   style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-                  transform={`translate(${(width - (currentHover === 'north' ? 106 : 60)) / 2}, ${
+                  transform={`translate(${(width - (currentHover === 'north' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
                     Math.max(0, yScale(normalizedBrushExtent[1])) -
                     (currentHover === 'north' ? (flipNorthHandle ? -8 : 35) : flipNorthHandle ? -8 : 15)
                   })`}
@@ -326,7 +326,7 @@ const Brush2 = ({
                       )}
                       <text
                         className='font-archia font-semibold'
-                        x={interactive ? '27' : '50'}
+                        x={interactive ? '27' : '30'}
                         y='23'
                         fill={interactive ? '#2C002A' : '#B3ABB7'}
                         fontSize='20'
@@ -365,7 +365,7 @@ const Brush2 = ({
                   pointerEvents='none'
                   cursor={interactive ? 'ns-resize' : 'default'}
                   style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-                  transform={`translate(${(width - (currentHover === 'south' ? 106 : 60)) / 2}, ${
+                  transform={`translate(${(width - (currentHover === 'south' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
                     Math.max(0, yScale(normalizedBrushExtent[0])) +
                     (currentHover === 'south' ? (flipSouthHandle ? -35 : 8) : flipSouthHandle ? -15 : 8)
                   })`}
@@ -403,7 +403,7 @@ const Brush2 = ({
                       )}
                       <text
                         className='font-archia font-semibold'
-                        x={interactive ? 27 : 50}
+                        x={interactive ? '27' : '30'}
                         y='23'
                         fill={interactive ? '#2C002A' : '#B3ABB7'}
                         fontSize='20'

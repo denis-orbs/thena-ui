@@ -15,15 +15,12 @@ export function LiquidityBars({
   const bars = useMemo(() => {
     if (!series || series.length === 0) return []
 
-    // Always show all liquidity bars, don't filter by brushDomain
-    const filteredSeries = series
+    if (series.length === 0) return []
 
-    if (filteredSeries.length === 0) return []
-
-    const maxLiquidity = getMax(filteredSeries, xValue)
+    const maxLiquidity = getMax(series, xValue)
     if (!maxLiquidity || maxLiquidity === 0) return []
 
-    return filteredSeries.map((d, index) => {
+    return series.map((d, index) => {
       const liquidityValue = xValue(d)
       const priceValue = yValue(d)
 
@@ -50,7 +47,7 @@ export function LiquidityBars({
     })
   }, [series, xValue, yValue, maxBarWidth, isLgDown, xScale, yScale])
 
-  return (
+  return bars.length > 0 ? (
     <g className='liquidity-bars' style={{ zIndex: -1 }}>
       {/* Vertical ticks along y axis, behind bars */}
       {!isLgDown &&
@@ -68,8 +65,8 @@ export function LiquidityBars({
                 key={`liquidity-tick-${i}`}
                 x1={xScale(0)}
                 x2={xScale(0) - 16}
-                y1={y}
-                y2={y}
+                y1={isNaN(y) ? 0 : y}
+                y2={isNaN(y) ? 0 : y}
                 stroke='#685770'
                 strokeWidth='3'
                 opacity='0.25'
@@ -81,8 +78,8 @@ export function LiquidityBars({
       {bars.map((bar, index) => (
         <rect
           key={`liquidity-bar-${index}`}
-          x={bar.x - (isLgDown ? 0 : 21)} // Adjust x position for small screens
-          y={bar.y}
+          x={isNaN(bar.x - (isLgDown ? 0 : 21)) ? 0 : bar.x - (isLgDown ? 0 : 21)} // Adjust x position for small screens
+          y={isNaN(bar.y) ? 0 : Math.floor(bar.y)}
           width={bar.width}
           height={bar.height}
           fill='#685770'
@@ -96,5 +93,5 @@ export function LiquidityBars({
         <rect x={50} y={50} width={100} height={5} fill='#FF0000' opacity={0.8} />
       )}
     </g>
-  )
+  ) : null
 }

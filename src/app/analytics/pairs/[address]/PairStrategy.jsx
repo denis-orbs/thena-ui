@@ -296,13 +296,14 @@ function PairStrategy({ pair }) {
 
       <Collapsible
         previewContent={
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src='/images/outside.svg' alt='chart' className='h-full w-full object-cover' loading='lazy' />
+          <div className='h-[143px] w-full overflow-hidden bg-[url("/images/range-chart.png")] bg-[length:100%_122px] bg-center bg-no-repeat' />
         }
         title={
           <div className='flex flex-col gap-1'>
-            <TextHeading className='text-primary-600 font-archia text-xl! font-semibold'>{estimateAPRs}</TextHeading>
-            <TextHeading className='font-archia text-xl! font-semibold'>{t('Manual Strategy')}</TextHeading>
+            <TextHeading className='text-primary-600 font-archia text-xl! leading-6! font-semibold'>
+              {estimateAPRs}
+            </TextHeading>
+            <TextHeading className='font-archia text-xl! leading-6! font-semibold'>{t('Manual Strategy')}</TextHeading>
           </div>
         }
         subtitle={`${t('Full Range')} / ${t('Broad')} / ${t('Moderate')} / ${t('Tight')}`}
@@ -351,21 +352,22 @@ function PairStrategy({ pair }) {
 
       <Collapsible
         className={cn('lg:hidden', !strategyAutoData && 'hidden')}
-        classNames={{ content: 'pb-4' }}
-        title={t('Automatic Strategy')}
-        subtitle={t('ICHI / GAMA / Single Sided')}
-        keepPreview
-        previewContent={
-          <div>
-            <TextSubHeading className='text-primary-600 font-archia text-xl! font-semibold'>
+        classNames={{ content: 'pb-4', subtitle: 'pt-1' }}
+        title={
+          <div className='flex flex-col gap-1'>
+            <TextSubHeading className='text-primary-600 font-archia text-xl! leading-6! font-semibold'>
               {getAprRange(sortedSubPools).max !== getAprRange(sortedSubPools).min
                 ? `${formatAmount(getAprRange(sortedSubPools).min)}% - ${formatAmount(
                     getAprRange(sortedSubPools).max,
                   )}%`
                 : `${formatAmount(getAprRange(sortedSubPools).min)}%`}
             </TextSubHeading>
+            <TextHeading className='font-archia text-xl! leading-6! font-semibold text-neutral-50'>
+              {t('Automatic Strategy')}
+            </TextHeading>
           </div>
         }
+        subtitle={t('ICHI / GAMA / Single Sided')}
       >
         <AutomaticStrategy
           className='divide-y-1 divide-neutral-700'
@@ -376,10 +378,12 @@ function PairStrategy({ pair }) {
         />
       </Collapsible>
 
-      <div className='hidden w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:flex lg:w-[65%] lg:px-6 xl:w-[70%]'>
+      <div className='hidden w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:flex lg:w-[65%] xl:w-[70%]'>
         <div className={cn('flex items-start justify-between gap-2 bg-neutral-900')}>
           <div className='flex items-start gap-4 lg:gap-8'>
-            <TextHeading className='text-xl! font-medium lg:text-2xl!'>{t('Manual Strategy')}</TextHeading>
+            <TextHeading className='text-xl! leading-6! font-medium lg:text-2xl! lg:leading-8!'>
+              {t('Manual Strategy')}
+            </TextHeading>
           </div>
 
           <div className='flex flex-row items-start gap-8'>

@@ -8,6 +8,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TXN_TYPE } from '@/constant'
 import { SizeTypes } from '@/constant/type'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
 import {
   ArrowLeftIcon,
@@ -20,39 +21,56 @@ import {
 } from '@/svgs'
 
 function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSizeChange, className = '' }) {
+  const [showPageSizeOptions, setShowPageSizeOptions] = useState(false)
+  const [dropdownDirection, setDropdownDirection] = useState('down')
+  const pageSizes = [5, 10, 20, 50, 100]
+  const dropdownRef = useRef(null)
+  const buttonRef = useRef(null)
+
+  const { isViewDown: isMobile } = useMediaQuery('down', 500)
+  // Custom getVisiblePages for mobile
   const getVisiblePages = () => {
+    if (isMobile) {
+      const pages = []
+      if (totalPages <= 4) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i)
+        return pages
+      }
+      // currentPage near start
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, '...', totalPages)
+        return pages
+      }
+      // currentPage near end
+      if (currentPage >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages)
+        return pages
+      }
+      // currentPage in the middle
+      pages.push(1, '...', currentPage - 1, currentPage, '...', totalPages)
+      return pages
+    }
+    // logic for desktop...
     const delta = 1
     const rangeWithDots = []
-
-    // Always show first page
     if (currentPage > delta + 2) {
       rangeWithDots.push(1)
       if (currentPage > delta + 3) {
         rangeWithDots.push('...')
       }
     }
-
-    // Show pages around current page
     for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
       rangeWithDots.push(i)
     }
-
-    // Always show last page
     if (currentPage < totalPages - delta - 1) {
       if (currentPage < totalPages - delta - 2) {
         rangeWithDots.push('...')
       }
       rangeWithDots.push(totalPages)
     }
-
     return rangeWithDots
   }
 
-  const [showPageSizeOptions, setShowPageSizeOptions] = useState(false)
-  const [dropdownDirection, setDropdownDirection] = useState('down') // 'down' hoặc 'up'
-  const pageSizes = [5, 10, 20, 50, 100]
-  const dropdownRef = useRef(null)
-  const buttonRef = useRef(null)
   const handlePageSizeSelect = size => {
     onPageSizeChange(size)
     setShowPageSizeOptions(false)
@@ -92,7 +110,7 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
   if (totalPages <= 1) return null
   return (
     <div className={cn('flex h-8 w-full items-center justify-between lg:h-11', className)}>
-      <div className='flex flex-row items-center gap-[9px]'>
+      <div className='flex flex-row items-center gap-1 sm:gap-[9px]'>
         {/* Previous Button */}
         <TextIconButton
           Icon={ArrowLeftIcon}
@@ -100,18 +118,36 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         />
-
         {/* Page Numbers */}
-        {getVisiblePages().map((page, index) => (
-          <EmphasisButton
-            key={index}
-            onClick={() => onPageChange(page)}
-            className={cn('size-8', page !== currentPage && 'bg-transparent')}
-          >
-            {page}
-          </EmphasisButton>
-        ))}
-
+        {getVisiblePages().map((page, index, arr) => {
+          if (page === '...') {
+            return (
+              <EmphasisButton
+                key={`ellipsis-${index}`}
+                onClick={() => {
+                  // Jump to middle page
+                  if (index < arr.indexOf(currentPage)) {
+                    onPageChange(Math.max(currentPage - 2, 1))
+                  } else {
+                    onPageChange(Math.min(currentPage + 2, totalPages))
+                  }
+                }}
+                className={cn('size-8 bg-transparent')}
+              >
+                ...
+              </EmphasisButton>
+            )
+          }
+          return (
+            <EmphasisButton
+              key={index}
+              onClick={() => onPageChange(page)}
+              className={cn('size-8', page !== currentPage && 'bg-transparent')}
+            >
+              {page}
+            </EmphasisButton>
+          )
+        })}
         {/* Next Button */}
         <TextIconButton
           Icon={ArrowRightIcon}

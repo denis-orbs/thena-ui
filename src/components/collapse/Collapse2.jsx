@@ -79,7 +79,7 @@ function Collapsible({
 
   return (
     <div
-      className={cn('bg-chart-gradient! relative overflow-hidden rounded-xl border border-neutral-600', className)}
+      className={cn('bg-chart-gradient relative overflow-hidden rounded-xl border border-neutral-600', className)}
       style={{
         backgroundImage:
           !isOpen && backgroundImage
@@ -136,7 +136,7 @@ function Collapsible({
             </div>
           )}
           {typeof title === 'string' ? (
-            <h3 className={cn('text-xl font-medium text-neutral-50 transition-all duration-300 ease-out')}>
+            <h3 className={cn('text-xl leading-6 font-medium text-neutral-50 transition-all duration-300 ease-out')}>
               {isOpen ? title : defaultTitle ?? title}
             </h3>
           ) : isOpen ? (
@@ -145,7 +145,12 @@ function Collapsible({
             defaultTitle ?? title
           )}
           {subtitle && (
-            <p className={cn('text-sm text-neutral-500 transition-all duration-300 ease-out', classNames?.subtitle)}>
+            <p
+              className={cn(
+                'pt-1 text-sm leading-4! text-neutral-500 transition-all duration-300 ease-out',
+                classNames?.subtitle,
+              )}
+            >
               {isOpen ? subtitle : defaultSubtitle ?? subtitle}
             </p>
           )}

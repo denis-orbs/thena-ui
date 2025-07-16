@@ -202,7 +202,7 @@ export default function PairDetailPage({ params }) {
                     className='w-full leading-5! max-lg:hidden'
                     onClick={() => push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)}
                   >
-                    {t('Add Liquidity')}
+                    {t('Deposit')}
                   </EmphasisButton>
                 )}
               </div>
@@ -233,10 +233,10 @@ export default function PairDetailPage({ params }) {
             </div>
 
             <EmphasisButton
-              className={cn('w-full max-lg:hidden', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
+              className={cn('h-8! w-full py-2! text-xs! max-lg:hidden', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
               onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)}
             >
-              {t('Add Liquidity')}
+              {t('Deposit')}
             </EmphasisButton>
           </div>
 
@@ -246,7 +246,7 @@ export default function PairDetailPage({ params }) {
             className={cn('w-full lg:w-[80%]', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
           />
           <EmphasisButton
-            className='z-40 h-8 w-full text-xs! lg:hidden'
+            className='z-40 h-8 w-full rounded-md! text-xs! lg:hidden'
             onClick={() => {
               if (pair.type !== PAIR_TYPES.WEIGHTED) {
                 push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
@@ -255,7 +255,7 @@ export default function PairDetailPage({ params }) {
               }
             }}
           >
-            {t('Add Liquidity')}
+            {t('Deposit')}
           </EmphasisButton>
         </div>
 
@@ -263,8 +263,10 @@ export default function PairDetailPage({ params }) {
           <Collapsible
             title={t('Analytics')}
             subtitle='TVL / Volume / Fees / Liquidity'
-            previewContent={<PoolChart address={pair.address} showTitle={false} isSimple />}
-            classNames={{ content: 'pb-4 px-0!', preview: '!pb-[1px] px-0! pt-0!' }}
+            previewContent={
+              <div className='h-[143px] w-full overflow-hidden bg-[url("/images/line-chart.png")] bg-[length:100%_143px] bg-center bg-no-repeat' />
+            }
+            classNames={{ preview: 'px-0!', content: 'pb-4 pr-2 pl-0!', headerClosed: '-mt-9' }}
           >
             <PoolChart address={pair.address} showTitle={false} classNames={{ chart: 'px-4! analytics-chart' }} />
           </Collapsible>
@@ -282,7 +284,7 @@ export default function PairDetailPage({ params }) {
             </div>
             <Collapsible
               className='bg-contain bg-no-repeat lg:hidden'
-              backgroundImage='/images/dataplot.svg'
+              backgroundImage='/images/dataplot-weighted.png'
               title={t('Pool Attributes')}
               subtitle={t('Weighted')}
               previewContent={<div className='h-[161px] w-full' />}

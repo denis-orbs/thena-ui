@@ -409,7 +409,7 @@ export default function ChartPriceRangeInput({
           )}
         </div>
         <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
-          {showPeriod && <Tabs data={periods} />}
+          {showPeriod && <Tabs data={periods} className='flex-1' itemClassName='w-full' />}
           <div className='z-40 hidden gap-2 lg:flex'>
             <EmphasisIconButton
               className='lg:size-8'

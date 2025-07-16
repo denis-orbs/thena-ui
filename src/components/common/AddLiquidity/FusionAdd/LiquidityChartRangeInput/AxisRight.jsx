@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react'
 
 import './style.css'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatPrice } from '@/lib/utils'
 
 const labelWidth = 55
@@ -22,6 +23,8 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height, maskColor }) {
+  const { isLgDown } = useMediaQuery()
+
   const tickFormat = useCallback(d => {
     const str = d.toString()
     let decimal = 1
@@ -68,8 +71,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   return (
     <>
       <g className='axis-right' transform={`translate(${offset + 5}, 0)`}>
-        {!isNaN(minY) && renderHoverLines(minY, 'south')}
-        {!isNaN(maxY) && renderHoverLines(maxY, 'north')}
+        {!isNaN(minY) && !isLgDown && renderHoverLines(minY, 'south')}
+        {!isNaN(maxY) && !isLgDown && renderHoverLines(maxY, 'north')}
         <Axis axisGenerator={axisGenerator} />
         {!isNaN(currentY) && (
           <g style={{ padding: '6px' }}>
