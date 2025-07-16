@@ -73,7 +73,7 @@ function AnalyticsReChart({
           <defs>
             <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
-              <stop offset='95%' stopColor='#F199EE' stopOpacity={0.1} />
+              <stop offset='95%' stopColor='#F199EE' stopOpacity={0} />
             </linearGradient>
           </defs>
           {chartItemConfigs.map(item => (
@@ -112,7 +112,7 @@ function AnalyticsReChart({
         <defs>
           <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
             <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
-            <stop offset='95%' stopColor='#F199EE' stopOpacity={0.1} />
+            <stop offset='95%' stopColor='#F199EE' stopOpacity={0} />
           </linearGradient>
         </defs>
         {chartItemConfigs.map((item, index) => (

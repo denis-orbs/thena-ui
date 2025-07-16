@@ -1,7 +1,7 @@
 import React from 'react'
 
 function SingleBarReChart({ ...props }) {
-  const { x, y, width, height, fill, stroke = '#000', strokeWidth = 1, rx = 4 } = props
+  const { x, y, width, height, fill, stroke = '#F299EE', strokeWidth = 1, rx = 4 } = props
 
   const radius = Math.min(rx, width / 2, height / 2)
   const right = x + width
