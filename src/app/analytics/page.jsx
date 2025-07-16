@@ -63,8 +63,8 @@ export default function AnalyticsPage() {
         (prevVal, curr) => ({
           ...prevVal,
           customPoolFeesUSD: prevVal.customPoolFeesUSD + curr.customPoolFeesUSD,
-          feesUSD: prevVal.feesUSD + curr.feesUSD + prevVal.customPoolFeesUSD + curr.customPoolFeesUSD,
-          totalFeesUSD: prevVal.feesUSD + curr.feesUSD,
+          veTheUSD: prevVal.veTheUSD + curr.veTheUSD,
+          theNftUSD: prevVal.theNftUSD + curr.theNftUSD,
           tvlUSD: prevVal.tvlUSD + curr.tvlUSD,
           volumeUSD: prevVal.volumeUSD + curr.volumeUSD,
           date: !prevVal.date ? curr.date : Math.min(curr.date, prevVal.date),
@@ -73,18 +73,15 @@ export default function AnalyticsPage() {
           chainId: networkId,
           epoch: Number(Object.keys(groupData)[i]),
           customPoolFeesUSD: 0,
-          feesUSD: 0,
-          totalFeesUSD: 0,
+          veTheUSD: 0,
+          theNftUSD: 0,
           tvlUSD: 0,
           volumeUSD: 0,
           date: 0,
         },
       )
     }
-    return Object.values(result).map(item => ({
-      ...item,
-      customPoolFeesUSD: item.customPoolFeesUSD * 100,
-    }))
+    return Object.values(result)
   }, [rawData, networkId])
 
   const totalStats = useMemo(() => {
@@ -247,22 +244,27 @@ export default function AnalyticsPage() {
                   protocolProperty='feesUSD'
                   chartId='Fee Distribution'
                   chartConfig={{
-                    feesUSD: {
+                    veTheUSD: {
                       label: t('veTHE'),
                     },
                     customPoolFeesUSD: {
                       label: t('LP'),
+                    },
+                    theNftUSD: {
+                      label: t('theNFT'),
                     },
                   }}
                   chartItemConfigs={[
                     {
                       dataKey: 'customPoolFeesUSD',
                       fill: '#BD60BA',
-                      stroke: '#EA66E5',
-                      shape: SingleBarReChart,
                     },
                     {
-                      dataKey: 'feesUSD',
+                      dataKey: 'theNftUSD',
+                      fill: '#EA66E5',
+                    },
+                    {
+                      dataKey: 'veTheUSD',
                       fill: '#F199EE',
                     },
                   ]}
@@ -285,22 +287,27 @@ export default function AnalyticsPage() {
                     protocolProperty='feesUSD'
                     chartId='Fee Distribution'
                     chartConfig={{
-                      feesUSD: {
+                      veTheUSD: {
                         label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
                         label: t('LP'),
+                      },
+                      theNftUSD: {
+                        label: t('theNFT'),
                       },
                     }}
                     chartItemConfigs={[
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
-                        stroke: '#EA66E5',
-                        shape: SingleBarReChart,
                       },
                       {
-                        dataKey: 'feesUSD',
+                        dataKey: 'theNftUSD',
+                        fill: '#EA66E5',
+                      },
+                      {
+                        dataKey: 'veTheUSD',
                         fill: '#F199EE',
                       },
                     ]}
@@ -369,22 +376,27 @@ export default function AnalyticsPage() {
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
                     chartConfig={{
-                      feesUSD: {
+                      veTheUSD: {
                         label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
                         label: t('LP'),
+                      },
+                      theNftUSD: {
+                        label: t('theNFT'),
                       },
                     }}
                     chartItemConfigs={[
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
-                        stroke: '#EA66E5',
-                        shape: SingleBarReChart,
                       },
                       {
-                        dataKey: 'feesUSD',
+                        dataKey: 'theNftUSD',
+                        fill: '#EA66E5',
+                      },
+                      {
+                        dataKey: 'veTheUSD',
                         fill: '#F199EE',
                       },
                     ]}
@@ -427,22 +439,27 @@ export default function AnalyticsPage() {
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
                     chartConfig={{
-                      feesUSD: {
+                      veTheUSD: {
                         label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
                         label: t('LP'),
+                      },
+                      theNftUSD: {
+                        label: t('theNFT'),
                       },
                     }}
                     chartItemConfigs={[
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
-                        stroke: '#EA66E5',
-                        shape: SingleBarReChart,
                       },
                       {
-                        dataKey: 'feesUSD',
+                        dataKey: 'theNftUSD',
+                        fill: '#EA66E5',
+                      },
+                      {
+                        dataKey: 'veTheUSD',
                         fill: '#F199EE',
                       },
                     ]}
