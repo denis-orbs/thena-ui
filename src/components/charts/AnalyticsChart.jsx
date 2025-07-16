@@ -5,7 +5,7 @@ import { memo, useEffect, useMemo, useState } from 'react'
 
 import Toggle from '@/components/toggle'
 import { cn, formatAmount } from '@/lib/utils'
-import { Expand04Icon } from '@/svgs'
+import { Expand06Icon } from '@/svgs'
 
 import AnalyticsReChart from './AnalyticsReChart'
 import Box from '../box'
@@ -148,9 +148,26 @@ function AnalyticsChart({
     [property, chartConfig],
   )
 
+  // Calculate current price for stacked charts
+  const currentPrice = useMemo(() => {
+    if (!formattedData?.length || !chartItemConfigs?.length) return undefined
+
+    const lastDataPoint = formattedData[formattedData.length - 1]
+    const activeConfigs =
+      property === 'all' ? chartItemConfigs : chartItemConfigs.filter(item => item.dataKey === property)
+
+    // For stacked charts (multiple data keys), sum all values
+    if (activeConfigs.length > 1) {
+      return activeConfigs.reduce((sum, config) => sum + (lastDataPoint[config.dataKey] || 0), 0)
+    }
+
+    // For single data key, use the value directly
+    return lastDataPoint[activeConfigs[0]?.dataKey]
+  }, [formattedData, chartItemConfigs, property])
+
   return (
     <Box className={cn('bg-chart-gradient border border-[#422D4C]', className)}>
-      <div className={cn('flex flex-col gap-2', !isExpanded && '')}>
+      <div className={cn('flex flex-col gap-3', (!isExpanded || isMinimum) && 'gap-1')}>
         <div className={cn('flex justify-between', !isExpanded && 'flex-col gap-1')}>
           {isMinimum ? (
             <>
@@ -167,10 +184,16 @@ function AnalyticsChart({
           ) : (
             <>
               <div className={cn('flex flex-col gap-2', !isExpanded && 'flex-row items-center justify-between')}>
-                <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
-                  {t(title)}
-                </Paragraph>
-                {!!epochData?.length && (
+                {Number(hover) > -1 && typeof hover !== 'undefined' ? (
+                  <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
+                    {t(title)}
+                  </Paragraph>
+                ) : (
+                  <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
+                    {t('Total Revenue')}
+                  </Paragraph>
+                )}
+                {!!epochData?.length && isExpanded && (
                   <Toggle
                     className='hidden lg:flex'
                     checked={groupPerEpoch}
@@ -181,8 +204,8 @@ function AnalyticsChart({
                 )}
                 {!isExpanded && (
                   <TextIconButton
-                    Icon={Expand04Icon}
-                    className='h-6! w-6! stroke-neutral-400'
+                    Icon={Expand06Icon}
+                    className='h-6! w-6! stroke-neutral-400 p-1!'
                     onClick={() => {
                       onExpand()
                     }}
@@ -191,31 +214,37 @@ function AnalyticsChart({
               </div>
               <div className='flex items-start justify-between gap-1'>
                 {!isExpanded && (
-                  <div className='flex h-[56px] flex-col gap-1'>
+                  <div className='flex h-6 flex-row gap-2'>
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
                       <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(hover)}</TextHeading>
                     ) : (
                       <>
                         <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(valueDefault)}</TextHeading>
-                        <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
                       </>
                     )}
-                    {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
+                    {dateHover ? (
+                      <TextSubHeading className='leading-6!'>{dateHover}</TextSubHeading>
+                    ) : (
+                      <div className='h-5' />
+                    )}
                   </div>
                 )}
                 {properties ? (
                   <Selection
-                    className={cn('items-stretch bg-transparent md:h-11')}
+                    className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
                     classNames={{
-                      items: cn('md:text-sm! text-x! flex-1 w-fit text-nowrap'),
+                      items: cn(
+                        'md:text-sm text-x! flex-1 w-fit text-nowrap',
+                        !isExpanded && 'text-xs! h-6! py-1! px-2!',
+                      ),
                     }}
                     data={properties}
                   />
                 ) : (
                   <Selection
-                    className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
+                    className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
                     classNames={{
-                      items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+                      items: cn('md:text-sm text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
                     }}
                     data={periods}
                   />
@@ -260,13 +289,24 @@ function AnalyticsChart({
             </div>
 
             {properties && (
-              <Selection
-                className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
-                classNames={{
-                  items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
-                }}
-                data={periods}
-              />
+              <div className={cn('flex items-center justify-between gap-1', !isExpanded && 'w-full')}>
+                {!!epochData?.length && !isExpanded && (
+                  <Toggle
+                    className='hidden lg:flex'
+                    checked={groupPerEpoch}
+                    onChange={() => setGroupPerEpoch(!groupPerEpoch)}
+                    toggleId={`active-epoch-${chartId}`}
+                    label='Per Epoch'
+                  />
+                )}
+                <Selection
+                  className={cn('items-stretch bg-transparent md:h-11!', !isExpanded && 'h-8!')}
+                  classNames={{
+                    items: cn('md:text-sm text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+                  }}
+                  data={periods}
+                />
+              </div>
             )}
           </div>
         )}
@@ -283,6 +323,8 @@ function AnalyticsChart({
           }
           useEpoch={groupPerEpoch}
           chartType={chartType}
+          currentPrice={currentPrice}
+          showCurrentPrice
         />
       </div>
       {!!epochData?.length && isMinimum && (

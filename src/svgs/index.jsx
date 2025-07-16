@@ -57,6 +57,7 @@ import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExchangeIcon from '~/svgs/exchange.svg'
 import ExpandIcon from '~/svgs/expand.svg'
 import Expand04Icon from '~/svgs/expand-04.svg'
+import Expand06Icon from '~/svgs/expand-06.svg'
 import ExpandDownIcon from '~/svgs/expand-down.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
@@ -214,6 +215,7 @@ export {
   EtherFiBadgeIcon,
   ExchangeIcon,
   Expand04Icon,
+  Expand06Icon,
   ExpandDownIcon,
   ExpandIcon,
   ExternalIcon,

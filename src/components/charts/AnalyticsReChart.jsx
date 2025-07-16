@@ -2,12 +2,30 @@ import dayjs from 'dayjs'
 import { sum } from 'lodash'
 import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
-import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, Bar, BarChart, ReferenceLine, XAxis, YAxis } from 'recharts'
 
 import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { ChartContainer } from '../ui/chart'
+
+function CustomPriceLabel({ viewBox, value }) {
+  const { x, y, width } = viewBox
+
+  const labelWidth = (value.length + 1) * 7 + 12
+  const labelHeight = 20
+  const labelX = x + width + 4
+  const labelY = y - labelHeight / 2
+
+  return (
+    <g>
+      <rect x={labelX} y={labelY} width={labelWidth} height={labelHeight} fill='#F299EE' rx={8} ry={8} />
+      <text x={labelX + 6} y={labelY + 14} fill='#0D090F' fontSize='12' fontWeight='bold' textAnchor='start'>
+        ${value}
+      </text>
+    </g>
+  )
+}
 
 function AnalyticsReChart({
   data,
@@ -18,6 +36,8 @@ function AnalyticsReChart({
   useEpoch = false,
   setHoverValue,
   setHoverDate,
+  currentPrice,
+  showCurrentPrice,
 }) {
   const t = useTranslations()
   const { locale } = useLocaleSettings()
@@ -35,16 +55,17 @@ function AnalyticsReChart({
           year: 'numeric',
           month: 'short',
           day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZone: 'UTC',
-        })} (UTC)`
+          // hour: 'numeric',
+          // minute: '2-digit',
+          // timeZone: 'UTC',
+        })}`
         if (setHoverValue) setHoverValue(value)
         if (setHoverDate) setHoverDate(time)
       }
     },
     [chartItemConfigs, locale, setHoverDate, setHoverValue, t, useEpoch],
   )
+
   if (chartType === 'area') {
     return (
       <ChartContainer config={chartConfig}>
@@ -84,6 +105,7 @@ function AnalyticsReChart({
           </defs>
           {chartItemConfigs.map(item => (
             <Area
+              key={item.dataKey}
               {...item}
               dataKey={item.dataKey}
               type={item.type ?? 'natural'}
@@ -92,6 +114,15 @@ function AnalyticsReChart({
               stackId='a'
             />
           ))}
+          {showCurrentPrice && (
+            <ReferenceLine
+              y={Number(currentPrice)}
+              stroke='#F299EE'
+              strokeDasharray='2 2'
+              strokeWidth={2}
+              label={<CustomPriceLabel value={`${formatAmount(currentPrice, true)}`} />}
+            />
+          )}
         </AreaChart>
       </ChartContainer>
     )
@@ -128,6 +159,7 @@ function AnalyticsReChart({
         </defs>
         {chartItemConfigs.map((item, index) => (
           <Bar
+            key={item.dataKey}
             dataKey={item.dataKey}
             stackId='a'
             fill={item.fill}
@@ -137,6 +169,15 @@ function AnalyticsReChart({
             {...item}
           />
         ))}
+        {showCurrentPrice && (
+          <ReferenceLine
+            y={Number(currentPrice)}
+            stroke='#F299EE'
+            strokeDasharray='2 2'
+            strokeWidth={2}
+            label={<CustomPriceLabel value={`${formatAmount(currentPrice, true)}`} />}
+          />
+        )}
       </BarChart>
     </ChartContainer>
   )

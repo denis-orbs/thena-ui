@@ -162,7 +162,7 @@ export default function AnalyticsPage() {
               >
                 <AnalyticsChart
                   className='border-none! bg-transparent p-0!'
-                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6!' }}
                   rawData={rawData}
                   title='TVL'
                   protocolData={totalStats}
@@ -171,6 +171,9 @@ export default function AnalyticsPage() {
                   chartConfig={{
                     tvlUSD: {
                       label: t('Total Volume'),
+                    },
+                    currentPrice: {
+                      label: t('Current Price'),
                     },
                   }}
                   chartItemConfigs={[
@@ -200,7 +203,7 @@ export default function AnalyticsPage() {
               >
                 <AnalyticsChart
                   className='border-none! bg-transparent p-0!'
-                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                  classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                   rawData={rawData}
                   title='Volume'
                   protocolData={totalStats}
@@ -245,10 +248,10 @@ export default function AnalyticsPage() {
                   chartId='Fee Distribution'
                   chartConfig={{
                     feesUSD: {
-                      label: t('veTHE owners'),
+                      label: t('veTHE'),
                     },
                     customPoolFeesUSD: {
-                      label: t("Manual LP'ers"),
+                      label: t('LP'),
                     },
                   }}
                   chartItemConfigs={[
@@ -283,10 +286,10 @@ export default function AnalyticsPage() {
                     chartId='Fee Distribution'
                     chartConfig={{
                       feesUSD: {
-                        label: t('veTHE owners'),
+                        label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
-                        label: t("Manual LP'ers"),
+                        label: t('LP'),
                       },
                     }}
                     chartItemConfigs={[
@@ -308,7 +311,7 @@ export default function AnalyticsPage() {
                 {isExpanded === 'tvl' && (
                   <AnalyticsChart
                     className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
                     title='TVL'
                     protocolData={totalStats}
@@ -358,18 +361,19 @@ export default function AnalyticsPage() {
               <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
                 {isExpanded === 'tvl' ? (
                   <AnalyticsChart
+                    epochData={groupEpochData}
                     rawData={rawData}
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     title='Fees'
                     protocolData={totalStats}
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
                     chartConfig={{
                       feesUSD: {
-                        label: t('veTHE owners'),
+                        label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
-                        label: t("Manual LP'ers"),
+                        label: t('LP'),
                       },
                     }}
                     chartItemConfigs={[
@@ -384,7 +388,6 @@ export default function AnalyticsPage() {
                         fill: '#F199EE',
                       },
                     ]}
-                    showPerEpoch={false}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
                     valueDefault={dataRevenue?.revenueData}
@@ -392,7 +395,7 @@ export default function AnalyticsPage() {
                 ) : (
                   <AnalyticsChart
                     className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
                     title='TVL'
                     protocolData={totalStats}
@@ -418,17 +421,17 @@ export default function AnalyticsPage() {
                 {isExpanded === 'volume' ? (
                   <AnalyticsChart
                     rawData={rawData}
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     title='Fees'
                     protocolData={totalStats}
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
                     chartConfig={{
                       feesUSD: {
-                        label: t('veTHE owners'),
+                        label: t('veTHE'),
                       },
                       customPoolFeesUSD: {
-                        label: t("Manual LP'ers"),
+                        label: t('LP'),
                       },
                     }}
                     chartItemConfigs={[
@@ -443,6 +446,7 @@ export default function AnalyticsPage() {
                         fill: '#F199EE',
                       },
                     ]}
+                    epochData={groupEpochData}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
                     valueDefault={dataRevenue?.revenueData}
@@ -450,7 +454,7 @@ export default function AnalyticsPage() {
                 ) : (
                   <AnalyticsChart
                     className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                    classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                    classNames={{ title: 'lg:text-xl! font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
                     title='Volume (24h)'
                     protocolData={totalStats}
