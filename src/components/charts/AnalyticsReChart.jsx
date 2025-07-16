@@ -157,13 +157,13 @@ function AnalyticsReChart({
             <stop offset='95%' stopColor='#F199EE' stopOpacity={0} />
           </linearGradient>
         </defs>
-        {chartItemConfigs.map((item, index) => (
+        {chartItemConfigs.map(item => (
           <Bar
             key={item.dataKey}
             dataKey={item.dataKey}
             stackId='a'
             fill={item.fill}
-            radius={item.radius ?? index === chartItemConfigs.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+            radius={item.radius ?? [0, 0, 0, 0]}
             onMouseOver={onHoverEntry}
             activeBar={false}
             {...item}
