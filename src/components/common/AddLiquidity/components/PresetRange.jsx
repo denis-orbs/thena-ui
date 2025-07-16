@@ -108,7 +108,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     <div
       className={cn(
         'grid grid-cols-2 bg-neutral-900 md:grid-cols-4',
-        'items-stretch gap-1 rounded-xl p-0.5 md:items-center',
+        'items-stretch gap-1 rounded-xl md:items-center',
         isStablecoinPair && 'grid-cols-1 md:grid-cols-1',
         className,
       )}

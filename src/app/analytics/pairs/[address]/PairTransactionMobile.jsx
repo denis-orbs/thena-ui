@@ -151,7 +151,15 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
   )
 }
 
-function TransactionMobile({ filters = [], getTransactionType, formatTime, className = '', filter, sortedData }) {
+function TransactionMobile({
+  filters = [],
+  getTransactionType,
+  formatTime,
+  className = '',
+  filter,
+  sortedData,
+  isWeighted = false,
+}) {
   const t = useTranslations()
   const [pageSize, setPageSize] = useState(10)
   const [currentPage, setCurrentPage] = useState(1)
@@ -193,7 +201,7 @@ function TransactionMobile({ filters = [], getTransactionType, formatTime, class
       <div className='space-y-0 divide-y-1 divide-neutral-700'>
         {paginatedData.length > 0 ? (
           paginatedData.map((item, index) => (
-            <div key={`${item.id || index}-${currentPage}`} className='space-y-2 px-2 py-4 transition-colors'>
+            <div key={`${item.id || index}-${currentPage}`} className='min-w-0 space-y-2 px-2 py-4 transition-colors'>
               {/* Header */}
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
@@ -206,28 +214,43 @@ function TransactionMobile({ filters = [], getTransactionType, formatTime, class
               </div>
 
               {/* Details Grid */}
-              <div className='grid grid-cols-4 items-center gap-2'>
+              <div className='flex min-w-0 items-center gap-4 overflow-x-auto'>
+                {isWeighted ? (
+                  (item.tokens || []).map(token => (
+                    <div key={token.symbol} className='flex flex-col'>
+                      <TextHeading className='text-[10px]! leading-4 text-neutral-300'>{t('Amount')}</TextHeading>
+                      <TextHeading className='text-[10px]! leading-4 text-nowrap text-neutral-300'>
+                        {formatAmount(Number(token.amount) < 0 ? token.amount * -1 : token.amount)} {token.symbol}
+                      </TextHeading>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className='flex flex-col'>
+                      <TextHeading className='text-[10px]! leading-4 text-neutral-300'>{t('Amount')}</TextHeading>
+                      <TextHeading className='text-[10px]! leading-4 text-nowrap text-neutral-300'>
+                        {`${formatAmount(item.token0Amount)} ${item.token0Symbol}`}
+                      </TextHeading>
+                    </div>
+                    <div className='flex flex-col'>
+                      <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Amount')}</TextHeading>
+                      <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>
+                        {`${formatAmount(item.token1Amount)} ${item.token1Symbol}`}
+                      </TextHeading>
+                    </div>
+                  </>
+                )}
                 <div className='flex flex-col'>
-                  <TextHeading className='text-[10px] text-neutral-300'>{t('Amount')}</TextHeading>
-                  <TextHeading className='text-[10px] text-neutral-300'>
-                    {`${formatAmount(item.token0Amount)} ${item.token0Symbol}`}
-                  </TextHeading>
-                </div>
-                <div className='flex flex-col'>
-                  <TextHeading className='text-[10px] text-neutral-300'>{t('Amount')}</TextHeading>
-                  <TextHeading className='text-[10px] text-neutral-300'>
-                    {`${formatAmount(item.token1Amount)} ${item.token1Symbol}`}
-                  </TextHeading>
-                </div>
-                <div className='flex flex-col'>
-                  <TextHeading className='text-[10px] text-neutral-300'>{t('Account')}</TextHeading>
-                  <TextHeading className='text-[10px] text-neutral-300'>
+                  <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Account')}</TextHeading>
+                  <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>
                     {item.account && formatAddress(item.account)}
                   </TextHeading>
                 </div>
                 <div className='flex flex-col'>
-                  <TextHeading className='text-[10px] text-neutral-300'>{t('Time')}</TextHeading>
-                  <TextHeading className='text-[10px] text-neutral-300'>{`${formatTime(item.timestamp)}`}</TextHeading>
+                  <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Time')}</TextHeading>
+                  <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>
+                    {`${formatTime(item.timestamp)}`}
+                  </TextHeading>
                 </div>
               </div>
             </div>

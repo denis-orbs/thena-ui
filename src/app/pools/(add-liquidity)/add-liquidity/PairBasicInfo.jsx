@@ -18,7 +18,7 @@ export function PairBasicInfo({ pair, className }) {
       {/* Desktop view - single box with all items */}
       <Box
         className={cn(
-          'w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent px-4 py-3! max-md:hidden md:flex',
+          'w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4! max-md:hidden md:flex',
           !isMdDown && 'gap-y-4',
         )}
         style={{
@@ -27,37 +27,37 @@ export function PairBasicInfo({ pair, className }) {
         }}
       >
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! xl:text-3xl!'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             {pair?.apr ?? '0%'}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>
+          <Paragraph className='text-sm! text-neutral-500'>
             {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
           </Paragraph>
         </div>
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! xl:text-3xl!'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
         </div>
 
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! xl:text-3xl!'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.dayFees)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
         </div>
 
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! xl:text-3xl!'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.tvlUSD)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
       </Box>
 
       {/* Mobile view - Swiper carousel */}
-      <div className='w-full md:hidden'>
+      <div className='my-auto w-full md:hidden'>
         <Swiper slidesPerView={1.1} spaceBetween={8} grabCursor>
           <SwiperSlide>
             <Box
@@ -69,7 +69,7 @@ export function PairBasicInfo({ pair, className }) {
             >
               <div className='flex flex-col gap-2'>
                 <NewTextSubHeading className='text-gradient-primary text-lg!'>{pair?.apr ?? '0%'}</NewTextSubHeading>
-                <Paragraph className='text-sm text-nowrap text-neutral-500'>
+                <Paragraph className='text-sm! text-nowrap text-neutral-500'>
                   {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
                 </Paragraph>
               </div>
@@ -77,7 +77,7 @@ export function PairBasicInfo({ pair, className }) {
                 <NewTextSubHeading className='text-gradient-primary text-lg!'>
                   ${formatAmount(pair?.dayVolume)}
                 </NewTextSubHeading>
-                <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+                <Paragraph className='text-sm! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
               </div>
             </Box>
           </SwiperSlide>
@@ -94,14 +94,14 @@ export function PairBasicInfo({ pair, className }) {
                 <NewTextSubHeading className='text-gradient-primary text-lg!'>
                   ${formatAmount(pair?.dayFees)}
                 </NewTextSubHeading>
-                <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+                <Paragraph className='text-sm! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
               </div>
 
               <div className='flex flex-col gap-2'>
                 <NewTextSubHeading className='text-gradient-primary text-lg!'>
                   ${formatAmount(pair?.tvlUSD)}
                 </NewTextSubHeading>
-                <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+                <Paragraph className='text-sm! text-neutral-500'>{t('TVL')}</Paragraph>
               </div>
             </Box>
           </SwiperSlide>

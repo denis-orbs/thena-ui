@@ -396,7 +396,7 @@ export default function ChartPriceRangeInput({
   }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
         <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
           {t(label ?? 'Your Range against the Price')}
@@ -446,16 +446,18 @@ export default function ChartPriceRangeInput({
       {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
       {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
       {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
-      <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
-        <div className='relative flex h-[272px] w-full items-center justify-center lg:h-[235px]'>
+      <div className={cn('flex flex-col gap-2 md:gap-4')}>
+        <div
+          className={cn('relative flex h-[272px] w-full items-center justify-center lg:h-[235px]', classNames?.chart)}
+        >
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading || isLoadLiquidity ? (
-            <Skeleton className={cn('absolute h-[calc(100%-48px)] w-full lg:h-full', `h-[${height}px]`)} />
+            <Skeleton className={cn('absolute h-[calc(100%-48px)] w-full lg:h-full')} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
-            <div className={cn('flex h-full w-full flex-col gap-4', `max-h-[${height}px}]`)}>
+            <div className={cn('flex h-full w-full flex-col gap-4')}>
               <div className='flex h-[calc(100%-48px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div

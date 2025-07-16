@@ -101,7 +101,7 @@ function HoverableChart({
         <div className='flex flex-col gap-1'>
           <Paragraph className='max-lg:hidden'>{t(title)}</Paragraph>
           {Number(hover) > -1 ? ( // sometimes data is 0
-            <TextHeading className='font-archia text-xl leading-6 font-semibold lg:text-2xl'>
+            <TextHeading className='font-archia text-xl! leading-6! font-medium! lg:text-2xl! lg:leading-8!'>
               ${formatAmount(hover)}
             </TextHeading>
           ) : (

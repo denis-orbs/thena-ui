@@ -14,6 +14,7 @@ import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -26,7 +27,7 @@ const ChartType = {
   // Liquidity: 'Liquidity',
 }
 
-export function PoolChart({ address, showTitle = true, isSimple = false }) {
+export function PoolChart({ address, showTitle = true, isSimple = false, classNames }) {
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
   const t = useTranslations()
@@ -35,6 +36,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false }) {
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
   const [strategy, setStrategy] = useState(null)
+  const { isLgDown } = useMediaQuery()
 
   const { isReverse } = useSelector(state => state.fusion)
 
@@ -76,7 +78,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false }) {
             valueProperty='tvlUSD'
             title='TVL'
             ChartComponent={LineChart}
-            className='p-0! max-lg:bg-transparent'
+            className='flex flex-col bg-transparent p-0! lg:gap-6!'
             isSimple={isSimple}
           />
         )
@@ -89,7 +91,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false }) {
             valueProperty='dayVolume'
             title='Volume (24h)'
             ChartComponent={BarChart}
-            className='p-0! max-lg:bg-transparent'
+            className='flex flex-col bg-transparent p-0! lg:gap-6!'
             isSimple={isSimple}
           />
         )
@@ -102,7 +104,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false }) {
             valueProperty='dayFees'
             title='Fees (24h)'
             ChartComponent={BarChart}
-            className='p-0! max-lg:bg-transparent'
+            className='flex flex-col bg-transparent p-0! lg:gap-6!'
             isSimple={isSimple}
           />
         )
@@ -132,20 +134,29 @@ export function PoolChart({ address, showTitle = true, isSimple = false }) {
   }
 
   return (
-    <div className='flex w-full flex-col lg:gap-4'>
+    <div className='flex w-full flex-col lg:gap-2'>
       {!isSimple && (
         <div className='w-full items-center justify-between lg:flex'>
           {showTitle && <NewTextSubHeading className='max-lg:hidden'>{t('Analytics')}</NewTextSubHeading>}
           <Selection
             isFull
             data={chartTypeSelection}
-            className='mt-0 w-full max-lg:h-8 max-lg:rounded-none max-lg:bg-transparent max-lg:px-4 max-lg:py-1 lg:w-[565px]'
+            className='mt-0 h-8 w-full rounded-none p-1 max-lg:bg-transparent max-lg:px-4 max-lg:py-1 lg:h-11 lg:w-[275px] lg:rounded-md xl:h-[38px] xl:w-[520px]'
+            classNames={{ items: 'h-6 lg:h-9 xl:h-[30px] py-[4px]! text-xs! font-medium max-lg:px-4! max-lg:py-1!' }}
             isTranslation={false}
           />
         </div>
       )}
       <Divider className={cn('mx-4 my-3 h-0.5 lg:hidden', isSimple && 'hidden')} />
-      <div className={cn('p-0 lg:rounded-lg', !isSimple && 'px-4 lg:bg-neutral-900 lg:py-6', isSimple && 'scale-105')}>
+      <div
+        className={cn(
+          'p-0 lg:rounded-lg',
+          !isSimple && 'px-4 lg:pt-6 lg:pb-3',
+          !isSimple && !isLgDown && 'bg-gradient-purple-dark border border-neutral-600',
+          isSimple && 'scale-105',
+          classNames?.chart,
+        )}
+      >
         {renderChart}
       </div>
     </div>

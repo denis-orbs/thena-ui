@@ -99,8 +99,8 @@ function PairStrategy({ pair }) {
       .filter(item => !MANUAL_TYPES.includes(item.title))
       .map(sub => ({
         content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
+          <div className='grid flex-1 grid-cols-4 items-center justify-between'>
+            <div className='col-span-2'>
               <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
@@ -266,7 +266,7 @@ function PairStrategy({ pair }) {
 
   return (
     <div className='flex gap-4 max-lg:flex-col'>
-      <div className='w-[30%] rounded-xl bg-neutral-900 p-4 max-lg:hidden'>
+      <div className='rounded-xl bg-neutral-900 p-4 max-lg:hidden lg:w-[35%] xl:w-[30%]'>
         <div className={cn('mb-4 flex items-center justify-between')}>
           <TextHeading className='text-primary-100 text-xl font-medium lg:text-2xl'>
             {t('Automatic Strategy')}
@@ -282,7 +282,7 @@ function PairStrategy({ pair }) {
             className='divide-y-1 divide-neutral-700'
             canSelect={false}
             strategyAutoData={strategyAutoData}
-            classNames={{ item: 'bg-transparent hover:bg-transparent rounded-none px-0' }}
+            classNames={{ item: 'bg-transparent hover:bg-transparent rounded-none px-0 h-[87px]!' }}
             isGrid={false}
           />
         )}
@@ -335,7 +335,7 @@ function PairStrategy({ pair }) {
             />
           </div>
         </div>
-        <PrimaryButton className='h-8 w-full text-xs!' onClick={() => handleAddLiquidity('automatic')}>
+        <PrimaryButton className='h-8 w-full rounded-md text-xs!' onClick={() => handleAddLiquidity('automatic')}>
           {t('Deposit')}
         </PrimaryButton>
       </Collapsible>
@@ -367,7 +367,7 @@ function PairStrategy({ pair }) {
         />
       </Collapsible>
 
-      <div className='hidden w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:flex lg:w-[70%] lg:px-6'>
+      <div className='hidden w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:flex lg:w-[65%] lg:px-6 xl:w-[70%]'>
         <div className={cn('flex items-start justify-between gap-2 bg-neutral-900')}>
           <div className='flex items-start gap-4 lg:gap-8'>
             <TextHeading className='text-xl! font-medium lg:text-2xl!'>{t('Manual Strategy')}</TextHeading>
@@ -385,7 +385,7 @@ function PairStrategy({ pair }) {
             </EmphasisButton>
           </div>
         </div>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col'>
           <ChartPriceRangeInput
             maskColor='#1A121E'
             currencyA={baseCurrency ?? undefined}
@@ -401,6 +401,7 @@ function PairStrategy({ pair }) {
             showPeriod
             classNames={{
               periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
+              chart: 'lg:h-[265px]',
             }}
             handleShow
             isCreate={false}

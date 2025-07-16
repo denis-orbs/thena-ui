@@ -131,16 +131,26 @@ export default function PairDetailPage({ params }) {
         {/* Header with token info and stats in horizontal layout */}
         <div className='flex flex-col gap-4 rounded-lg lg:flex-row lg:gap-12'>
           {/* Token info and external link */}
-          <div className='flex flex-row gap-4 max-lg:justify-between lg:w-[20%] lg:min-w-[307px] lg:flex-col'>
-            <div className='flex items-center gap-4 lg:justify-between'>
+          <div
+            className={cn(
+              'flex flex-row gap-4 max-lg:justify-between lg:w-[20%] lg:min-w-[307px] lg:flex-col',
+              pair.type === PAIR_TYPES.WEIGHTED && 'w-full flex-col lg:w-full',
+            )}
+          >
+            <div
+              className={cn(
+                'flex items-center gap-4',
+                pair.type !== PAIR_TYPES.WEIGHTED ? 'lg:justify-between' : 'max-lg:max-h-[70px]',
+              )}
+            >
               {pair.type === PAIR_TYPES.WEIGHTED ? (
                 <GroupIconTokens
                   classNames={{
-                    image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
+                    image: 'w-7 h-7 text-xl font-medium leading-5 text-[#1C2027]',
                     rows: '*:not-first:-ml-2',
                   }}
-                  width={40}
-                  height={40}
+                  width={pair.tokens.length > 4 ? 28 : 48}
+                  height={pair.tokens.length > 4 ? 28 : 48}
                   tokens={pair.tokens}
                 />
               ) : (
@@ -152,28 +162,53 @@ export default function PairDetailPage({ params }) {
                   logo2={pair.token1.logoURI ?? UNKNOWN_LOGO}
                 />
               )}
-              <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-3'>
-                  <TextHeading className='text-xl! text-wrap break-all whitespace-normal lg:text-4xl!'>
+              <div
+                className={cn(
+                  'flex min-w-0 flex-1 flex-col',
+                  pair.type === PAIR_TYPES.WEIGHTED ? 'justify-between max-md:h-[48px]' : 'gap-1',
+                )}
+              >
+                <div className='flex min-w-0 items-center gap-3'>
+                  <TextHeading className='min-w-0 truncate text-xl! leading-6! lg:text-4xl! lg:leading-10!'>
                     {pair.symbol}
                   </TextHeading>
                   <LinkExternalIcon
-                    className='size-4 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100 xl:size-6'
+                    className='size-4 flex-shrink-0 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100 xl:size-6'
                     onClick={() => goScan(networkId, pairAddress)}
                     data-tooltip-id='contract-tooltip'
                   />
                 </div>
-                <span className='hidden text-xs text-nowrap max-md:block'>
-                  {t('Fee')}: {pair.fee}%
-                </span>
+                <div className='hidden text-xs text-nowrap text-neutral-300 max-lg:block'>
+                  {`${t('Fee')}: ${pair.fee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                </div>
               </div>
             </div>
 
             <div className='flex items-center gap-6 text-sm text-neutral-400 max-lg:justify-end'>
-              <span className='hidden text-nowrap lg:block'>
-                {t('Fee')}: {pair.fee}%
-              </span>
-              <div className={cn('flex flex-col justify-between gap-4 md:flex-row', pair.type === PAIR_TYPES.LSD)}>
+              <div
+                className={cn(
+                  'flex flex-col justify-between',
+                  pair.type === PAIR_TYPES.WEIGHTED && 'h-full min-w-[285px] max-lg:hidden',
+                )}
+              >
+                <span className='hidden text-base leading-5 font-normal text-nowrap text-neutral-300 lg:block'>
+                  {`${t('Fee')}: ${pair.fee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                </span>
+                {pair.type === PAIR_TYPES.WEIGHTED && (
+                  <EmphasisButton
+                    className='w-full leading-5! max-lg:hidden'
+                    onClick={() => push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)}
+                  >
+                    {t('Add Liquidity')}
+                  </EmphasisButton>
+                )}
+              </div>
+              <div
+                className={cn(
+                  'flex flex-col justify-between gap-4 md:flex-row',
+                  pair.type !== PAIR_TYPES.LSD && 'hidden',
+                )}
+              >
                 <RadioInput
                   name='earn-type'
                   value='the'
@@ -191,24 +226,22 @@ export default function PairDetailPage({ params }) {
                   className='size-5'
                 />
               </div>
+              {pair.type === PAIR_TYPES.WEIGHTED && <PairBasicInfo pair={pair} className='h-[100px] w-full' />}
             </div>
 
             <EmphasisButton
-              className='w-full max-lg:hidden'
-              onClick={() => {
-                if (pair.type !== PAIR_TYPES.WEIGHTED) {
-                  push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
-                } else {
-                  push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)
-                }
-              }}
+              className={cn('w-full max-lg:hidden', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
+              onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)}
             >
               {t('Add Liquidity')}
             </EmphasisButton>
           </div>
 
           {/* Stats in horizontal layout */}
-          <PairBasicInfo pair={pair} className='w-full lg:w-[80%]' />
+          <PairBasicInfo
+            pair={pair}
+            className={cn('w-full lg:w-[80%]', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
+          />
           <EmphasisButton
             className='h-8 w-full text-xs! lg:hidden'
             onClick={() => {
@@ -228,9 +261,9 @@ export default function PairDetailPage({ params }) {
             title={t('Analytics')}
             subtitle='TVL / Volume / Fees / Liquidity'
             previewContent={<PoolChart address={pair.address} showTitle={false} isSimple />}
-            classNames={{ content: 'pb-4', preview: '!p-0' }}
+            classNames={{ content: 'pb-4 px-0!', preview: '!pb-[1px] px-0! pt-0!' }}
           >
-            <PoolChart address={pair.address} showTitle={false} />
+            <PoolChart address={pair.address} showTitle={false} classNames={{ chart: 'px-0! analytics-chart' }} />
           </Collapsible>
         </div>
 
@@ -239,7 +272,27 @@ export default function PairDetailPage({ params }) {
         </div>
 
         {pair.type === PAIR_TYPES.LSD && <PairStrategy pair={pair} />}
-        {pair.type === PAIR_TYPES.WEIGHTED && <PoolAttributesAnalytic pair={pair} />}
+        {pair.type === PAIR_TYPES.WEIGHTED && (
+          <>
+            <div className='hidden lg:block'>
+              <PoolAttributesAnalytic pair={pair} />
+            </div>
+            <Collapsible
+              className='bg-contain bg-no-repeat lg:hidden'
+              backgroundImage='/images/dataplot.svg'
+              title={t('Pool Attributes')}
+              subtitle={t('Weighted')}
+              previewContent={<div className='h-[161px] w-full' />}
+              classNames={{
+                content: 'pb-4 px-0! bg-gradient-purple-dark',
+                preview: '!pb-[1px] px-0! pt-0!',
+                headerOpen: 'bg-[url(/images/dataplot2.svg)] bg-contain bg-no-repeat h-[104px] content-end pb-0',
+              }}
+            >
+              <PoolAttributesAnalytic pair={pair} />
+            </Collapsible>
+          </>
+        )}
         {pair.type === PAIR_TYPES.WEIGHTED ? (
           <WeightedTransactionTable pair={pair} />
         ) : (

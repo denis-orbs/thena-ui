@@ -773,9 +773,9 @@
     }
   }
 
-  .price-chart-container .tv-lightweight-charts table tr:first-child {
+  /* .price-chart-container .tv-lightweight-charts table tr:first-child {
     border-bottom: 2px solid #281b2e;
-  }
+  } */
 
   .bg-full-range {
     background: linear-gradient(
@@ -806,6 +806,10 @@
   }
 
   @layer utilities {
+    .analytics-chart > div > div:first-child {
+      @apply max-lg:px-4;
+    }
+
     .bg-gradient-purple-dark {
       background: linear-gradient(87.54deg, #0d090f 19.75%, #422d4c 240.97%),
         linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
