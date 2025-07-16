@@ -15,7 +15,7 @@ const PresetProfits = {
   HIGH: 'HIGH',
 }
 
-export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
+export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection, className }) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { APRs } = useAprStore()
   const t = useTranslations()
@@ -110,6 +110,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
         'grid grid-cols-2 bg-neutral-900 md:grid-cols-4',
         'items-stretch gap-1 rounded-xl p-0.5 md:items-center',
         isStablecoinPair && 'grid-cols-1 md:grid-cols-1',
+        className,
       )}
     >
       {rangeSelections.map((range, index) => (

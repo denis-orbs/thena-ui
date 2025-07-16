@@ -49,23 +49,18 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   )
 
   const renderHoverLines = useCallback(
-    (y, direction, markerId) => {
+    (y, direction) => {
       if (currentHover === direction) {
-        const offsets = [-20, -15, -10, -5]
-        return offsets.map((x1, idx) => (
-          <line
-            key={`${direction}-${idx}`}
-            x1={x1}
-            x2={x1 + 2}
-            y1={y}
-            y2={y}
-            stroke='#F199EE'
-            strokeWidth='2'
-            markerStart={`url(#${markerId})`}
-          />
-        ))
+        return null
       }
-      return <line x1={40} x2={5} y1={y} y2={y} stroke='#F199EE' strokeWidth='2' markerStart={`url(#${markerId})`} />
+      return (
+        <svg x={5} y={y - 4} width='35' height='8' viewBox='0 0 35 8' fill='none'>
+          <path
+            d='M1.08149 5.69313C-0.165751 4.90892 -0.165752 3.09108 1.08149 2.30687L3.41005 0.842769C3.72893 0.642271 4.09794 0.535899 4.47462 0.535899L30.3405 0.535898C30.7171 0.535898 31.0861 0.64227 31.405 0.842768L33.7336 2.30687C34.9808 3.09108 34.9808 4.90892 33.7336 5.69313L31.405 7.15723C31.0861 7.35773 30.7171 7.4641 30.3405 7.4641L4.47462 7.4641C4.09794 7.4641 3.72893 7.35773 3.41005 7.15723L1.08149 5.69313Z'
+            fill='#F199EE'
+          />
+        </svg>
+      )
     },
     [currentHover],
   )
@@ -73,32 +68,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   return (
     <>
       <g className='axis-right' transform={`translate(${offset + 5}, 0)`}>
-        <defs>
-          <marker
-            id='arrow-min'
-            markerWidth='5'
-            markerHeight='5'
-            refX='4'
-            refY='2.5'
-            orient='auto'
-            markerUnits='strokeWidth'
-          >
-            {currentHover !== 'south' && !isNaN(minY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
-          </marker>
-          <marker
-            id='arrow-max'
-            markerWidth='5'
-            markerHeight='5'
-            refX='4'
-            refY='2.5'
-            orient='auto'
-            markerUnits='strokeWidth'
-          >
-            {currentHover !== 'north' && !isNaN(maxY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
-          </marker>
-        </defs>
-        {!isNaN(minY) && renderHoverLines(minY, 'south', 'arrow-min')}
-        {!isNaN(maxY) && renderHoverLines(maxY, 'north', 'arrow-max')}
+        {!isNaN(minY) && renderHoverLines(minY, 'south')}
+        {!isNaN(maxY) && renderHoverLines(maxY, 'north')}
         <Axis axisGenerator={axisGenerator} />
         {!isNaN(currentY) && (
           <g style={{ padding: '6px' }}>

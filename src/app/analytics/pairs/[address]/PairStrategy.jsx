@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Collapsible from '@/components/collapse/Collapse2'
 import { defaultSwapFees } from '@/components/common/AddLiquidity/ChooseStrategy'
 import { PresetRanges } from '@/components/common/AddLiquidity/components/PresetRange'
@@ -289,6 +289,58 @@ function PairStrategy({ pair }) {
       </div>
 
       <Collapsible
+        previewContent={
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src='/images/outside.svg' alt='chart' className='h-full w-full object-cover' loading='lazy' />
+        }
+        title={
+          <div className='flex flex-col gap-1'>
+            <TextHeading className='text-primary-600 font-archia text-xl! font-semibold'>{estimateAPRs}</TextHeading>
+            <TextHeading className='font-archia text-xl! font-semibold'>{t('Manual Strategy')}</TextHeading>
+          </div>
+        }
+        subtitle={`${t('Full Range')} / ${t('Broad')} / ${t('Moderate')} / ${t('Tight')}`}
+        className={cn('lg:hidden', !strategyAutoData && 'hidden')}
+        classNames={{ content: 'pb-0 bg-neutral-950 pt-2 gap-4 flex flex-col', preview: '!p-0' }}
+      >
+        <div className='flex flex-col gap-2 px-4'>
+          <ChartPriceRangeInput
+            maskColor='#0d090f'
+            currencyA={baseCurrency ?? undefined}
+            currencyB={quoteCurrency ?? undefined}
+            feeAmount={mintInfo.dynamicFee}
+            ticksAtLimit={mintInfo.ticksAtLimit}
+            price={price ? parseFloat(price) : undefined}
+            priceLower={priceLower}
+            priceUpper={priceUpper}
+            onLeftRangeInput={onLeftRangeInput}
+            onRightRangeInput={onRightRangeInput}
+            interactive={false}
+            showPeriod
+            classNames={{
+              periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
+            }}
+            handleShow
+            isCreate={false}
+            label='Your Range against the Price'
+          />
+
+          <div className='mt-2'>
+            <PresetRanges
+              mintInfo={mintInfo}
+              isStablecoinPair={isStablecoinPair}
+              activePreset={activePreset}
+              handlePresetRangeSelection={handlePresetRangeSelection}
+              className='bg-transparent'
+            />
+          </div>
+        </div>
+        <PrimaryButton className='h-8 w-full text-xs!' onClick={() => handleAddLiquidity('automatic')}>
+          {t('Deposit')}
+        </PrimaryButton>
+      </Collapsible>
+
+      <Collapsible
         className={cn('lg:hidden', !strategyAutoData && 'hidden')}
         classNames={{ content: 'pb-4' }}
         title={t('Automatic Strategy')}
@@ -315,16 +367,18 @@ function PairStrategy({ pair }) {
         />
       </Collapsible>
 
-      <div className='flex w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:w-[70%] lg:px-6'>
-        <div className={cn('flex items-center justify-between gap-2 bg-neutral-900')}>
-          <div className='flex items-center gap-4 lg:gap-8'>
-            <TextHeading className='text-xl! font-medium lg:text-xl!'>{t('Manual Strategy')}</TextHeading>
+      <div className='hidden w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:flex lg:w-[70%] lg:px-6'>
+        <div className={cn('flex items-start justify-between gap-2 bg-neutral-900')}>
+          <div className='flex items-start gap-4 lg:gap-8'>
+            <TextHeading className='text-xl! font-medium lg:text-2xl!'>{t('Manual Strategy')}</TextHeading>
           </div>
 
           <div className='flex flex-row items-start gap-8'>
             <div className='flex flex-col gap-2.5'>
               <TextHeading className='text-primary-600 font-archia text-xl! font-semibold'>{estimateAPRs}</TextHeading>
-              <Paragraph className='text-sm font-normal text-neutral-400'>{t('Estimated APR')}</Paragraph>
+              <Paragraph className='w-full text-right text-sm font-normal text-neutral-400'>
+                {t('Estimated APR')}
+              </Paragraph>
             </div>
             <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('manual')}>
               {t('Add Liquidity')}

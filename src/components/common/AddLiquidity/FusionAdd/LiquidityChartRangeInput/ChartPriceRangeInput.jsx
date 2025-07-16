@@ -9,9 +9,10 @@ import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, TextHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
+import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
@@ -82,8 +83,9 @@ export default function ChartPriceRangeInput({
   const t = useTranslations()
   const zoomRef = useRef(null)
   const windowSize = useWindowSize()
-  const { startPriceTypedValue } = useV3MintState()
+  const { startPriceTypedValue, presetRange } = useV3MintState()
   const dispatch = useDispatch()
+  console.log({ presetRange })
   const { isReverse } = useSelector(state => state.fusion)
 
   const [zoomFactor, setZoomFactor] = useState(1)
@@ -94,6 +96,8 @@ export default function ChartPriceRangeInput({
   const [range, setRange] = useState(2)
   const [midPrice, setMidPrice] = useState(null)
   const [isOutOfView, setIsOutOfView] = useState(false)
+
+  const { APRs } = useAprStore()
 
   const isFullRange = useMemo(() => activePreset === Presets.FULL, [activePreset])
 
@@ -394,12 +398,20 @@ export default function ChartPriceRangeInput({
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className={cn('text-base md:text-xl', classNames?.title)}>
+        <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
           {t(label ?? 'Your Range against the Price')}
         </NewTextHeading>
+        <div className='flex items-center justify-between gap-4 lg:hidden'>
+          <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>
+          {presetRange && (
+            <TextHeading className={cn('text-primary-600 text-xl')}>
+              {formatAmount(APRs?.[presetRange?.type])}%
+            </TextHeading>
+          )}
+        </div>
         <div className='flex items-center gap-4 max-md:justify-between'>
           {showPeriod && <Tabs data={periods} />}
-          <div className='flex gap-1'>
+          <div className='z-40 hidden gap-2 lg:flex'>
             <EmphasisIconButton
               className='lg:size-8'
               classNames='lg:size-4 stroke-neutral-400'
@@ -418,42 +430,33 @@ export default function ChartPriceRangeInput({
               }}
               disabled={false}
             />
-            {/* <TextButton
-              className='flex h-8 w-[69px] gap-1 p-2!'
-              onClick={() => {
-                setZoomFactor(1)
-                setRange(2)
-              }}
-            >
-
-            </TextButton> */}
-            <EmphasisButton
-              className='flex h-8 gap-1 bg-transparent p-2! text-neutral-500'
-              onClick={() => {
-                setZoomFactor(1)
-                setRange(2)
-              }}
-            >
-              <RefreshIcon className='h-4 w-4' />
-              {t('Reset')}
-            </EmphasisButton>
           </div>
+          <EmphasisButton
+            className='flex h-8 gap-1 bg-transparent p-2! text-neutral-500'
+            onClick={() => {
+              setZoomFactor(1)
+              setRange(2)
+            }}
+          >
+            <RefreshIcon className='h-4 w-4 stroke-neutral-50' />
+            {t('Reset')}
+          </EmphasisButton>
         </div>
       </div>
       {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
       {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
       {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
       <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
-        <div className='relative flex h-[235px] w-full items-center justify-center'>
+        <div className='relative flex h-[272px] w-full items-center justify-center lg:h-[235px]'>
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading || isLoadLiquidity ? (
-            <Skeleton className={cn('absolute w-full', `h-[${height}px]`)} />
+            <Skeleton className={cn('absolute h-[calc(100%-48px)] w-full lg:h-full', `h-[${height}px]`)} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
-            <div className={cn('flex h-full w-full flex-col', `max-h-[${height}px}]`)} ref={containerRef}>
-              <div className='flex h-full w-full flex-col gap-8'>
+            <div className={cn('flex h-full w-full flex-col gap-4', `max-h-[${height}px}]`)}>
+              <div className='flex h-[calc(100%-48px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
                     className='relative h-full w-full'
@@ -465,7 +468,10 @@ export default function ChartPriceRangeInput({
                     <div
                       className='absolute inset-0 z-0 h-full'
                       style={{
-                        width: chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - 10,
+                        width:
+                          chartSize.chartContainerWidth -
+                          desktopSizes.rightAxisWidth -
+                          (windowSize.width > 768 ? 133 : 41),
                       }}
                     >
                       {pairPrices.length > 0 && !isLoading && (
@@ -526,6 +532,26 @@ export default function ChartPriceRangeInput({
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:hidden'>
+                <EmphasisIconButton
+                  className='lg:size-8'
+                  classNames='lg:size-4 stroke-neutral-400'
+                  Icon={ZoomInIcon}
+                  onClick={() => {
+                    setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+                  }}
+                  disabled={false}
+                />
+                <EmphasisIconButton
+                  className='lg:size-8'
+                  classNames='lg:size-4 stroke-neutral-400'
+                  Icon={ZoomOutIcon}
+                  onClick={() => {
+                    setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+                  }}
+                  disabled={false}
+                />
               </div>
             </div>
           )}

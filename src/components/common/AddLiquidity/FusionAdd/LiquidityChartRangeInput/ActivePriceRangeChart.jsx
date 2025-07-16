@@ -1,6 +1,8 @@
 import { max as getMax, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import CheckBox from '@/components/checkbox'
+
 import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
 import { HorizontalLine } from './HorizontalLine'
@@ -50,9 +52,10 @@ export default function ActivePriceRangeChart({
   }, [brushDomain, onBrushDomainChange, yScale])
 
   const [liveLocalBrushExtent, setLiveLocalBrushExtent] = useState(brushDomain)
+  const [showLiquidity, setShowLiquidity] = useState(true)
 
   return (
-    <>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} ref={svgRef}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>
@@ -92,14 +95,16 @@ export default function ActivePriceRangeChart({
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
             /> */}
-            <LiquidityBars
-              series={series}
-              xScale={xScale}
-              yScale={yScale}
-              xValue={xAccessor}
-              yValue={yAccessor}
-              maxBarWidth={117}
-            />
+            {showLiquidity && (
+              <LiquidityBars
+                series={series}
+                xScale={xScale}
+                yScale={yScale}
+                xValue={xAccessor}
+                yValue={yAccessor}
+                maxBarWidth={117}
+              />
+            )}
             {!disableBrush && (
               <HorizontalLine
                 value={current}
@@ -148,6 +153,10 @@ export default function ActivePriceRangeChart({
           )}
         </g>
       </svg>
-    </>
+      <label className='absolute right-2 bottom-0 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+        <CheckBox checked={showLiquidity} setChecked={() => setShowLiquidity(prev => !prev)} />
+        Show Liquidity
+      </label>
+    </div>
   )
 }

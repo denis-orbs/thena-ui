@@ -48,7 +48,7 @@ export function LiquidityBars({
   }, [series, xScale, yScale, xValue, yValue, maxBarWidth])
 
   return (
-    <g className='liquidity-bars'>
+    <g className='liquidity-bars' style={{ zIndex: -1 }}>
       {bars.map((bar, index) => (
         <rect
           key={`liquidity-bar-${index}`}
