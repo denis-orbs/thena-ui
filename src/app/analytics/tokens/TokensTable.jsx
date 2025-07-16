@@ -45,6 +45,7 @@ const sortOptions = [
 export default function TokensTable({ data, hidePagination = false, backUrlNumber }) {
   const [sort, setSort] = useState(sortOptions[3])
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
   const { push } = useRouter()
 
   const sortedData = useMemo(
@@ -108,6 +109,10 @@ export default function TokensTable({ data, hidePagination = false, backUrlNumbe
       setCurrentPage={setCurrentPage}
       notAction
       hidePagination={hidePagination}
+      showNumberOfPage
+      defaultNumberItem={5}
+      setNumberOfPage={setItemsPerPage}
+      pageSize={itemsPerPage}
     />
   )
 }

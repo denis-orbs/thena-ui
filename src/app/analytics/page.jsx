@@ -1,14 +1,12 @@
 'use client'
 
 import { groupBy } from 'lodash'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import PercentBadge from '@/components/badges/PercentBadge'
-import { EmphasisButton } from '@/components/buttons/Button'
 import BarChart from '@/components/charts/BarChart'
 import EpochStackableChart from '@/components/charts/EpochStackableChart'
 import HoverableChart from '@/components/charts/HoverableChart'
@@ -29,9 +27,10 @@ import TokensTable from './tokens/TokensTable'
 
 export default function AnalyticsPage() {
   const { networkId } = useChainSettings()
+  const [isExpanded, setIsExpanded] = useState('feeDistribution')
 
   const { pairs } = usePairs()
-  const { push } = useRouter()
+  // const { push } = useRouter()
   const { tokens } = useTokens()
   const t = useTranslations()
   const { data: stats } = useSWR(
@@ -147,65 +146,138 @@ export default function AnalyticsPage() {
             </div>
           </div>
           <div className='grid grid-cols-1 gap-6'>
-            <EpochStackableChart
-              groupEpochData={groupEpochData}
-              rawData={rawData}
-              title='Fee Distribution'
-              protocolData={totalStats}
-              valueProperty={['feesUSD', 'customPoolFeesUSD']}
-              protocolProperty='feesUSD'
-              ChartComponent={StackableBarChart}
-              chartId='Fee Distribution'
-              propertyLabel={{
-                feesUSD: t('veTHE owners'),
-                customPoolFeesUSD: t("Manual LP'ers"),
-              }}
-            />
+            {isExpanded === 'feeDistribution' && (
+              <EpochStackableChart
+                groupEpochData={groupEpochData}
+                rawData={rawData}
+                title='Fee'
+                protocolData={totalStats}
+                valueProperty={['feesUSD', 'customPoolFeesUSD']}
+                protocolProperty='feesUSD'
+                ChartComponent={StackableBarChart}
+                chartId='Fee Distribution'
+                propertyLabel={{
+                  feesUSD: t('veTHE owners'),
+                  customPoolFeesUSD: t("Manual LP'ers"),
+                }}
+                isExpanded
+              />
+            )}
+            {isExpanded === 'tvl' && (
+              <HoverableChart
+                className='bg-chart-gradient rounded-xl border border-[#422D4C]'
+                chartData={rawData}
+                protocolData={totalStats}
+                valueProperty='tvlUSD'
+                title='TVL'
+                ChartComponent={LineChart}
+                isExpanded
+              />
+            )}
+            {isExpanded === 'volume' && (
+              <HoverableChart
+                className='bg-chart-gradient rounded-xl border border-[#422D4C]'
+                chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
+                protocolData={totalStats}
+                valueProperty='volumeUSD'
+                title='Volume (24h)'
+                ChartComponent={BarChart}
+                isExpanded
+              />
+            )}
           </div>
-          <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 bg-none lg:grid-cols-2'>
-            <HoverableChart
-              className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-              chartData={rawData}
-              protocolData={totalStats}
-              valueProperty='tvlUSD'
-              title='TVL'
-              ChartComponent={LineChart}
-            />
-            <HoverableChart
-              className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-              chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
-              protocolData={totalStats}
-              valueProperty='volumeUSD'
-              title='Volume (24h)'
-              ChartComponent={BarChart}
-            />
+          <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
+            {isExpanded === 'tvl' ? (
+              <EpochStackableChart
+                groupEpochData={groupEpochData}
+                rawData={rawData}
+                title='Fee Distribution'
+                protocolData={totalStats}
+                valueProperty={['feesUSD', 'customPoolFeesUSD']}
+                protocolProperty='feesUSD'
+                ChartComponent={StackableBarChart}
+                chartId='Fee Distribution'
+                propertyLabel={{
+                  feesUSD: t('veTHE owners'),
+                  customPoolFeesUSD: t("Manual LP'ers"),
+                }}
+                classNames={{ title: 'text-xl! leading-6! text-neutral-500' }}
+                showPerEpoch={false}
+                isExpanded={false}
+                onExpand={() => setIsExpanded('feeDistribution')}
+              />
+            ) : (
+              <HoverableChart
+                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+                chartData={rawData}
+                protocolData={totalStats}
+                valueProperty='tvlUSD'
+                title='TVL'
+                ChartComponent={LineChart}
+                onExpand={() => setIsExpanded('tvl')}
+                isExpanded={false}
+                classNames={{ title: 'font-semibold font-archia' }}
+              />
+            )}
+            {isExpanded === 'volume' ? (
+              <EpochStackableChart
+                groupEpochData={groupEpochData}
+                rawData={rawData}
+                title='Fee Distribution'
+                protocolData={totalStats}
+                valueProperty={['feesUSD', 'customPoolFeesUSD']}
+                protocolProperty='feesUSD'
+                ChartComponent={StackableBarChart}
+                chartId='Fee Distribution'
+                propertyLabel={{
+                  feesUSD: t('veTHE owners'),
+                  customPoolFeesUSD: t("Manual LP'ers"),
+                }}
+                classNames={{ title: 'lg:text-xl! leading-6! text-neutral-500' }}
+                showPerEpoch={false}
+                isExpanded={false}
+                onExpand={() => setIsExpanded('feeDistribution')}
+              />
+            ) : (
+              <HoverableChart
+                className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+                chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
+                protocolData={totalStats}
+                valueProperty='volumeUSD'
+                title='Volume (24h)'
+                ChartComponent={BarChart}
+                onExpand={() => setIsExpanded('volume')}
+                isExpanded={false}
+                classNames={{ title: 'font-semibold font-archia' }}
+              />
+            )}
           </div>
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <TextHeading className='text-2xl text-neutral-50'>{t('Top Assets')}</TextHeading>
-            <EmphasisButton
+            {/* <EmphasisButton
               onClick={() => {
                 push('/analytics/tokens?back=3')
               }}
             >
               {t('View All')}
-            </EmphasisButton>
+            </EmphasisButton> */}
           </div>
-          <TokensTable backUrlNumber={3} data={tokens} hidePagination />
+          <TokensTable backUrlNumber={3} data={tokens} />
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <TextHeading className='text-2xl text-neutral-50'>{t('Top Pairs')}</TextHeading>
-            <EmphasisButton
+            {/* <EmphasisButton
               onClick={() => {
                 push('/analytics/pairs?back=3')
               }}
             >
               {t('View All')}
-            </EmphasisButton>
+            </EmphasisButton> */}
           </div>
-          <PairsTable backUrlNumber={3} data={pairs} hidePagination />
+          <PairsTable backUrlNumber={3} data={pairs} />
         </div>
       </div>
     </LayoutWithBackButton>

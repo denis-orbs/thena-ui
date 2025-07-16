@@ -2,11 +2,15 @@ import dayjs from 'dayjs'
 import { isArray } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
 
 import Toggle from '@/components/toggle'
+import { fetchStats } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
+import { Expand04Icon } from '@/svgs'
 
 import Box from '../box'
+import { TextIconButton } from '../buttons/IconButton'
 import Divider from '../divider'
 import Selection from '../selection'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
@@ -22,8 +26,12 @@ function EpochStackableChart({
   title,
   ChartComponent,
   className,
+  classNames,
   chartId,
   propertyLabel,
+  showPerEpoch = true,
+  isExpanded,
+  onExpand,
 }) {
   const [groupPerEpoch, setGroupPerEpoch] = useState(false)
   const [property, setProperty] = useState('all')
@@ -32,17 +40,19 @@ function EpochStackableChart({
   const [dateHover, setDateHover] = useState()
   const t = useTranslations()
 
+  const { data: dataRevenue } = useSWR('thena total stats', () => fetchStats())
+
   // Getting latest data to display on top of chart when not hovered
   useEffect(() => {
     setHover(undefined)
   }, [protocolData])
 
   useEffect(() => {
-    if (typeof hover === 'undefined' && protocolData) {
+    if (protocolData) {
       setHover(protocolData[protocolProperty])
       setDateHover()
     }
-  }, [protocolData, hover, protocolProperty])
+  }, [protocolData, protocolProperty])
 
   useEffect(() => {
     setHover(protocolData?.[protocolProperty] || undefined)
@@ -132,43 +142,73 @@ function EpochStackableChart({
 
   return (
     <Box className={cn('bg-chart-gradient border border-[#422D4C]', className)}>
-      <div className='flex flex-col gap-4'>
-        <div className='flex justify-between'>
-          <div className='flex flex-col gap-2'>
-            <Paragraph className='text-base font-semibold text-neutral-50 lg:text-3xl'>{t(title)}</Paragraph>
-            <Toggle
-              className='hidden lg:flex'
-              checked={groupPerEpoch}
-              onChange={() => setGroupPerEpoch(!groupPerEpoch)}
-              toggleId={`active-epoch-${chartId}`}
-              label='Per Epoch'
-            />
+      <div className={cn('flex flex-col gap-4', !isExpanded && 'gap-2')}>
+        <div className={cn('flex justify-between', !isExpanded && 'flex-col gap-2')}>
+          <div className={cn('flex flex-col gap-2', !isExpanded && 'flex-row items-center justify-between')}>
+            <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
+              {t(title)}
+            </Paragraph>
+            {showPerEpoch && (
+              <Toggle
+                className='hidden lg:flex'
+                checked={groupPerEpoch}
+                onChange={() => setGroupPerEpoch(!groupPerEpoch)}
+                toggleId={`active-epoch-${chartId}`}
+                label='Per Epoch'
+              />
+            )}
+            {!isExpanded && (
+              <TextIconButton
+                Icon={Expand04Icon}
+                className='h-6! w-6! stroke-neutral-400'
+                onClick={() => {
+                  onExpand()
+                }}
+              />
+            )}
           </div>
-          {properties && (
-            <Selection
-              className='items-stretch md:h-11'
-              classNames={{
-                items: 'md:text-sm text-xs',
-              }}
-              data={properties}
-            />
-          )}
+          <div className='flex items-center justify-between gap-1'>
+            {!isExpanded && (
+              <div className='flex flex-col gap-1'>
+                {Number(hover) > -1 ? ( // sometimes data is 0
+                  <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(hover)}</TextHeading>
+                ) : (
+                  <TextHeading className={cn('text-xl! leading-6!')}>
+                    ${formatAmount(dataRevenue?.revenueData)}
+                  </TextHeading>
+                )}
+              </div>
+            )}
+            {properties && (
+              <Selection
+                className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
+                classNames={{
+                  items: cn('md:text-sm text-xs', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+                }}
+                data={properties}
+              />
+            )}
+          </div>
         </div>
         <Divider />
         <div className='flex items-start justify-between'>
           <div className='flex flex-col gap-1'>
-            {Number(hover) > -1 ? ( // sometimes data is 0
-              <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
-            ) : (
-              <div className='h-[32px] w-[128px]' />
+            {isExpanded && (
+              <>
+                {Number(hover) > -1 ? ( // sometimes data is 0
+                  <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
+                ) : (
+                  <TextHeading className={cn('text-2xl')}>${formatAmount(dataRevenue?.revenueData)}</TextHeading>
+                )}
+              </>
             )}
             {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
           </div>
 
           <Selection
-            className='items-stretch md:h-11'
+            className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
             classNames={{
-              items: 'md:text-sm text-xs',
+              items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
             }}
             data={periods}
           />

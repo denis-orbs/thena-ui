@@ -53,6 +53,7 @@ const sortOptions = [
 export default function PairsTable({ data, hidePagination = false, backUrlNumber }) {
   const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
   const { push } = useRouter()
   const t = useTranslations()
 
@@ -139,6 +140,10 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
       setCurrentPage={setCurrentPage}
       notAction
       hidePagination={hidePagination}
+      showNumberOfPage
+      defaultNumberItem={5}
+      setNumberOfPage={setItemsPerPage}
+      pageSize={itemsPerPage}
     />
   )
 }
