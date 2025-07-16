@@ -206,6 +206,8 @@ function AnalyticsChart({
     [t],
   )
 
+  console.log({ title, formattedData })
+
   return (
     <Box className={cn('bg-chart-gradient border border-[#422D4C]', (isMinimum || !isExpanded) && 'p-4!', className)}>
       <div className={cn('flex flex-col gap-3', (!isExpanded || isMinimum) && 'gap-1')}>
