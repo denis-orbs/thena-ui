@@ -292,19 +292,14 @@ function AnalyticsChart({
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
                       <TextHeading className='text-3xl! leading-9!'>${formatAmount(hover)}</TextHeading>
                     ) : (
-                      <>
-                        {properties && (
-                          <>
-                            <TextHeading className={cn('text-3xl! leading-9!')}>
-                              ${formatAmount(defaultValue)}
-                            </TextHeading>
-                            <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
-                          </>
-                        )}
-                      </>
+                      <TextHeading className={cn('text-3xl! leading-9!')}>${formatAmount(defaultValue)}</TextHeading>
                     )}
                   </>
-                  {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
+                  {dateHover || defaultDateHover ? (
+                    <TextSubHeading>{dateHover || defaultDateHover}</TextSubHeading>
+                  ) : (
+                    <div className='h-5' />
+                  )}
                 </div>
               )}
             </div>

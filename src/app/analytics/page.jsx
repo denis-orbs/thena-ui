@@ -332,7 +332,6 @@ export default function AnalyticsPage() {
                 {isExpanded === 'tvl' && (
                   <AnalyticsChart
                     className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                    classNames={{ title: 'lg:text-xl font-semibold font-archia leading-6' }}
                     rawData={rawData}
                     title='Total Value Locked'
                     defaultValue={totalStats?.tvlUSD}
