@@ -228,8 +228,11 @@ function PairStrategy({ pair }) {
   }, [pair])
 
   useEffect(() => {
-    handleChooseStrategy(bestManualPool)
-  }, [bestManualPool, handleChooseStrategy])
+    // Only set best manual pool if no strategy is currently selected
+    if (!mintInfo.strategy && bestManualPool) {
+      handleChooseStrategy(bestManualPool)
+    }
+  }, [bestManualPool, handleChooseStrategy, mintInfo.strategy])
 
   const { strategy, pool, poolAddress } = mintInfo
 
@@ -260,9 +263,12 @@ function PairStrategy({ pair }) {
   }, [JSON.stringify(estimateAPR), setAPRs])
 
   useEffect(() => {
-    const _strategy = sortedSubPools.find(item => MANUAL_TYPES.includes(item.title))
-    handleChooseStrategy(_strategy ?? defaultSwapFees)
-  }, [handleChooseStrategy, sortedSubPools])
+    // Only set default strategy if no strategy is currently selected
+    if (!mintInfo.strategy) {
+      const _strategy = sortedSubPools.find(item => MANUAL_TYPES.includes(item.title))
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
+    }
+  }, [handleChooseStrategy, sortedSubPools, mintInfo.strategy])
 
   return (
     <div className='flex gap-4 max-lg:flex-col'>
@@ -300,10 +306,10 @@ function PairStrategy({ pair }) {
           </div>
         }
         subtitle={`${t('Full Range')} / ${t('Broad')} / ${t('Moderate')} / ${t('Tight')}`}
-        className={cn('lg:hidden', !strategyAutoData && 'hidden')}
+        className={cn('relative lg:hidden', !strategyAutoData && 'hidden')}
         classNames={{ content: 'pb-0 bg-neutral-950 pt-2 gap-4 flex flex-col', preview: '!p-0' }}
       >
-        <div className='flex flex-col gap-2 px-4'>
+        <div className='flex flex-col gap-2 px-0'>
           <ChartPriceRangeInput
             maskColor='#0d090f'
             currencyA={baseCurrency ?? undefined}
@@ -317,25 +323,28 @@ function PairStrategy({ pair }) {
             onRightRangeInput={onRightRangeInput}
             interactive={false}
             showPeriod
+            idChart='mobile-chart-price-range'
             classNames={{
               periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
+              title: 'px-4',
+              actions: 'px-4',
             }}
             handleShow
             isCreate={false}
             label='Your Range against the Price'
           />
 
-          <div className='mt-2'>
+          <div className='z-40 mt-2 px-2'>
             <PresetRanges
               mintInfo={mintInfo}
               isStablecoinPair={isStablecoinPair}
               activePreset={activePreset}
               handlePresetRangeSelection={handlePresetRangeSelection}
-              className='bg-transparent'
+              className='bg-transparent!'
             />
           </div>
         </div>
-        <PrimaryButton className='h-8 w-full rounded-md text-xs!' onClick={() => handleAddLiquidity('automatic')}>
+        <PrimaryButton className='z-40 h-8 w-full rounded-md text-xs!' onClick={() => handleAddLiquidity('automatic')}>
           {t('Deposit')}
         </PrimaryButton>
       </Collapsible>
@@ -408,12 +417,13 @@ function PairStrategy({ pair }) {
             label='Your Range against the Price'
           />
 
-          <div className='mt-2'>
+          <div className='z-40 mt-4'>
             <PresetRanges
               mintInfo={mintInfo}
               isStablecoinPair={isStablecoinPair}
               activePreset={activePreset}
               handlePresetRangeSelection={handlePresetRangeSelection}
+              className='bg-transparent!'
             />
           </div>
         </div>

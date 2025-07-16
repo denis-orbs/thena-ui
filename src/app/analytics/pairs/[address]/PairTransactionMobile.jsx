@@ -3,12 +3,21 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
+import Highlight from '@/components/highlight'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TXN_TYPE } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
-import { ArrowLeftIcon, ArrowRightIcon, BackRevertIcon, ChevronDownIcon, CoinsStackedIcon, ReverseIcon } from '@/svgs'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  BackRevertIcon,
+  ChevronDownIcon,
+  CoinsStackedIcon,
+  InfoCircleWhite,
+  ReverseIcon,
+} from '@/svgs'
 
 function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSizeChange, className = '' }) {
   const getVisiblePages = () => {
@@ -214,7 +223,7 @@ function TransactionMobile({
               </div>
 
               {/* Details Grid */}
-              <div className='flex min-w-0 items-center gap-4 overflow-x-auto'>
+              <div className='flex min-w-0 items-center justify-between gap-4 overflow-x-auto'>
                 {isWeighted ? (
                   (item.tokens || []).map(token => (
                     <div key={token.symbol} className='flex flex-col'>
@@ -256,7 +265,10 @@ function TransactionMobile({
             </div>
           ))
         ) : (
-          <div className='py-8 text-center'>
+          <div className='flex flex-col items-center justify-center py-8 text-center'>
+            <Highlight>
+              <InfoCircleWhite className='h-4 w-4' />
+            </Highlight>
             <TextHeading className='text-neutral-400'>{t('No transactions found')}</TextHeading>
           </div>
         )}

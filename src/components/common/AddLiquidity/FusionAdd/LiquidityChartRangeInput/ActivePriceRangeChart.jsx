@@ -2,6 +2,7 @@ import { max as getMax, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import CheckBox from '@/components/checkbox'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
@@ -28,7 +29,9 @@ export default function ActivePriceRangeChart({
   container,
   setCurrentHover = () => {},
   maskColor,
+  divideDistanceWidth,
 }) {
+  const { isLgDown } = useMediaQuery()
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
@@ -115,18 +118,6 @@ export default function ActivePriceRangeChart({
               />
             )}
           </g>
-
-          <AxisRight
-            yScale={yScale}
-            offset={width - axisLabelPaneWidth}
-            current={current}
-            min={liveLocalBrushExtent?.[0]}
-            max={liveLocalBrushExtent?.[1]}
-            currentHover={currentHover}
-            padding={padding}
-            height={height}
-            maskColor={maskColor}
-          />
           {handleShow && (
             <Brush2
               id={id}
@@ -135,7 +126,7 @@ export default function ActivePriceRangeChart({
               brushLabelValue={brushLabels}
               brushExtent={brushDomain ?? yScale.domain()}
               hideHandles={!brushDomain}
-              width={width - axisLabelPaneWidth - 20}
+              width={width - (isLgDown ? 0 : axisLabelPaneWidth - 12)}
               height={height}
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
@@ -149,12 +140,24 @@ export default function ActivePriceRangeChart({
               padding={padding}
               container={container}
               maskColor={maskColor}
+              divideDistanceWidth={divideDistanceWidth}
             />
           )}
+          <AxisRight
+            yScale={yScale}
+            offset={width - axisLabelPaneWidth}
+            current={current}
+            min={liveLocalBrushExtent?.[0]}
+            max={liveLocalBrushExtent?.[1]}
+            currentHover={currentHover}
+            padding={padding}
+            height={height}
+            maskColor={maskColor}
+          />
         </g>
       </svg>
-      <label className='absolute right-2 bottom-0 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
-        <CheckBox checked={showLiquidity} setChecked={() => setShowLiquidity(prev => !prev)} />
+      <label className='absolute right-4 -bottom-2 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+        <CheckBox className='size-5!' checked={showLiquidity} setChecked={() => setShowLiquidity(prev => !prev)} />
         Show Liquidity
       </label>
     </div>

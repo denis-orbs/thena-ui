@@ -1,6 +1,8 @@
 import { max as getMax } from 'd3'
 import React, { useMemo } from 'react'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+
 export function LiquidityBars({
   series,
   xScale,
@@ -9,6 +11,7 @@ export function LiquidityBars({
   yValue,
   maxBarWidth = 117, // Maximum bar width in pixels
 }) {
+  const { isLgDown } = useMediaQuery()
   const bars = useMemo(() => {
     if (!series || series.length === 0) return []
 
@@ -30,7 +33,7 @@ export function LiquidityBars({
 
       // const maxBarHeight = 20 // Maximum height for bars
       // const normalizedHeight = (liquidityValue / maxLiquidity) * maxBarHeight
-      const barHeight = 4
+      const barHeight = isLgDown ? 2 : 4
 
       // Position bars to the left of the axis
       const x = xScale(0) - barWidth
@@ -45,14 +48,40 @@ export function LiquidityBars({
         index,
       }
     })
-  }, [series, xScale, yScale, xValue, yValue, maxBarWidth])
+  }, [series, xValue, yValue, maxBarWidth, isLgDown, xScale, yScale])
 
   return (
     <g className='liquidity-bars' style={{ zIndex: -1 }}>
+      {/* Vertical ticks along y axis, behind bars */}
+      {!isLgDown &&
+        (() => {
+          if (!yScale) return null
+          const [yMin, yMax] = yScale.domain()
+          const [r0, r1] = yScale.range()
+          const tickCount = 10
+          const ticks = Array.from({ length: tickCount + 1 }).map((_, i) => {
+            const t = i / tickCount
+            const yValueTick = yScale.invert ? yScale.invert(r0 + t * (r1 - r0)) : yMin + t * (yMax - yMin)
+            const y = yScale(yValueTick)
+            return (
+              <line
+                key={`liquidity-tick-${i}`}
+                x1={xScale(0)}
+                x2={xScale(0) - 16}
+                y1={y}
+                y2={y}
+                stroke='#685770'
+                strokeWidth='3'
+                opacity='0.25'
+              />
+            )
+          })
+          return ticks
+        })()}
       {bars.map((bar, index) => (
         <rect
           key={`liquidity-bar-${index}`}
-          x={bar.x}
+          x={bar.x - (isLgDown ? 0 : 21)} // Adjust x position for small screens
           y={bar.y}
           width={bar.width}
           height={bar.height}

@@ -362,14 +362,21 @@ function StrategyTitle({
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
   const hasToggle = useMemo(() => hasSwapFee && hasFarming && !isAutomatic, [hasFarming, hasSwapFee, isAutomatic])
 
-  const handleChangeManualType = useCallback(() => {
-    if (strategy) {
-      const _strategy = pair?.subpools.find(item =>
-        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
-      )
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
-    }
-  }, [handleChooseStrategy, pair?.subpools, strategy])
+  const handleChangeManualType = useCallback(
+    event => {
+      if (strategy) {
+        // event.target.checked=true means "Earn Fees" (not farming)
+        // event.target.checked=false means "Earn THE" (farming)
+        const isToggleChecked = event.target.checked
+        const shouldBeFarming = !isToggleChecked
+        const _strategy = pair?.subpools.find(item =>
+          shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
+        )
+        handleChooseStrategy(_strategy ?? defaultSwapFees)
+      }
+    },
+    [handleChooseStrategy, pair?.subpools, strategy],
+  )
 
   return (
     <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>

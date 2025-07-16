@@ -85,7 +85,6 @@ export default function ChartPriceRangeInput({
   const windowSize = useWindowSize()
   const { startPriceTypedValue, presetRange } = useV3MintState()
   const dispatch = useDispatch()
-  console.log({ presetRange })
   const { isReverse } = useSelector(state => state.fusion)
 
   const [zoomFactor, setZoomFactor] = useState(1)
@@ -401,7 +400,7 @@ export default function ChartPriceRangeInput({
         <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
           {t(label ?? 'Your Range against the Price')}
         </NewTextHeading>
-        <div className='flex items-center justify-between gap-4 lg:hidden'>
+        <div className={cn('flex items-center justify-between gap-4 lg:hidden', classNames?.title)}>
           <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>
           {presetRange && (
             <TextHeading className={cn('text-primary-600 text-xl')}>
@@ -409,7 +408,7 @@ export default function ChartPriceRangeInput({
             </TextHeading>
           )}
         </div>
-        <div className='flex items-center gap-4 max-md:justify-between'>
+        <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
           {showPeriod && <Tabs data={periods} />}
           <div className='z-40 hidden gap-2 lg:flex'>
             <EmphasisIconButton
@@ -524,9 +523,11 @@ export default function ChartPriceRangeInput({
                           setCurrentHover={setCurrentHover}
                           currentHover={currentHover}
                           id={idChart}
-                          // setIsFlipped={setIsFlipped}
-                          // container={zoomRef.current}
-                          // triggerScroll={triggerScroll}
+                          divideDistanceWidth={
+                            chartSize.chartContainerWidth -
+                            desktopSizes.rightAxisWidth -
+                            (windowSize.width > 768 ? 133 : 41)
+                          }
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />

@@ -773,9 +773,10 @@
     }
   }
 
-  /* .price-chart-container .tv-lightweight-charts table tr:first-child {
-    border-bottom: 2px solid #281b2e;
-  } */
+  .price-chart-container .tv-lightweight-charts table tr:nth-child(2) td:nth-child(2) > div {
+    position: absolute !important;
+    z-index: -1 !important;
+  }
 
   .bg-full-range {
     background: linear-gradient(

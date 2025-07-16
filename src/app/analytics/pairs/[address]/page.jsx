@@ -112,14 +112,18 @@ export default function PairDetailPage({ params }) {
     [setStrategy],
   )
 
-  const handleChangeManualType = useCallback(() => {
-    if (strategy) {
+  const handleChangeManualType = useCallback(
+    targetValue => {
+      // targetValue: 'the' for farming, 'fees' for swap fees
+      const shouldBeFarming = targetValue === 'the'
       const _strategy = pair?.subpools.find(item =>
-        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+        shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
       )
+      console.log({ _strategy })
       handleChooseStrategy(_strategy ?? defaultSwapFees)
-    }
-  }, [handleChooseStrategy, pair?.subpools, strategy])
+    },
+    [handleChooseStrategy, pair?.subpools],
+  )
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
@@ -212,7 +216,7 @@ export default function PairDetailPage({ params }) {
                 <RadioInput
                   name='earn-type'
                   value='the'
-                  onChange={handleChangeManualType}
+                  onChange={() => handleChangeManualType('the')}
                   label='Earn THE'
                   checked={strategy?.isFarming}
                   className='size-5'
@@ -220,7 +224,7 @@ export default function PairDetailPage({ params }) {
                 <RadioInput
                   name='earn-type'
                   value='fees'
-                  onChange={handleChangeManualType}
+                  onChange={() => handleChangeManualType('fees')}
                   checked={!strategy?.isFarming}
                   label='Earn Fees'
                   className='size-5'
@@ -243,7 +247,7 @@ export default function PairDetailPage({ params }) {
             className={cn('w-full lg:w-[80%]', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
           />
           <EmphasisButton
-            className='h-8 w-full text-xs! lg:hidden'
+            className='z-40 h-8 w-full text-xs! lg:hidden'
             onClick={() => {
               if (pair.type !== PAIR_TYPES.WEIGHTED) {
                 push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
@@ -263,7 +267,7 @@ export default function PairDetailPage({ params }) {
             previewContent={<PoolChart address={pair.address} showTitle={false} isSimple />}
             classNames={{ content: 'pb-4 px-0!', preview: '!pb-[1px] px-0! pt-0!' }}
           >
-            <PoolChart address={pair.address} showTitle={false} classNames={{ chart: 'px-0! analytics-chart' }} />
+            <PoolChart address={pair.address} showTitle={false} classNames={{ chart: 'px-4! analytics-chart' }} />
           </Collapsible>
         </div>
 

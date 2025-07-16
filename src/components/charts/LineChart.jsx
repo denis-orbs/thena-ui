@@ -46,6 +46,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch =
           bottom: isSimple ? 0 : 0.1,
         },
         borderVisible: false,
+        width: 50,
       },
       timeScale: {
         visible: !isSimple,

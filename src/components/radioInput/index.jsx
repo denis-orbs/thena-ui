@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
 
-function RadioInput({ name, value, onChange, label, checked, className }) {
+function RadioInput({ name, value, onChange, label, checked = false, className }) {
   const t = useTranslations()
 
   return (
@@ -12,7 +12,7 @@ function RadioInput({ name, value, onChange, label, checked, className }) {
         name={name}
         value={value}
         onChange={onChange}
-        checked={checked}
+        checked={Boolean(checked)}
         className={cn(
           'checked:bg-primary-600 h-4 w-4 rounded-full border border-neutral-600 bg-transparent focus:ring-0 focus:outline-none',
           className,

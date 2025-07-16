@@ -2,13 +2,14 @@ import { brushY, select } from 'd3'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 36
 
 // margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 4
+const BRUSH_EXTENT_MARGIN_PX = 0
 
 /**
  * Returns true if every element in `a` maps to the
@@ -48,7 +49,9 @@ export const Brush2 = ({
   setLiveLocalBrushExtent = () => {},
   setCurrentHover = () => {},
   currentHover,
+  divideDistanceWidth,
 }) => {
+  const { isLgDown } = useMediaQuery()
   const t = useTranslations()
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -232,15 +235,28 @@ export const Brush2 = ({
       <>
         <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
         {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
-        <rect x='0' y={height} width='100%' height={padding - 15} fill={maskColor} />
+        <rect x='0' y={height} width='100%' height={padding - 8} fill={maskColor} />
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
         )}
         <defs>
-          <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+          {/* <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
             <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
             <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
-          </linearGradient>
+          </linearGradient> */}
+          {isLgDown ? (
+            <>
+              <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+                <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0} />
+                <stop offset='100%' stopColor='#83007E' stopOpacity={0.1} />
+              </linearGradient>
+            </>
+          ) : (
+            <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+              <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+              <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
+            </linearGradient>
+          )}
 
           {/* clips at exactly the svg area */}
           <clipPath id={`${id}-brush-clip`}>
@@ -265,8 +281,8 @@ export const Brush2 = ({
                   y1={Math.max(0, yScale(normalizedBrushExtent[1]))}
                   x2={width + 15}
                   y2={Math.max(0, yScale(normalizedBrushExtent[1]))}
-                  stroke='#F199EE'
-                  strokeWidth='3'
+                  stroke='#EA66E5'
+                  strokeWidth={isLgDown ? 1 : 2}
                 />
                 <g
                   pointerEvents='none'
@@ -290,7 +306,7 @@ export const Brush2 = ({
                         strokeWidth='1'
                       />
                       {interactive && (
-                        <g transform='translate(12, 9)' pointerEvents='none'>
+                        <g transform='translate(8, 9)' pointerEvents='none'>
                           <svg
                             width='11'
                             height='16'
@@ -310,18 +326,26 @@ export const Brush2 = ({
                       )}
                       <text
                         className='font-archia font-semibold'
-                        x={interactive ? '60' : '50'}
+                        x={interactive ? '27' : '50'}
                         y='23'
                         fill={interactive ? '#2C002A' : '#B3ABB7'}
                         fontSize='20'
-                        textAnchor='middle'
+                        textAnchor='start'
                         pointerEvents='none'
                       >
                         {brushLabelValue('w', localBrushExtent?.[1])}
                       </text>
                     </g>
                   ) : (
-                    <rect width={60} height={8} fill='#F199EE' stroke='#EA66E5' strokeWidth='1' rx='4' ry='4' />
+                    <rect
+                      width={isLgDown ? 32 : 52}
+                      height={8}
+                      fill='#F199EE'
+                      stroke='#EA66E5'
+                      strokeWidth='1'
+                      rx='4'
+                      ry='4'
+                    />
                   )}
                 </g>
               </g>
@@ -334,8 +358,8 @@ export const Brush2 = ({
                   y1={Math.max(0, yScale(normalizedBrushExtent[0]))}
                   x2={width + 15}
                   y2={Math.max(0, yScale(normalizedBrushExtent[0]))}
-                  stroke='#F199EE'
-                  strokeWidth='3'
+                  stroke='#EA66E5'
+                  strokeWidth={isLgDown ? 1 : 2}
                 />
                 <g
                   pointerEvents='none'
@@ -359,7 +383,7 @@ export const Brush2 = ({
                         strokeWidth='1'
                       />
                       {interactive && (
-                        <g transform='translate(12, 9)' pointerEvents='none'>
+                        <g transform='translate(8, 9)' pointerEvents='none'>
                           <svg
                             width='11'
                             height='16'
@@ -379,18 +403,26 @@ export const Brush2 = ({
                       )}
                       <text
                         className='font-archia font-semibold'
-                        x={interactive ? 60 : 50}
+                        x={interactive ? 27 : 50}
                         y='23'
                         fill={interactive ? '#2C002A' : '#B3ABB7'}
                         fontSize='20'
-                        textAnchor='middle'
+                        textAnchor='start'
                         pointerEvents='none'
                       >
                         {brushLabelValue('w', localBrushExtent?.[0])}
                       </text>
                     </g>
                   ) : (
-                    <rect width={60} height={8} fill='#F199EE' stroke='#EA66E5' strokeWidth='1' rx='4' ry='4' />
+                    <rect
+                      width={isLgDown ? 32 : 52}
+                      height={8}
+                      fill='#F199EE'
+                      stroke='#EA66E5'
+                      strokeWidth='1'
+                      rx='4'
+                      ry='4'
+                    />
                   )}
                 </g>
               </g>
@@ -457,6 +489,27 @@ export const Brush2 = ({
                 </text>
               </g>
             )}
+            {!showSouthAnimated && !isLgDown && (
+              <g width={divideDistanceWidth} transform={`translate(18, ${height + 10}) `}>
+                {/* Tick lines for bottom axis */}
+                {Array.from({ length: Math.floor(divideDistanceWidth / 40) + 1 }).map((_, i) => (
+                  <line
+                    key={i}
+                    x1={i * 40}
+                    y1={0}
+                    x2={i * 40}
+                    y2={-10}
+                    stroke='#4B3950'
+                    strokeWidth='3'
+                    opacity='0.4'
+                  />
+                ))}
+              </g>
+            )}
+
+            <g transform={`translate(0, ${height + 20}) `}>
+              <line x1='0' y1={5} x2={width} y2={5} stroke='#281B2E' strokeWidth='3' />
+            </g>
           </>
         )}
       </>
@@ -469,6 +522,7 @@ export const Brush2 = ({
       width,
       height,
       showSouthArrow,
+      isLgDown,
       id,
       interactive,
       normalizedBrushExtent,
@@ -486,9 +540,10 @@ export const Brush2 = ({
       southHandleInView,
       flipSouthHandle,
       southHandleColor,
-      t,
       showNorthAnimated,
+      t,
       showSouthAnimated,
+      divideDistanceWidth,
     ],
   )
 }
