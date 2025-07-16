@@ -161,8 +161,7 @@ export default function AnalyticsPage() {
                   classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6!' }}
                   rawData={rawData}
                   title='TVL'
-                  protocolData={totalStats}
-                  protocolProperty='tvlUSD'
+                  defaultValue={totalStats?.tvlUSD}
                   chartId='tvlUSD'
                   chartConfig={{
                     tvlUSD: {
@@ -206,8 +205,7 @@ export default function AnalyticsPage() {
                   classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                   rawData={rawData}
                   title='Volume'
-                  protocolData={totalStats}
-                  protocolProperty='volumeUSD'
+                  defaultValue={totalStats?.volumeUSD}
                   chartId='Volume (24h)'
                   chartConfig={{
                     volumeUSD: {
@@ -252,8 +250,6 @@ export default function AnalyticsPage() {
                   defaultDateHover='Total Revenue'
                   rawData={rawData}
                   title='Fees'
-                  protocolData={totalStats}
-                  protocolProperty='feesUSD'
                   chartId='Fee Distribution'
                   chartConfig={{
                     veTheUSD: {
@@ -285,7 +281,7 @@ export default function AnalyticsPage() {
                     },
                   ]}
                   onHoverChange={value => setFeesSubTitle(value)}
-                  valueDefault={dataRevenue?.revenueData}
+                  defaultValue={dataRevenue?.revenueData}
                   isMinimum
                 />
               </Collapsible>
@@ -299,8 +295,6 @@ export default function AnalyticsPage() {
                     defaultDateHover='Total Revenue'
                     rawData={rawData}
                     title='Fees'
-                    protocolData={totalStats}
-                    protocolProperty='feesUSD'
                     chartId='Fee Distribution'
                     chartConfig={{
                       veTheUSD: {
@@ -332,7 +326,7 @@ export default function AnalyticsPage() {
                       },
                     ]}
                     isExpanded
-                    valueDefault={dataRevenue?.revenueData}
+                    defaultValue={dataRevenue?.revenueData}
                   />
                 )}
                 {isExpanded === 'tvl' && (
@@ -341,8 +335,7 @@ export default function AnalyticsPage() {
                     classNames={{ title: 'lg:text-xl font-semibold font-archia leading-6' }}
                     rawData={rawData}
                     title='Total Value Locked'
-                    protocolData={totalStats}
-                    protocolProperty='tvlUSD'
+                    defaultValue={totalStats?.tvlUSD}
                     chartId='tvlUSD'
                     chartConfig={{
                       tvlUSD: {
@@ -366,8 +359,7 @@ export default function AnalyticsPage() {
                     className='bg-chart-gradient rounded-xl border border-[#422D4C]'
                     rawData={rawData}
                     title='Volume (24h)'
-                    protocolData={totalStats}
-                    protocolProperty='volumeUSD'
+                    defaultValue={totalStats?.volumeUSD}
                     chartId='Volume (24h)'
                     chartConfig={{
                       volumeUSD: {
@@ -396,8 +388,8 @@ export default function AnalyticsPage() {
                     rawData={rawData}
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     title='Fees'
-                    protocolData={totalStats}
-                    protocolProperty='revenueData'
+                    defaultDateHover='Total Revenue'
+                    defaultValue={dataRevenue?.revenueData}
                     chartId='Fee Distribution'
                     chartConfig={{
                       veTheUSD: {
@@ -430,7 +422,6 @@ export default function AnalyticsPage() {
                     ]}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
-                    valueDefault={dataRevenue?.revenueData}
                   />
                 ) : (
                   <AnalyticsChart
@@ -438,8 +429,7 @@ export default function AnalyticsPage() {
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
                     title='TVL'
-                    protocolData={totalStats}
-                    protocolProperty='tvlUSD'
+                    defaultValue={totalStats?.tvlUSD}
                     chartId='tvlUSD'
                     chartConfig={{
                       tvlUSD: {
@@ -464,8 +454,7 @@ export default function AnalyticsPage() {
                     rawData={rawData}
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia leading-6' }}
                     title='Fees'
-                    protocolData={totalStats}
-                    protocolProperty='revenueData'
+                    defaultDateHover='Total Revenue'
                     chartId='Fee Distribution'
                     chartConfig={{
                       veTheUSD: {
@@ -499,7 +488,7 @@ export default function AnalyticsPage() {
                     epochData={groupEpochData}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
-                    valueDefault={dataRevenue?.revenueData}
+                    defaultValue={dataRevenue?.revenueData}
                   />
                 ) : (
                   <AnalyticsChart
@@ -507,8 +496,7 @@ export default function AnalyticsPage() {
                     classNames={{ title: 'lg:text-xl! font-semibold text-neutral-500 font-archia leading-6' }}
                     rawData={rawData}
                     title='Volume (24h)'
-                    protocolData={totalStats}
-                    protocolProperty='volumeUSD'
+                    defaultValue={totalStats?.volumeUSD}
                     chartId='Volume (24h)'
                     chartConfig={{
                       volumeUSD: {

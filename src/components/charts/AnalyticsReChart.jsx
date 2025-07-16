@@ -203,6 +203,14 @@ function AnalyticsReChart({
           if (setHoverValue) setHoverValue(undefined)
           if (setHoverDate) setHoverDate(undefined)
         }}
+        onMouseMove={state => {
+          const { activeIndex } = state
+          if (!activeIndex) return
+          const entry = data[Number(activeIndex)]
+          if (entry) {
+            onHoverEntry(entry)
+          }
+        }}
       >
         <XAxis
           dataKey={xAsisKey}
@@ -228,7 +236,6 @@ function AnalyticsReChart({
             stackId='a'
             fill={item.fill}
             opacity={item.opacity ?? 1}
-            onMouseOver={onHoverEntry}
             activeBar={false}
             {...item}
             radius={chartItemConfigs.length - 1 === index ? item.radius : [0, 0, 0, 0]}
@@ -240,7 +247,6 @@ function AnalyticsReChart({
             className='border-neutral-600 bg-neutral-900'
             content={<ChartTooltipContent />}
             cursor={<CustomCursor />}
-            defaultIndex={1}
             formatter={chartTooltipFormatter}
             labelFormatter={customLabelFormatter}
           />
