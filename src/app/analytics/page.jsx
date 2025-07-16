@@ -154,7 +154,9 @@ export default function AnalyticsPage() {
                 title='TVL'
                 subtitle={<span className='block h-4'>${formatAmount(tvlSubTitle)}</span>}
                 // eslint-disable-next-line @next/next/no-img-element
-                previewContent={<img className='h-auto w-full' src='/images/line-chart.svg' alt='tvl' />}
+                previewContent={
+                  <div className='h-[143px] w-full overflow-hidden bg-[url("/images/line-chart.png")] bg-[length:100%_143px] bg-center bg-no-repeat' />
+                }
                 className='px-0!'
                 classNames={{ preview: 'px-0!', content: 'pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
               >
@@ -189,8 +191,11 @@ export default function AnalyticsPage() {
                 title='Volume'
                 subtitle={<span className='block h-4'>${formatAmount(volumeSubTitle)}</span>}
                 // eslint-disable-next-line @next/next/no-img-element
-                previewContent={<img className='h-auto w-full' src='/images/barchart.svg' alt='tvl' />}
-                className='px-0!'
+                // <img className='h-auto w-full' src='/images/barchart.svg' alt='tvl' />
+                previewContent={
+                  <div className='h-[143px] w-full bg-[url("/images/barchart.png")] bg-[length:auto_100%] bg-repeat-x' />
+                }
+                className='min-h-[197px]! px-0!'
                 classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
               >
                 <AnalyticsChart
@@ -223,8 +228,10 @@ export default function AnalyticsPage() {
                 title={<span className='text-neutral-50'>{t('Fees')}</span>}
                 subtitle={<span className='block h-4'>${formatAmount(feesSubTitle)}</span>}
                 // eslint-disable-next-line @next/next/no-img-element
-                previewContent={<img className='h-auto w-full' src='/images/barchart-stack.svg' alt='tvl' />}
-                className='px-0!'
+                previewContent={
+                  <div className='h-[143px] w-full bg-[url("/images/barchart-stack.png")] bg-[length:auto_100%] bg-repeat-x' />
+                }
+                className='min-h-[197px]! px-0!'
                 classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
               >
                 <AnalyticsChart
@@ -232,7 +239,7 @@ export default function AnalyticsPage() {
                   epochData={groupEpochData}
                   defaultDateHover='Total Revenue'
                   rawData={rawData}
-                  title='Fee'
+                  title='Fees'
                   protocolData={totalStats}
                   protocolProperty='feesUSD'
                   chartId='Fee Distribution'
@@ -270,7 +277,7 @@ export default function AnalyticsPage() {
                     epochData={groupEpochData}
                     defaultDateHover='Total Revenue'
                     rawData={rawData}
-                    title='Fee'
+                    title='Fees'
                     protocolData={totalStats}
                     protocolProperty='feesUSD'
                     chartId='Fee Distribution'
@@ -353,7 +360,7 @@ export default function AnalyticsPage() {
                   <AnalyticsChart
                     rawData={rawData}
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                    title='Fee'
+                    title='Fees'
                     protocolData={totalStats}
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
@@ -380,6 +387,7 @@ export default function AnalyticsPage() {
                     showPerEpoch={false}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
+                    valueDefault={dataRevenue?.revenueData}
                   />
                 ) : (
                   <AnalyticsChart
@@ -411,7 +419,7 @@ export default function AnalyticsPage() {
                   <AnalyticsChart
                     rawData={rawData}
                     classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
-                    title='Fee'
+                    title='Fees'
                     protocolData={totalStats}
                     protocolProperty='revenueData'
                     chartId='Fee Distribution'
@@ -437,6 +445,7 @@ export default function AnalyticsPage() {
                     ]}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
+                    valueDefault={dataRevenue?.revenueData}
                   />
                 ) : (
                   <AnalyticsChart

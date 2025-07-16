@@ -306,7 +306,12 @@ function Table({
                           <tr
                             key={`table-row-${eleIdx}`}
                             id={`table-row-${eleIdx}`}
-                            className={ele.id === hightLightById ? bgHightLight : ''}
+                            className={cn(
+                              ele.id === hightLightById ? bgHightLight : '',
+                              'rounded-lg hover:bg-neutral-800',
+                              ele.onRowClick && 'cursor-pointer',
+                            )}
+                            onClick={() => ele.onRowClick && ele.onRowClick()}
                           >
                             {sortOptions.map((cell, cellIdx) => (
                               <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -329,11 +334,14 @@ function Table({
                         <tr
                           key={`table-row-${eleIdx}`}
                           id={`table-row-${eleIdx}`}
-                          className={
+                          className={cn(
                             eleIdx === hightLightIndex
                               ? 'table__animate-gradient bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
-                              : ''
-                          }
+                              : '',
+                            'rounded-lg hover:bg-neutral-800',
+                            ele.onRowClick && 'cursor-pointer',
+                          )}
+                          onClick={() => ele.onRowClick && ele.onRowClick()}
                         >
                           {sortOptions.map((cell, cellIdx) => (
                             <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -355,7 +363,12 @@ function Table({
                     },
                   )}
                   {summary && (
-                    <tr key='table-row-summary' id='table-row-summary'>
+                    <tr
+                      key='table-row-summary'
+                      id='table-row-summary'
+                      className={cn('rounded-lg hover:bg-neutral-800', summary.onRowClick && 'cursor-pointer')}
+                      onClick={() => summary.onRowClick && summary.onRowClick()}
+                    >
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
                           <TableCell

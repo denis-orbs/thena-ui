@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
 import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from 'recharts'
 
+import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { ChartContainer } from '../ui/chart'
@@ -69,7 +70,12 @@ function AnalyticsReChart({
             axisLine={false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
           />
-          <YAxis orientation='right' axisLine={false} tickLine={false} />
+          <YAxis
+            orientation='right'
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={value => `$${formatAmount(value, true)}`}
+          />
           <defs>
             <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />
@@ -108,7 +114,12 @@ function AnalyticsReChart({
           axisLine={false}
           tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
         />
-        <YAxis orientation='right' axisLine={false} tickLine={false} />
+        <YAxis
+          orientation='right'
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={value => `$${formatAmount(value, true)}`}
+        />
         <defs>
           <linearGradient id='fillGradient' x1='0' y1='0' x2='0' y2='1'>
             <stop offset='5%' stopColor='#F199EE' stopOpacity={1} />

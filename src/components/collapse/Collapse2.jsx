@@ -23,50 +23,31 @@ function Collapsible({
 
   const toggleCollapse = () => {
     const content = contentRef.current
-    const preview = previewRef.current
     if (!content) return
 
     setIsAnimating(true)
 
     if (isOpen) {
-      // Closing: animate content to 0, then show preview
+      // Closing: animate content to 0 and show preview simultaneously
       content.style.height = `${content.scrollHeight}px`
       requestAnimationFrame(() => {
         content.style.height = '0px'
       })
 
-      // Show preview with delay to match content animation
+      // Show preview immediately for smooth transition
       if (previewContent) {
+        // Small delay to let content start closing first
         setTimeout(() => {
           setShowPreview(true)
-          // Animate preview in
-          if (preview) {
-            preview.style.opacity = '0'
-            preview.style.transform = 'translateY(-10px)'
-            requestAnimationFrame(() => {
-              preview.style.opacity = '1'
-              preview.style.transform = 'translateY(0)'
-            })
-          }
-        }, 200)
+        }, 100)
       }
-    } else if (previewContent && preview) {
-      // Animate preview out
-      preview.style.opacity = '0'
-      preview.style.transform = 'translateY(-10px)'
-
-      setTimeout(() => {
-        setShowPreview(false)
-        // Start content animation
-        setTimeout(() => {
-          content.style.height = '0px'
-          requestAnimationFrame(() => {
-            content.style.height = `${content.scrollHeight}px`
-          })
-        }, 50)
-      }, 150)
     } else {
-      // No preview, animate content directly
+      // Opening: hide preview and show content simultaneously
+      if (previewContent) {
+        setShowPreview(false)
+      }
+
+      // Start content animation
       content.style.height = '0px'
       requestAnimationFrame(() => {
         content.style.height = `${content.scrollHeight}px`
@@ -106,27 +87,29 @@ function Collapsible({
       {...props}
     >
       {/* Preview content when collapsed */}
-      <div
-        ref={previewRef}
-        className={cn(
-          'transform transition-all duration-300 ease-out',
-          showPreview && !isOpen && previewContent ? 'block' : 'hidden',
-        )}
-        style={{
-          opacity: showPreview && !isOpen && previewContent ? 1 : 0,
-          transform: showPreview && !isOpen && previewContent ? 'translateY(0)' : 'translateY(-10px)',
-          transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
-        }}
-      >
-        <div className='relative'>
-          <div className={cn('px-4 pt-4 pb-1', classNames?.preview)}>{previewContent}</div>
+      {previewContent && (
+        <div
+          ref={previewRef}
+          className='transform overflow-hidden'
+          style={{
+            opacity: showPreview && !isOpen ? 1 : 0,
+            transform: showPreview && !isOpen ? 'translateY(0)' : 'translateY(-20px)',
+            maxHeight: showPreview && !isOpen ? '200px' : '0px',
+            transition:
+              'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            pointerEvents: showPreview && !isOpen ? 'auto' : 'none',
+          }}
+        >
+          <div className='relative'>
+            <div className={cn('px-4 pt-4 pb-1', classNames?.preview)}>{previewContent}</div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Header - with smooth position transition */}
       <div
         className={cn(
-          'relative z-10 flex w-full cursor-pointer items-center justify-between p-4 transition-all duration-300 ease-out',
+          'relative z-10 flex w-full cursor-pointer items-center justify-between p-4 transition-all duration-400 ease-out',
           showPreview && !isOpen && previewContent ? '-mt-6' : 'mt-0',
           isOpen && 'bg-gradient-to-b from-white/0 to-black/50',
           isAnimating && 'pointer-events-none', // Prevent clicks during animation
@@ -173,16 +156,17 @@ function Collapsible({
         ref={contentRef}
         style={{
           height: defaultOpen ? 'auto' : '0px',
-          transition: 'height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smoother easing
+          transition: 'height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smoother and slightly longer easing
           overflow: 'hidden',
         }}
       >
         <div
           className={cn(classNames?.content)}
           style={{
-            transform: isOpen ? 'translateY(0)' : 'translateY(-10px)',
-            opacity: isOpen ? 1 : 0.8,
-            transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease-out',
+            transform: isOpen ? 'translateY(0)' : 'translateY(-15px)', // Slightly more movement
+            opacity: isOpen ? 1 : 0,
+            transition: 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out',
+            transitionDelay: isOpen ? '0.1s' : '0s', // Slight delay when opening for smoother effect
           }}
         >
           {children}
