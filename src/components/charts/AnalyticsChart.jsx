@@ -356,7 +356,7 @@ function AnalyticsChart({
           </div>
         )}
       </div>
-      <div className={cn('mt-6 h-[250px]', !properties && 'h-[292px]')}>
+      <div className='mt-6 h-[250px]'>
         <AnalyticsReChart
           data={formattedData}
           setHoverValue={setHover}

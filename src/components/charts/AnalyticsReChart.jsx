@@ -153,7 +153,7 @@ function AnalyticsReChart({
           <XAxis
             dataKey={xAsisKey}
             tickLine={false}
-            tickMargin={10}
+            tickMargin={8}
             axisLine={xAxisLine ? { stroke: '#F299EE', strokeWidth: 2 } : false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
             // interval={xInterval}
