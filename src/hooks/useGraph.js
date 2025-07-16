@@ -9,6 +9,7 @@ import {
   V1_MULTI_CHAIN_START_TIME,
   WEIGHTED_MULTI_CHAIN_START_TIME,
 } from '@/constant'
+import { getAnalyticsData } from '@/lib/api'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -200,6 +201,153 @@ const fetchGlobalChartData = async chainId => {
 export const useGlobalChartData = () => {
   const { networkId } = useChainSettings()
   const { data: chartData } = useSWR(['analytics/global', networkId], () => fetchGlobalChartData(networkId), {
+    refreshInterval: 0,
+  })
+  return chartData ?? undefined
+}
+
+const V1_FEE_DATAS = gql`
+  query feeOverviewCharts($startTime: Int!, $skip: Int!) {
+    pairDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
+      date
+      dailyVolumeUSD
+      pairAddress
+    }
+  }
+`
+
+const v2_FEE_DATAS = gql`
+  query feeOverviewCharts($startTime: Int!, $skip: Int!) {
+    fusionDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
+      feesUSD
+      date
+      id
+    }
+  }
+`
+
+const v3_FEE_DATAS = gql`
+  query feeOverviewCharts($startTime: Int!, $skip: Int!) {
+    poolDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
+      date
+      feesUSD
+      id
+      pool {
+        deployer
+      }
+    }
+  }
+`
+
+// eslint-disable-next-line unused-imports/no-unused-vars
+const getV1FeeData = async (chainId, skip) => {
+  try {
+    const { pairDayDatas } = await v1Client[chainId].request(V1_FEE_DATAS, {
+      startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+      skip,
+    })
+    const data = pairDayDatas.map(ele => ({
+      date: ele.date,
+      volumeUSD: parseFloat(ele.dailyVolumeUSD),
+      pairAddress: ele.pairAddress,
+    }))
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch overview chart data', error)
+    return { error: true }
+  }
+}
+
+const getV2FeeData = async (chainId, skip) => {
+  try {
+    const { fusionDayDatas } = await fusionClient[2][chainId].request(v2_FEE_DATAS, {
+      startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
+      skip,
+    })
+    const data = fusionDayDatas.map(ele => ({
+      date: ele.date,
+      feesUSD: parseFloat(ele.feesUSD),
+      id: ele.id,
+    }))
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch overview chart data', error)
+    return { error: true }
+  }
+}
+const getV3FeeData = async (chainId, skip) => {
+  try {
+    const { poolDayDatas } = await fusionClient[3][chainId].request(v3_FEE_DATAS, {
+      startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
+      skip,
+    })
+    const data = poolDayDatas.map(ele => ({
+      date: ele.date,
+      feesUSD: parseFloat(ele.feesUSD),
+      id: ele.id,
+    }))
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch overview chart data', error)
+    return { error: true }
+  }
+}
+
+export const fetchFeeChartData = async chainId => {
+  const [
+    // { data: v1data },
+    { data: fusiondata2 },
+    { data: fusiondata3 },
+  ] = await Promise.all([
+    // fetchChartData(getV1FeeData, [chainId], false),
+    fetchChartData(getV2FeeData, [chainId], true),
+    fetchChartData(getV3FeeData, [chainId], true),
+  ])
+  console.log({
+    fusiondata2,
+    fusiondata3,
+  })
+}
+
+export const useFeeChartData = () => {
+  const { networkId } = useChainSettings()
+  const { data: chartData } = useSWR(['analytics/fee', networkId], () => fetchFeeChartData(networkId), {
+    refreshInterval: 0,
+  })
+  return chartData ?? undefined
+}
+
+const fetchAnalyticsChartData = async networkId => {
+  const result = []
+  const PAGE_SIZE = 1000
+  let page = 1
+  let hasMore = true
+
+  while (hasMore) {
+    try {
+      const data = await getAnalyticsData({
+        networkId,
+        first: PAGE_SIZE,
+        page,
+      })
+
+      result.push(...data)
+      if (data.length < PAGE_SIZE) {
+        hasMore = false
+      } else {
+        page += 1
+      }
+    } catch (e) {
+      console.error('Error fetching userRewards:', e)
+      hasMore = false
+    }
+  }
+  return result
+}
+
+export const useAnalyticsChartData = () => {
+  const { networkId } = useChainSettings()
+  const { data: chartData } = useSWR(['analytics/all', networkId], () => fetchAnalyticsChartData(networkId), {
     refreshInterval: 0,
   })
   return chartData ?? undefined

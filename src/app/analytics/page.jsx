@@ -1,5 +1,6 @@
 'use client'
 
+import { groupBy } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
@@ -10,14 +11,15 @@ import PercentBadge from '@/components/badges/PercentBadge'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import BarChart from '@/components/charts/BarChart'
-import HoverableChart from '@/components/charts/HoverableChart'
+import EpochStackableChart from '@/components/charts/EpochStackableChart'
 import LineChart from '@/components/charts/LineChart'
+import StackableBarChart from '@/components/charts/StackableBarChart'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
 import { useTokens } from '@/context/tokensContext'
-import { useGlobalChartData } from '@/hooks/useGraph'
+import { useAnalyticsChartData } from '@/hooks/useGraph'
 import { fetchStats } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -27,6 +29,11 @@ import TokensTable from './tokens/TokensTable'
 
 export default function AnalyticsPage() {
   const { networkId } = useChainSettings()
+
+  const { pairs } = usePairs()
+  const { push } = useRouter()
+  const { tokens } = useTokens()
+  const t = useTranslations()
   const { data: stats } = useSWR(
     'stats api',
     { fetcher: fetchStats },
@@ -34,11 +41,37 @@ export default function AnalyticsPage() {
       refreshInterval: 60000,
     },
   )
-  const chartData = useGlobalChartData()
-  const { pairs } = usePairs()
-  const { push } = useRouter()
-  const { tokens } = useTokens()
-  const t = useTranslations()
+  const rawData = useAnalyticsChartData()
+  const groupEpochData = useMemo(() => {
+    const groupData = groupBy(rawData ?? [], 'epoch')
+    const result = {}
+
+    for (let i = 0; i < Object.keys(groupData).length; i++) {
+      const items = groupData[Object.keys(groupData)[i]]
+      result[Object.keys(groupData)[i]] = items.reduce(
+        (prevVal, curr) => ({
+          ...prevVal,
+          customPoolFeesUSD: prevVal.customPoolFeesUSD + curr.customPoolFeesUSD,
+          feesUSD: prevVal.feesUSD + curr.feesUSD + prevVal.customPoolFeesUSD + curr.customPoolFeesUSD,
+          totalFeesUSD: prevVal.feesUSD + curr.feesUSD,
+          tvlUSD: prevVal.tvlUSD + curr.tvlUSD,
+          volumeUSD: prevVal.volumeUSD + curr.volumeUSD,
+          date: !prevVal.date ? curr.date : Math.min(curr.date, prevVal.date),
+        }),
+        {
+          chainId: networkId,
+          epoch: Number(Object.keys(groupData)[i]),
+          customPoolFeesUSD: 0,
+          feesUSD: 0,
+          totalFeesUSD: 0,
+          tvlUSD: 0,
+          volumeUSD: 0,
+          date: 0,
+        },
+      )
+    }
+    return Object.values(result)
+  }, [rawData, networkId])
 
   const totalStats = useMemo(() => {
     if (!stats) return undefined
@@ -57,18 +90,36 @@ export default function AnalyticsPage() {
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <h2>{t('Analytics')}</h2>
+          <div className='grid grid-cols-1 gap-6'>
+            <EpochStackableChart
+              groupEpochData={groupEpochData}
+              rawData={rawData}
+              title='Fee Distribution'
+              valueProperty={['feesUSD', 'customPoolFeesUSD']}
+              ChartComponent={StackableBarChart}
+              chartId='Fee Distribution'
+              propertyLabel={{
+                feesUSD: t('veTHE owners'),
+                customPoolFeesUSD: t("Manual LP'ers"),
+              }}
+            />
+          </div>
           <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-            <HoverableChart
-              chartData={chartData}
+            <EpochStackableChart
+              groupEpochData={groupEpochData}
+              rawData={rawData}
               protocolData={totalStats}
               valueProperty='tvlUSD'
               title='TVL'
+              chartId='tvlUSD'
               ChartComponent={LineChart}
             />
-            <HoverableChart
-              chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+            <EpochStackableChart
+              groupEpochData={groupEpochData}
+              rawData={rawData}
               protocolData={totalStats}
               valueProperty='volumeUSD'
+              chartId='volumeUSD'
               title='Volume (24h)'
               ChartComponent={BarChart}
             />

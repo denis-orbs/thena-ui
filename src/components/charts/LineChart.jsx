@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
+import { useTranslations } from 'next-intl'
 import { darken } from 'polished'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -8,10 +9,13 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 
 import Skeleton from '../skeleton'
 
-function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
+const epoch5 = 1675900800
+
+function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch = false }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
   const { locale } = useLocaleSettings()
+  const t = useTranslations()
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -25,6 +29,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
 
   useEffect(() => {
     if (!chartRef?.current || !transformedData || transformedData.length === 0) return
+    const epochNumber = epochStartTimestamp => Math.floor((+epochStartTimestamp - epoch5) / 604800) + 5
 
     const chart = createChart(chartRef?.current, {
       layout: {
@@ -45,7 +50,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
         visible: true,
         borderVisible: false,
         secondsVisible: false,
-        tickMarkFormatter: unixTime => dayjs(unixTime).format('MMM D'),
+        tickMarkFormatter: unixTime => (useEpoch ? epochNumber(unixTime / 1000) : dayjs(unixTime).format('MMM D')),
       },
       grid: {
         horzLines: {
@@ -107,18 +112,24 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
       if (newSeries && param) {
         const timestamp = param.time
         if (!timestamp) return
-        const now = new Date(timestamp)
-        const time = `${now.toLocaleString(locale, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZone: 'UTC',
-        })} (UTC)`
-        const parsed = param.seriesData.get(newSeries)?.value ?? 0
-        if (setHoverValue) setHoverValue(parsed)
-        if (setHoverDate) setHoverDate(time)
+        if (useEpoch) {
+          const parsed = param.seriesData.get(newSeries)?.value ?? 0
+          if (setHoverValue) setHoverValue(parsed)
+          if (setHoverDate) setHoverDate(`${t('Epoch')} ${epochNumber(timestamp / 1000)}`)
+        } else {
+          const now = new Date(timestamp)
+          const time = `${now.toLocaleString(locale, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'UTC',
+          })} (UTC)`
+          const parsed = param.seriesData.get(newSeries)?.value ?? 0
+          if (setHoverValue) setHoverValue(parsed)
+          if (setHoverDate) setHoverDate(time)
+        }
       } else {
         if (setHoverValue) setHoverValue(undefined)
         if (setHoverDate) setHoverDate(undefined)
@@ -128,7 +139,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, locale, numberFormat])
+  }, [transformedData, setHoverValue, setHoverDate, locale, numberFormat, t, useEpoch])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

@@ -159,3 +159,8 @@ export const fetchAutomationHistory = (chainId, tokenId) =>
   fetch(`${backendApi}/v3/vethes/automation/${chainId}/${tokenId}`)
     .then(r => r.json())
     .then(r => r.data)
+
+export const getAnalyticsData = async ({ networkId, first, page }) =>
+  fetch(`${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`)
+    .then(r => r.json())
+    .then(r => r.data)
