@@ -7,11 +7,8 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import PercentBadge from '@/components/badges/PercentBadge'
-import BarChart from '@/components/charts/BarChart'
-import EpochStackableChart from '@/components/charts/EpochStackableChart'
-import HoverableChart from '@/components/charts/HoverableChart'
-import LineChart from '@/components/charts/LineChart'
-import StackableBarChart from '@/components/charts/StackableBarChart'
+import AnalyticsChart from '@/components/charts/AnalyticsChart'
+import SingleBarReChart from '@/components/charts/SingleBarReChart'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -69,7 +66,10 @@ export default function AnalyticsPage() {
         },
       )
     }
-    return Object.values(result)
+    return Object.values(result).map(item => ({
+      ...item,
+      customPoolFeesUSD: item.customPoolFeesUSD * 100,
+    }))
   }, [rawData, networkId])
 
   const totalStats = useMemo(() => {
@@ -147,108 +147,193 @@ export default function AnalyticsPage() {
           </div>
           <div className='grid grid-cols-1 gap-6'>
             {isExpanded === 'feeDistribution' && (
-              <EpochStackableChart
-                groupEpochData={groupEpochData}
+              <AnalyticsChart
+                epochData={groupEpochData}
+                defaultDateHover='Total Revenue'
                 rawData={rawData}
                 title='Fee'
                 protocolData={totalStats}
-                valueProperty={['feesUSD', 'customPoolFeesUSD']}
-                protocolProperty='feesUSD'
-                ChartComponent={StackableBarChart}
+                protocolProperty='revenueData'
                 chartId='Fee Distribution'
-                propertyLabel={{
-                  feesUSD: t('veTHE owners'),
-                  customPoolFeesUSD: t("Manual LP'ers"),
+                chartConfig={{
+                  feesUSD: {
+                    label: t('veTHE owners'),
+                  },
+                  customPoolFeesUSD: {
+                    label: t("Manual LP'ers"),
+                  },
                 }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'feesUSD',
+                    fill: '#BD60BA',
+                  },
+                  {
+                    dataKey: 'customPoolFeesUSD',
+                    fill: '#F199EE',
+                  },
+                ]}
                 isExpanded
               />
             )}
             {isExpanded === 'tvl' && (
-              <HoverableChart
+              <AnalyticsChart
                 className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                chartData={rawData}
-                protocolData={totalStats}
-                valueProperty='tvlUSD'
+                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                rawData={rawData}
                 title='TVL'
-                ChartComponent={LineChart}
+                protocolData={totalStats}
+                protocolProperty='tvlUSD'
+                chartId='tvlUSD'
+                chartConfig={{
+                  tvlUSD: {
+                    label: t('Total Volume'),
+                  },
+                }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'tvlUSD',
+                    fill: 'url(#fillGradient)',
+                    stroke: '#F299EE',
+                  },
+                ]}
+                chartType='area'
                 isExpanded
               />
             )}
             {isExpanded === 'volume' && (
-              <HoverableChart
+              <AnalyticsChart
                 className='bg-chart-gradient rounded-xl border border-[#422D4C]'
-                chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
-                protocolData={totalStats}
-                valueProperty='volumeUSD'
+                rawData={rawData}
                 title='Volume (24h)'
-                ChartComponent={BarChart}
+                protocolData={totalStats}
+                protocolProperty='volumeUSD'
+                chartId='Volume (24h)'
+                chartConfig={{
+                  volumeUSD: {
+                    label: t('Volume (24h)'),
+                  },
+                }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'volumeUSD',
+                    fill: 'url(#fillGradient)',
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    shape: props => <SingleBarReChart {...props} borderColor='#F299EE' />,
+                  },
+                ]}
                 isExpanded
               />
             )}
           </div>
           <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 rounded-xl bg-none lg:grid-cols-2'>
             {isExpanded === 'tvl' ? (
-              <EpochStackableChart
-                groupEpochData={groupEpochData}
+              <AnalyticsChart
                 rawData={rawData}
-                title='Fee Distribution'
+                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                title='Fee'
                 protocolData={totalStats}
-                valueProperty={['feesUSD', 'customPoolFeesUSD']}
-                protocolProperty='feesUSD'
-                ChartComponent={StackableBarChart}
+                protocolProperty='revenueData'
                 chartId='Fee Distribution'
-                propertyLabel={{
-                  feesUSD: t('veTHE owners'),
-                  customPoolFeesUSD: t("Manual LP'ers"),
+                chartConfig={{
+                  feesUSD: {
+                    label: t('veTHE owners'),
+                  },
+                  customPoolFeesUSD: {
+                    label: t("Manual LP'ers"),
+                  },
                 }}
-                classNames={{ title: 'text-xl! leading-6! text-neutral-500' }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'feesUSD',
+                    fill: '#BD60BA',
+                  },
+                  {
+                    dataKey: 'customPoolFeesUSD',
+                    fill: '#F199EE',
+                  },
+                ]}
                 showPerEpoch={false}
                 isExpanded={false}
                 onExpand={() => setIsExpanded('feeDistribution')}
               />
             ) : (
-              <HoverableChart
+              <AnalyticsChart
                 className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                chartData={rawData}
-                protocolData={totalStats}
-                valueProperty='tvlUSD'
+                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                rawData={rawData}
                 title='TVL'
-                ChartComponent={LineChart}
-                onExpand={() => setIsExpanded('tvl')}
+                protocolData={totalStats}
+                protocolProperty='tvlUSD'
+                chartId='tvlUSD'
+                chartConfig={{
+                  tvlUSD: {
+                    label: t('Total Volume'),
+                  },
+                }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'tvlUSD',
+                    fill: 'url(#fillGradient)',
+                    stroke: '#F299EE',
+                  },
+                ]}
+                chartType='area'
                 isExpanded={false}
-                classNames={{ title: 'font-semibold font-archia' }}
+                onExpand={() => setIsExpanded('tvl')}
               />
             )}
             {isExpanded === 'volume' ? (
-              <EpochStackableChart
-                groupEpochData={groupEpochData}
+              <AnalyticsChart
                 rawData={rawData}
-                title='Fee Distribution'
+                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                title='Fee'
                 protocolData={totalStats}
-                valueProperty={['feesUSD', 'customPoolFeesUSD']}
-                protocolProperty='feesUSD'
-                ChartComponent={StackableBarChart}
+                protocolProperty='revenueData'
                 chartId='Fee Distribution'
-                propertyLabel={{
-                  feesUSD: t('veTHE owners'),
-                  customPoolFeesUSD: t("Manual LP'ers"),
+                chartConfig={{
+                  feesUSD: {
+                    label: t('veTHE owners'),
+                  },
+                  customPoolFeesUSD: {
+                    label: t("Manual LP'ers"),
+                  },
                 }}
-                classNames={{ title: 'lg:text-xl! leading-6! text-neutral-500' }}
-                showPerEpoch={false}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'feesUSD',
+                    fill: '#BD60BA',
+                  },
+                  {
+                    dataKey: 'customPoolFeesUSD',
+                    fill: '#F199EE',
+                  },
+                ]}
                 isExpanded={false}
                 onExpand={() => setIsExpanded('feeDistribution')}
               />
             ) : (
-              <HoverableChart
+              <AnalyticsChart
                 className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
-                chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
-                protocolData={totalStats}
-                valueProperty='volumeUSD'
+                classNames={{ title: 'lg:text-xl font-semibold text-neutral-500 font-archia' }}
+                rawData={rawData}
                 title='Volume (24h)'
-                ChartComponent={BarChart}
+                protocolData={totalStats}
+                protocolProperty='volumeUSD'
+                chartId='Volume (24h)'
+                chartConfig={{
+                  volumeUSD: {
+                    label: t('Volume (24h)'),
+                  },
+                }}
+                chartItemConfigs={[
+                  {
+                    dataKey: 'volumeUSD',
+                    fill: 'url(#fillGradient)',
+                  },
+                ]}
                 onExpand={() => setIsExpanded('volume')}
                 isExpanded={false}
-                classNames={{ title: 'font-semibold font-archia' }}
               />
             )}
           </div>

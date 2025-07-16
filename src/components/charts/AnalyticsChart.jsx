@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { isArray } from 'lodash'
+import { pick } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -9,6 +9,7 @@ import { fetchStats } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 import { Expand04Icon } from '@/svgs'
 
+import AnalyticsReChart from './AnalyticsReChart'
 import Box from '../box'
 import { TextIconButton } from '../buttons/IconButton'
 import Divider from '../divider'
@@ -17,21 +18,21 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 /** Base on HoverableChart and can support stacked bar chart and group data by epoch */
 
-function EpochStackableChart({
-  groupEpochData,
+function AnalyticsChart({
+  epochData,
   rawData,
   protocolData,
-  valueProperty,
   protocolProperty,
+  defaultDateHover,
   title,
-  ChartComponent,
   className,
   classNames,
   chartId,
-  propertyLabel,
-  showPerEpoch = true,
   isExpanded,
   onExpand,
+  chartConfig,
+  chartItemConfigs,
+  chartType = 'bar',
 }) {
   const [groupPerEpoch, setGroupPerEpoch] = useState(false)
   const [property, setProperty] = useState('all')
@@ -50,15 +51,17 @@ function EpochStackableChart({
   useEffect(() => {
     if (protocolData) {
       setHover(protocolData[protocolProperty])
-      setDateHover()
+      setDateHover(defaultDateHover)
     }
-  }, [protocolData, protocolProperty])
+  }, [protocolData, protocolProperty, defaultDateHover])
 
   useEffect(() => {
     setHover(protocolData?.[protocolProperty] || undefined)
+    setDateHover(defaultDateHover)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title])
-  const chartData = useMemo(() => (groupPerEpoch ? groupEpochData : rawData), [rawData, groupPerEpoch, groupEpochData])
+
+  const chartData = useMemo(() => (groupPerEpoch ? epochData : rawData), [rawData, groupPerEpoch, epochData])
 
   const formattedData = useMemo(
     () =>
@@ -69,19 +72,11 @@ function EpochStackableChart({
           return ele.date > startTimestamp
         })
         .sort((a, b) => (groupPerEpoch ? a.epoch - b.epoch : a.date - b.date))
-        .map(item =>
-          isArray(valueProperty)
-            ? {
-                ...item,
-                time: dayjs.unix(item.date).toDate(),
-              }
-            : {
-                time: dayjs.unix(item.date).toDate(),
-                epoch: groupPerEpoch ? item.epoch : null,
-                value: item[valueProperty],
-              },
-        ),
-    [chartData, valueProperty, period, groupPerEpoch],
+        .map(item => ({
+          ...item,
+          time: dayjs.unix(item.date).toDate(),
+        })),
+    [chartData, period, groupPerEpoch],
   )
 
   const periods = useMemo(
@@ -119,7 +114,7 @@ function EpochStackableChart({
   )
   const properties = useMemo(
     () =>
-      isArray(valueProperty) && valueProperty.length > 1
+      Object.keys(chartConfig).length > 1
         ? [
             {
               label: 'All',
@@ -128,16 +123,16 @@ function EpochStackableChart({
                 setProperty('all')
               },
             },
-            ...valueProperty.map(item => ({
-              label: propertyLabel[item] ?? '',
-              active: property === item,
+            ...Object.keys(chartConfig).map(key => ({
+              label: chartConfig[key].label ?? '',
+              active: property === key,
               onClickHandler: () => {
-                setProperty(item)
+                setProperty(key)
               },
             })),
           ]
         : null,
-    [property, propertyLabel, valueProperty],
+    [property, chartConfig],
   )
 
   return (
@@ -148,7 +143,7 @@ function EpochStackableChart({
             <Paragraph className={cn('text-base font-semibold text-neutral-50 lg:text-3xl', classNames?.title)}>
               {t(title)}
             </Paragraph>
-            {showPerEpoch && (
+            {!!epochData?.length && (
               <Toggle
                 className='hidden lg:flex'
                 checked={groupPerEpoch}
@@ -177,9 +172,10 @@ function EpochStackableChart({
                     ${formatAmount(dataRevenue?.revenueData)}
                   </TextHeading>
                 )}
+                {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
               </div>
             )}
-            {properties && (
+            {properties ? (
               <Selection
                 className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
                 classNames={{
@@ -187,44 +183,61 @@ function EpochStackableChart({
                 }}
                 data={properties}
               />
+            ) : (
+              <Selection
+                className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
+                classNames={{
+                  items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+                }}
+                data={periods}
+              />
             )}
           </div>
         </div>
-        <Divider />
+        {properties && <Divider />}
         <div className='flex items-start justify-between'>
-          <div className='flex flex-col gap-1'>
+          <div>
             {isExpanded && (
-              <>
-                {Number(hover) > -1 ? ( // sometimes data is 0
-                  <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
-                ) : (
-                  <TextHeading className={cn('text-2xl')}>${formatAmount(dataRevenue?.revenueData)}</TextHeading>
-                )}
-              </>
+              <div className='flex flex-col gap-1'>
+                <>
+                  {Number(hover) > -1 ? ( // sometimes data is 0
+                    <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
+                  ) : (
+                    <TextHeading className={cn('text-2xl')}>${formatAmount(dataRevenue?.revenueData)}</TextHeading>
+                  )}
+                </>
+                {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
+              </div>
             )}
-            {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
           </div>
 
-          <Selection
-            className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
-            classNames={{
-              items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
-            }}
-            data={periods}
-          />
+          {properties && (
+            <Selection
+              className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
+              classNames={{
+                items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
+              }}
+              data={periods}
+            />
+          )}
         </div>
       </div>
       <div className='mt-2 h-[250px]'>
-        <ChartComponent
+        <AnalyticsReChart
           data={formattedData}
           setHoverValue={setHover}
           setHoverDate={setDateHover}
+          xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
+          chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
+          chartItemConfigs={
+            property === 'all' ? chartItemConfigs : chartItemConfigs.filter(item => item.dataKey === property)
+          }
           useEpoch={groupPerEpoch}
-          valueProperty={property === 'all' ? valueProperty : [property]}
+          chartType={chartType}
         />
       </div>
     </Box>
   )
 }
 
-export default memo(EpochStackableChart)
+export default memo(AnalyticsChart)
