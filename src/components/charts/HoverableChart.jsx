@@ -3,10 +3,8 @@ import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
 import { cn, formatAmount } from '@/lib/utils'
-import { Expand04Icon } from '@/svgs'
 
 import Box from '../box'
-import { TextIconButton } from '../buttons/IconButton'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
@@ -15,12 +13,10 @@ function HoverableChart({
   chartData,
   protocolData,
   valueProperty,
-  onExpand,
-  isExpanded,
   title,
   ChartComponent,
   className,
-  classNames,
+  isSimple = false,
 }) {
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
@@ -95,36 +91,34 @@ function HoverableChart({
     [period],
   )
 
-  return (
-    <Box className={cn('flex h-full flex-col', className)}>
-      <div className='flex-grow'>
-        <div className='flex flex-col justify-between gap-2'>
-          <div className='flex items-start justify-between'>
-            <Paragraph className={cn('text-xl font-semibold text-neutral-500', classNames?.title)}>
-              {t(title)}
-            </Paragraph>
-            {!isExpanded ? (
-              <TextIconButton
-                Icon={Expand04Icon}
-                className='h-6! w-6! stroke-neutral-400'
-                onClick={() => {
-                  onExpand()
-                }}
-              />
-            ) : (
-              <Tabs data={periods} />
-            )}
-          </div>
-          <div className='flex items-center justify-between gap-1'>
-            {Number(hover) > -1 ? (
-              <TextHeading className='text-xl font-semibold text-neutral-50'>${formatAmount(hover)}</TextHeading>
-            ) : (
-              <Skeleton className='h-[30px] w-[128px]' />
-            )}
-            {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
-            {!isExpanded && <Tabs data={periods} />}
-          </div>
+  return isSimple ? (
+    <div className='h-[150px]'>
+      <ChartComponent data={formattedData} setHoverValue={setHover} setHoverDate={setDateHover} isSimple />
+    </div>
+  ) : (
+    <Box className={cn(className)}>
+      <div className='flex flex-col items-start justify-between max-lg:gap-2 lg:flex-row'>
+        <div className='flex flex-col gap-1'>
+          <Paragraph className='max-lg:hidden'>{t(title)}</Paragraph>
+          {Number(hover) > -1 ? ( // sometimes data is 0
+            <TextHeading className='font-archia text-xl leading-6 font-semibold lg:text-2xl'>
+              ${formatAmount(hover)}
+            </TextHeading>
+          ) : (
+            <Skeleton className='h-6 w-[128px] lg:h-8' />
+          )}
+          {dateHover ? (
+            <TextSubHeading className='max-lg:hidden'>{dateHover}</TextSubHeading>
+          ) : (
+            <div className='h-5 max-lg:hidden' />
+          )}
         </div>
+
+        <Tabs
+          data={periods}
+          className='max-lg:w-full max-lg:p-1'
+          itemClassName='w-full h-6 lg:h-8 items-center max-lg:py-1!'
+        />
       </div>
 
       <div className='mt-2 h-[250px]'>

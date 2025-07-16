@@ -21,7 +21,7 @@ function Axis({ axisGenerator }) {
   return <g className='axis-right-ref' ref={axisRef} />
 }
 
-export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height }) {
+export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height, maskColor }) {
   const tickFormat = useCallback(d => {
     const str = d.toString()
     let decimal = 1
@@ -151,8 +151,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
             </text>
           </g>
         )}
-        <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
-        <rect x='0' y={height} width='100%' height={padding * 2} fill='#0D090F' />
+        <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
+        <rect x='0' y={height} width='100%' height={padding * 2} fill={maskColor} />
       </g>
     </>
   )

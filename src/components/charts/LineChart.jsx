@@ -11,7 +11,7 @@ import Skeleton from '../skeleton'
 
 const epoch5 = 1675900800
 
-function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch = false }) {
+function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch = false, isSimple = false }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
   const { locale } = useLocaleSettings()
@@ -40,14 +40,15 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch =
       handleScale: false,
       handleScroll: false,
       rightPriceScale: {
+        visible: !isSimple,
         scaleMargins: {
-          top: 0.1,
-          bottom: 0.1,
+          top: isSimple ? 0 : 0.1,
+          bottom: isSimple ? 0 : 0.1,
         },
         borderVisible: false,
       },
       timeScale: {
-        visible: true,
+        visible: !isSimple,
         borderVisible: false,
         secondsVisible: false,
         tickMarkFormatter: unixTime => (useEpoch ? epochNumber(unixTime / 1000) : dayjs(unixTime).format('MMM D')),
@@ -67,7 +68,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch =
         },
         mode: 1,
         vertLine: {
-          visible: true,
+          visible: !isSimple,
           labelVisible: false,
           style: 3,
           width: 1,
@@ -92,6 +93,8 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch =
         precision: 4,
         minMove: numberFormat ? 1 : 0.0001,
       },
+      lastValueVisible: !isSimple,
+      priceLineVisible: !isSimple,
       autoscaleInfoProvider: original => {
         const res = original()
         const allZero = transformedData.every(val => val.value === 0)
@@ -139,7 +142,7 @@ function LineChart({ data, setHoverValue, setHoverDate, numberFormat, useEpoch =
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, locale, numberFormat, t, useEpoch])
+  }, [transformedData, setHoverValue, setHoverDate, locale, numberFormat, t, useEpoch, isSimple])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

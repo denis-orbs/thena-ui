@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
-import { HorizontalArea } from './HorizontalArea'
 import { HorizontalLine } from './HorizontalLine'
+import { LiquidityBars } from './LiquidityBars'
 
 const xAccessor = d => d.activeLiquidity
 const yAccessor = d => d.price0
@@ -25,6 +25,7 @@ export default function ActivePriceRangeChart({
   currentHover,
   container,
   setCurrentHover = () => {},
+  maskColor,
 }) {
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
@@ -79,7 +80,7 @@ export default function ActivePriceRangeChart({
 
         <g>
           <g clipPath={`url(#${id}-chart-clip)`}>
-            <HorizontalArea
+            {/* <HorizontalArea
               series={series}
               xScale={xScale}
               yScale={yScale}
@@ -90,6 +91,14 @@ export default function ActivePriceRangeChart({
               selectedFill='url(#gradient-brush-area)'
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
+            /> */}
+            <LiquidityBars
+              series={series}
+              xScale={xScale}
+              yScale={yScale}
+              xValue={xAccessor}
+              yValue={yAccessor}
+              maxBarWidth={117}
             />
             {!disableBrush && (
               <HorizontalLine
@@ -111,6 +120,7 @@ export default function ActivePriceRangeChart({
             currentHover={currentHover}
             padding={padding}
             height={height}
+            maskColor={maskColor}
           />
           {handleShow && (
             <Brush2
@@ -133,6 +143,7 @@ export default function ActivePriceRangeChart({
               setLiveLocalBrushExtent={setLiveLocalBrushExtent}
               padding={padding}
               container={container}
+              maskColor={maskColor}
             />
           )}
         </g>

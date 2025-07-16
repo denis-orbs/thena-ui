@@ -8,11 +8,13 @@ import Loading from '@/app/loading'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
+import Divider from '@/components/divider'
 import Selection from '@/components/selection'
 import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
+import { cn } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import LiquidityCharts from './LiquidityCharts'
@@ -24,7 +26,7 @@ const ChartType = {
   // Liquidity: 'Liquidity',
 }
 
-export function PoolChart({ address }) {
+export function PoolChart({ address, showTitle = true, isSimple = false }) {
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
   const t = useTranslations()
@@ -74,7 +76,8 @@ export function PoolChart({ address }) {
             valueProperty='tvlUSD'
             title='TVL'
             ChartComponent={LineChart}
-            className='p-0!'
+            className='p-0! max-lg:bg-transparent'
+            isSimple={isSimple}
           />
         )
       }
@@ -86,7 +89,8 @@ export function PoolChart({ address }) {
             valueProperty='dayVolume'
             title='Volume (24h)'
             ChartComponent={BarChart}
-            className='p-0!'
+            className='p-0! max-lg:bg-transparent'
+            isSimple={isSimple}
           />
         )
       }
@@ -98,7 +102,8 @@ export function PoolChart({ address }) {
             valueProperty='dayFees'
             title='Fees (24h)'
             ChartComponent={BarChart}
-            className='p-0!'
+            className='p-0! max-lg:bg-transparent'
+            isSimple={isSimple}
           />
         )
       }
@@ -112,6 +117,7 @@ export function PoolChart({ address }) {
             setStrategy={setStrategy}
             isReverse={isReverse}
             isModal={false}
+            isSimple={isSimple}
           />
         )
       }
@@ -119,24 +125,29 @@ export function PoolChart({ address }) {
         return <></>
       }
     }
-  }, [chartType, chartData, pair, firstAsset, isReverse, secondAsset, strategy])
+  }, [chartType, chartData, pair, isSimple, firstAsset, secondAsset, strategy, isReverse])
 
   if (isLoading || !pair) {
     return <Loading />
   }
 
   return (
-    <div className='flex w-full flex-col gap-4'>
-      <div className='w-full items-center justify-between lg:flex'>
-        <NewTextSubHeading>{t('Analytics')}</NewTextSubHeading>
-        <Selection
-          isFull
-          data={chartTypeSelection}
-          className='mt-3 w-full lg:mt-0 lg:w-[565px]'
-          isTranslation={false}
-        />
+    <div className='flex w-full flex-col lg:gap-4'>
+      {!isSimple && (
+        <div className='w-full items-center justify-between lg:flex'>
+          {showTitle && <NewTextSubHeading className='max-lg:hidden'>{t('Analytics')}</NewTextSubHeading>}
+          <Selection
+            isFull
+            data={chartTypeSelection}
+            className='mt-0 w-full max-lg:h-8 max-lg:rounded-none max-lg:bg-transparent max-lg:px-4 max-lg:py-1 lg:w-[565px]'
+            isTranslation={false}
+          />
+        </div>
+      )}
+      <Divider className={cn('mx-4 my-3 h-0.5 lg:hidden', isSimple && 'hidden')} />
+      <div className={cn('p-0 lg:rounded-lg', !isSimple && 'px-4 lg:bg-neutral-900 lg:py-6', isSimple && 'scale-105')}>
+        {renderChart}
       </div>
-      <div className='rounded-lg bg-neutral-900 px-4 py-6'>{renderChart}</div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import Collapsible from '@/components/collapse/Collapse2'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
@@ -14,6 +15,8 @@ import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+
+import TransactionMobile from './PairTransactionMobile'
 
 export const TXN_TYPE = {
   All: 'All',
@@ -517,20 +520,34 @@ export default function TransactionTable({ pair }) {
   )
 
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-col gap-4'>
-        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
-        <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
+    <>
+      <div className='hidden flex-col gap-6 lg:flex'>
+        <div className='flex flex-col gap-4'>
+          <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
+          <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
+        </div>
+        <Table
+          sortOptions={sortOptions}
+          data={final}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          notAction
+        />
       </div>
-      <Table
-        sortOptions={sortOptions}
-        data={final}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        notAction
-      />
-    </div>
+      <div className='lg:hidden'>
+        <Collapsible title={t('Transactions')} subtitle={`${t('Swaps')}/${t('Additions')}/ ${t('Removals')}`}>
+          <TransactionMobile
+            filter={filter}
+            sortedData={sortedData}
+            getTransactionType={getTransactionType}
+            formatTime={formatTime}
+            filters={filters}
+            itemsPerPage={10}
+          />
+        </Collapsible>
+      </div>
+    </>
   )
 }

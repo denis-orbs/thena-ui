@@ -10,7 +10,7 @@ import Skeleton from '../skeleton'
 
 const epoch5 = 1675900800
 
-function BarChart({ data, setHoverValue, setHoverDate, useEpoch }) {
+function BarChart({ data, setHoverValue, setHoverDate, isSimple = false, useEpoch }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
   const { locale } = useLocaleSettings()
@@ -40,6 +40,7 @@ function BarChart({ data, setHoverValue, setHoverDate, useEpoch }) {
       handleScale: false,
       handleScroll: false,
       rightPriceScale: {
+        visible: !isSimple,
         scaleMargins: {
           top: 0.01,
           bottom: 0,
@@ -47,7 +48,7 @@ function BarChart({ data, setHoverValue, setHoverDate, useEpoch }) {
         borderVisible: false,
       },
       timeScale: {
-        visible: true,
+        visible: !isSimple,
         borderVisible: false,
         secondsVisible: false,
         tickMarkFormatter: unixTime => (useEpoch ? epochNumber(unixTime / 1000) : dayjs(unixTime).format('MMM D')),
@@ -67,7 +68,7 @@ function BarChart({ data, setHoverValue, setHoverDate, useEpoch }) {
         },
         mode: 1,
         vertLine: {
-          visible: true,
+          visible: !isSimple,
           labelVisible: false,
           style: 3,
           width: 1,
@@ -121,7 +122,7 @@ function BarChart({ data, setHoverValue, setHoverDate, useEpoch }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, locale, t, useEpoch])
+  }, [transformedData, setHoverValue, setHoverDate, locale, t, useEpoch, isSimple])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

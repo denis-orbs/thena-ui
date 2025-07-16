@@ -5,14 +5,15 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import { EmphasisButton } from '@/components/buttons/Button'
+import Collapsible from '@/components/collapse/Collapse2'
 import { defaultSwapFees } from '@/components/common/AddLiquidity/ChooseStrategy'
 import { PresetRanges } from '@/components/common/AddLiquidity/components/PresetRange'
 import AutomaticStrategy from '@/components/common/AddLiquidity/FusionAdd/AutomaticStrategy'
 import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
-import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
@@ -26,9 +27,27 @@ import {
   useV3MintActionHandlers,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { ArrowRightIcon } from '@/svgs'
 
 const feeAmount = 3000
+
+function getAprRange(pools) {
+  const validPools = pools.filter(item => !MANUAL_TYPES.includes(item.title))
+
+  if (validPools.length === 0) {
+    return { max: null, min: null }
+  }
+
+  let max = -Infinity
+  let min = Infinity
+
+  validPools.forEach(sub => {
+    const apr = sub.gauge?.apr ?? 0
+    if (apr > max) max = apr
+    if (apr < min) min = apr
+  })
+
+  return { max, min }
+}
 
 function PairStrategy({ pair }) {
   const t = useTranslations()
@@ -246,81 +265,101 @@ function PairStrategy({ pair }) {
   }, [handleChooseStrategy, sortedSubPools])
 
   return (
-    <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
-      <div className='w-full 2xl:w-[25%]'>
-        <div className={cn('flex items-center justify-between py-4 lg:h-[92px]')}>
-          <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
+    <div className='flex gap-4 max-lg:flex-col'>
+      <div className='w-[30%] rounded-xl bg-neutral-900 p-4 max-lg:hidden'>
+        <div className={cn('mb-4 flex items-center justify-between')}>
+          <TextHeading className='text-primary-100 text-xl font-medium lg:text-2xl'>
             {t('Automatic Strategy')}
-          </NewTextSubHeading>
+          </TextHeading>
 
-          <EmphasisIconButton
-            Icon={ArrowRightIcon}
-            className='size-8 bg-neutral-700 lg:size-11 [&>svg]:size-4 lg:[&>svg]:size-5 [&>svg>path]:stroke-neutral-400'
-            onClick={() => handleAddLiquidity('automatic')}
-          />
+          <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('automatic')}>
+            {t('View')}
+          </EmphasisButton>
         </div>
 
         {strategyAutoData && (
           <AutomaticStrategy
+            className='divide-y-1 divide-neutral-700'
             canSelect={false}
             strategyAutoData={strategyAutoData}
-            classNames={{ item: 'md:px-4 bg-neutral-900' }}
+            classNames={{ item: 'bg-transparent hover:bg-transparent rounded-none px-0' }}
             isGrid={false}
           />
         )}
       </div>
 
-      <div className='flex w-full flex-col gap-8 2xl:w-[75%]'>
-        <div className={cn('bg-primary-950/50 flex items-center justify-between gap-2 rounded-xl p-4 lg:px-6')}>
+      <Collapsible
+        className={cn('lg:hidden', !strategyAutoData && 'hidden')}
+        classNames={{ content: 'pb-4' }}
+        title={t('Automatic Strategy')}
+        subtitle={t('ICHI / GAMA / Single Sided')}
+        keepPreview
+        previewContent={
+          <div>
+            <TextSubHeading className='text-primary-600 font-archia text-xl! font-semibold'>
+              {getAprRange(sortedSubPools).max !== getAprRange(sortedSubPools).min
+                ? `${formatAmount(getAprRange(sortedSubPools).min)}% - ${formatAmount(
+                    getAprRange(sortedSubPools).max,
+                  )}%`
+                : `${formatAmount(getAprRange(sortedSubPools).min)}%`}
+            </TextSubHeading>
+          </div>
+        }
+      >
+        <AutomaticStrategy
+          className='divide-y-1 divide-neutral-700'
+          canSelect={false}
+          strategyAutoData={strategyAutoData}
+          classNames={{ item: 'bg-transparent hover:bg-transparent rounded-none mx-4 px-0' }}
+          isGrid={false}
+        />
+      </Collapsible>
+
+      <div className='flex w-full flex-col gap-4 rounded-xl bg-neutral-900 p-4 lg:w-[70%] lg:px-6'>
+        <div className={cn('flex items-center justify-between gap-2 bg-neutral-900')}>
           <div className='flex items-center gap-4 lg:gap-8'>
-            <NewTextSubHeading className='text-primary-100 text-xs font-bold md:text-xl'>
-              {t('Manual Strategy')}
-            </NewTextSubHeading>
-            <EmphasisIconButton
-              Icon={ArrowRightIcon}
-              className='size-8 bg-neutral-700 lg:size-11 [&>svg]:size-4 lg:[&>svg]:size-5 [&>svg>path]:stroke-neutral-400'
-              onClick={() => handleAddLiquidity('manual')}
-            />
+            <TextHeading className='text-xl! font-medium lg:text-xl!'>{t('Manual Strategy')}</TextHeading>
           </div>
 
-          <div className='flex flex-col justify-end'>
-            <Paragraph className='text-sm leading-5 font-bold text-neutral-500 md:text-lg'>
-              {t('Estimated APR')}
-            </Paragraph>
-            <NewTextSubHeading className='text-primary-600 text-base lg:text-3xl'>{estimateAPRs}</NewTextSubHeading>
+          <div className='flex flex-row items-start gap-8'>
+            <div className='flex flex-col gap-2.5'>
+              <TextHeading className='text-primary-600 font-archia text-xl! font-semibold'>{estimateAPRs}</TextHeading>
+              <Paragraph className='text-sm font-normal text-neutral-400'>{t('Estimated APR')}</Paragraph>
+            </div>
+            <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('manual')}>
+              {t('Add Liquidity')}
+            </EmphasisButton>
           </div>
         </div>
+        <div className='flex flex-col gap-2'>
+          <ChartPriceRangeInput
+            maskColor='#1A121E'
+            currencyA={baseCurrency ?? undefined}
+            currencyB={quoteCurrency ?? undefined}
+            feeAmount={mintInfo.dynamicFee}
+            ticksAtLimit={mintInfo.ticksAtLimit}
+            price={price ? parseFloat(price) : undefined}
+            priceLower={priceLower}
+            priceUpper={priceUpper}
+            onLeftRangeInput={onLeftRangeInput}
+            onRightRangeInput={onRightRangeInput}
+            interactive={false}
+            showPeriod
+            classNames={{
+              periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
+            }}
+            handleShow
+            isCreate={false}
+            label='Your Range against the Price'
+          />
 
-        <div className='flex flex-col gap-4'>
-          <div className='flex flex-col gap-2 lg:gap-8'>
-            <ChartPriceRangeInput
-              currencyA={baseCurrency ?? undefined}
-              currencyB={quoteCurrency ?? undefined}
-              feeAmount={mintInfo.dynamicFee}
-              ticksAtLimit={mintInfo.ticksAtLimit}
-              price={price ? parseFloat(price) : undefined}
-              priceLower={priceLower}
-              priceUpper={priceUpper}
-              onLeftRangeInput={onLeftRangeInput}
-              onRightRangeInput={onRightRangeInput}
-              interactive={false}
-              showPeriod
-              classNames={{
-                periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
-              }}
-              handleShow
-              isCreate={false}
-              label='Your Range against the Price'
+          <div className='mt-2'>
+            <PresetRanges
+              mintInfo={mintInfo}
+              isStablecoinPair={isStablecoinPair}
+              activePreset={activePreset}
+              handlePresetRangeSelection={handlePresetRangeSelection}
             />
-
-            <div className='mt-11 md:mt-4'>
-              <PresetRanges
-                mintInfo={mintInfo}
-                isStablecoinPair={isStablecoinPair}
-                activePreset={activePreset}
-                handlePresetRangeSelection={handlePresetRangeSelection}
-              />
-            </div>
           </div>
         </div>
       </div>

@@ -79,7 +79,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
       ranges.map(range => ({
         label: (
           <div className='gap flex flex-col items-center justify-center'>
-            <Paragraph className='font-medium text-neutral-50 lg:text-sm'>
+            <Paragraph className='text-primary-600 font-bold lg:text-sm'>
               APR: {formatAmount(APRs?.[range.type])}%
             </Paragraph>
             <div className='flex items-center gap-4'>

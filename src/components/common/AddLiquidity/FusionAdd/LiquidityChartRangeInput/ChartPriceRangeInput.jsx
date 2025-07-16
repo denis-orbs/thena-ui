@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 
 import { Warning } from '@/components/alert'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
@@ -14,10 +15,11 @@ import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
+import { RefreshIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
 import ChartPrice from './ChartPrice'
+import { useDensityChartData } from './hooks'
 
 const RIGHT_AXIS_WIDTH = 64
 const CHART_CONTAINER_WIDTH = 452 + RIGHT_AXIS_WIDTH
@@ -72,6 +74,8 @@ export default function ChartPriceRangeInput({
   height = 300,
   idChart = 'chart-price-range',
   label = 'Liquidity range',
+  feeAmount,
+  maskColor,
   classNames,
 }) {
   const activePreset = useActivePreset()
@@ -109,6 +113,16 @@ export default function ChartPriceRangeInput({
     token1Address: currencyA?.wrapped?.address,
     timeWindow,
     currentSwapPrice: { [currencyB?.wrapped?.address]: price },
+  })
+
+  const {
+    isLoading: isLoadLiquidity,
+    // error: isLoadLiquidityError,
+    formattedData,
+  } = useDensityChartData({
+    currencyA,
+    currencyB,
+    feeAmount,
   })
 
   const brushDomain = useMemo(() => {
@@ -199,16 +213,16 @@ export default function ChartPriceRangeInput({
   )
 
   const containerRef = useRef(null)
-  const sortedFormattedData = useMemo(
-    () =>
-      pairPrices
-        ?.sort((a, b) => a.price0 - b.price0)
-        .map(item => ({
-          ...item,
-          activeLiquidity: item.time.getTime(),
-        })),
-    [pairPrices],
-  )
+  // const sortedFormattedData = useMemo(
+  //   () =>
+  //     pairPrices
+  //       ?.sort((a, b) => a.price0 - b.price0)
+  //       .map(item => ({
+  //         ...item,
+  //         activeLiquidity: item.time.getTime(),
+  //       })),
+  //   [pairPrices],
+  // )
 
   const onBrushDomainChangeEnded = useCallback(
     (domain, mode) => {
@@ -404,6 +418,25 @@ export default function ChartPriceRangeInput({
               }}
               disabled={false}
             />
+            {/* <TextButton
+              className='flex h-8 w-[69px] gap-1 p-2!'
+              onClick={() => {
+                setZoomFactor(1)
+                setRange(2)
+              }}
+            >
+
+            </TextButton> */}
+            <EmphasisButton
+              className='flex h-8 gap-1 bg-transparent p-2! text-neutral-500'
+              onClick={() => {
+                setZoomFactor(1)
+                setRange(2)
+              }}
+            >
+              <RefreshIcon className='h-4 w-4' />
+              {t('Reset')}
+            </EmphasisButton>
           </div>
         </div>
       </div>
@@ -414,7 +447,7 @@ export default function ChartPriceRangeInput({
         <div className='relative flex h-[235px] w-full items-center justify-center'>
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
-          ) : isLoading ? (
+          ) : isLoading || isLoadLiquidity ? (
             <Skeleton className={cn('absolute w-full', `h-[${height}px]`)} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
@@ -448,10 +481,11 @@ export default function ChartPriceRangeInput({
                       )}
                     </div>
                     <div className='absolute inset-0 z-10'>
-                      {chartSize && sortedFormattedData.length > 0 ? (
+                      {chartSize && formattedData?.length > 0 ? (
                         <ActivePriceRangeChart
+                          maskColor={maskColor}
                           data={{
-                            series: sortedFormattedData,
+                            series: formattedData,
                             current: price ?? pairPrices[pairPrices.length - 1]?.value,
                             min: boundaryPrices?.[0],
                             max: boundaryPrices?.[1],

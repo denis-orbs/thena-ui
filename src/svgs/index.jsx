@@ -11,6 +11,7 @@ import ArrowNarrowUpRightIcon from '~/svgs/arrow-narrow-up-right.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
+import BackRevertIcon from '~/svgs/backRevert.svg'
 import BankIcon from '~/svgs/bank.svg'
 import BarChartIcon from '~/svgs/bar-chart.svg'
 import BellIcon from '~/svgs/bell.svg'
@@ -171,6 +172,7 @@ export {
   ArrowRightIcon,
   ArrowsDownIcon,
   AwardIcon,
+  BackRevertIcon,
   BankIcon,
   BarChartIcon,
   BellIcon,
