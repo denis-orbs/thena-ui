@@ -96,7 +96,7 @@ export default function TokenPairs({ token }) {
       <TextHeading className='text-xl'>
         {token?.symbol} {t('Pairs')}
       </TextHeading>
-      <PairsTable data={filteredPairs} />
+      <PairsTable data={filteredPairs} backUrlNumber={5} />
     </div>
   )
 }

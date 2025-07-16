@@ -7,6 +7,7 @@ import PercentBadge from '@/components/badges/PercentBadge'
 import CircleImage from '@/components/image/CircleImage'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatAmount } from '@/lib/utils'
 
 const sortOptions = [
@@ -45,6 +46,8 @@ const sortOptions = [
 export default function TokensTable({ data, hidePagination = false, backUrlNumber }) {
   const [sort, setSort] = useState(sortOptions[3])
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const { isLgDown } = useMediaQuery()
   const { push } = useRouter()
 
   const sortedData = useMemo(
@@ -98,9 +101,30 @@ export default function TokensTable({ data, hidePagination = false, backUrlNumbe
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData)],
   )
+
+  const finalSortOption = useMemo(() => {
+    if (isLgDown) {
+      return [
+        {
+          ...sortOptions[0],
+          width: 'w-[45%]',
+        },
+        {
+          ...sortOptions[1],
+          width: 'w-[28%]',
+        },
+        {
+          ...sortOptions[3],
+          width: 'w-[27%]',
+        },
+      ]
+    }
+    return sortOptions
+  }, [isLgDown])
+
   return (
     <Table
-      sortOptions={sortOptions}
+      sortOptions={finalSortOption}
       data={final}
       sort={sort}
       setSort={setSort}
@@ -108,6 +132,19 @@ export default function TokensTable({ data, hidePagination = false, backUrlNumbe
       setCurrentPage={setCurrentPage}
       notAction
       hidePagination={hidePagination}
+      showNumberOfPage={!isLgDown}
+      defaultNumberItem={5}
+      setNumberOfPage={setItemsPerPage}
+      pageSize={itemsPerPage}
+      tableBasic
+      className='max-lg:bg-transparent max-md:px-0 max-md:py-0'
+      classNames={{
+        headerItem: 'max-md:h-5! max-md:[&>div]:pt-0! max-md:[&>div]:px-1! max-md:[&>div]:pb-2!',
+        tableContainer: 'max-md:p-0',
+        cellItemContent: 'max-md:h-11 py-2 px-1',
+        paginationContainer: 'max-md:px-0 border-none pt-0',
+        paginationList: 'max-md:py-0',
+      }}
     />
   )
 }

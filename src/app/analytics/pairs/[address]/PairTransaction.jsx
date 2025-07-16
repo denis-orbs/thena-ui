@@ -6,14 +6,17 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import Collapsible from '@/components/collapse/Collapse2'
 import Table from '@/components/table'
-import Tabs from '@/components/tabs'
+import RoundedTabs from '@/components/tabs/RoundedTab'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+
+import TransactionMobile from './PairTransactionMobile'
 
 export const TXN_TYPE = {
   All: 'All',
@@ -431,6 +434,7 @@ export default function TransactionTable({ pair }) {
   const filters = useMemo(
     () =>
       Object.values(TXN_TYPE).map(ele => ({
+        id: ele,
         label: ele,
         active: filter === ele,
         onClickHandler: () => setFilter(ele),
@@ -517,20 +521,46 @@ export default function TransactionTable({ pair }) {
   )
 
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-col gap-4'>
-        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
-        <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
+    <>
+      <div className='hidden flex-col lg:flex'>
+        <div className='flex flex-col gap-4'>
+          <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
+          <RoundedTabs
+            tabs={filters}
+            size={SizeTypes.Medium}
+            className='h-[38px] w-fit'
+            classNames={{ wrapper: 'flex-wrap gap-2' }}
+            containContent={false}
+          />
+        </div>
+        {final.length === 0 ? (
+          <div className='flex h-[150px] w-full flex-col items-center justify-center rounded-xl bg-neutral-900'>
+            <Paragraph className='text-center text-neutral-300'>{t('No transactions found')}</Paragraph>
+          </div>
+        ) : (
+          <Table
+            sortOptions={sortOptions}
+            data={final}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            notAction
+          />
+        )}
       </div>
-      <Table
-        sortOptions={sortOptions}
-        data={final}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        notAction
-      />
-    </div>
+      <div className='lg:hidden'>
+        <Collapsible title={t('Transactions')} subtitle={`${t('Swaps')}/${t('Additions')}/ ${t('Removals')}`}>
+          <TransactionMobile
+            filter={filter}
+            sortedData={sortedData}
+            getTransactionType={getTransactionType}
+            formatTime={formatTime}
+            filters={filters}
+            itemsPerPage={10}
+          />
+        </Collapsible>
+      </div>
+    </>
   )
 }

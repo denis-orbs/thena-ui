@@ -79,7 +79,7 @@ function Dropdown({
     <div className={cn('relative', className)} ref={wrapperRef}>
       <Input
         classNames={{
-          ...classNames,
+          // ...classNames,
           input: cn('cursor-pointer caret-transparent', className, classNames?.input),
         }}
         type='text'

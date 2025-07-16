@@ -33,6 +33,7 @@
     "bignumber.js": "^9.1.2",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.5",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "css-box-model": "^1.2.1",
     "d3": "^7.8.5",
@@ -43,6 +44,7 @@
     "html2canvas": "^1.4.1",
     "lightweight-charts": "^4.1.2",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.525.0",
     "moment": "^2.30.1",
     "next": "^14.2.4",
     "next-intl": "^3.9.5",
@@ -65,11 +67,12 @@
     "react-tiny-popover": "^8.0.4",
     "react-toastify": "^10.0.4",
     "react-tooltip": "^5.25.1",
+    "recharts": "^3.1.0",
     "redux-localstorage-simple": "^2.5.1",
     "redux-persist": "^6.0.0",
     "swiper": "^11.0.5",
     "swr": "^2.2.4",
-    "tailwind-merge": "^3.3.0",
+    "tailwind-merge": "^3.3.1",
     "thena-sdk-core": "^0.0.6",
     "thenafi-fusion-sdk": "^0.0.1",
     "tiny-invariant": "^1.3.1",
@@ -99,7 +102,8 @@
     "prettier-airbnb-config": "^1.0.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwind-scrollbar": "4.0.2",
-    "tailwindcss": "^4.1.8"
+    "tailwindcss": "^4.1.8",
+    "tw-animate-css": "^1.3.5"
   },
   "engines": {
     "node": "20.x"

@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react'
 
 import './style.css'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatPrice } from '@/lib/utils'
 
 const labelWidth = 55
@@ -21,7 +22,9 @@ function Axis({ axisGenerator }) {
   return <g className='axis-right-ref' ref={axisRef} />
 }
 
-export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height }) {
+export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height, maskColor }) {
+  const { isLgDown } = useMediaQuery()
+
   const tickFormat = useCallback(d => {
     const str = d.toString()
     let decimal = 1
@@ -49,23 +52,18 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   )
 
   const renderHoverLines = useCallback(
-    (y, direction, markerId) => {
+    (y, direction) => {
       if (currentHover === direction) {
-        const offsets = [-20, -15, -10, -5]
-        return offsets.map((x1, idx) => (
-          <line
-            key={`${direction}-${idx}`}
-            x1={x1}
-            x2={x1 + 2}
-            y1={y}
-            y2={y}
-            stroke='#F199EE'
-            strokeWidth='2'
-            markerStart={`url(#${markerId})`}
-          />
-        ))
+        return null
       }
-      return <line x1={40} x2={5} y1={y} y2={y} stroke='#F199EE' strokeWidth='2' markerStart={`url(#${markerId})`} />
+      return (
+        <svg x={10} y={y - 4} width='20' height='8' viewBox='0 0 20 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <path
+            d='M1.68588 5.69486C0.434957 4.91118 0.434956 3.08882 1.68588 2.30514L4.02288 0.841036C4.34115 0.641646 4.70912 0.535899 5.08469 0.535899L14.994 0.535898C15.3696 0.535898 15.7376 0.641646 16.0558 0.841035L18.3928 2.30514C19.6437 3.08882 19.6438 4.91118 18.3928 5.69486L16.0558 7.15896C15.7376 7.35835 15.3696 7.4641 14.994 7.4641L5.08469 7.4641C4.70912 7.4641 4.34115 7.35835 4.02288 7.15896L1.68588 5.69486Z'
+            fill='#F199EE'
+          />
+        </svg>
+      )
     },
     [currentHover],
   )
@@ -73,32 +71,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   return (
     <>
       <g className='axis-right' transform={`translate(${offset + 5}, 0)`}>
-        <defs>
-          <marker
-            id='arrow-min'
-            markerWidth='5'
-            markerHeight='5'
-            refX='4'
-            refY='2.5'
-            orient='auto'
-            markerUnits='strokeWidth'
-          >
-            {currentHover !== 'south' && !isNaN(minY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
-          </marker>
-          <marker
-            id='arrow-max'
-            markerWidth='5'
-            markerHeight='5'
-            refX='4'
-            refY='2.5'
-            orient='auto'
-            markerUnits='strokeWidth'
-          >
-            {currentHover !== 'north' && !isNaN(maxY) && <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />}
-          </marker>
-        </defs>
-        {!isNaN(minY) && renderHoverLines(minY, 'south', 'arrow-min')}
-        {!isNaN(maxY) && renderHoverLines(maxY, 'north', 'arrow-max')}
+        {!isNaN(minY) && !isLgDown && renderHoverLines(minY, 'south')}
+        {!isNaN(maxY) && !isLgDown && renderHoverLines(maxY, 'north')}
         <Axis axisGenerator={axisGenerator} />
         {!isNaN(currentY) && (
           <g style={{ padding: '6px' }}>
@@ -151,8 +125,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
             </text>
           </g>
         )}
-        <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
-        <rect x='0' y={height} width='100%' height={padding * 2} fill='#0D090F' />
+        <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
+        <rect x='0' y={height} width='100%' height={padding * 2} fill={maskColor} />
       </g>
     </>
   )

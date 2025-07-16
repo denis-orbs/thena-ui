@@ -1,10 +1,13 @@
 import { max as getMax, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import CheckBox from '@/components/checkbox'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+
 import { AxisRight } from './AxisRight'
-import { Brush2 } from './Brush2'
-import { HorizontalArea } from './HorizontalArea'
+import Brush2 from './Brush2'
 import { HorizontalLine } from './HorizontalLine'
+import { LiquidityBars } from './LiquidityBars'
 
 const xAccessor = d => d.activeLiquidity
 const yAccessor = d => d.price0
@@ -25,7 +28,10 @@ export default function ActivePriceRangeChart({
   currentHover,
   container,
   setCurrentHover = () => {},
+  maskColor,
+  divideDistanceWidth,
 }) {
+  const { isLgDown } = useMediaQuery()
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
@@ -49,10 +55,11 @@ export default function ActivePriceRangeChart({
   }, [brushDomain, onBrushDomainChange, yScale])
 
   const [liveLocalBrushExtent, setLiveLocalBrushExtent] = useState(brushDomain)
+  const [showLiquidity, setShowLiquidity] = useState(true)
 
   return (
-    <>
-      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} ref={svgRef}>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} className='z-10' ref={svgRef}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>
             <rect x='0' y='0' width={width} height={height} />
@@ -79,7 +86,7 @@ export default function ActivePriceRangeChart({
 
         <g>
           <g clipPath={`url(#${id}-chart-clip)`}>
-            <HorizontalArea
+            {/* <HorizontalArea
               series={series}
               xScale={xScale}
               yScale={yScale}
@@ -90,7 +97,17 @@ export default function ActivePriceRangeChart({
               selectedFill='url(#gradient-brush-area)'
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
-            />
+            /> */}
+            {showLiquidity && (
+              <LiquidityBars
+                series={series}
+                xScale={xScale}
+                yScale={yScale}
+                xValue={xAccessor}
+                yValue={yAccessor}
+                maxBarWidth={117}
+              />
+            )}
             {!disableBrush && (
               <HorizontalLine
                 value={current}
@@ -101,17 +118,6 @@ export default function ActivePriceRangeChart({
               />
             )}
           </g>
-
-          <AxisRight
-            yScale={yScale}
-            offset={width - axisLabelPaneWidth}
-            current={current}
-            min={liveLocalBrushExtent?.[0]}
-            max={liveLocalBrushExtent?.[1]}
-            currentHover={currentHover}
-            padding={padding}
-            height={height}
-          />
           {handleShow && (
             <Brush2
               id={id}
@@ -120,7 +126,7 @@ export default function ActivePriceRangeChart({
               brushLabelValue={brushLabels}
               brushExtent={brushDomain ?? yScale.domain()}
               hideHandles={!brushDomain}
-              width={width - axisLabelPaneWidth - 20}
+              width={width - (isLgDown ? 0 : axisLabelPaneWidth - 12)}
               height={height}
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
@@ -133,10 +139,29 @@ export default function ActivePriceRangeChart({
               setLiveLocalBrushExtent={setLiveLocalBrushExtent}
               padding={padding}
               container={container}
+              maskColor={maskColor}
+              divideDistanceWidth={divideDistanceWidth}
             />
           )}
+          <AxisRight
+            yScale={yScale}
+            offset={width - axisLabelPaneWidth}
+            current={current}
+            min={liveLocalBrushExtent?.[0]}
+            max={liveLocalBrushExtent?.[1]}
+            currentHover={currentHover}
+            padding={padding}
+            height={height}
+            maskColor={maskColor}
+          />
         </g>
       </svg>
-    </>
+      <div className='absolute right-4 -bottom-2 z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+        <CheckBox className='size-5!' checked={showLiquidity} setChecked={setShowLiquidity} />
+        <span className='cursor-pointer select-none' onClick={() => setShowLiquidity(prev => !prev)}>
+          Show Liquidity
+        </span>
+      </div>
+    </div>
   )
 }

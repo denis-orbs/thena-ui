@@ -125,25 +125,23 @@ function PieChart({ tokens, colors, showTotalPercent = true, className, bgColor 
 
   const totalWeight = useMemo(() => tokens.reduce((sum, curr) => sum + curr.weight, 0), [tokens])
   return (
-    <div className={cn('flex items-center justify-center', className)}>
-      <div className='relative h-[230px] w-[230px] overflow-visible'>
-        <Doughnut
-          height={200}
-          width={200}
-          data={finalData}
-          options={options}
-          className='z-20'
-          plugins={[backgroundCenterPlugin]}
-        />
-        {showTotalPercent && (
-          <div
-            className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'
-            style={{ backgroundColor: bgColor }}
-          >
-            <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight || 0)}%</TextHeading>
-          </div>
-        )}
-      </div>
+    <div className={cn('relative flex h-[230px] w-[230px] items-center justify-center overflow-visible', className)}>
+      <Doughnut
+        height={200}
+        width={200}
+        data={finalData}
+        options={options}
+        className='z-20'
+        plugins={[backgroundCenterPlugin]}
+      />
+      {showTotalPercent && (
+        <div
+          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'
+          style={{ backgroundColor: bgColor }}
+        >
+          <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight || 0)}%</TextHeading>
+        </div>
+      )}
     </div>
   )
 }

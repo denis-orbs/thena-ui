@@ -11,6 +11,7 @@ import ArrowNarrowUpRightIcon from '~/svgs/arrow-narrow-up-right.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
+import BackRevertIcon from '~/svgs/backRevert.svg'
 import BankIcon from '~/svgs/bank.svg'
 import BarChartIcon from '~/svgs/bar-chart.svg'
 import BellIcon from '~/svgs/bell.svg'
@@ -56,6 +57,8 @@ import EmailIcon from '~/svgs/email.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExchangeIcon from '~/svgs/exchange.svg'
 import ExpandIcon from '~/svgs/expand.svg'
+import Expand04Icon from '~/svgs/expand-04.svg'
+import Expand06Icon from '~/svgs/expand-06.svg'
 import ExpandDownIcon from '~/svgs/expand-down.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
@@ -105,6 +108,7 @@ import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
+import ResetIcon from '~/svgs/reset.svg'
 import ReverseIcon from '~/svgs/reverse.svg'
 import RightInIcon from '~/svgs/right-in.svg'
 import RightOutIcon from '~/svgs/right-out.svg'
@@ -169,6 +173,7 @@ export {
   ArrowRightIcon,
   ArrowsDownIcon,
   AwardIcon,
+  BackRevertIcon,
   BankIcon,
   BarChartIcon,
   BellIcon,
@@ -212,6 +217,8 @@ export {
   EmailIcon,
   EtherFiBadgeIcon,
   ExchangeIcon,
+  Expand04Icon,
+  Expand06Icon,
   ExpandDownIcon,
   ExpandIcon,
   ExternalIcon,
@@ -264,6 +271,7 @@ export {
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
+  ResetIcon,
   ReverseIcon,
   RightInIcon,
   RightOutIcon,

@@ -1,90 +1,116 @@
-import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 import Box from '@/components/box'
-import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
-import { ChevronRightIcon } from '@/svgs'
 
-export function PairBasicInfo({ pair }) {
+export function PairBasicInfo({ pair, className }) {
   const t = useTranslations()
   const { isMdDown } = useMediaQuery()
-  const [isExpanded, setIsExpanded] = useState(false)
+  // const [isExpanded, setIsExpanded] = useState(false)
 
   return (
-    <div className='flex justify-between gap-2'>
+    <div className={cn('flex justify-between gap-2 rounded-xl', className)}>
+      {/* Desktop view - single box with all items */}
       <Box
         className={cn(
-          'w-full justify-between gap-x-4 border border-neutral-600 px-4 py-3! max-md:grid max-md:grid-cols-2 md:flex',
+          'w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4! max-md:hidden md:flex',
           !isMdDown && 'gap-y-4',
         )}
+        style={{
+          background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
+                 linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
+        }}
       >
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             {pair?.apr ?? '0%'}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
+          <Paragraph className='text-sm! text-neutral-500'>
             {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
           </Paragraph>
         </div>
         <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
-            {t('Volume (24h)')}
-          </Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 0, height: 0 }}
-          animate={isExpanded ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className='col-span-2 overflow-hidden bg-neutral-900 md:hidden'
-        >
-          <div className={cn('mt-4 grid grid-cols-2 gap-4')}>
-            <div className='flex flex-col gap-2 md:gap-1'>
-              <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
-                ${formatAmount(pair?.dayFees)}
-              </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>
-                {t('Fees (24h)')}
-              </Paragraph>
-            </div>
-            <div className='flex flex-col gap-2 md:gap-1'>
-              <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
-                ${formatAmount(pair?.tvlUSD)}
-              </NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
-            </div>
-          </div>
-        </motion.div>
-
-        <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
+        <div className='flex flex-col gap-2 md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.dayFees)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
         </div>
 
-        <div className='flex flex-col gap-2 max-md:hidden md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg md:text-xl md:leading-6'>
+        <div className='flex flex-col gap-2 md:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
             ${formatAmount(pair?.tvlUSD)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500 md:text-base xl:text-neutral-300'>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm! text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
       </Box>
 
-      <EmphasisButton
-        className='size-8 bg-neutral-900! p-2 outline-0 md:hidden'
-        onClick={() => setIsExpanded(prev => !prev)}
-      >
-        <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && '-rotate-90')} />
-      </EmphasisButton>
+      {/* Mobile view - Swiper carousel */}
+      <div className='my-auto w-full md:hidden'>
+        <Swiper slidesPerView={1.1} spaceBetween={8} grabCursor>
+          <SwiperSlide>
+            <Box
+              className={cn(
+                'flex h-[84px] w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4!',
+              )}
+              style={{
+                background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
+                 linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
+              }}
+            >
+              <div className='flex flex-col gap-2'>
+                <NewTextSubHeading className='text-gradient-primary text-lg!'>{pair?.apr ?? '0%'}</NewTextSubHeading>
+                <Paragraph className='text-sm! text-nowrap text-neutral-500'>
+                  {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
+                </Paragraph>
+              </div>
+              <div className='flex flex-col gap-2'>
+                <NewTextSubHeading className='text-gradient-primary text-lg!'>
+                  ${formatAmount(pair?.dayVolume)}
+                </NewTextSubHeading>
+                <Paragraph className='text-sm! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+              </div>
+            </Box>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <Box
+              className={cn(
+                'flex h-[84px] w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4!',
+              )}
+              style={{
+                background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
+                 linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
+              }}
+            >
+              <div className='flex flex-col gap-2'>
+                <NewTextSubHeading className='text-gradient-primary text-lg!'>
+                  ${formatAmount(pair?.dayFees)}
+                </NewTextSubHeading>
+                <Paragraph className='text-sm! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+              </div>
+
+              <div className='flex flex-col gap-2'>
+                <NewTextSubHeading className='text-gradient-primary text-lg!'>
+                  ${formatAmount(pair?.tvlUSD)}
+                </NewTextSubHeading>
+                <Paragraph className='text-sm! text-neutral-500'>{t('TVL')}</Paragraph>
+              </div>
+            </Box>
+          </SwiperSlide>
+        </Swiper>
+      </div>
     </div>
   )
 }
