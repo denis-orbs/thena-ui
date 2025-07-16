@@ -76,6 +76,9 @@
   --color-gradient-secondary-start: rgba(220, 0, 212, 0.5);
   --color-gradient-secondary-end: rgba(142, 66, 255, 0);
 
+  --color-gradient-pink-start: #b386ff;
+  --color-gradient-pink-end: #ff86fa;
+
   --color-gradient-tertiary-start: #c72ad0;
   --color-gradient-tertiary-end: #aa23db;
 
@@ -86,6 +89,8 @@
   --color-social-instagram: radial-gradient(circle at 50% 50%, #ffb140 0%, #ff5445 25.59%, #fc2b82 59.9%, #8e40b7 100%);
 
   --background-image-custom-gradient: linear-gradient(90deg, #b386ff 0%, #ff86fa 100%);
+  --background-image-chart-gradient: linear-gradient(87.54deg, #0d090f 19.75%, #422d4c 240.97%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
   --background-image-progress-gradient: linear-gradient(90deg, #83007eb0 0.49%, #bd60ba 100%);
 
   --grid-template-columns-add-liquidity-layout: minmax(650px, 7fr) 5fr;
@@ -704,6 +709,10 @@
 
   .border-gradient-secondary {
     @apply from-gradient-secondary-start to-gradient-secondary-end bg-linear-to-b;
+  }
+
+  .text-gradient-pink {
+    @apply from-gradient-pink-start to-gradient-pink-end bg-linear-to-r bg-clip-text text-transparent;
   }
 
   .text-gradient-tertiary {

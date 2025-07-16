@@ -8,8 +8,7 @@ import { cn, formatAmount } from '@/lib/utils'
 
 import Box from '../box'
 import Divider from '../divider'
-import Skeleton from '../skeleton'
-import Tabs from '../tabs'
+import Selection from '../selection'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 /** Base on HoverableChart and can support stacked bar chart and group data by epoch */
@@ -19,6 +18,7 @@ function EpochStackableChart({
   rawData,
   protocolData,
   valueProperty,
+  protocolProperty,
   title,
   ChartComponent,
   className,
@@ -39,13 +39,13 @@ function EpochStackableChart({
 
   useEffect(() => {
     if (typeof hover === 'undefined' && protocolData) {
-      setHover(protocolData[valueProperty])
+      setHover(protocolData[protocolProperty])
       setDateHover()
     }
-  }, [protocolData, hover, valueProperty])
+  }, [protocolData, hover, protocolProperty])
 
   useEffect(() => {
-    setHover(protocolData?.[valueProperty] || undefined)
+    setHover(protocolData?.[protocolProperty] || undefined)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title])
   const chartData = useMemo(() => (groupPerEpoch ? groupEpochData : rawData), [rawData, groupPerEpoch, groupEpochData])
@@ -131,7 +131,7 @@ function EpochStackableChart({
   )
 
   return (
-    <Box className={cn(className)}>
+    <Box className={cn('bg-chart-gradient border border-[#422D4C]', className)}>
       <div className='flex flex-col gap-4'>
         <div className='flex justify-between'>
           <div className='flex flex-col gap-2'>
@@ -144,7 +144,15 @@ function EpochStackableChart({
               label='Per Epoch'
             />
           </div>
-          {properties && <Tabs data={properties} />}
+          {properties && (
+            <Selection
+              className='items-stretch md:h-11'
+              classNames={{
+                items: 'md:text-sm text-xs',
+              }}
+              data={properties}
+            />
+          )}
         </div>
         <Divider />
         <div className='flex items-start justify-between'>
@@ -152,12 +160,18 @@ function EpochStackableChart({
             {Number(hover) > -1 ? ( // sometimes data is 0
               <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
             ) : (
-              <Skeleton className='h-[32px] w-[128px]' />
+              <div className='h-[32px] w-[128px]' />
             )}
             {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
           </div>
 
-          <Tabs data={periods} />
+          <Selection
+            className='items-stretch md:h-11'
+            classNames={{
+              items: 'md:text-sm text-xs',
+            }}
+            data={periods}
+          />
         </div>
       </div>
       <div className='mt-2 h-[250px]'>

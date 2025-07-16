@@ -8,10 +8,10 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import PercentBadge from '@/components/badges/PercentBadge'
-import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import BarChart from '@/components/charts/BarChart'
 import EpochStackableChart from '@/components/charts/EpochStackableChart'
+import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
 import StackableBarChart from '@/components/charts/StackableBarChart'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
@@ -90,46 +90,14 @@ export default function AnalyticsPage() {
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col gap-4'>
           <h2>{t('Analytics')}</h2>
-          <div className='grid grid-cols-1 gap-6'>
-            <EpochStackableChart
-              groupEpochData={groupEpochData}
-              rawData={rawData}
-              title='Fee Distribution'
-              valueProperty={['feesUSD', 'customPoolFeesUSD']}
-              ChartComponent={StackableBarChart}
-              chartId='Fee Distribution'
-              propertyLabel={{
-                feesUSD: t('veTHE owners'),
-                customPoolFeesUSD: t("Manual LP'ers"),
-              }}
-            />
-          </div>
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-            <EpochStackableChart
-              groupEpochData={groupEpochData}
-              rawData={rawData}
-              protocolData={totalStats}
-              valueProperty='tvlUSD'
-              title='TVL'
-              chartId='tvlUSD'
-              ChartComponent={LineChart}
-            />
-            <EpochStackableChart
-              groupEpochData={groupEpochData}
-              rawData={rawData}
-              protocolData={totalStats}
-              valueProperty='volumeUSD'
-              chartId='volumeUSD'
-              title='Volume (24h)'
-              ChartComponent={BarChart}
-            />
-          </div>
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-            <Box className='flex flex-col gap-2'>
-              <div className='flex items-start justify-between'>
+          <div className='lg:bg-chart-gradient item-center flex gap-8 px-8 py-4 lg:justify-between lg:rounded-xl lg:border lg:border-[#422D4C]'>
+            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+              <div className='flex items-start justify-between gap-4'>
                 {totalStats ? (
                   <>
-                    <TextHeading className='text-2xl'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
+                    <TextHeading className='text-gradient-pink text-3xl'>
+                      ${formatAmount(totalStats.tvlUSD)}
+                    </TextHeading>
                     <PercentBadge value={totalStats.tvlChange} />
                   </>
                 ) : (
@@ -139,13 +107,15 @@ export default function AnalyticsPage() {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
-            </Box>
-            <Box className='flex flex-col gap-2'>
-              <div className='flex items-start justify-between'>
+              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+            </div>
+            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+              <div className='flex items-start justify-between gap-4'>
                 {totalStats ? (
                   <>
-                    <TextHeading className='text-2xl'>${formatAmount(totalStats.volumeUSD)}</TextHeading>
+                    <TextHeading className='text-gradient-pink text-3xl'>
+                      ${formatAmount(totalStats.volumeUSD)}
+                    </TextHeading>
                     <PercentBadge value={totalStats.volumeChange} />
                   </>
                 ) : (
@@ -155,13 +125,15 @@ export default function AnalyticsPage() {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm'>{t('Volume (24h)')}</Paragraph>
-            </Box>
-            <Box className='flex flex-col gap-2'>
-              <div className='flex items-start justify-between'>
+              <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+            </div>
+            <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+              <div className='flex items-start justify-between gap-4'>
                 {totalStats ? (
                   <>
-                    <TextHeading className='text-2xl'>${formatAmount(totalStats.feesUSD)}</TextHeading>
+                    <TextHeading className='text-gradient-pink text-3xl'>
+                      ${formatAmount(totalStats.feesUSD)}
+                    </TextHeading>
                     <PercentBadge value={totalStats.feesChange} />
                   </>
                 ) : (
@@ -171,13 +143,47 @@ export default function AnalyticsPage() {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm'>{t('Fees (24h)')}</Paragraph>
-            </Box>
+              <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+            </div>
+          </div>
+          <div className='grid grid-cols-1 gap-6'>
+            <EpochStackableChart
+              groupEpochData={groupEpochData}
+              rawData={rawData}
+              title='Fee Distribution'
+              protocolData={totalStats}
+              valueProperty={['feesUSD', 'customPoolFeesUSD']}
+              protocolProperty='feesUSD'
+              ChartComponent={StackableBarChart}
+              chartId='Fee Distribution'
+              propertyLabel={{
+                feesUSD: t('veTHE owners'),
+                customPoolFeesUSD: t("Manual LP'ers"),
+              }}
+            />
+          </div>
+          <div className='lg:bg-chart-gradient grid grid-cols-1 gap-6 bg-none lg:grid-cols-2'>
+            <HoverableChart
+              className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+              chartData={rawData}
+              protocolData={totalStats}
+              valueProperty='tvlUSD'
+              title='TVL'
+              ChartComponent={LineChart}
+            />
+            <HoverableChart
+              className='bg-chart-gradient border border-[#422D4C] bg-transparent lg:bg-none'
+              chartData={rawData ? rawData.slice(0, rawData.length - 1) : undefined}
+              protocolData={totalStats}
+              valueProperty='volumeUSD'
+              title='Volume (24h)'
+              ChartComponent={BarChart}
+            />
           </div>
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
-            <TextHeading>{t('Top Assets')}</TextHeading>
+            <TextHeading className='text-2xl text-neutral-50'>{t('Top Assets')}</TextHeading>
             <EmphasisButton
               onClick={() => {
                 push('/analytics/tokens?back=3')
@@ -190,7 +196,7 @@ export default function AnalyticsPage() {
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
-            <TextHeading>{t('Top Pairs')}</TextHeading>
+            <TextHeading className='text-2xl text-neutral-50'>{t('Top Pairs')}</TextHeading>
             <EmphasisButton
               onClick={() => {
                 push('/analytics/pairs?back=3')

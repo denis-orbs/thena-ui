@@ -87,11 +87,11 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
     <Box className={cn(className)}>
       <div className='flex items-start justify-between'>
         <div className='flex flex-col gap-1'>
-          <Paragraph>{t(title)}</Paragraph>
+          <Paragraph className='text-xl font-semibold text-neutral-500'>{t(title)}</Paragraph>
           {Number(hover) > -1 ? ( // sometimes data is 0
-            <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
+            <TextHeading className='text-xl font-semibold text-neutral-50'>${formatAmount(hover)}</TextHeading>
           ) : (
-            <Skeleton className='h-[32px] w-[128px]' />
+            <Skeleton className='h-[30px] w-[128px]' />
           )}
           {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
         </div>
