@@ -59,6 +59,13 @@ function AnalyticsChart({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title])
 
+  useEffect(() => {
+    if (typeof hover === 'undefined' && protocolData && !valueDefault) {
+      setHover(protocolData[protocolProperty])
+      setDateHover()
+    }
+  }, [protocolData, hover, protocolProperty, valueDefault])
+
   const chartData = useMemo(() => (groupPerEpoch ? epochData : rawData), [rawData, groupPerEpoch, epochData])
   useEffect(() => {
     if (!onHoverChange) return
@@ -143,8 +150,8 @@ function AnalyticsChart({
 
   return (
     <Box className={cn('bg-chart-gradient border border-[#422D4C]', className)}>
-      <div className={cn('flex flex-col gap-4', !isExpanded && 'gap-2')}>
-        <div className={cn('flex justify-between', !isExpanded && 'flex-col gap-2')}>
+      <div className={cn('flex flex-col gap-2', !isExpanded && '')}>
+        <div className={cn('flex justify-between', !isExpanded && 'flex-col gap-1')}>
           {isMinimum ? (
             <>
               {properties && (
@@ -182,13 +189,16 @@ function AnalyticsChart({
                   />
                 )}
               </div>
-              <div className='flex items-center justify-between gap-1'>
+              <div className='flex items-start justify-between gap-1'>
                 {!isExpanded && (
-                  <div className='flex flex-col gap-1'>
-                    {Number(hover) > -1 ? ( // sometimes data is 0
+                  <div className='flex h-[56px] flex-col gap-1'>
+                    {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
                       <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(hover)}</TextHeading>
                     ) : (
-                      <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(valueDefault)}</TextHeading>
+                      <>
+                        <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(valueDefault)}</TextHeading>
+                        <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
+                      </>
                     )}
                     {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
                   </div>
@@ -197,7 +207,7 @@ function AnalyticsChart({
                   <Selection
                     className={cn('items-stretch bg-transparent md:h-11')}
                     classNames={{
-                      items: cn('md:text-sm! text-x! flex-1'),
+                      items: cn('md:text-sm! text-x! flex-1 w-fit text-nowrap'),
                     }}
                     data={properties}
                   />
@@ -229,14 +239,17 @@ function AnalyticsChart({
           <div className='flex items-start justify-between'>
             <div>
               {isExpanded && (
-                <div className='flex flex-col gap-1'>
+                <div className='flex h-[56px] flex-col gap-1'>
                   <>
-                    {Number(hover) > -1 ? ( // sometimes data is 0
+                    {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
                       <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
                     ) : (
                       <>
                         {properties && (
-                          <TextHeading className={cn('text-2xl')}>${formatAmount(valueDefault)}</TextHeading>
+                          <>
+                            <TextHeading className={cn('text-2xl')}>${formatAmount(valueDefault)}</TextHeading>
+                            <TextSubHeading>{t('Total Revenue')}</TextSubHeading>
+                          </>
                         )}
                       </>
                     )}
@@ -248,7 +261,7 @@ function AnalyticsChart({
 
             {properties && (
               <Selection
-                className={cn('items-stretch md:h-11', !isExpanded && 'h-8! bg-transparent')}
+                className={cn('items-stretch bg-transparent md:h-11', !isExpanded && 'h-8!')}
                 classNames={{
                   items: cn('md:text-sm! text-xs py-2! px-3!', !isExpanded && 'text-xs! h-6! py-1! px-2!'),
                 }}
@@ -258,7 +271,7 @@ function AnalyticsChart({
           </div>
         )}
       </div>
-      <div className={cn('mt-2 h-[250px]', !properties && 'h-[292px]')}>
+      <div className={cn('mt-6 h-[250px]', !properties && 'h-[292px]')}>
         <AnalyticsReChart
           data={formattedData}
           setHoverValue={setHover}

@@ -174,8 +174,8 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
         headerItem: 'max-md:h-5! max-md:[&>div]:pt-0! max-md:[&>div]:px-1! max-md:[&>div]:pb-2!',
         tableContainer: 'max-md:p-0',
         cellItemContent: 'max-md:h-11 pl-0.5 flex-row items-center',
-        paginationContainer: 'max-md:px-0 border-none pt-0',
-        paginationList: 'max-md:py-0',
+        paginationContainer: 'max-md:px-0 border-none pt-0 mx-auto w-full',
+        paginationList: 'max-md:py-0 mx-auto',
       }}
       tableBasic
     />
