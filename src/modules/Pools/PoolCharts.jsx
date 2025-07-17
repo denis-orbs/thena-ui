@@ -70,15 +70,6 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
     switch (chartType) {
       case ChartType.TVL: {
         return (
-          // <HoverableChart
-          //   chartData={chartData}
-          //   protocolData={pair}
-          //   valueProperty='tvlUSD'
-          //   title='TVL'
-          //   ChartComponent={LineChart}
-          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
-          //   isSimple={isSimple}
-          // />
           <HoverAbleReChart
             chartData={chartData}
             valueProperty='tvlUSD'
@@ -111,17 +102,8 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
       }
       case ChartType.Volume: {
         return (
-          // <HoverableChart
-          //   chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
-          //   protocolData={pair}
-          //   valueProperty='dayVolume'
-          //   title='Volume (24h)'
-          //   ChartComponent={BarChart}
-          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
-          //   isSimple={isSimple}
-          // />
           <HoverAbleReChart
-            chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+            chartData={chartData}
             valueProperty='dayVolume'
             protocolData={pair}
             title='Volume (24h)'
@@ -145,17 +127,8 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
       }
       case ChartType.Fees: {
         return (
-          // <HoverableChart
-          //   chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
-          //   protocolData={pair}
-          //   valueProperty='dayFees'
-          //   title='Fees (24h)'
-          //   ChartComponent={BarChart}
-          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
-          //   isSimple={isSimple}
-          // />
           <HoverAbleReChart
-            chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+            chartData={chartData}
             valueProperty='dayFees'
             protocolData={pair}
             title='Fees (24h)'
