@@ -43,6 +43,7 @@ export const LOCALES = {
   th: 'th', // Thai
   ja: 'ja', // Japanese
   ko: 'ko', // Korean
+  es: 'es', // Spanish
 }
 
 export const SCAN_URLS = {

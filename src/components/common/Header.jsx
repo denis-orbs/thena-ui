@@ -62,12 +62,13 @@ const chains = [
 
 const langs = [
   { iso: 'en', lang: LOCALES.en, label: 'English' },
-  { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
-  { iso: 'zh', lang: LOCALES.zh_TW, label: '繁體中文' },
+  { iso: 'es', lang: LOCALES.es, label: 'Español' },
   { iso: 'ja', lang: LOCALES.ja, label: '日本語' },
   { iso: 'ko', lang: LOCALES.ko, label: '한국어' },
   { iso: 'th', lang: LOCALES.th, label: 'ภาษาไทย' },
   { iso: 'vi', lang: LOCALES.vi, label: 'Tiếng Việt' },
+  { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
+  { iso: 'zh', lang: LOCALES.zh_TW, label: '繁體中文' },
 ]
 
 function BridgeMaintainModal({ show, onClose }) {
