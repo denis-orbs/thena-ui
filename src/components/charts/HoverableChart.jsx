@@ -9,7 +9,15 @@ import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
-function HoverableChart({ chartData, protocolData, valueProperty, title, ChartComponent, className }) {
+function HoverableChart({
+  chartData,
+  protocolData,
+  valueProperty,
+  title,
+  ChartComponent,
+  className,
+  isSimple = false,
+}) {
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
@@ -83,21 +91,36 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
     [period],
   )
 
-  return (
+  return isSimple ? (
+    <div className='h-[150px]'>
+      <ChartComponent data={formattedData} setHoverValue={setHover} setHoverDate={setDateHover} isSimple />
+    </div>
+  ) : (
     <Box className={cn(className)}>
-      <div className='flex items-start justify-between'>
+      <div className='flex flex-col items-start justify-between max-lg:gap-2 lg:flex-row'>
         <div className='flex flex-col gap-1'>
-          <Paragraph>{t(title)}</Paragraph>
+          <Paragraph className='max-lg:hidden'>{t(title)}</Paragraph>
           {Number(hover) > -1 ? ( // sometimes data is 0
-            <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
+            <TextHeading className='font-archia text-xl! leading-6! font-medium! lg:text-2xl! lg:leading-8!'>
+              ${formatAmount(hover)}
+            </TextHeading>
           ) : (
-            <Skeleton className='h-[32px] w-[128px]' />
+            <Skeleton className='h-6 w-[128px] lg:h-8' />
           )}
-          {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
+          {dateHover ? (
+            <TextSubHeading className='max-lg:hidden'>{dateHover}</TextSubHeading>
+          ) : (
+            <div className='h-5 max-lg:hidden' />
+          )}
         </div>
 
-        <Tabs data={periods} />
+        <Tabs
+          data={periods}
+          className='max-lg:w-full max-lg:p-1'
+          itemClassName='w-full h-6 lg:h-8 items-center max-lg:py-1!'
+        />
       </div>
+
       <div className='mt-2 h-[250px]'>
         <ChartComponent data={formattedData} setHoverValue={setHover} setHoverDate={setDateHover} />
       </div>

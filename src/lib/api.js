@@ -171,3 +171,8 @@ export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page
     .then(r => r.json())
     .then(r => r)
 }
+
+export const getAnalyticsData = async ({ networkId, first, page }) =>
+  fetch(`${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`)
+    .then(r => r.json())
+    .then(r => r.data)

@@ -9,6 +9,7 @@ import {
   V1_MULTI_CHAIN_START_TIME,
   WEIGHTED_MULTI_CHAIN_START_TIME,
 } from '@/constant'
+import { getAnalyticsData } from '@/lib/api'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -200,6 +201,48 @@ const fetchGlobalChartData = async chainId => {
 export const useGlobalChartData = () => {
   const { networkId } = useChainSettings()
   const { data: chartData } = useSWR(['analytics/global', networkId], () => fetchGlobalChartData(networkId), {
+    refreshInterval: 0,
+  })
+  return chartData ?? undefined
+}
+
+const fetchAnalyticsChartData = async networkId => {
+  const result = []
+  const PAGE_SIZE = 1000
+  let page = 1
+  let hasMore = true
+
+  while (hasMore) {
+    try {
+      const data = await getAnalyticsData({
+        networkId,
+        first: PAGE_SIZE,
+        page,
+      })
+
+      result.push(
+        ...data.map(item => ({
+          ...item,
+          veTheUSD: item.feesUSD * 0.9,
+          theNftUSD: item.feesUSD * 0.1,
+        })),
+      )
+      if (data.length < PAGE_SIZE) {
+        hasMore = false
+      } else {
+        page += 1
+      }
+    } catch (e) {
+      console.error('Error fetching userRewards:', e)
+      hasMore = false
+    }
+  }
+  return result
+}
+
+export const useAnalyticsChartData = () => {
+  const { networkId } = useChainSettings()
+  const { data: chartData } = useSWR(['analytics/all', networkId], () => fetchAnalyticsChartData(networkId), {
     refreshInterval: 0,
   })
   return chartData ?? undefined

@@ -245,6 +245,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
             {/* <PoolDescriptionSection pairType={strategy?.title} /> */}
             {!isAutomatic && (
               <ChartPriceRangeInput
+                maskColor='#0D090F'
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}

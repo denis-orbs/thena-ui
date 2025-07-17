@@ -70,7 +70,7 @@ function ChartPrice({
         },
         mode: 1,
         vertLine: {
-          visible: true,
+          visible: false,
           labelVisible: false,
           style: 3,
           width: 1,

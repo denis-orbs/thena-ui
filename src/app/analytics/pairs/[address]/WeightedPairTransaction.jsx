@@ -6,8 +6,9 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import Collapsible from '@/components/collapse/Collapse2'
 import Table from '@/components/table'
-import Tabs from '@/components/tabs'
+import RoundedTabs from '@/components/tabs/RoundedTab'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { weightedClient } from '@/lib/graphql'
@@ -15,6 +16,7 @@ import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { TXN_TYPE } from './PairTransaction'
+import TransactionMobile from './PairTransactionMobile'
 
 const WEIGHTED_TRANSACTIONS = gql`
   query fusionTransactions($address: String!) {
@@ -144,42 +146,80 @@ const getTransactionType = (event, symbol0, symbol1, t, tokens, isWeighted = fal
 }
 
 export default function WeightedTransactionTable({ pair }) {
-  const sortOptions = useMemo(
-    () => [
+  const sortOptions = useMemo(() => {
+    const tokenCount = pair.tokens.length
+
+    // Function to adjust widths based on the number of tokens
+    // This function returns an object with the adjusted widths for each column
+    const getAdjustedWidths = () => {
+      if (tokenCount <= 2) {
+        return {
+          action: 'lg:w-[12%]',
+          total: 'lg:w-[18%]',
+          account: 'lg:w-[20%]',
+          time: 'min-w-[130px] w-[18%]',
+        }
+      }
+      if (tokenCount <= 4) {
+        return {
+          action: 'lg:w-[10%]',
+          total: 'lg:w-[15%]',
+          account: 'lg:w-[16%]',
+          time: 'min-w-[130px] w-[16%]',
+        }
+      }
+      if (tokenCount <= 6) {
+        return {
+          action: 'lg:w-[8%]',
+          total: 'lg:w-[12%]',
+          account: 'lg:w-[14%]',
+          time: 'min-w-[130px] w-[14%]',
+        }
+      }
+      return {
+        action: 'lg:w-[6%]',
+        total: 'lg:w-[10%]',
+        account: 'lg:w-[12%]',
+        time: 'min-w-[130px] w-[12%]',
+      }
+    }
+
+    const adjustedWidths = getAdjustedWidths()
+
+    return [
       {
         label: 'Action',
         value: 'action',
-        width: 'lg:w-[20%]',
+        width: adjustedWidths.action,
         isDesc: true,
       },
       {
         label: 'Total Value',
         value: 'total',
-        width: 'lg:w-[16%]',
+        width: adjustedWidths.total,
         isDesc: true,
       },
       ...pair.tokens.map(t => ({
         label: t.symbol === 'BNB' ? 'WBNB' : t.symbol,
         value: t.symbol === 'BNB' ? 'WBNB' : t.symbol,
-        width: 'lg:w-[16%]',
+        width: 'w-[150px]', // Fixed width for token columns
         notTranslate: true,
         isDesc: true,
       })),
       {
         label: 'Account',
         value: 'account',
-        width: 'lg:w-[16%]',
+        width: adjustedWidths.account,
         isDesc: true,
       },
       {
         label: 'Time',
         value: 'time',
-        width: 'min-w-[130px] w-[16%]',
+        width: adjustedWidths.time,
         isDesc: true,
       },
-    ],
-    [pair.tokens],
-  )
+    ]
+  }, [pair.tokens])
   const [sort, setSort] = useState(sortOptions.at(-1))
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState(TXN_TYPE.All)
@@ -221,12 +261,6 @@ export default function WeightedTransactionTable({ pair }) {
             case 'total':
               res = (a.amountUSD - b.amountUSD) * (sort.isDesc ? -1 : 1)
               break
-            // case 'token0':
-            //   res = (a.token0Amount - b.token0Amount) * (sort.isDesc ? -1 : 1)
-            //   break
-            // case 'token1':
-            //   res = (a.token1Amount - b.token1Amount) * (sort.isDesc ? -1 : 1)
-            //   break
             case 'account':
               res = (a.account - b.account) * (sort.isDesc ? -1 : 1)
               break
@@ -246,7 +280,7 @@ export default function WeightedTransactionTable({ pair }) {
       sortedData.map(item => ({
         action: (
           <div
-            className='cursor-pointer'
+            className='cursor-pointer text-base! text-nowrap text-neutral-200'
             onClick={() => {
               goScan(networkId, item.hash, true)
             }}
@@ -255,13 +289,13 @@ export default function WeightedTransactionTable({ pair }) {
           </div>
         ),
         total: (
-          <Paragraph>
+          <Paragraph className='text-base! text-nowrap text-neutral-200'>
             ${formatAmount(Number(item.amountUSD) < 0 ? item.amountUSD * -1 : item.amountUSD, true)}
           </Paragraph>
         ),
         ...(item.tokens || []).reduce((acc, token) => {
           acc[token.symbol] = (
-            <Paragraph>
+            <Paragraph className='text-base! text-nowrap text-neutral-200'>
               {formatAmount(Number(token.amount) < 0 ? token.amount * -1 : token.amount)} {token.symbol}
             </Paragraph>
           )
@@ -269,7 +303,7 @@ export default function WeightedTransactionTable({ pair }) {
         }, {}),
         account: (
           <span
-            className='text-primary-600 cursor-pointer'
+            className='cursor-pointer text-base! text-nowrap text-neutral-200'
             onClick={() => {
               goScan(networkId, item.account)
             }}
@@ -277,26 +311,53 @@ export default function WeightedTransactionTable({ pair }) {
             {item.account && `${item.account.slice(0, 6)}...${item.account.slice(38, 42)}`}
           </span>
         ),
-        time: <Paragraph>{formatTime(item.timestamp)}</Paragraph>,
+        time: <Paragraph className='text-base! text-nowrap text-neutral-200'>{formatTime(item.timestamp)}</Paragraph>,
       })),
     [networkId, pair.tokens, sortedData, t],
   )
 
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-col gap-4'>
-        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
-        <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
+    <>
+      <div className='hidden flex-col lg:flex'>
+        <div className='flex flex-col gap-4'>
+          <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
+          <RoundedTabs
+            tabs={filters}
+            size={SizeTypes.Medium}
+            className='h-[38px] w-fit'
+            classNames={{ wrapper: 'flex-wrap gap-2' }}
+            containContent={false}
+          />
+        </div>
+        {sortedData.length === 0 ? (
+          <div className='flex h-[150px] w-full flex-col items-center justify-center rounded-xl bg-neutral-900'>
+            <Paragraph className='text-center text-neutral-300'>{t('No transactions found')}</Paragraph>
+          </div>
+        ) : (
+          <Table
+            sortOptions={sortOptions}
+            data={final}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            notAction
+          />
+        )}
       </div>
-      <Table
-        sortOptions={sortOptions}
-        data={final}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        notAction
-      />
-    </div>
+      <div className='lg:hidden'>
+        <Collapsible title={t('Transactions')} subtitle={`${t('Swaps')}/${t('Additions')}/ ${t('Removals')}`}>
+          <TransactionMobile
+            filter={filter}
+            sortedData={sortedData}
+            getTransactionType={getTransactionType}
+            formatTime={formatTime}
+            filters={filters}
+            itemsPerPage={10}
+            isWeighted
+          />
+        </Collapsible>
+      </div>
+    </>
   )
 }

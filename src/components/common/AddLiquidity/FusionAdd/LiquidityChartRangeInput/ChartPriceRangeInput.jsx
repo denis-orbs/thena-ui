@@ -3,21 +3,24 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 
 import { Warning } from '@/components/alert'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, TextHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
+import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
+import { ResetIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
 import ChartPrice from './ChartPrice'
+import { useDensityChartData } from './hooks'
 
 const RIGHT_AXIS_WIDTH = 64
 const CHART_CONTAINER_WIDTH = 452 + RIGHT_AXIS_WIDTH
@@ -72,13 +75,15 @@ export default function ChartPriceRangeInput({
   height = 300,
   idChart = 'chart-price-range',
   label = 'Liquidity range',
+  feeAmount,
+  maskColor,
   classNames,
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
   const zoomRef = useRef(null)
   const windowSize = useWindowSize()
-  const { startPriceTypedValue } = useV3MintState()
+  const { startPriceTypedValue, presetRange } = useV3MintState()
   const dispatch = useDispatch()
   const { isReverse } = useSelector(state => state.fusion)
 
@@ -90,6 +95,8 @@ export default function ChartPriceRangeInput({
   const [range, setRange] = useState(2)
   const [midPrice, setMidPrice] = useState(null)
   const [isOutOfView, setIsOutOfView] = useState(false)
+
+  const { APRs } = useAprStore()
 
   const isFullRange = useMemo(() => activePreset === Presets.FULL, [activePreset])
 
@@ -109,6 +116,16 @@ export default function ChartPriceRangeInput({
     token1Address: currencyA?.wrapped?.address,
     timeWindow,
     currentSwapPrice: { [currencyB?.wrapped?.address]: price },
+  })
+
+  const {
+    isLoading: isLoadLiquidity,
+    // error: isLoadLiquidityError,
+    formattedData,
+  } = useDensityChartData({
+    currencyA,
+    currencyB,
+    feeAmount,
   })
 
   const brushDomain = useMemo(() => {
@@ -199,16 +216,16 @@ export default function ChartPriceRangeInput({
   )
 
   const containerRef = useRef(null)
-  const sortedFormattedData = useMemo(
-    () =>
-      pairPrices
-        ?.sort((a, b) => a.price0 - b.price0)
-        .map(item => ({
-          ...item,
-          activeLiquidity: item.time.getTime(),
-        })),
-    [pairPrices],
-  )
+  // const sortedFormattedData = useMemo(
+  //   () =>
+  //     pairPrices
+  //       ?.sort((a, b) => a.price0 - b.price0)
+  //       .map(item => ({
+  //         ...item,
+  //         activeLiquidity: item.time.getTime(),
+  //       })),
+  //   [pairPrices],
+  // )
 
   const onBrushDomainChangeEnded = useCallback(
     (domain, mode) => {
@@ -378,14 +395,22 @@ export default function ChartPriceRangeInput({
   }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
       <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className={cn('text-base md:text-xl', classNames?.title)}>
+        <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
           {t(label ?? 'Your Range against the Price')}
         </NewTextHeading>
-        <div className='flex items-center gap-4 max-md:justify-between'>
-          {showPeriod && <Tabs data={periods} />}
-          <div className='flex gap-1'>
+        <div className={cn('flex items-center justify-between gap-4 lg:hidden', classNames?.title)}>
+          <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>
+          {presetRange && (
+            <TextHeading className={cn('text-primary-600 text-xl')}>
+              {formatAmount(APRs?.[presetRange?.type])}%
+            </TextHeading>
+          )}
+        </div>
+        <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
+          {showPeriod && <Tabs data={periods} className='flex-1' itemClassName='w-full' />}
+          <div className='z-40 hidden gap-2 lg:flex'>
             <EmphasisIconButton
               className='lg:size-8'
               classNames='lg:size-4 stroke-neutral-400'
@@ -405,22 +430,34 @@ export default function ChartPriceRangeInput({
               disabled={false}
             />
           </div>
+          <EmphasisButton
+            className='flex h-8 gap-1 bg-transparent p-2! text-neutral-500'
+            onClick={() => {
+              setZoomFactor(1)
+              setRange(2)
+            }}
+          >
+            <ResetIcon className='h-4 w-4' />
+            {t('Reset')}
+          </EmphasisButton>
         </div>
       </div>
       {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
       {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
       {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
-      <div className={cn('flex flex-col gap-2 md:gap-4', `max-h-[${height}px]`)}>
-        <div className='relative flex h-[235px] w-full items-center justify-center'>
+      <div className={cn('flex flex-col gap-2 md:gap-4')}>
+        <div
+          className={cn('relative flex h-[272px] w-full items-center justify-center lg:h-[235px]', classNames?.chart)}
+        >
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
-          ) : isLoading ? (
-            <Skeleton className={cn('absolute w-full', `h-[${height}px]`)} />
+          ) : isLoading || isLoadLiquidity ? (
+            <Skeleton className={cn('absolute h-[calc(100%-48px)] w-full lg:h-full')} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
-            <div className={cn('flex h-full w-full flex-col', `max-h-[${height}px}]`)} ref={containerRef}>
-              <div className='flex h-full w-full flex-col gap-8'>
+            <div className={cn('flex h-full w-full flex-col gap-4')}>
+              <div className='flex h-[calc(100%-48px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
                     className='relative h-full w-full'
@@ -432,7 +469,10 @@ export default function ChartPriceRangeInput({
                     <div
                       className='absolute inset-0 z-0 h-full'
                       style={{
-                        width: chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - 10,
+                        width:
+                          chartSize.chartContainerWidth -
+                          desktopSizes.rightAxisWidth -
+                          (windowSize.width > 768 ? 133 : 41),
                       }}
                     >
                       {pairPrices.length > 0 && !isLoading && (
@@ -448,10 +488,11 @@ export default function ChartPriceRangeInput({
                       )}
                     </div>
                     <div className='absolute inset-0 z-10'>
-                      {chartSize && sortedFormattedData.length > 0 ? (
+                      {chartSize && formattedData?.length > 0 ? (
                         <ActivePriceRangeChart
+                          maskColor={maskColor}
                           data={{
-                            series: sortedFormattedData,
+                            series: formattedData,
                             current: price ?? pairPrices[pairPrices.length - 1]?.value,
                             min: boundaryPrices?.[0],
                             max: boundaryPrices?.[1],
@@ -482,9 +523,11 @@ export default function ChartPriceRangeInput({
                           setCurrentHover={setCurrentHover}
                           currentHover={currentHover}
                           id={idChart}
-                          // setIsFlipped={setIsFlipped}
-                          // container={zoomRef.current}
-                          // triggerScroll={triggerScroll}
+                          divideDistanceWidth={
+                            chartSize.chartContainerWidth -
+                            desktopSizes.rightAxisWidth -
+                            (windowSize.width > 768 ? 133 : 41)
+                          }
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />
@@ -492,6 +535,26 @@ export default function ChartPriceRangeInput({
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:hidden'>
+                <EmphasisIconButton
+                  className='lg:size-8'
+                  classNames='lg:size-4 stroke-neutral-400'
+                  Icon={ZoomInIcon}
+                  onClick={() => {
+                    setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+                  }}
+                  disabled={false}
+                />
+                <EmphasisIconButton
+                  className='lg:size-8'
+                  classNames='lg:size-4 stroke-neutral-400'
+                  Icon={ZoomOutIcon}
+                  onClick={() => {
+                    setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+                  }}
+                  disabled={false}
+                />
               </div>
             </div>
           )}

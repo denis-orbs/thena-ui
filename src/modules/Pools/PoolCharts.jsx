@@ -5,14 +5,15 @@ import useSWR from 'swr'
 
 import { fetchPairChartData } from '@/app/analytics/pairs/[address]/PairChart'
 import Loading from '@/app/loading'
-import BarChart from '@/components/charts/BarChart'
-import HoverableChart from '@/components/charts/HoverableChart'
-import LineChart from '@/components/charts/LineChart'
+import HoverAbleReChart from '@/components/charts/HoverAbleReChart'
+import Divider from '@/components/divider'
 import Selection from '@/components/selection'
 import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { cn } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import LiquidityCharts from './LiquidityCharts'
@@ -24,7 +25,7 @@ const ChartType = {
   // Liquidity: 'Liquidity',
 }
 
-export function PoolChart({ address }) {
+export function PoolChart({ address, showTitle = true, isSimple = false, classNames }) {
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
   const t = useTranslations()
@@ -33,6 +34,7 @@ export function PoolChart({ address }) {
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
   const [strategy, setStrategy] = useState(null)
+  const { isLgDown } = useMediaQuery()
 
   const { isReverse } = useSelector(state => state.fusion)
 
@@ -68,37 +70,110 @@ export function PoolChart({ address }) {
     switch (chartType) {
       case ChartType.TVL: {
         return (
-          <HoverableChart
+          // <HoverableChart
+          //   chartData={chartData}
+          //   protocolData={pair}
+          //   valueProperty='tvlUSD'
+          //   title='TVL'
+          //   ChartComponent={LineChart}
+          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
+          //   isSimple={isSimple}
+          // />
+          <HoverAbleReChart
             chartData={chartData}
-            protocolData={pair}
             valueProperty='tvlUSD'
+            protocolData={pair}
             title='TVL'
-            ChartComponent={LineChart}
-            className='p-0!'
+            chartConfig={{
+              tvlUSD: {
+                label: t('Total Volume'),
+              },
+            }}
+            chartItemConfigs={[
+              {
+                dataKey: 'tvlUSD',
+                fill: 'url(#fillGradient)',
+                stroke: '#F299EE',
+                strokeWidth: 2,
+              },
+              {
+                dataKey: 'currentPrice',
+                fill: '#F299EE',
+                stroke: '#F299EE',
+                strokeWidth: 2,
+              },
+            ]}
+            type='area'
+            className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
+            isMinimum={isLgDown}
           />
         )
       }
       case ChartType.Volume: {
         return (
-          <HoverableChart
+          // <HoverableChart
+          //   chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+          //   protocolData={pair}
+          //   valueProperty='dayVolume'
+          //   title='Volume (24h)'
+          //   ChartComponent={BarChart}
+          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
+          //   isSimple={isSimple}
+          // />
+          <HoverAbleReChart
             chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
-            protocolData={pair}
             valueProperty='dayVolume'
+            protocolData={pair}
             title='Volume (24h)'
-            ChartComponent={BarChart}
-            className='p-0!'
+            chartConfig={{
+              dayVolume: {
+                label: t('Volume (24h)'),
+              },
+            }}
+            chartItemConfigs={[
+              {
+                dataKey: 'dayVolume',
+                fill: 'url(#fillGradient)',
+                radius: [4, 4, 0, 0],
+              },
+            ]}
+            type='bar'
+            className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
+            isMinimum={isLgDown}
           />
         )
       }
       case ChartType.Fees: {
         return (
-          <HoverableChart
+          // <HoverableChart
+          //   chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
+          //   protocolData={pair}
+          //   valueProperty='dayFees'
+          //   title='Fees (24h)'
+          //   ChartComponent={BarChart}
+          //   className='flex flex-col bg-transparent p-0! lg:gap-6!'
+          //   isSimple={isSimple}
+          // />
+          <HoverAbleReChart
             chartData={chartData ? chartData.slice(0, chartData.length - 1) : undefined}
-            protocolData={pair}
             valueProperty='dayFees'
+            protocolData={pair}
             title='Fees (24h)'
-            ChartComponent={BarChart}
-            className='p-0!'
+            chartConfig={{
+              dayFees: {
+                label: t('Fees (24h)'),
+              },
+            }}
+            chartItemConfigs={[
+              {
+                dataKey: 'dayFees',
+                fill: 'url(#fillGradient)',
+                radius: [4, 4, 0, 0],
+              },
+            ]}
+            type='bar'
+            className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
+            isMinimum={isLgDown}
           />
         )
       }
@@ -112,6 +187,7 @@ export function PoolChart({ address }) {
             setStrategy={setStrategy}
             isReverse={isReverse}
             isModal={false}
+            isSimple={isSimple}
           />
         )
       }
@@ -119,24 +195,26 @@ export function PoolChart({ address }) {
         return <></>
       }
     }
-  }, [chartType, chartData, pair, firstAsset, isReverse, secondAsset, strategy])
+  }, [chartType, chartData, pair, t, isLgDown, firstAsset, secondAsset, strategy, isReverse, isSimple])
 
   if (isLoading || !pair) {
     return <Loading />
   }
 
   return (
-    <div className='flex w-full flex-col gap-4'>
+    <div className='flex w-full flex-col lg:gap-2'>
       <div className='w-full items-center justify-between lg:flex'>
-        <NewTextSubHeading>{t('Analytics')}</NewTextSubHeading>
+        {showTitle && <NewTextSubHeading className='max-lg:hidden'>{t('Analytics')}</NewTextSubHeading>}
         <Selection
           isFull
           data={chartTypeSelection}
-          className='mt-3 w-full lg:mt-0 lg:w-[565px]'
+          className='mt-0 h-8 w-full rounded-none p-1 max-lg:bg-transparent max-lg:px-4 max-lg:py-1 lg:h-11 lg:w-[275px] lg:rounded-md xl:h-[38px] xl:w-[520px]'
+          classNames={{ items: 'h-6 lg:h-9 xl:h-[30px] py-[4px]! text-xs! font-medium max-lg:px-4! max-lg:py-1!' }}
           isTranslation={false}
         />
       </div>
-      <div className='rounded-lg bg-neutral-900 px-4 py-6'>{renderChart}</div>
+      <Divider className={cn('mx-4 my-3 h-0.5 lg:hidden', isSimple && 'hidden')} />
+      <div className={cn('p-0 lg:rounded-lg', classNames?.chart)}>{renderChart}</div>
     </div>
   )
 }

@@ -230,6 +230,7 @@ function Table({
                       option.width,
                       option.justify,
                       option.minWidth,
+                      classNames?.headerItem,
                     )}
                     key={`header-${idx}`}
                     onClick={() => {
@@ -305,7 +306,12 @@ function Table({
                           <tr
                             key={`table-row-${eleIdx}`}
                             id={`table-row-${eleIdx}`}
-                            className={ele.id === hightLightById ? bgHightLight : ''}
+                            className={cn(
+                              ele.id === hightLightById ? bgHightLight : '',
+                              'rounded-lg hover:bg-neutral-800',
+                              ele.onRowClick && 'cursor-pointer',
+                            )}
+                            onClick={() => ele.onRowClick && ele.onRowClick()}
                           >
                             {sortOptions.map((cell, cellIdx) => (
                               <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -328,11 +334,14 @@ function Table({
                         <tr
                           key={`table-row-${eleIdx}`}
                           id={`table-row-${eleIdx}`}
-                          className={
+                          className={cn(
                             eleIdx === hightLightIndex
                               ? 'table__animate-gradient bg-linear-to-r from-[#B386FF] to-[#FF86FA]'
-                              : ''
-                          }
+                              : '',
+                            'rounded-lg hover:bg-neutral-800',
+                            ele.onRowClick && 'cursor-pointer',
+                          )}
+                          onClick={() => ele.onRowClick && ele.onRowClick()}
                         >
                           {sortOptions.map((cell, cellIdx) => (
                             <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -341,6 +350,7 @@ function Table({
                                   'flex flex-col text-nowrap lg:flex-row',
                                   cell.justify,
                                   classNames?.cellItem,
+                                  classNames?.cellItemContent,
                                   cell?.className,
                                 )}
                               >
@@ -353,7 +363,12 @@ function Table({
                     },
                   )}
                   {summary && (
-                    <tr key='table-row-summary' id='table-row-summary'>
+                    <tr
+                      key='table-row-summary'
+                      id='table-row-summary'
+                      className={cn('rounded-lg hover:bg-neutral-800', summary.onRowClick && 'cursor-pointer')}
+                      onClick={() => summary.onRowClick && summary.onRowClick()}
+                    >
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
                           <TableCell
@@ -480,7 +495,12 @@ function Table({
         )}
       </div>
       {((!loading && pageCount > 1 && !hidePagination) || showNumberOfPage) && (
-        <div className='flex flex-col justify-between gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5'>
+        <div
+          className={cn(
+            'flex flex-col justify-between gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5',
+            classNames?.paginationContainer,
+          )}
+        >
           {showNumberOfPage && (
             <Dropdown
               className='h-11 w-full max-w-[128px] text-sm text-neutral-400'
@@ -501,8 +521,13 @@ function Table({
             />
           )}
           {!loading && pageCount > 1 && !hidePagination && (
-            <div className='flex justify-center sm:justify-end'>
-              <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
+            <div className={cn('flex justify-center sm:justify-end', !showNumberOfPage && 'max-lg:mx-auto lg:ml-auto')}>
+              <ul
+                className={cn(
+                  'relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end',
+                  classNames?.paginationList,
+                )}
+              >
                 <PaginateCell
                   onClick={() => {
                     if (currentPage !== 1) {

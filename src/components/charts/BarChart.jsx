@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { formatAmount } from '@/lib/utils'
@@ -7,10 +8,13 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 
 import Skeleton from '../skeleton'
 
-function BarChart({ data, setHoverValue, setHoverDate }) {
+const epoch5 = 1675900800
+
+function BarChart({ data, setHoverValue, setHoverDate, isSimple = false, useEpoch }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
   const { locale } = useLocaleSettings()
+  const t = useTranslations()
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -25,6 +29,8 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
   useEffect(() => {
     if (!chartRef?.current || !transformedData || transformedData.length === 0) return
 
+    const epochNumber = epochStartTimestamp => Math.floor((+epochStartTimestamp - epoch5) / 604800) + 5
+
     const chart = createChart(chartRef?.current, {
       layout: {
         background: { color: 'transparent' },
@@ -34,6 +40,7 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
       handleScale: false,
       handleScroll: false,
       rightPriceScale: {
+        visible: !isSimple,
         scaleMargins: {
           top: 0.01,
           bottom: 0,
@@ -41,10 +48,10 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
         borderVisible: false,
       },
       timeScale: {
-        visible: true,
+        visible: !isSimple,
         borderVisible: false,
         secondsVisible: false,
-        tickMarkFormatter: unixTime => dayjs(unixTime).format('MMM D'),
+        tickMarkFormatter: unixTime => (useEpoch ? epochNumber(unixTime / 1000) : dayjs(unixTime).format('MMM D')),
       },
       grid: {
         horzLines: {
@@ -61,7 +68,7 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
         },
         mode: 1,
         vertLine: {
-          visible: true,
+          visible: !isSimple,
           labelVisible: false,
           style: 3,
           width: 1,
@@ -88,18 +95,24 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
       if (newSeries && param) {
         const timestamp = param.time
         if (!timestamp) return
-        const now = new Date(timestamp)
-        const time = `${now.toLocaleString(locale, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZone: 'UTC',
-        })} (UTC)`
-        const parsed = param.seriesData.get(newSeries)?.value ?? 0
-        if (setHoverValue) setHoverValue(parsed)
-        if (setHoverDate) setHoverDate(time)
+        if (useEpoch) {
+          const parsed = param.seriesData.get(newSeries)?.value ?? 0
+          if (setHoverValue) setHoverValue(parsed)
+          if (setHoverDate) setHoverDate(`${t('Epoch')} ${epochNumber(timestamp / 1000)}`)
+        } else {
+          const now = new Date(timestamp)
+          const time = `${now.toLocaleString(locale, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'UTC',
+          })} (UTC)`
+          const parsed = param.seriesData.get(newSeries)?.value ?? 0
+          if (setHoverValue) setHoverValue(parsed)
+          if (setHoverDate) setHoverDate(time)
+        }
       } else {
         if (setHoverValue) setHoverValue(undefined)
         if (setHoverDate) setHoverDate(undefined)
@@ -109,7 +122,7 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, locale])
+  }, [transformedData, setHoverValue, setHoverDate, locale, t, useEpoch, isSimple])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

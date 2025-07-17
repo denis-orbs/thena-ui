@@ -2,15 +2,14 @@ import { brushY, select } from 'd3'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrevious from '@/hooks/usePrevious'
-
-import { brushHandlePathV2 } from './svg'
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 36
 
 // margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 8
+const BRUSH_EXTENT_MARGIN_PX = 0
 
 /**
  * Returns true if every element in `a` maps to the
@@ -30,7 +29,7 @@ const toPriceExtent = (selection, yScale) => [yScale.invert(selection[1]), yScal
 
 const normalizeExtent = extent => (extent[0] < extent[1] ? extent : [extent[1], extent[0]])
 
-export const Brush2 = ({
+const Brush2 = ({
   id,
   yScale,
   interactive,
@@ -46,9 +45,13 @@ export const Brush2 = ({
   padding,
   container,
   disableColor,
+  maskColor,
   setLiveLocalBrushExtent = () => {},
   setCurrentHover = () => {},
+  currentHover,
+  divideDistanceWidth,
 }) => {
+  const { isLgDown } = useMediaQuery()
   const t = useTranslations()
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -168,8 +171,8 @@ export const Brush2 = ({
     width,
     setBrushExtent,
     brushInProgress,
-    setCurrentHover,
     container,
+    setCurrentHover,
   ])
 
   // respond to yScale changes only
@@ -196,13 +199,9 @@ export const Brush2 = ({
     normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height
 
   useEffect(() => {
-    select(brushRef.current)
-      .selectAll('.handle--n')
-      .attr('transform', `translate(0, ${flipNorthHandle ? 10 : -10})`)
-    select(brushRef.current)
-      .selectAll('.handle--s')
-      .attr('transform', `translate(0, ${flipSouthHandle ? -10 : 10})`)
-  }, [flipNorthHandle, flipSouthHandle])
+    select(brushRef.current).selectAll('.handle--n').attr('transform', 'translate(0, -15)')
+    select(brushRef.current).selectAll('.handle--s').attr('transform', 'translate(0, 15)')
+  }, [])
 
   useEffect(() => {
     if (showNorthArrow || showSouthArrow) {
@@ -234,17 +233,30 @@ export const Brush2 = ({
   return useMemo(
     () => (
       <>
-        <rect x='0' y={-padding} width='100%' height={padding} fill='#0D090F' />
+        <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
         {(showNorthArrow || isFullRange) && <line x1='0' y1='0' x2={width} y2='0' stroke='#F199EE' strokeWidth='2' />}
-        <rect x='0' y={height} width='100%' height={padding - 15} fill='#0D090F' />
+        <rect x='0' y={height} width='100%' height={padding - 8} fill={maskColor} />
         {(showSouthArrow || isFullRange) && (
           <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
         )}
         <defs>
-          <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+          {/* <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
             <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
             <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
-          </linearGradient>
+          </linearGradient> */}
+          {isLgDown ? (
+            <>
+              <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+                <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0} />
+                <stop offset='100%' stopColor='#83007E' stopOpacity={0.1} />
+              </linearGradient>
+            </>
+          ) : (
+            <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+              <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+              <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
+            </linearGradient>
+          )}
 
           {/* clips at exactly the svg area */}
           <clipPath id={`${id}-brush-clip`}>
@@ -262,129 +274,156 @@ export const Brush2 = ({
         {normalizedBrushExtent && (
           <>
             {northHandleInView && !isFullRange ? (
-              <g
-                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${
-                  flipNorthHandle ? -1 : 1
-                })`}
-                cursor={interactive ? 'ns-resize' : 'default'}
-                pointerEvents={interactive ? 'all' : 'none'}
-                style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-              >
-                <path
-                  color={interactive ? southHandleColor : disableColor.line.south}
-                  stroke={interactive ? southHandleColor : disableColor.line.south}
-                  strokeWidth={3}
-                  opacity={interactive ? 0.85 : 1}
-                  d={brushHandlePathV2(width)}
+              <g>
+                {/* Draw the line first, then the handle above it */}
+                <line
+                  x1='0'
+                  y1={Math.max(0, yScale(normalizedBrushExtent[1]))}
+                  x2={width + 15}
+                  y2={Math.max(0, yScale(normalizedBrushExtent[1]))}
+                  stroke='#EA66E5'
+                  strokeWidth={isLgDown ? 1 : 2}
                 />
-                <g pointerEvents='none' opacity={interactive ? 0.85 : 1}>
-                  {' '}
-                  <rect
-                    x='0'
-                    y='-37'
-                    width='128'
-                    height='36'
-                    rx='10'
-                    fill={interactive ? southHandleColor : disableColor.handle.south}
-                  />
-                  <rect
-                    x='0'
-                    y='-19'
-                    width='128'
-                    height='18'
-                    fill={interactive ? southHandleColor : disableColor.handle.south}
-                  />
-                  {interactive && (
-                    <g transform='translate(16, -26)' pointerEvents='none'>
-                      <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                        <path
-                          d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                          stroke='#2C002A'
-                          strokeWidth='2'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                        />
-                      </svg>
+                <g
+                  pointerEvents='none'
+                  cursor={interactive ? 'ns-resize' : 'default'}
+                  style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
+                  transform={`translate(${(width - (currentHover === 'north' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
+                    Math.max(0, yScale(normalizedBrushExtent[1])) -
+                    (currentHover === 'north' ? (flipNorthHandle ? -8 : 35) : flipNorthHandle ? -8 : 15)
+                  })`}
+                >
+                  {currentHover === 'north' ? (
+                    <g pointerEvents='none' opacity={1}>
+                      <rect
+                        x='0'
+                        y='1'
+                        width='106'
+                        height='28'
+                        rx='8'
+                        fill={interactive ? northHandleColor : disableColor.handle.north}
+                        stroke={interactive ? '#F199EE' : disableColor.line.north}
+                        strokeWidth='1'
+                      />
+                      {interactive && (
+                        <g transform='translate(8, 9)' pointerEvents='none'>
+                          <svg
+                            width='11'
+                            height='16'
+                            viewBox='0 0 11 16'
+                            fill='none'
+                            xmlns='http://www.w3.org/2000/svg'
+                          >
+                            <path
+                              d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                              stroke='#2C002A'
+                              strokeWidth='2'
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                            />
+                          </svg>
+                        </g>
+                      )}
+                      <text
+                        className='font-archia font-semibold'
+                        x={interactive ? '27' : '30'}
+                        y='23'
+                        fill={interactive ? '#2C002A' : '#B3ABB7'}
+                        fontSize='20'
+                        textAnchor='start'
+                        pointerEvents='none'
+                      >
+                        {brushLabelValue('w', localBrushExtent?.[1])}
+                      </text>
                     </g>
+                  ) : (
+                    <rect
+                      width={isLgDown ? 32 : 52}
+                      height={8}
+                      fill='#F199EE'
+                      stroke='#EA66E5'
+                      strokeWidth='1'
+                      rx='4'
+                      ry='4'
+                    />
                   )}
-                  <text
-                    className='font-archia font-semibold'
-                    x={interactive ? '80' : '60'}
-                    y='-12'
-                    fill={interactive ? '#2C002A' : '#B3ABB7'}
-                    fontSize='20'
-                    textAnchor='middle'
-                    pointerEvents='none'
-                    transform={`translate(80, ${flipNorthHandle ? -18 : -12}) rotate(${
-                      flipNorthHandle ? 180 : 0
-                    }) scale(${flipNorthHandle ? -1 : 1},1) translate(-80, ${flipNorthHandle ? 18 : 12})`}
-                  >
-                    {brushLabelValue('w', localBrushExtent?.[1])}
-                  </text>
                 </g>
               </g>
             ) : null}
 
             {southHandleInView && !isFullRange ? (
-              <g
-                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${flipSouthHandle ? -1 : 1})`}
-                cursor={interactive ? 'ns-resize' : 'default'}
-                pointerEvents={interactive ? 'all' : 'none'}
-                style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-              >
-                <g>
-                  <path
-                    color={interactive ? southHandleColor : disableColor.line.south}
-                    stroke={interactive ? southHandleColor : disableColor.line.south}
-                    strokeWidth={3}
-                    opacity={interactive ? 0.85 : 1}
-                    d={brushHandlePathV2(width)}
-                    id='south-line-handle-path'
-                  />
-                  <g pointerEvents='none' opacity={interactive ? 0.85 : 1}>
+              <g>
+                <line
+                  x1='0'
+                  y1={Math.max(0, yScale(normalizedBrushExtent[0]))}
+                  x2={width + 15}
+                  y2={Math.max(0, yScale(normalizedBrushExtent[0]))}
+                  stroke='#EA66E5'
+                  strokeWidth={isLgDown ? 1 : 2}
+                />
+                <g
+                  pointerEvents='none'
+                  cursor={interactive ? 'ns-resize' : 'default'}
+                  style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
+                  transform={`translate(${(width - (currentHover === 'south' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
+                    Math.max(0, yScale(normalizedBrushExtent[0])) +
+                    (currentHover === 'south' ? (flipSouthHandle ? -35 : 8) : flipSouthHandle ? -15 : 8)
+                  })`}
+                >
+                  {currentHover === 'south' ? (
+                    <g pointerEvents='none' opacity={1}>
+                      <rect
+                        x='0'
+                        y='1'
+                        width='106'
+                        height='28'
+                        rx='8'
+                        fill={interactive ? southHandleColor : disableColor.handle.south}
+                        stroke={interactive ? '#F199EE' : disableColor.line.south}
+                        strokeWidth='1'
+                      />
+                      {interactive && (
+                        <g transform='translate(8, 9)' pointerEvents='none'>
+                          <svg
+                            width='11'
+                            height='16'
+                            viewBox='0 0 11 16'
+                            fill='none'
+                            xmlns='http://www.w3.org/2000/svg'
+                          >
+                            <path
+                              d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                              stroke='#2C002A'
+                              strokeWidth='2'
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                            />
+                          </svg>
+                        </g>
+                      )}
+                      <text
+                        className='font-archia font-semibold'
+                        x={interactive ? '27' : '30'}
+                        y='23'
+                        fill={interactive ? '#2C002A' : '#B3ABB7'}
+                        fontSize='20'
+                        textAnchor='start'
+                        pointerEvents='none'
+                      >
+                        {brushLabelValue('w', localBrushExtent?.[0])}
+                      </text>
+                    </g>
+                  ) : (
                     <rect
-                      x='0'
-                      y='1'
-                      width='128'
-                      height='36'
-                      rx='10'
-                      fill={interactive ? southHandleColor : disableColor.handle.south}
+                      width={isLgDown ? 32 : 52}
+                      height={8}
+                      fill='#F199EE'
+                      stroke='#EA66E5'
+                      strokeWidth='1'
+                      rx='4'
+                      ry='4'
                     />
-                    <rect
-                      x='0'
-                      y='1'
-                      width='128'
-                      height='18'
-                      fill={interactive ? southHandleColor : disableColor.handle.south}
-                    />
-                    {interactive && (
-                      <g transform='translate(16, 12)' pointerEvents='none'>
-                        <svg width='11' height='16' viewBox='0 0 11 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                          <path
-                            d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                            stroke='#2C002A'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </svg>
-                      </g>
-                    )}
-                    <text
-                      className='font-archia font-semibold'
-                      x={interactive ? '80' : '60'}
-                      y='25'
-                      fill={interactive ? '#2C002A' : '#B3ABB7'}
-                      fontSize='20'
-                      textAnchor='middle'
-                      pointerEvents='none'
-                      transform={`translate(80, ${flipSouthHandle ? 20 : 25}) rotate(${
-                        flipSouthHandle ? 180 : 0
-                      }) scale(${flipSouthHandle ? -1 : 1},1) translate(-80, ${flipSouthHandle ? -20 : -25})`}
-                    >
-                      {brushLabelValue('w', localBrushExtent?.[0])}
-                    </text>
-                  </g>
+                  )}
                 </g>
               </g>
             ) : null}
@@ -450,34 +489,63 @@ export const Brush2 = ({
                 </text>
               </g>
             )}
+            {!showSouthAnimated && !isLgDown && (
+              <g width={divideDistanceWidth} transform={`translate(18, ${height + 10}) `}>
+                {/* Tick lines for bottom axis */}
+                {Array.from({ length: Math.floor(divideDistanceWidth / 40) + 1 }).map((_, i) => (
+                  <line
+                    key={i}
+                    x1={i * 40}
+                    y1={0}
+                    x2={i * 40}
+                    y2={-10}
+                    stroke='#4B3950'
+                    strokeWidth='3'
+                    opacity='0.4'
+                  />
+                ))}
+              </g>
+            )}
+
+            <g transform={`translate(0, ${height + 20}) `}>
+              <line x1='0' y1={5} x2={width} y2={5} stroke='#281B2E' strokeWidth='3' />
+            </g>
           </>
         )}
       </>
     ),
     [
       padding,
+      maskColor,
       showNorthArrow,
       isFullRange,
       width,
       height,
       showSouthArrow,
+      isLgDown,
       id,
       interactive,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
+      currentHover,
       flipNorthHandle,
-      southHandleColor,
-      disableColor.line.south,
+      northHandleColor,
+      disableColor.handle.north,
       disableColor.handle.south,
+      disableColor.line.north,
+      disableColor.line.south,
       brushLabelValue,
       localBrushExtent,
       southHandleInView,
       flipSouthHandle,
-      northHandleColor,
-      t,
+      southHandleColor,
       showNorthAnimated,
+      t,
       showSouthAnimated,
+      divideDistanceWidth,
     ],
   )
 }
+
+export default Brush2

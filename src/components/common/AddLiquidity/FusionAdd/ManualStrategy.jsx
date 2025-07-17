@@ -294,6 +294,7 @@ function ManualStrategy({
           <div>
             <div className='mt-2 flex flex-col xl:hidden'>
               <ChartPriceRangeInput
+                maskColor='#0D090F'
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
