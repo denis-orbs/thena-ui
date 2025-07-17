@@ -63,8 +63,6 @@ const FUSION_DAY_DATAS = gql`
       volumeUSD
       untrackedVolumeUSD
       tvlUSD
-      dailyVolumeToken0
-      dailyVolumeToken1
       feesToken0
       feesToken1
     }
@@ -210,8 +208,6 @@ export const getFusionChartData = async ({
       dayVolume: parseFloat(ele.volumeUSD) || parseFloat(ele.untrackedVolumeUSD),
       tvlUSD: parseFloat(ele.tvlUSD),
       dayFees: parseFloat(ele.feesUSD),
-      dailyVolumeToken0: parseFloat(ele.dailyVolumeToken0),
-      dailyVolumeToken1: parseFloat(ele.dailyVolumeToken1),
       feesToken0: parseFloat(ele.feesToken0),
       feesToken1: parseFloat(ele.feesToken1),
     }))
