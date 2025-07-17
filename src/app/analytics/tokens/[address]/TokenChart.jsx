@@ -12,6 +12,8 @@ import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME 
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import { findNearestPrice, getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
+
 const V1_DAY_DATAS = gql`
   query v1TokenCharts($address: String!, $startTime: Int!, $skip: Int!) {
     tokenDayDatas(
@@ -24,18 +26,49 @@ const V1_DAY_DATAS = gql`
       date
       totalLiquidityUSD
       dailyVolumeUSD
+      dailyVolumeToken
       priceUSD
+      totalLiquidityToken
+      totalLiquidityETH
+    }
+    tokens(where: { id: $address }) {
+      derivedETH
     }
   }
 `
 
 const getV1ChartData = async (chainId, address, skip = 0) => {
   try {
-    const { tokenDayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
+    const { tokenDayDatas, tokens } = await v1Client[chainId].request(V1_DAY_DATAS, {
       address,
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
+
+    if (tokens.some(token => Number(token.derivedETH ?? 0) === 0)) {
+      const priceData = await getHistoricalTokenPrice({
+        chainId,
+        tokenAddresses: [address],
+        startTime: V1_MULTI_CHAIN_START_TIME[chainId],
+      })
+      const data = tokenDayDatas.map(ele => {
+        const datePrice = findNearestPrice(priceData, ele.date, address)
+
+        const priceUSD = parseFloat(datePrice ?? ele.priceUSD ?? 0)
+
+        const tvlUSD = parseFloat(ele.totalLiquidityToken) * priceUSD
+        const dailyVolumeUSD = parseFloat(ele.dailyVolumeToken) * priceUSD
+
+        return {
+          date: Number(ele.date),
+          tvlUSD: tvlUSD || parseFloat(ele.totalLiquidityUSD),
+          dailyVolumeUSD: dailyVolumeUSD || parseFloat(ele.dailyVolumeUSD),
+          priceUSD,
+        }
+      })
+      return { data, error: false }
+    }
+
     const data = tokenDayDatas.map(ele => ({
       date: Number(ele.date),
       tvlUSD: parseFloat(ele.totalLiquidityUSD),
@@ -93,6 +126,7 @@ const fetchTokenChartData = async (chainId, token) => {
   console.log('fetch token chart data ======================')
   const { data: fusiondata } = await getFusionChartData(chainId, token.address)
   const { data: fusiondatav3 } = await getFusionChartData(chainId, token.address, 0, 3)
+
   const { data: v1data } = await getV1ChartData(chainId, token.address)
   const fusionFirstDate = (fusiondata && fusiondata[0]?.date) ?? 0
   const v1FirstDate = (v1data && v1data[0]?.date) ?? 0
@@ -125,7 +159,10 @@ const fetchTokenChartData = async (chainId, token) => {
             : (data1?.tvlUSD ?? 0) + (fusionItem?.tvlUSD ?? 0) + (fusionV3Item?.tvlUSD ?? 0),
         dailyVolumeUSD:
           (data1?.dailyVolumeUSD ?? 0) + (fusionItem?.dailyVolumeUSD ?? 0) + (fusionV3Item?.dailyVolumeUSD ?? 0),
-        priceUSD: fusionV3Item?.priceUSD ?? fusionItem?.priceUSD ?? data1?.priceUSD ?? lastPrice ?? 0,
+        priceUSD:
+          [fusionV3Item?.priceUSD, fusionItem?.priceUSD, data1?.priceUSD, lastPrice].find(
+            v => v && v !== '0' && v !== 0,
+          ) ?? 0,
       }
       lastTVL = item.tvlUSD
       lastPrice = item.priceUSD
@@ -154,13 +191,14 @@ export default function TokenChart({ token }) {
       refreshInterval: 0,
     },
   )
+
   const stats = useMemo(
     () => ({
-      tvlUSD: token?.liquidity,
-      dailyVolumeUSD: token?.volume,
-      priceUSD: token?.price,
+      tvlUSD: token?.liquidity || chartData?.[chartData.length - 1]?.tvlUSD,
+      dailyVolumeUSD: token?.volume || chartData?.[chartData.length - 1]?.dailyVolumeUSD,
+      priceUSD: token?.price || chartData?.[chartData.length - 1]?.priceUSD,
     }),
-    [token],
+    [token, chartData],
   )
   return (
     <div className='flex flex-col gap-6'>

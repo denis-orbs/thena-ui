@@ -160,6 +160,18 @@ export const fetchAutomationHistory = (chainId, tokenId) =>
     .then(r => r.json())
     .then(r => r.data)
 
+export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
+  let url = `${backendApi}/v3/historical-token-price/${chainId}?page=${page}&limit=${limit}&date_gte=${startDate}`
+
+  for (const address of tokenAddresses) {
+    url += `&tokens[]=${address}`
+  }
+
+  return fetch(url)
+    .then(r => r.json())
+    .then(r => r)
+}
+
 export const getAnalyticsData = async ({ networkId, first, page }) =>
   fetch(`${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`)
     .then(r => r.json())
