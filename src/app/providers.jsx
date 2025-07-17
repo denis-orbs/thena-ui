@@ -22,6 +22,7 @@ import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
 import enMessage from '@/lang/en.json'
+import esMessage from '@/lang/es.json'
 import jaMessage from '@/lang/ja.json'
 import koMessage from '@/lang/ko.json'
 import thMessage from '@/lang/th.json'
@@ -81,6 +82,8 @@ function IntlProvider({ children }) {
         return jaMessage
       case LOCALES.ko:
         return koMessage
+      case LOCALES.es:
+        return esMessage
       default:
         return enMessage
     }
