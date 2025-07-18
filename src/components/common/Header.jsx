@@ -571,7 +571,7 @@ function Header() {
           {
             heading: t('Perps Trade'),
             subheading: t('Easy & user-friendly trading interface'),
-            onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
+            onClickHandler: () => window.open('https://perps.thena.fi', '_blank'),
           },
           {
             heading: t('Cross-Chain'),
@@ -1083,7 +1083,7 @@ function Header() {
             </div>
             <LanguageSelect className='2sm:block hidden' />
             <ChainSelect t={t} className='2sm:block hidden' />
-            {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+            {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://perps.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
             <ConnectButton
