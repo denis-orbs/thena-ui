@@ -1318,11 +1318,18 @@ function Header() {
       )} */}
       <Script
         id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget.js'
+        crossOrigin='crossOrigin'
+        integrity='sha384-VFG3iHnx96F8Vxsk5xLsuKkYZJklyruaWz9YFnEqFNcqvWjNeTHADh8AC9Zdbb9z'
+        src='https://widget.metacrm.inc/static/js/widget-3-7-1.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
+            autoOpenNewNotification: true,
+            manualConnect: true,
           })
+        }}
+        onError={error => {
+          console.error('Failed to load widget.js', error)
         }}
       />
     </div>
