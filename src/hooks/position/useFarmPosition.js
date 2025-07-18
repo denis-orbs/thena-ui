@@ -193,7 +193,7 @@ export const useFarmPositions = positions => {
 
         const tvl = amount0InUsd.plus(amount1InUsd)
         const totalLiquidity = fusion?.liquidity
-        const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || NaN
+        const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || ZERO_VALUE
 
         const farmRatio =
           Number(totalLiquidityInFarm) > 0 ? BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm) : ZERO_VALUE
