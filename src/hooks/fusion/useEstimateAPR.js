@@ -168,6 +168,11 @@ export const useEstimateAPR = ({
         address: virtualPool ?? zeroAddress,
         abi: eternalVirtualPoolAbi,
       },
+      {
+        functionName: 'rewardReserves',
+        address: virtualPool ?? zeroAddress,
+        abi: eternalVirtualPoolAbi,
+      },
     ],
     query: {
       enabled: Boolean(poolAddress),
@@ -176,6 +181,7 @@ export const useEstimateAPR = ({
 
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
+  const rewardReserve = farmInfo?.[2]?.result ?? [0n, 0n]
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   const poolPrice = currentPrice ?? pool?._token0Price?.toSignificant(5)
@@ -333,7 +339,8 @@ export const useEstimateAPR = ({
     .plus(fromWei(_amount1, currency1?.decimals ?? 18).times(currency1?.price ?? 0))
 
   return presetPositions.reduce((acc, { title, position: p }) => {
-    if (!p) {
+    const hasEmission = Number(rewardReserve[0]) > 0 || Number(rewardReserve[1]) > 0n
+    if (!p || !hasEmission) {
       acc[title] = BigNumber(0)
     } else {
       const positionTvl = BigNumber((isRevert ? p.amount0 : p.amount1)?.toExact() ?? 0)
@@ -497,11 +504,20 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     })),
   )
 
+  const rewardReserves = await batchCallMulti(
+    poolAddressList.map(address => ({
+      functionName: 'rewardReserves',
+      address: getAddress(farmDatas, address),
+      abi: eternalVirtualPoolAbi,
+    })),
+  )
+
   const result = (globalStates || []).map((states, index) => {
     const communityFee = BigNumber(states?.[4] || 200n)
     const totalLiquidityInFarm = BigNumber(currentLiquidities?.[index] ?? 1n)
     const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
-    return { totalLiquidityInFarm, earnPercent }
+    const rewardReserve = rewardReserves?.[index] ?? [0n, 0n]
+    return { totalLiquidityInFarm, earnPercent, rewardReserve }
   })
 
   return result
