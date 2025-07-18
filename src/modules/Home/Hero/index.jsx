@@ -66,9 +66,12 @@ function Hero() {
           <br />
           with THENA Finance */}
         </h1>
-        <TrailingButton className='z-30 mt-8 lg:mt-10' onClick={() => push('/swap')}>
-          {t('Trade Now')}
-        </TrailingButton>
+        <div className='z-30 mt-8 flex gap-4 lg:mt-10'>
+          <TrailingButton onClick={() => push('/swap')}>{t('Spot Trade')}</TrailingButton>
+          <TrailingButton onClick={() => window.open('https://perps.thena.fi', '_blank')}>
+            {t('Perps Trade')}
+          </TrailingButton>
+        </div>
         <MainHero />
       </div>
     </>
