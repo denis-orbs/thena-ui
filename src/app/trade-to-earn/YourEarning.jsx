@@ -329,7 +329,7 @@ function YourEarning({ setPending }) {
                 {t('Go trade on ALPHA and claim your earnings here')}
               </TextSubHeading>
               <div className='flex justify-center'>
-                <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
+                <TrailingButton onClick={() => push('https://perps.thena.fi/trade/BTCUSDT')}>
                   {t('Trade Now')}
                 </TrailingButton>
               </div>

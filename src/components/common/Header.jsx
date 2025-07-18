@@ -571,7 +571,7 @@ function Header() {
           {
             heading: t('Perps Trade'),
             subheading: t('Easy & user-friendly trading interface'),
-            onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
+            onClickHandler: () => window.open('https://perps.thena.fi', '_blank'),
           },
           {
             heading: t('Cross-Chain'),
@@ -1083,7 +1083,7 @@ function Header() {
             </div>
             <LanguageSelect className='2sm:block hidden' />
             <ChainSelect t={t} className='2sm:block hidden' />
-            {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+            {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://perps.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
             <ConnectButton
@@ -1318,11 +1318,18 @@ function Header() {
       )} */}
       <Script
         id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget.js'
+        crossOrigin='crossOrigin'
+        integrity='sha384-VFG3iHnx96F8Vxsk5xLsuKkYZJklyruaWz9YFnEqFNcqvWjNeTHADh8AC9Zdbb9z'
+        src='https://widget.metacrm.inc/static/js/widget-3-7-1.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
+            autoOpenNewNotification: true,
+            manualConnect: true,
           })
+        }}
+        onError={error => {
+          console.error('Failed to load widget.js', error)
         }}
       />
     </div>
