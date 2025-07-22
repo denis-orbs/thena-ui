@@ -339,7 +339,7 @@ export const useEstimateAPR = ({
     .plus(fromWei(_amount1, currency1?.decimals ?? 18).times(currency1?.price ?? 0))
 
   return presetPositions.reduce((acc, { title, position: p }) => {
-    const hasEmission = Number(rewardReserve[0]) > 0 || Number(rewardReserve[1]) > 0n
+    const hasEmission = Number(rewardReserve?.[0]) > 0 || Number(rewardReserve?.[1]) > 0n
     if (!p || !hasEmission) {
       acc[title] = BigNumber(0)
     } else {
