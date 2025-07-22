@@ -294,11 +294,16 @@ export const useIchiRemove = () => {
   const t = useTranslations()
 
   const onIchiRemove = useCallback(
-    async ({ pool, amount, version, callback, isStaked = true }) => {
+    async ({ pool, amount, version, callback, isStaked = true, hasRewards = false }) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
+      const claimuuid = uuidv4()
       const unstakeuuid = uuidv4()
       const isFarming = pool.title === ICHI_TYPES[0] && version === 3
+
+      const ichiVault = getIchiVaultContract(pool.address, networkId, pool.account?.version)
+      const farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
+      const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
 
       startTxn({
         key,
@@ -312,6 +317,13 @@ export const useIchiRemove = () => {
                 hash: null,
               },
             }),
+          ...(hasRewards && {
+            [claimuuid]: {
+              desc: t('Claim Rewards'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -326,6 +338,13 @@ export const useIchiRemove = () => {
         const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
         const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
         if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      if (hasRewards) {
+        if (!(await writeTxn(key, claimuuid, multiFeeDistributionContract, 'getAllRewards', []))) {
           setPending(false)
           return
         }
