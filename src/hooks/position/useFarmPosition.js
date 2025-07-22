@@ -189,21 +189,23 @@ export const useFarmPositions = positions => {
         if (!tickLower || !tickUpper || !position) return ZERO_VALUE
 
         const farmInfo = farmInfoList[index] || {}
-        const { earnPercent = 0, totalLiquidityInFarm } = farmInfo
+        const { earnPercent = 0, totalLiquidityInFarm, rewardReserve } = farmInfo
 
         const tvl = amount0InUsd.plus(amount1InUsd)
         const totalLiquidity = fusion?.liquidity
         const annualPoolFees = annualPoolFeesPools?.[poolAddress.toLowerCase()]?.annualPoolFees || ZERO_VALUE
+        const hasEmission = Number(rewardReserve?.[0]) > 0 || Number(rewardReserve?.[1]) > 0n
 
         const farmRatio =
           Number(totalLiquidityInFarm) > 0 ? BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm) : ZERO_VALUE
-        const farmApr = tvl.gt(0)
-          ? rewardPerSecond
-              .times(farmRatio)
-              .times(86400 * 365)
-              .div(tvl)
-              .times(100)
-          : ZERO_VALUE
+        const farmApr =
+          tvl.gt(0) && hasEmission
+            ? rewardPerSecond
+                .times(farmRatio)
+                .times(86400 * 365)
+                .div(tvl)
+                .times(100)
+            : ZERO_VALUE
 
         const feeRatio = Number(totalLiquidity) > 0 ? BigNumber(liquidity).div(totalLiquidity) : ZERO_VALUE
         const feeAPR = Number(tvl) > 0 ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : ZERO_VALUE
