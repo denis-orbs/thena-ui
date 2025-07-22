@@ -156,6 +156,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
                   }
                 }}
                 placeHolder='Select theNFT'
+                listClassNames='z-100 max-h-[300px] overflow-y-auto'
               />
             </div>
             <div className='flex flex-col gap-2'>
