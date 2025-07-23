@@ -130,7 +130,7 @@ function AnalyticsChart({
 
   // Calculate current price for stacked charts
   const currentPrice = useMemo(() => {
-    if (!formattedData?.length || !chartItemConfigs?.length) return undefined
+    if (!formattedData?.length || !chartItemConfigs?.length) return 0
 
     const lastDataPoint = formattedData[formattedData.length - 1]
     const activeConfigs =
@@ -138,11 +138,11 @@ function AnalyticsChart({
 
     // For stacked charts (multiple data keys), sum all values
     if (activeConfigs.length > 1) {
-      return activeConfigs.reduce((sum, config) => sum + (lastDataPoint[config.dataKey] || 0), 0)
+      return activeConfigs.reduce((sum, config) => sum + (lastDataPoint[config.dataKey] || 0), 0) || 0
     }
 
     // For single data key, use the value directly
-    return lastDataPoint[activeConfigs[0]?.dataKey]
+    return lastDataPoint[activeConfigs[0]?.dataKey] ?? 0
   }, [formattedData, chartItemConfigs, property])
 
   const chartTooltipFormatter = useCallback(
