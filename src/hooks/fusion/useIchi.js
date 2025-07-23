@@ -301,10 +301,6 @@ export const useIchiRemove = () => {
       const unstakeuuid = uuidv4()
       const isFarming = pool.title === ICHI_TYPES[0] && version === 3
 
-      const ichiVault = getIchiVaultContract(pool.address, networkId, pool.account?.version)
-      const farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
-      const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
-
       startTxn({
         key,
         title: 'Remove Liquidity',
@@ -332,24 +328,26 @@ export const useIchiRemove = () => {
         },
       })
       setPending(true)
+
       const vaultContract = getIchiVaultContract(pool.address, networkId, version)
+      if (isFarming) {
+        const farmContractAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
+        const farmingContract = getIchiFarmingContract(farmContractAddress, networkId)
+        const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
+        if (isStaked) {
+          if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
+            setPending(false)
+            return
+          }
+        }
 
-      if (isFarming && isStaked) {
-        const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
-        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
-        if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
-          setPending(false)
-          return
+        if (hasRewards) {
+          if (!(await writeTxn(key, claimuuid, multiFeeDistributionContract, 'getAllRewards', []))) {
+            setPending(false)
+            return
+          }
         }
       }
-
-      if (hasRewards) {
-        if (!(await writeTxn(key, claimuuid, multiFeeDistributionContract, 'getAllRewards', []))) {
-          setPending(false)
-          return
-        }
-      }
-
       if (!(await writeTxn(key, removeuuid, vaultContract, 'withdraw', [toWei(amount).toFixed(0), account]))) {
         setPending(false)
         return
