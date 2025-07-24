@@ -1,13 +1,16 @@
 import dayjs from 'dayjs'
 import { isEmpty } from 'lodash'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Highlight from '@/components/highlight'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { SCAN_URLS } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
+import { useChainSettings } from '@/state/settings/hooks'
 import { CheckIcon, CopyArenaIcon, InfoCircleWhite } from '@/svgs'
 
 const sortOptions = [
@@ -52,6 +55,7 @@ function HistoryContract({ histories }) {
   const { onCopy, copied } = useCopyText()
   const [sort, setSort] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
+  const { networkId } = useChainSettings()
   const finalData = useMemo(
     () =>
       (histories || []).map(transaction => ({
@@ -64,7 +68,13 @@ function HistoryContract({ histories }) {
         ),
         hash: (
           <TextHeading className='flex flex-row gap-1'>
-            {formatAddress(transaction.transactionHash)}
+            <Link
+              href={`${SCAN_URLS[networkId]}/tx/${transaction.transactionHash}`}
+              target='_blank'
+              rel='nofollow noopener'
+            >
+              {formatAddress(transaction.transactionHash)}
+            </Link>
             <div
               onClick={e => onCopy(e, transaction.transactionHash, transaction.transactionHash)}
               className='h-5 w-5 cursor-pointer stroke-neutral-200'
@@ -84,7 +94,7 @@ function HistoryContract({ histories }) {
           </TextHeading>
         ),
       })),
-    [copied, histories, onCopy],
+    [copied, histories, onCopy, networkId],
   )
   const t = useTranslations()
 

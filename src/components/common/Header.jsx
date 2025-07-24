@@ -1319,11 +1319,13 @@ function Header() {
       <Script
         id='widget-dom-id'
         crossOrigin='anonymous'
-        src='https://widget.metacrm.inc/static/js/widget.js'
+        integrity='sha384-3zFe+8VKgjcBTM8asFjY4ey9NzeDLCHJKUMrtyvDD8Og7iVekE2ciXhKpqJGJ5H1'
+        src='https://widget.metacrm.inc/static/js/widget-3-8-1.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
             autoOpenNewNotification: true,
+            manualConnect: true,
           })
         }}
         onError={error => {

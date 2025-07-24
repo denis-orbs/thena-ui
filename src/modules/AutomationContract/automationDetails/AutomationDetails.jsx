@@ -1,11 +1,12 @@
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import Box from '@/components/box'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { AUTOMATION_STATUS, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { AUTOMATION_STATUS, PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import useWallet from '@/hooks/useWallet'
 import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
@@ -15,7 +16,7 @@ import { CheckIcon, CopyArenaIcon } from '@/svgs'
 function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
-  const { account } = useWallet()
+  const { account, chainId } = useWallet()
 
   const [nextTime, setNextTime] = useState('')
 
@@ -116,7 +117,9 @@ function AutomationDetails({ contractData, transactionHash, date }) {
               <TextHeading className='flex flex-row gap-1'>
                 {account && contractData.status !== AUTOMATION_STATUS.PENDING ? (
                   <>
-                    {formatAddress(account)}
+                    <Link href={`${SCAN_URLS[chainId]}/address/${account}`} target='_blank' rel='nofollow noopener'>
+                      {formatAddress(account)}
+                    </Link>
                     <div
                       onClick={e => onCopy(e, account, 'ownerAddress')}
                       className='h-5 w-5 cursor-pointer stroke-neutral-200'
@@ -139,7 +142,9 @@ function AutomationDetails({ contractData, transactionHash, date }) {
               <TextHeading className='flex flex-row gap-1'>
                 {contractData.status !== AUTOMATION_STATUS.PENDING && transactionHash ? (
                   <>
-                    {formatAddress(transactionHash)}
+                    <Link href={`${SCAN_URLS[chainId]}/tx/${transactionHash}`} target='_blank' rel='nofollow noopener'>
+                      {formatAddress(transactionHash)}
+                    </Link>
                     <div
                       onClick={e => onCopy(e, transactionHash, 'transactionHash')}
                       className='h-5 w-5 cursor-pointer stroke-neutral-200'
@@ -157,7 +162,13 @@ function AutomationDetails({ contractData, transactionHash, date }) {
               <TextHeading className='flex flex-row items-center gap-1'>
                 {contractData.status !== AUTOMATION_STATUS.PENDING ? (
                   <>
-                    {formatAddress(contractData.forwarder)}
+                    <Link
+                      href={`${SCAN_URLS[chainId]}/address/${contractData.forwarder}`}
+                      target='_blank'
+                      rel='nofollow noopener'
+                    >
+                      {formatAddress(contractData.forwarder)}
+                    </Link>
                     <div
                       onClick={e => onCopy(e, contractData.forwarder, 'forwarderAddress')}
                       className='h-5 w-5 cursor-pointer stroke-neutral-200'
@@ -182,7 +193,13 @@ function AutomationDetails({ contractData, transactionHash, date }) {
               <TextHeading className='flex flex-row items-center gap-1'>
                 {contractData.status !== AUTOMATION_STATUS.PENDING ? (
                   <>
-                    {formatAddress(contractData.address)}
+                    <Link
+                      href={`${SCAN_URLS[chainId]}/address/${contractData.address}`}
+                      target='_blank'
+                      rel='nofollow noopener'
+                    >
+                      {formatAddress(contractData.address)}
+                    </Link>
                     <div
                       onClick={e => onCopy(e, contractData.address, 'contractAddress')}
                       className='h-5 w-5 cursor-pointer stroke-neutral-200'

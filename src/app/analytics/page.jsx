@@ -77,6 +77,7 @@ export default function AnalyticsPage() {
           tvlUSD: 0,
           volumeUSD: 0,
           date: 0,
+          bribeUSD: items[0]?.bribeUSD ?? 0,
         },
       )
     }
@@ -252,6 +253,10 @@ export default function AnalyticsPage() {
                   title='Fees'
                   chartId='Fee Distribution'
                   chartConfig={{
+                    bribeUSD: {
+                      label: t('Bribes'),
+                      onlyShowByEpoch: true,
+                    },
                     veTheUSD: {
                       label: t('veTHE'),
                     },
@@ -263,6 +268,13 @@ export default function AnalyticsPage() {
                     },
                   }}
                   chartItemConfigs={[
+                    {
+                      dataKey: 'bribeUSD',
+                      fill: '#E333DD',
+                      opacity: 0.85,
+                      radius: [4, 4, 0, 0],
+                      onlyShowByEpoch: true,
+                    },
                     {
                       dataKey: 'customPoolFeesUSD',
                       fill: '#BD60BA',
@@ -297,6 +309,10 @@ export default function AnalyticsPage() {
                     title='Fees'
                     chartId='Fee Distribution'
                     chartConfig={{
+                      bribeUSD: {
+                        label: t('Bribes'),
+                        onlyShowByEpoch: true,
+                      },
                       veTheUSD: {
                         label: t('veTHE'),
                       },
@@ -308,6 +324,13 @@ export default function AnalyticsPage() {
                       },
                     }}
                     chartItemConfigs={[
+                      {
+                        dataKey: 'bribeUSD',
+                        fill: '#E333DD',
+                        opacity: 0.85,
+                        radius: [4, 4, 0, 0],
+                        onlyShowByEpoch: true,
+                      },
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
@@ -391,6 +414,10 @@ export default function AnalyticsPage() {
                     defaultValue={dataRevenue?.revenueData}
                     chartId='Fee Distribution'
                     chartConfig={{
+                      bribeUSD: {
+                        label: t('Bribes'),
+                        onlyShowByEpoch: true,
+                      },
                       veTheUSD: {
                         label: t('veTHE'),
                       },
@@ -402,6 +429,13 @@ export default function AnalyticsPage() {
                       },
                     }}
                     chartItemConfigs={[
+                      {
+                        dataKey: 'bribeUSD',
+                        fill: '#E333DD',
+                        opacity: 0.85,
+                        radius: [4, 4, 0, 0],
+                        onlyShowByEpoch: true,
+                      },
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
@@ -456,6 +490,10 @@ export default function AnalyticsPage() {
                     defaultDateHover='Total Revenue'
                     chartId='Fee Distribution'
                     chartConfig={{
+                      bribeUSD: {
+                        label: t('Bribes'),
+                        onlyShowByEpoch: true,
+                      },
                       veTheUSD: {
                         label: t('veTHE'),
                       },
@@ -467,6 +505,13 @@ export default function AnalyticsPage() {
                       },
                     }}
                     chartItemConfigs={[
+                      {
+                        dataKey: 'bribeUSD',
+                        fill: '#E333DD',
+                        opacity: 0.85,
+                        radius: [4, 4, 0, 0],
+                        onlyShowByEpoch: true,
+                      },
                       {
                         dataKey: 'customPoolFeesUSD',
                         fill: '#BD60BA',
