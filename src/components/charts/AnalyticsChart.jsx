@@ -105,12 +105,37 @@ function AnalyticsChart({
     ],
     [period],
   )
+  const filteredChartItemConfigs = useMemo(() => {
+    if (property !== 'all') {
+      return chartItemConfigs.filter(item => item.dataKey === property)
+    }
+    if (!groupPerEpoch) {
+      return chartItemConfigs.filter(config => !config.onlyShowByEpoch)
+    }
+
+    return chartItemConfigs
+  }, [property, groupPerEpoch, chartItemConfigs])
+
+  const filteredProperties = useMemo(() => {
+    if (!groupPerEpoch) {
+      return Object.fromEntries(Object.entries(chartConfig).filter(([_, config]) => !config.onlyShowByEpoch))
+    }
+    return chartConfig
+  }, [groupPerEpoch, chartConfig])
+
+  useEffect(() => {
+    const activeConfig = chartItemConfigs.find(item => item.dataKey === property)
+    if (!groupPerEpoch && activeConfig?.onlyShowByEpoch) {
+      setProperty('all')
+    }
+  }, [chartItemConfigs, groupPerEpoch, property])
+
   const properties = useMemo(
     () =>
-      Object.keys(chartConfig).length > 1
+      Object.keys(filteredProperties).length > 1
         ? [
-            ...Object.keys(chartConfig).map(key => ({
-              label: chartConfig[key].label ?? '',
+            ...Object.keys(filteredProperties).map(key => ({
+              label: filteredProperties[key].label ?? '',
               active: property === key,
               onClickHandler: () => {
                 setProperty(key)
@@ -125,7 +150,7 @@ function AnalyticsChart({
             },
           ]
         : null,
-    [property, chartConfig],
+    [property, filteredProperties],
   )
 
   // Calculate current price for stacked charts
@@ -163,6 +188,9 @@ function AnalyticsChart({
           break
         case 'theNftUSD':
           label = t('theNFT')
+          break
+        case 'bribeUSD':
+          label = t('Bribes')
           break
         default:
           break
@@ -334,9 +362,7 @@ function AnalyticsChart({
           setHoverDate={setDateHover}
           xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
           chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
-          chartItemConfigs={
-            property === 'all' ? chartItemConfigs : chartItemConfigs.filter(item => item.dataKey === property)
-          }
+          chartItemConfigs={filteredChartItemConfigs}
           useEpoch={groupPerEpoch}
           chartType={chartType}
           currentPrice={currentPrice}
