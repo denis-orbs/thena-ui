@@ -190,7 +190,7 @@ function AnalyticsChart({
           label = t('theNFT')
           break
         case 'bribeUSD':
-          label = t('Bribes')
+          label = t('Incentives')
           break
         default:
           break

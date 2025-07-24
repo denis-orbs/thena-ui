@@ -254,7 +254,7 @@ export default function AnalyticsPage() {
                   chartId='Fee Distribution'
                   chartConfig={{
                     bribeUSD: {
-                      label: t('Bribes'),
+                      label: t('Incentives'),
                       onlyShowByEpoch: true,
                     },
                     veTheUSD: {
@@ -310,7 +310,7 @@ export default function AnalyticsPage() {
                     chartId='Fee Distribution'
                     chartConfig={{
                       bribeUSD: {
-                        label: t('Bribes'),
+                        label: t('Incentives'),
                         onlyShowByEpoch: true,
                       },
                       veTheUSD: {
@@ -415,7 +415,7 @@ export default function AnalyticsPage() {
                     chartId='Fee Distribution'
                     chartConfig={{
                       bribeUSD: {
-                        label: t('Bribes'),
+                        label: t('Incentives'),
                         onlyShowByEpoch: true,
                       },
                       veTheUSD: {
@@ -491,7 +491,7 @@ export default function AnalyticsPage() {
                     chartId='Fee Distribution'
                     chartConfig={{
                       bribeUSD: {
-                        label: t('Bribes'),
+                        label: t('Incentives'),
                         onlyShowByEpoch: true,
                       },
                       veTheUSD: {
