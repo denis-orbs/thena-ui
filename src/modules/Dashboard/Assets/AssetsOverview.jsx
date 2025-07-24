@@ -15,6 +15,7 @@ import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
 function AssetsOverview({
   positions,
+  removedClaimablePositions,
   currentHoverTableRow,
   isHoverFromChart,
   setIsHoverFromChart,
@@ -51,10 +52,13 @@ function AssetsOverview({
 
   const [totalProvided, totalRewards, totalPools] = useMemo(() => {
     const providedValue = filteredPositions.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
-    const rewardUsd = filteredPositions.reduce((sum, item) => sum + item.rewardUsd, 0)
+    const rewardUsd = [...filteredPositions, ...removedClaimablePositions].reduce(
+      (sum, item) => sum + item.rewardUsd,
+      0,
+    )
     const v1FeesUsd = v1FeesPositions.reduce((sum, item) => sum + Number(item.rewardUsd), 0)
     return [providedValue, rewardUsd + v1FeesUsd, filteredPositions.length]
-  }, [filteredPositions, v1FeesPositions])
+  }, [filteredPositions, v1FeesPositions, removedClaimablePositions])
 
   const processManualPosition = useCallback(
     pos => {
@@ -199,6 +203,20 @@ function AssetsOverview({
     processV3Position,
     processIchiSingleSidedPosition,
   ])
+
+  useEffect(() => {
+    removedClaimablePositions.forEach(pos => {
+      const type = getStrategy(pos.title)
+      addReward({
+        type,
+        args: pos.address,
+        symbol: pos.symbol,
+        amount: pos.amounts.map(amount => fromWei(amount)),
+        version: pos.version,
+        key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
+      })
+    })
+  }, [removedClaimablePositions, addReward])
 
   useEffect(() => {
     setPositionRewards(totalRewards)

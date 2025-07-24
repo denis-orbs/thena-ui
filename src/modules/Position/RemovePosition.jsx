@@ -70,7 +70,14 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
     if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount, version, isStaked, callback)
+      onGammaRemove({
+        pool: strategy,
+        amount,
+        version,
+        isStaked,
+        hasRewards: !!strategy.rewardUsd,
+        callback,
+      })
     } else if (ICHI_TYPES.includes(strategy.title)) {
       onIchiRemove({
         pool: strategy,
@@ -78,6 +85,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
         amount,
         version,
         callback,
+        hasRewards: !!strategy.rewardUsd,
       })
     } else if (strategy.title === 'DefiEdge') {
       onDefiedgeRemove(strategy, amount, callback)

@@ -169,10 +169,12 @@ export const useGammaRemove = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaRemove = useCallback(
-    async (pool, amount, version, isStaked, callback) => {
+    async ({ pool, amount, version, isStaked, hasRewards = false, callback }) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       const unstakeuuid = uuidv4()
+      const claimuuid = uuidv4()
+
       startTxn({
         key,
         title: 'Remove Liquidity',
@@ -185,6 +187,13 @@ export const useGammaRemove = () => {
                 hash: null,
               },
             }),
+          ...(hasRewards && {
+            [claimuuid]: {
+              desc: t('Claim Rewards'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -195,12 +204,22 @@ export const useGammaRemove = () => {
       setPending(true)
       const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, networkId, version)
 
-      if (version === 3 && isStaked) {
+      if (version === 3) {
         const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
-        if (!(await writeTxn(key, unstakeuuid, multiFeeDistributionContract, 'unstake', [toWei(amount).toFixed(0)]))) {
-          setPending(false)
-          return
+        if (isStaked) {
+          if (
+            !(await writeTxn(key, unstakeuuid, multiFeeDistributionContract, 'unstake', [toWei(amount).toFixed(0)]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+        if (hasRewards) {
+          if (!(await writeTxn(key, claimuuid, multiFeeDistributionContract, 'getAllRewards', []))) {
+            setPending(false)
+            return
+          }
         }
       }
 

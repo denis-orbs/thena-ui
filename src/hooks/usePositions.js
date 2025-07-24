@@ -1,10 +1,13 @@
 import { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 
-import { PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { useVaults } from '@/context/vaultsContext'
-import { isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import { batchCallMulti } from '@/lib/contractActions'
+import { getGammaHyperVisorContract, getIchiVaultContract, getMultiFeeDistributionContract } from '@/lib/contracts'
+import { fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 
 import { useFarmPositions } from './position/useFarmPosition'
@@ -12,6 +15,8 @@ import { useManualPositions } from './position/useManualPosition'
 import { useNotStakedPositions } from './position/useNotStakedPosition'
 import { useStakedPosition } from './position/useStakedPosition'
 import { useWeightedPositions } from './position/useWeightedPosition'
+import { useCachedSWR } from './useCachedSWR'
+import useWallet from './useWallet'
 import { useWeightedPositionList } from './weightedPool/useWeigtedPool'
 
 const updateWalletBalance = positions => {
@@ -36,12 +41,97 @@ const updateWalletBalance = positions => {
   return positions
 }
 
+const useGetPositionClaimableRewards = (pools, type) => {
+  const { account, chainId } = useWallet()
+  const assets = useAssets()
+  const queryKey = useMemo(
+    () => [`${type}-claimable-reward`, pools.map(pool => pool.address), account, chainId],
+    [account, chainId, pools, type],
+  )
+  const { data } = useCachedSWR(queryKey, async () => {
+    const vaultContracts = pools.map(pool =>
+      type === 'ichi'
+        ? getIchiVaultContract(pool.address, chainId, 3)
+        : getGammaHyperVisorContract(pool.address, chainId, 3),
+    )
+    const farmContractAddresses = await batchCallMulti(
+      vaultContracts.map(contract => ({
+        ...contract,
+        functionName: type === 'ichi' ? 'farmingContract' : 'receiver',
+      })),
+    )
+    const multiFeeDistributionContracts = farmContractAddresses.map(contract =>
+      getMultiFeeDistributionContract(contract, chainId),
+    )
+    const results = await batchCallMulti(
+      multiFeeDistributionContracts.map(contract => ({
+        ...contract,
+        functionName: 'claimableRewards',
+        args: [account],
+      })),
+    )
+
+    const allPools = pools.map((pool, index) => ({
+      ...pool,
+      tokens: results[index][0],
+      amounts: results[index][1],
+    }))
+
+    const filteredPools = allPools.filter(item => item.amounts.some(amount => !fromWei(amount).isZero()))
+
+    return filteredPools.map(pool => {
+      const { tokens, amounts } = pool
+      let totalUsd = 0
+      for (let index = 0; index < tokens.length; index++) {
+        const token = tokens[index]
+        const asset = assets.find(item => item.address.toLowerCase() === token.toLowerCase())
+        totalUsd += (asset.price ?? 0) * fromWei(amounts[index]).toNumber()
+      }
+      return {
+        ...pool,
+        rewardUsd: totalUsd,
+      }
+    })
+  })
+
+  return data
+}
+
+const useRemovedClaimablePositions = () => {
+  const positions = usePools()
+  const ichiPositions = useMemo(
+    () =>
+      positions.filter(
+        pos =>
+          pos.title === ICHI_TYPES[0] &&
+          pos.version === 3 &&
+          !(pos.account?.gaugeBalance?.gt(0) || pos.account?.walletBalance?.gt(0)),
+      ),
+    [positions],
+  )
+  const gammaPositions = useMemo(
+    () =>
+      positions.filter(
+        pos =>
+          pos.version === 3 &&
+          GAMMA_TYPES.includes(pos.title) &&
+          pos.title.includes('Farming') &&
+          !(pos.account?.gaugeBalance?.gt(0) || pos.account?.walletBalance?.gt(0)),
+      ),
+    [positions],
+  )
+
+  const removedClaimableIchiPositions = useGetPositionClaimableRewards(ichiPositions, 'ichi')
+  const removedClaimableGammaPositions = useGetPositionClaimableRewards(gammaPositions, 'gamma')
+
+  return [...removedClaimableIchiPositions, ...removedClaimableGammaPositions]
+}
+
 export const usePositions = () => {
-  const pools = usePools()
-  const vaults = useVaults()
   const userManuals = useManuals()
   const weightedPositionList = useWeightedPositionList()
-
+  const pools = usePools()
+  const vaults = useVaults()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
 
   const positions = useMemo(() => {
@@ -59,10 +149,10 @@ export const usePositions = () => {
   const weightedPositions = useWeightedPositions(weightedPositionList)
 
   const stakedPosition = useStakedPosition(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.gaugeBalance.gt(0)),
+    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.gaugeBalance?.gt(0)),
   )
   const notStakedPosition = useNotStakedPositions(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account.walletBalance.gt(0)),
+    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.walletBalance?.gt(0)),
   )
 
   const allPositions = useMemo(
@@ -76,5 +166,10 @@ export const usePositions = () => {
     [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
   )
 
-  return allPositions
+  const removedClaimablePositions = useRemovedClaimablePositions()
+
+  return {
+    positions: allPositions,
+    removedClaimablePositions,
+  }
 }

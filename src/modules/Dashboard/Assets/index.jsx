@@ -17,7 +17,7 @@ import SectionDivider from '../SectionDivider'
 function UserAssets({ setPositionRewards }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const positions = usePositions()
+  const { positions, removedClaimablePositions } = usePositions()
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)
@@ -49,6 +49,7 @@ function UserAssets({ setPositionRewards }) {
                 setIsHoverFromChart={setIsHoverFromChart}
                 currentHoverTableRow={currentHoverTableRow}
                 positions={positions}
+                removedClaimablePositions={removedClaimablePositions}
                 setPositionRewards={setPositionRewards}
               />
               <div className='flex items-center justify-between xl:hidden'>
