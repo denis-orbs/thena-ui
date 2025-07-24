@@ -70,7 +70,7 @@ function AssetsOverview({
             amount,
             type: 'manual',
             args: [account, pos.key, pos.tokenId],
-            key: getKeyFromTokenAddress('manual', [pos.asset0.address, pos.asset1.address]),
+            key: getKeyFromTokenAddress('manual', [pos.tokenId, pos.asset0.address, pos.asset1.address]),
           })
         }
       } else if (pos.fees?.[0] > 0n || pos.fees?.[1] > 0n) {
