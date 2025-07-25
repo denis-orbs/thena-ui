@@ -540,8 +540,19 @@ export default function PoolsPage() {
         isFarming: position?.title?.includes('Farming'),
         isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
         isDefault: true,
-        version: position.version,
+        version: position?.version,
         fee: position?.fee,
+        gauge: {
+          ...position?.gauge,
+          apr: position?.gauge?.apr?.toNumber(),
+          pooled0: position?.gauge?.pooled0?.toNumber(),
+          pooled1: position?.gauge?.pooled1?.toNumber(),
+          tvl: position?.gauge?.tvl?.toNumber(),
+          apr_list: (position?.gauge?.apr_list || []).map(ele => ({
+            ...ele,
+            apr: ele.apr?.toNumber(),
+          })),
+        },
       }
       dispatch(updateStrategy({ strategy: newStrategy }))
       dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))

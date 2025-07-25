@@ -33,13 +33,18 @@ function ClaimableRewards({ setClaimableRewards }) {
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
   const farmedRewards = useMemo(() => {
-    let total = ZERO_VALUE
+    let totalThe = ZERO_VALUE
+    let totalUsd = ZERO_VALUE
     Object.values(rewards).forEach(list => {
-      list.forEach(val => {
-        total = total.plus(val.amount ?? 0)
+      list.forEach((val, key) => {
+        if (key.includes('ichi-single-sided')) {
+          totalUsd = totalUsd.plus(val.amountInUsd ?? 0)
+        } else {
+          totalThe = totalThe.plus(val.amount ?? 0)
+        }
       })
     })
-    return total.times(prices.THE).toNumber()
+    return totalThe.times(prices.THE).plus(totalUsd).toNumber()
   }, [prices.THE, rewards])
 
   const totalVotingV2Rewards = useMemo(

@@ -132,6 +132,7 @@ function AssetsOverview({
           type: 'ichiSingleSided',
           symbol: pos.symbol,
           args: pos.gauge.address,
+          amountInUsd: pos.account.earnedUsd,
           key: getKeyFromTokenAddress('ichi-single-sided', [pos.token0.address, pos.token1.address]),
         })
       }
@@ -211,7 +212,7 @@ function AssetsOverview({
         type,
         args: pos.address,
         symbol: pos.symbol,
-        amount: pos.amounts.map(amount => fromWei(amount)),
+        amount: pos.account.gaugeEarned,
         version: pos.version,
         key: getKeyFromTokenAddress(type, [pos.token0.address, pos.token1.address]),
       })

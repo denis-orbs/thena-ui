@@ -28,6 +28,7 @@ export const useFarmRewards = create()(set => ({
    * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable | weighted
    * @param {string} position.key - The reward key
    * @param {number} position.amount - The reward  amount
+   * @param {number} position.amountInUSD - The reward amount in USD
    * @param {string} position.args - The reward args used to call smart contract
    */
   addReward: position =>
