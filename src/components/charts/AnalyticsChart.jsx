@@ -163,12 +163,23 @@ function AnalyticsChart({
 
     // For stacked charts (multiple data keys), sum all values
     if (activeConfigs.length > 1) {
-      return activeConfigs.reduce((sum, config) => sum + (lastDataPoint[config.dataKey] || 0), 0) || 0
+      return (
+        activeConfigs.reduce(
+          (sum, config) =>
+            sum +
+            (!groupPerEpoch
+              ? config.onlyShowByEpoch
+                ? 0
+                : lastDataPoint[config.dataKey] || 0
+              : lastDataPoint[config.dataKey] || 0),
+          0,
+        ) || 0
+      )
     }
 
     // For single data key, use the value directly
     return lastDataPoint[activeConfigs[0]?.dataKey] ?? 0
-  }, [formattedData, chartItemConfigs, property])
+  }, [formattedData, chartItemConfigs, property, groupPerEpoch])
 
   const chartTooltipFormatter = useCallback(
     (value, name, entry) => {
