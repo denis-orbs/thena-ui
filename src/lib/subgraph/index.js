@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js'
 import { gql, GraphQLClient } from 'graphql-request'
 import orderBy from 'lodash/orderBy'
-import { ChainId } from 'thena-sdk-core'
 
 import { fetchRevenue } from '../api'
-import { blockGraphUrl, fusionClient, fusionFarmingClient, v1Client } from '../graphql'
+import { blockGraphUrl, fusionClient, fusionFarmingClient } from '../graphql'
 
 const requestWithTimeout = (graphQLClient, request, variables, timeout = 30000) =>
   Promise.race([
@@ -204,54 +203,49 @@ export const getFusionFeesData = async ({ chainId, poolIds, date }) => {
   }
 }
 
-const FUSION_STATS = gql`
-  query globalData {
-    factories {
-      totalValueLockedUSD
-      totalVolumeUSD
-      txCount
-    }
-  }
-`
+// const FUSION_STATS = gql`
+//   query globalData {
+//     factories {
+//       totalValueLockedUSD
+//       totalVolumeUSD
+//       txCount
+//     }
+//   }
+// `
 
-const V1_STATS = gql`
-  query globalData {
-    factories {
-      totalLiquidityUSD
-      totalVolumeUSD
-      txCount
-    }
-  }
-`
+// const V1_STATS = gql`
+//   query globalData {
+//     factories {
+//       totalLiquidityUSD
+//       totalVolumeUSD
+//       txCount
+//     }
+//   }
+// `
 
 export const fetchStats = async () => {
-  const chainId = ChainId.BSC
-  const [fusionData, fusionV3Data, v1Data] = await Promise.all([
-    fusionClient[2][chainId].request(FUSION_STATS),
-    fusionClient[3][chainId].request(FUSION_STATS),
-    v1Client[chainId].request(V1_STATS),
-  ])
-  let revenueData = 0
+  // const chainId = ChainId.BSC
+  // const [fusionData, fusionV3Data, v1Data] = await Promise.all([
+  //   fusionClient[2][chainId].request(FUSION_STATS),
+  //   fusionClient[3][chainId].request(FUSION_STATS),
+  //   v1Client[chainId].request(V1_STATS),
+  // ])
+  let stats = null
   try {
     const res = await fetchRevenue()
-    revenueData = res.total_revenue
+    // get bsc-total
+    stats = res.data.find(ele => ele.type === 'bsc-total')
   } catch (error) {
     console.log('revenue fetch error :>> ', error)
   }
   return {
-    tvl:
-      Number(fusionData.factories[0].totalValueLockedUSD) +
-      Number(v1Data.factories[0].totalLiquidityUSD) +
-      Number(fusionV3Data.factories[0].totalValueLockedUSD),
-    totalVolume:
-      Number(fusionData.factories[0].totalVolumeUSD) +
-      Number(v1Data.factories[0].totalVolumeUSD) +
-      Number(fusionV3Data.factories[0].totalVolumeUSD),
-    txCount:
-      Number(fusionData.factories[0].txCount) +
-      Number(v1Data.factories[0].txCount) +
-      Number(fusionV3Data.factories[0].txCount),
-    revenueData,
+    tvl: Number(stats.tvlUSD),
+    totalVolume: Number(stats.totalVolumeUSD),
+    // txCount:
+    //   Number(fusionData.factories[0].txCount) +
+    //   Number(v1Data.factories[0].txCount) +
+    //   Number(fusionV3Data.factories[0].txCount),
+    revenueData: Number(stats.totalRevenueUSD),
   }
 }
 

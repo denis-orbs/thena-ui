@@ -137,8 +137,8 @@ export const fetchVeTHETokens = (chainId, account) =>
 export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
-export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
-
+// export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
+export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').then(r => r.json())
 export const fetchFusionPoolsInfos = ({ account, chainId }) => {
   const res = fetch(`${backendApi}/v3/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
     .then(r => r.json())
