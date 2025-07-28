@@ -345,7 +345,7 @@ function PairStrategy({ pair }) {
             />
           </div>
         </div>
-        <PrimaryButton className='z-40 h-8 w-full rounded-md text-xs!' onClick={() => handleAddLiquidity('automatic')}>
+        <PrimaryButton className='z-40 h-8 w-full rounded-md text-xs!' onClick={() => handleAddLiquidity('manual')}>
           {t('Deposit')}
         </PrimaryButton>
       </Collapsible>

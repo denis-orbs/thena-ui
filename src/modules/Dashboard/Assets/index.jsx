@@ -39,11 +39,18 @@ function UserAssets({ setPositionRewards }) {
         <div
           className={cn(
             'rounded-xl',
-            positions.length === 0 && 'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
+            positions.length === 0 &&
+              removedClaimablePositions.length === 0 &&
+              'bg-[url(/images/no-liquidity-bg.png)] bg-cover bg-center',
           )}
         >
-          {positions.length > 0 ? (
-            <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent md:pt-8 md:pb-2'>
+          {positions.length > 0 || removedClaimablePositions.length > 0 ? (
+            <div
+              className={cn(
+                'flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 max-md:bg-transparent md:pt-8 md:pb-2',
+                !positions.length && 'max-md:hidden',
+              )}
+            >
               <AssetsOverview
                 isHoverFromChart={isHoverFromChart}
                 setIsHoverFromChart={setIsHoverFromChart}
@@ -52,28 +59,35 @@ function UserAssets({ setPositionRewards }) {
                 removedClaimablePositions={removedClaimablePositions}
                 setPositionRewards={setPositionRewards}
               />
-              <div className='flex items-center justify-between xl:hidden'>
-                <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
-                <div className='flex cursor-pointer gap-2 rounded-md p-1' onClick={() => setShowTable(prev => !prev)}>
-                  <Paragraph className='text-base font-medium text-neutral-500'>
-                    {t(showTable ? 'Close' : 'Open')}
-                  </Paragraph>
-                  <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
-                </div>
-              </div>
+              {positions.length > 0 && (
+                <>
+                  <div className='flex items-center justify-between xl:hidden'>
+                    <NewTextSubHeading className='md:text-base'>{t('My Positions')}</NewTextSubHeading>
+                    <div
+                      className='flex cursor-pointer gap-2 rounded-md p-1'
+                      onClick={() => setShowTable(prev => !prev)}
+                    >
+                      <Paragraph className='text-base font-medium text-neutral-500'>
+                        {t(showTable ? 'Close' : 'Open')}
+                      </Paragraph>
+                      <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
+                    </div>
+                  </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: -10, height: 0 }}
-                animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className='overflow-hidden'
-              >
-                <AssetsTable
-                  setIsHoverFromChart={setIsHoverFromChart}
-                  positions={positions}
-                  setCurrentHoverTableRow={setCurrentHoverTableRow}
-                />
-              </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, height: 0 }}
+                    animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className='overflow-hidden'
+                  >
+                    <AssetsTable
+                      setIsHoverFromChart={setIsHoverFromChart}
+                      positions={positions}
+                      setCurrentHoverTableRow={setCurrentHoverTableRow}
+                    />
+                  </motion.div>
+                </>
+              )}
             </div>
           ) : (
             <div className='flex h-[278px] flex-col justify-between gap-0 p-8 md:justify-end md:gap-[42px]'>

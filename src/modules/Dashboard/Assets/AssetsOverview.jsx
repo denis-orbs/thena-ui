@@ -237,13 +237,17 @@ function AssetsOverview({
     <div className='flex flex-col gap-6 md:px-4'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2'>
         <div className='flex flex-col gap-4'>
-          <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
-            {t('Total Value Provided')}
-          </NewTextHeading>
-          <NewParagraph className='max-md:text-primary-300 flex gap-4 text-3xl max-md:text-center md:text-4xl'>
-            <span>${formatAmount(totalProvided)}</span>
-            <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
-          </NewParagraph>
+          {filteredPositions.length > 0 && (
+            <>
+              <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
+                {t('Total Value Provided')}
+              </NewTextHeading>
+              <NewParagraph className='max-md:text-primary-300 flex gap-4 text-3xl max-md:text-center md:text-4xl'>
+                <span>${formatAmount(totalProvided)}</span>
+                <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
+              </NewParagraph>
+            </>
+          )}
           <NewTextHeading className='font-semibold max-md:hidden md:text-3xl'>
             {t('Generated Fees and Rewards')}
           </NewTextHeading>
@@ -259,15 +263,17 @@ function AssetsOverview({
           </PrimaryButton>
         </div>
 
-        <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart
-            data={filteredPositions}
-            currentHoverTableRow={currentHoverTableRow}
-            className='h-[163px] w-[163px] md:h-[276px] md:w-[276px]'
-            isHoverFromChart={isHoverFromChart}
-            setIsHoverFromChart={setIsHoverFromChart}
-          />
-        </div>
+        {filteredPositions.length > 0 && (
+          <div className='flex h-full items-center justify-center'>
+            <LiquidityAPRChart
+              data={filteredPositions}
+              currentHoverTableRow={currentHoverTableRow}
+              className='h-[163px] w-[163px] md:h-[276px] md:w-[276px]'
+              isHoverFromChart={isHoverFromChart}
+              setIsHoverFromChart={setIsHoverFromChart}
+            />
+          </div>
+        )}
       </div>
 
       {migratePositions.length > 0 && (
