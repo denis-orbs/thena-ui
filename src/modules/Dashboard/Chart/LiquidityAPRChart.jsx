@@ -31,28 +31,27 @@ function LiquidityAPRChart({
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
-
   const avgApr = useMemo(() => {
-    const { totalAprWeighted, countPosition } = data.reduce(
+    // avgApr = (... + myvalue[i] * apr[i] +  myvalue[i+1] * apr[i+1] + .... ) / (... + myvalue[i] + myvalue[i+1] + ...)
+    // myvalue is amount to usd user deposit
+    const { totalApr, totalValue } = data.reduce(
       (acc, d) => {
         let realApr = Number(d.apr) || 0
         if (d.type === 'Manual') {
-          realApr = calculateManualAPR(d)
+          realApr = calculateManualAPR(d) || 0
         }
-        if (realApr > 0) {
-          return {
-            totalAprWeighted: acc.totalAprWeighted + realApr,
-            countPosition: acc.countPosition + 1,
-          }
+        const value = Number(d.fiatValueOfLiquidity) || 0
+        return {
+          totalApr: acc.totalApr + realApr * value,
+          totalValue: acc.totalValue + value,
         }
-        return acc
       },
       {
-        totalAprWeighted: 0,
-        countPosition: 0,
+        totalApr: 0,
+        totalValue: 0,
       },
     )
-    const avg = totalAprWeighted ? (totalAprWeighted / countPosition).toFixed(2) : '0'
+    const avg = totalValue !== 0 ? (totalApr / totalValue).toFixed(2) : '0'
     return avg
   }, [data])
 

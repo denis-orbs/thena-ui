@@ -172,7 +172,11 @@ export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page
     .then(r => r)
 }
 
-export const getAnalyticsData = async ({ networkId, first, page }) =>
-  fetch(`${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`)
+export const getAnalyticsData = async ({ networkId, first, page, epoch }) => {
+  let url = `${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`
+  if (epoch) url += `&epoch=${epoch}`
+
+  return fetch(url)
     .then(r => r.json())
     .then(r => r.data)
+}
