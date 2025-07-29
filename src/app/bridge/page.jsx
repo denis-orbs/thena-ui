@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
+import { ChainId } from 'thena-sdk-core'
 import { isAddress } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -15,9 +16,11 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAsset } from '@/hooks/useAsset'
 import { useBridge } from '@/hooks/useBridge'
+import { useBSCTheTokenBalance } from '@/hooks/useBSCTheTokenBalance'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { formatAmount } from '@/lib/utils'
+import { useChainSettings } from '@/state/settings/hooks'
 import { Clock, ExternalIcon, ReflectIcon, Wallet3Icon } from '@/svgs'
 
 export default function BridgePage() {
@@ -30,9 +33,10 @@ export default function BridgePage() {
   const debounceDestination = useDebounce(destination, 500)
   const { account } = useWallet()
   const { onBridge, pending } = useBridge()
+  const { networkId, updateNetwork } = useChainSettings()
+  const theAssetBNBBalance = useBSCTheTokenBalance()
 
   const theAssetOpBNB = useAsset(CHAIN_ID.OPBNB, Contracts.THE[CHAIN_ID.OPBNB])
-  const theAssetBNB = useAsset(CHAIN_ID.BSC, Contracts.THE[CHAIN_ID.BSC])
 
   const tabSelections = useMemo(
     () => [
@@ -55,6 +59,12 @@ export default function BridgePage() {
     ],
     [tab],
   )
+
+  useEffect(() => {
+    if (account) {
+      setDestination(prev => prev ?? account)
+    }
+  }, [account])
 
   useEffect(() => {
     if (debounceDestination && !isAddress(debounceDestination)) {
@@ -114,12 +124,12 @@ export default function BridgePage() {
             />
             <div className='flex justify-between text-xs text-neutral-400'>
               <span />
-              {theAssetBNB && (
+              {theAssetBNBBalance && (
                 <span>
                   {t('Available Amount on [chain]', {
                     chain: 'BNB',
                   })}
-                  : {formatAmount(theAssetBNB?.balance)}
+                  : {formatAmount(theAssetBNBBalance)}
                 </span>
               )}
             </div>
@@ -156,7 +166,7 @@ export default function BridgePage() {
                     chain: 'BNB',
                   })}
                 </Paragraph>
-                <Paragraph className='!text-xs text-neutral-500'>{formatAmount(theAssetBNB?.balance)} THE</Paragraph>
+                <Paragraph className='!text-xs text-neutral-500'>{formatAmount(theAssetBNBBalance)} THE</Paragraph>
               </div>
               {/* Bridge Route Info */}
               <div className='ml-8 flex flex-col gap-2'>
@@ -176,7 +186,12 @@ export default function BridgePage() {
               </div>
             </div>
           )}
-          {account ? (
+
+          {networkId !== ChainId.OPBNB ? (
+            <PrimaryButton className='w-full py-3 text-lg font-semibold' onClick={() => updateNetwork(ChainId.OPBNB)}>
+              {t('Switch Chain')}
+            </PrimaryButton>
+          ) : account ? (
             <PrimaryButton
               onClick={() => {
                 onBridge(debounceDestination, amount)
