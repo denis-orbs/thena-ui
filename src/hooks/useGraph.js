@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
-import { fromPairs } from 'lodash'
+import { fromPairs, sumBy } from 'lodash'
 import useSWR from 'swr'
 
 import {
@@ -246,4 +246,53 @@ export const useAnalyticsChartData = () => {
     refreshInterval: 0,
   })
   return chartData ?? undefined
+}
+
+const fetchEpochFeesData = async (networkId, epoch) => {
+  const result = []
+  const PAGE_SIZE = 1000
+  let page = 1
+  let hasMore = true
+
+  while (hasMore) {
+    try {
+      const data = await getAnalyticsData({
+        networkId,
+        epoch,
+        first: PAGE_SIZE,
+        page,
+      })
+
+      result.push(
+        ...data.map(item => ({
+          ...item,
+          veTheUSD: item.feesUSD * 0.9,
+          theNftUSD: item.feesUSD * 0.1,
+        })),
+      )
+      if (data.length < PAGE_SIZE) {
+        hasMore = false
+      } else {
+        page += 1
+      }
+    } catch (e) {
+      console.error('Error fetching userRewards:', e)
+      hasMore = false
+    }
+  }
+  return result
+}
+
+export const useCurrentEpochFees = () => {
+  const { networkId } = useChainSettings()
+  const curTime = new Date().getTime() / 1000
+  const epoch5 = 1675900800
+  const epoch = Math.floor((curTime - epoch5) / 604800) + 5
+  const { data } = useSWR(['fees/current-epoch', epoch, networkId], () => fetchEpochFeesData(networkId, epoch), {
+    refreshInterval: 0,
+  })
+  const veTheUSD = sumBy(data, 'veTheUSD')
+  const bribeUSD = data?.[0]?.bribeUSD ?? 0
+
+  return veTheUSD + bribeUSD
 }
