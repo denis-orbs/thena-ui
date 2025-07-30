@@ -251,7 +251,31 @@ function NotStakedItem({ position, isXlDown }) {
     () => (
       <div className='w-full text-center'>
         {position.type === PAIR_TYPES.LSD ? (
-          <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
+          isSingleSided ? (
+            <div className='flex h-15 w-full items-center'>
+              <div
+                className={cn(
+                  'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                  'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+                )}
+              >
+                {t('$THE Single Sided Vaults')}
+              </div>
+            </div>
+          ) : position.title.includes('ICHI') || GAMMA_TYPES.includes(position.title) ? (
+            <div className='flex h-15 w-full items-center'>
+              <div
+                className={cn(
+                  'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                  'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+                )}
+              >
+                {t('Automated')}
+              </div>
+            </div>
+          ) : (
+            <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
+          )
         ) : (
           <div className='flex h-15 w-full items-center'>
             <div
@@ -266,7 +290,7 @@ function NotStakedItem({ position, isXlDown }) {
         )}
       </div>
     ),
-    [position.type, priceLower, priceUpper, currentPrice, t],
+    [position.type, position.title, isSingleSided, t, currentPrice, priceUpper, priceLower],
   )
 
   const aprCell = useMemo(
