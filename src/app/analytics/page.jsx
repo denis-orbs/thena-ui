@@ -51,7 +51,7 @@ export default function AnalyticsPage() {
       refreshInterval: 60000,
     },
   )
-  const rawData = useAnalyticsChartData()
+  const { chartData: rawData, isLoading: isLoadingChartData } = useAnalyticsChartData()
   const groupEpochData = useMemo(() => {
     const groupData = groupBy(rawData ?? [], 'epoch')
     const result = {}
@@ -184,6 +184,7 @@ export default function AnalyticsPage() {
                   chartType='area'
                   isMinimum
                   onHoverChange={value => setTvlSubTitle(value)}
+                  isLoading={isLoadingChartData}
                 />
               </Collapsible>
 
@@ -225,6 +226,7 @@ export default function AnalyticsPage() {
                   onHoverChange={value => setVolumeSubTitle(value)}
                   isMinimum
                   xAxisLine
+                  isLoading={isLoadingChartData}
                 />
               </Collapsible>
 
@@ -295,6 +297,7 @@ export default function AnalyticsPage() {
                   onHoverChange={value => setFeesSubTitle(value)}
                   defaultValue={dataRevenue?.revenueData}
                   isMinimum
+                  isLoading={isLoadingChartData}
                 />
               </Collapsible>
             </>
@@ -350,6 +353,7 @@ export default function AnalyticsPage() {
                     ]}
                     isExpanded
                     defaultValue={dataRevenue?.revenueData}
+                    isLoading={isLoadingChartData}
                   />
                 )}
                 {isExpanded === 'tvl' && (
@@ -374,6 +378,7 @@ export default function AnalyticsPage() {
                     ]}
                     chartType='area'
                     isExpanded
+                    isLoading={isLoadingChartData}
                   />
                 )}
                 {isExpanded === 'volume' && (
@@ -400,6 +405,7 @@ export default function AnalyticsPage() {
                     ]}
                     isExpanded
                     xAxisLine
+                    isLoading={isLoadingChartData}
                   />
                 )}
               </div>
@@ -455,6 +461,7 @@ export default function AnalyticsPage() {
                     ]}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
+                    isLoading={isLoadingChartData}
                   />
                 ) : (
                   <AnalyticsChart
@@ -480,6 +487,7 @@ export default function AnalyticsPage() {
                     chartType='area'
                     isExpanded={false}
                     onExpand={() => setIsExpanded('tvl')}
+                    isLoading={isLoadingChartData}
                   />
                 )}
                 {isExpanded === 'volume' ? (
@@ -533,6 +541,7 @@ export default function AnalyticsPage() {
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
                     defaultValue={dataRevenue?.revenueData}
+                    isLoading={isLoadingChartData}
                   />
                 ) : (
                   <AnalyticsChart
@@ -558,6 +567,7 @@ export default function AnalyticsPage() {
                     onExpand={() => setIsExpanded('volume')}
                     isExpanded={false}
                     xAxisLine
+                    isLoading={isLoadingChartData}
                   />
                 )}
               </div>

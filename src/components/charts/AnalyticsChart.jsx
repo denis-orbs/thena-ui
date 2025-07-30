@@ -12,6 +12,7 @@ import Box from '../box'
 import { TextIconButton } from '../buttons/IconButton'
 import Divider from '../divider'
 import Selection from '../selection'
+import Skeleton from '../skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 /** Base on HoverableChart and can support stacked bar chart and group data by epoch */
@@ -34,6 +35,7 @@ function AnalyticsChart({
   defaultValue,
   xAxisLine = false,
   defaultProperty = 'all',
+  isLoading = false,
 }) {
   const [groupPerEpoch, setGroupPerEpoch] = useState(false)
   const [property, setProperty] = useState(defaultProperty)
@@ -367,22 +369,26 @@ function AnalyticsChart({
         )}
       </div>
       <div className='mt-6 h-[250px]'>
-        <AnalyticsReChart
-          data={formattedData}
-          setHoverValue={setHover}
-          setHoverDate={setDateHover}
-          xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
-          chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
-          chartItemConfigs={filteredChartItemConfigs}
-          useEpoch={groupPerEpoch}
-          chartType={chartType}
-          currentPrice={currentPrice}
-          showCurrentPrice
-          chartTooltipFormatter={chartTooltipFormatter}
-          desiredTicks={isMinimum || !isExpanded ? 4 : 12}
-          xAxisLine={xAxisLine}
-          showTooltip={Boolean(properties)}
-        />
+        {isLoading ? (
+          <Skeleton className='h-full w-full' />
+        ) : (
+          <AnalyticsReChart
+            data={formattedData}
+            setHoverValue={setHover}
+            setHoverDate={setDateHover}
+            xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
+            chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
+            chartItemConfigs={filteredChartItemConfigs}
+            useEpoch={groupPerEpoch}
+            chartType={chartType}
+            currentPrice={currentPrice}
+            showCurrentPrice
+            chartTooltipFormatter={chartTooltipFormatter}
+            desiredTicks={isMinimum || !isExpanded ? 4 : 12}
+            xAxisLine={xAxisLine}
+            showTooltip={Boolean(properties)}
+          />
+        )}
       </div>
       {!!epochData?.length && isMinimum && (
         <div className='w-full'>

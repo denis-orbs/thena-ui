@@ -20,6 +20,7 @@ function HoverAbleReChart({
   chartItemConfigs,
   chartConfig,
   isMinimum = false,
+  isLoading = false,
 }) {
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
@@ -137,19 +138,23 @@ function HoverAbleReChart({
       </div>
 
       <div className='mt-2 h-[250px]'>
-        <AnalyticsReChart
-          data={formattedData}
-          setHoverValue={setHover}
-          setHoverDate={setDateHover}
-          chartType={type}
-          xAsisKey='time'
-          chartConfig={chartConfig}
-          chartItemConfigs={chartItemConfigs}
-          useEpoch={false}
-          showCurrentPrice
-          desiredTicks={isMinimum ? 4 : 12}
-          currentPrice={currentPrice}
-        />
+        {isLoading ? (
+          <Skeleton className='h-full w-full' />
+        ) : (
+          <AnalyticsReChart
+            data={formattedData}
+            setHoverValue={setHover}
+            setHoverDate={setDateHover}
+            chartType={type}
+            xAsisKey='time'
+            chartConfig={chartConfig}
+            chartItemConfigs={chartItemConfigs}
+            useEpoch={false}
+            showCurrentPrice
+            desiredTicks={isMinimum ? 4 : 12}
+            currentPrice={currentPrice}
+          />
+        )}
       </div>
     </Box>
   )

@@ -43,9 +43,13 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
     [pairs, address],
   )
 
-  const { data: chartData } = useSWR(pair && ['pool/chart', pair.address], () => fetchPairChartData(networkId, pair), {
-    refreshInterval: 0,
-  })
+  const { data: chartData, isLoading: isLoadingChartData } = useSWR(
+    pair && ['pool/chart', pair.address],
+    () => fetchPairChartData(networkId, pair),
+    {
+      refreshInterval: 0,
+    },
+  )
 
   useEffect(() => {
     setFirstAsset(assets.find(ele => ele.address === pair?.token0?.address))
@@ -97,6 +101,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
             type='area'
             className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
             isMinimum={isLgDown}
+            isLoading={isLoadingChartData}
           />
         )
       }
@@ -122,6 +127,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
             type='bar'
             className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
             isMinimum={isLgDown}
+            isLoading={isLoadingChartData}
           />
         )
       }
@@ -147,6 +153,7 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
             type='bar'
             className='flex flex-col max-lg:bg-transparent max-lg:p-0! lg:gap-6! lg:px-4! lg:pt-6!'
             isMinimum={isLgDown}
+            isLoading={isLoadingChartData}
           />
         )
       }
@@ -168,7 +175,19 @@ export function PoolChart({ address, showTitle = true, isSimple = false, classNa
         return <></>
       }
     }
-  }, [chartType, chartData, pair, t, isLgDown, firstAsset, secondAsset, strategy, isReverse, isSimple])
+  }, [
+    chartType,
+    chartData,
+    pair,
+    t,
+    isLgDown,
+    firstAsset,
+    secondAsset,
+    strategy,
+    isReverse,
+    isSimple,
+    isLoadingChartData,
+  ])
 
   if (isLoading || !pair) {
     return <Loading />
