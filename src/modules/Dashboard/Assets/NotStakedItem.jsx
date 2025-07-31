@@ -239,7 +239,7 @@ function NotStakedItem({ position, isXlDown }) {
             </Link>
           )}
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
-            {getDisplayedStrategy(position.title, position.version)}
+            {getDisplayedStrategy(position.title, position.version, true)}
           </Paragraph>
         </div>
       </div>
@@ -259,7 +259,7 @@ function NotStakedItem({ position, isXlDown }) {
                   'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
                 )}
               >
-                {t('$THE Single Sided Vaults')}
+                {t('$THE Single Sided Vault')}
               </div>
             </div>
           ) : position.title.includes('ICHI') || GAMMA_TYPES.includes(position.title) ? (
