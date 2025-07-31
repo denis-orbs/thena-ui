@@ -242,10 +242,14 @@ const fetchAnalyticsChartData = async networkId => {
 
 export const useAnalyticsChartData = () => {
   const { networkId } = useChainSettings()
-  const { data: chartData } = useSWR(['analytics/all', networkId], () => fetchAnalyticsChartData(networkId), {
-    refreshInterval: 0,
-  })
-  return chartData ?? undefined
+  const { data: chartData, isLoading } = useSWR(
+    ['analytics/all', networkId],
+    () => fetchAnalyticsChartData(networkId),
+    {
+      refreshInterval: 0,
+    },
+  )
+  return { chartData: chartData ?? undefined, isLoading }
 }
 
 const fetchEpochFeesData = async (networkId, epoch) => {
