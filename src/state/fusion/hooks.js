@@ -482,12 +482,8 @@ export const useV3DerivedMintInfo = (
   )
 
   // single deposit only if price is out of range
-  const deposit0Disabled = Boolean(
-    typeof tickUpper === 'number' && poolForPosition && poolForPosition.tickCurrent >= tickUpper,
-  )
-  const deposit1Disabled = Boolean(
-    typeof tickLower === 'number' && poolForPosition && poolForPosition.tickCurrent <= tickLower,
-  )
+  const deposit0Disabled = Boolean(price && upperPrice && price.greaterThan(upperPrice))
+  const deposit1Disabled = Boolean(price && lowerPrice && price.lessThan(lowerPrice))
 
   // sorted for token order
   const depositADisabled =
