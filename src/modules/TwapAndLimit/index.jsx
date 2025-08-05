@@ -7,6 +7,7 @@ import BN from 'bignumber.js'
 import { useChainId, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Configs, Widget } from '@orbs-network/twap-ui'
+import { zeroAddress } from 'viem'
 import useWallet from '@/hooks/useWallet'
 import TokenInput from '@/components/input/TokenInput'
 import { InfoIcon, SwitchVerticalIcon, SwitchHorizontalV2Icon } from '@/svgs'
@@ -21,7 +22,6 @@ import Dropdown from '@/components/dropdown'
 import CustomTooltip from '@/components/tooltip'
 import CircleImage from '@/components/image/CircleImage'
 import { toWei } from '@/lib/utils'
-import { zeroAddress } from 'viem'
 
 function OrderConfirmationModal({ isOpen, onClose, children }) {
   return (
@@ -260,7 +260,7 @@ export function Twap({
           <div className='relative flex w-full flex-col gap-2'>
             <TokenPanel isSrcToken />
             <EmphasisIconButton
-              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+              className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 updateSearchParams({
