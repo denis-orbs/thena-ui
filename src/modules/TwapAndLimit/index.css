@@ -359,7 +359,7 @@
   height: 20px;
 }
 .orbs_StepIndicatorLine {
-  background: rgb(220 0 212/1);
+  background: rgb(220 0 212/1) !important;
 }
 @media (max-width: 768px) {
   .twap-inputs {

@@ -21,6 +21,7 @@ import Dropdown from '@/components/dropdown'
 import CustomTooltip from '@/components/tooltip'
 import CircleImage from '@/components/image/CircleImage'
 import { toWei } from '@/lib/utils'
+import { zeroAddress } from 'viem'
 
 function OrderConfirmationModal({ isOpen, onClose, children }) {
   return (
@@ -85,7 +86,9 @@ function TokenPanel({ isSrcToken }) {
       setOtherAsset={asset => (isSrcToken ? setToAddress(asset.address) : setFromAddress(asset.address))}
       otherAsset={isSrcToken ? toAsset : fromAsset}
       amount={input.value}
-      setAmount={input.onChange}
+      setAmount={it => {
+        input.onChange(typeof it === 'string' ? it : it.toString())
+      }}
       autoFocus
       disabled={!isSrcToken}
       hiddenAssets={hiddenAssets}
@@ -151,7 +154,7 @@ function parseAsset(asset) {
   if (!asset) return null
 
   return {
-    address: asset.address,
+    address: asset.address === 'BNB' ? zeroAddress : asset.address,
     decimals: asset.decimals,
     symbol: asset.symbol,
     logoUrl: asset.logoURI,
@@ -165,7 +168,8 @@ function getWeiBalanceFromAsset(asset) {
 function useToken(address) {
   const baseAssets = useAssets()
   return useMemo(() => {
-    const asset = baseAssets.find(it => it.address === address)
+    const _address = address === zeroAddress ? 'BNB' : address
+    const asset = baseAssets.find(it => it.address === _address)
     return parseAsset(asset)
   }, [baseAssets, address])
 }
@@ -256,7 +260,7 @@ export function Twap({
           <div className='relative flex w-full flex-col gap-2'>
             <TokenPanel isSrcToken />
             <EmphasisIconButton
-              className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
+              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
               onClick={() => {
                 updateSearchParams({
