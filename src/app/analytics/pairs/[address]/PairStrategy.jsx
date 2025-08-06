@@ -14,7 +14,7 @@ import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/Liq
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, STABLE_PAIRS } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -121,7 +121,7 @@ function PairStrategy({ pair }) {
                   <Paragraph className='text-sm! text-neutral-400'>{t('Deposit')}</Paragraph>
                 </div>
               )}
-              {NARROW_TYPES.includes(sub.title) && (
+              {GAMMA_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
                     className='*:not-first:-ml-2'
