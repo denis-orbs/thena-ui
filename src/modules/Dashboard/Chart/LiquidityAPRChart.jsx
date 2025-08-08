@@ -91,8 +91,8 @@ function LiquidityAPRChart({
         const percent = (Number(item.value) / totalValue) * 100
 
         if (sorted.length > 5 && percent < 5) {
-          othersValue += item.value
-          othersFiatValueOfLiquidity += item.fiatValueOfLiquidity
+          othersValue += Number(item.value) * Number(item.fiatValueOfLiquidity)
+          othersFiatValueOfLiquidity += Number(item.fiatValueOfLiquidity)
         } else {
           formatted.push(item)
         }
@@ -105,7 +105,7 @@ function LiquidityAPRChart({
     if (othersValue > 0) {
       formatted.push({
         label: 'Others',
-        value: othersValue,
+        value: key === 'apr' ? othersValue / othersFiatValueOfLiquidity : othersValue,
         ...(key === 'apr' ? { fiatValueOfLiquidity: othersFiatValueOfLiquidity, symbol: 'Others' } : {}),
       })
     }

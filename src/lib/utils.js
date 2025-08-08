@@ -136,15 +136,19 @@ export const formatPrice = (price, decimals = 5) => {
 
   const [intPart, decPart = ''] = price.toString().split('.')
 
+  if (decPart.length === 0) {
+    return `${formatAmount(price)}`
+  }
+
   if (intPart.length > 3) {
-    return `${intPart}.${decPart.slice(0, 2)}`
+    return `${formatAmount(intPart)}.${decPart.slice(0, 2)}`
   }
 
   if (decPart.length > decimals) {
-    return `${intPart}.${decPart.slice(0, decimals)}`
+    return `${formatAmount(intPart)}.${decPart.slice(0, decimals)}`
   }
 
-  return `${price}`
+  return `${formatAmount(price)}`
 }
 
 export const formatPriceForChart = num => {
