@@ -340,7 +340,7 @@ export const useEstimateAPR = ({
 
   return presetPositions.reduce((acc, { title, position: p }) => {
     const hasEmission = Number(rewardReserve?.[0]) > 0 || Number(rewardReserve?.[1]) > 0n
-    if (!p || !hasEmission) {
+    if (!p || (!hasEmission && isFarming)) {
       acc[title] = BigNumber(0)
     } else {
       const positionTvl = BigNumber((isRevert ? p.amount0 : p.amount1)?.toExact() ?? 0)
