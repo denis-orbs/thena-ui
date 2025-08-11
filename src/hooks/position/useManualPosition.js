@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
@@ -152,7 +153,7 @@ export const useManualPositions = positions => {
       const token1 = getToken(asset1.address, getAsset)
 
       const apr = (() => {
-        if (!tickLower || !tickUpper || !position) return ZERO_VALUE
+        if (isNil(tickLower) || isNil(tickUpper) || !position) return ZERO_VALUE
 
         const farmInfo = farmInfoList[index] || {}
 

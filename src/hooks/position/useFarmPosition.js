@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
@@ -186,7 +187,7 @@ export const useFarmPositions = positions => {
         .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
 
       const apr = (() => {
-        if (!tickLower || !tickUpper || !position) return ZERO_VALUE
+        if (isNil(tickLower) || isNil(tickUpper) || !position) return ZERO_VALUE
 
         const farmInfo = farmInfoList[index] || {}
         const { earnPercent = 0, totalLiquidityInFarm, rewardReserve } = farmInfo
