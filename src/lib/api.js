@@ -180,3 +180,11 @@ export const getAnalyticsData = async ({ networkId, first, page, epoch }) => {
     .then(r => r.json())
     .then(r => r.data)
 }
+
+export const getUserVotingRewards = async ({ networkId, address }) => {
+  const url = `${backendApi}/v3/vote/rewards/${networkId}?address=${address.toLowerCase()}`
+
+  return fetch(url)
+    .then(r => r.json())
+    .then(r => r.data)
+}

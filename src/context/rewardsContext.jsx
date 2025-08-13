@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js'
-import { gql } from 'graphql-request'
 import React, { useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
@@ -10,7 +9,7 @@ import { veTHEApiAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
-import { voterSubgraph } from '@/lib/graphql'
+import { getUserVotingRewards } from '@/lib/api'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { usePools, useV3PoolsWithGauge } from '@/state/pools/hooks'
 
@@ -21,64 +20,86 @@ const rewardsContext = React.createContext({
   },
 })
 
-const V3_GET_USER_REWARDS = gql`
-  query V3_GET_USER_REWARDS($user: Bytes = "", $first: Int = 1000, $skip: Int = 0) {
-    userRewards(
-      where: { user: $user, votingIncentive_: { isActive: true }, rewardAmount_gt: 0 }
-      first: $first
-      skip: $skip
-    ) {
-      id
-      lastUpdate
-      pool {
-        votingIncentive
-        createdAt
-        gauge
-        id
-        isActive
-      }
-      rewardAmount
-      rewardToken
-      user
-    }
-  }
-`
+// const V3_GET_USER_REWARDS = gql`
+//   query V3_GET_USER_REWARDS($user: Bytes = "", $first: Int = 1000, $skip: Int = 0) {
+//     userRewards(
+//       where: { user: $user, votingIncentive_: { isActive: true }, rewardAmount_gt: 0 }
+//       first: $first
+//       skip: $skip
+//     ) {
+//       id
+//       lastUpdate
+//       pool {
+//         votingIncentive
+//         createdAt
+//         gauge
+//         id
+//         isActive
+//       }
+//       rewardAmount
+//       rewardToken
+//       user
+//     }
+//   }
+// `
+// const fetchUserRewards = async (userId, chainId) => {
+//   const allRewards = []
+//   const PAGE_SIZE = 1000
+//   let skip = 0
+//   let hasMore = true
+
+//   while (hasMore) {
+//     try {
+//       const { userRewards } = await voterSubgraph[chainId].request(V3_GET_USER_REWARDS, {
+//         user: userId,
+//         first: PAGE_SIZE,
+//         skip,
+//       })
+
+//       const rewards = (userRewards || []).map(reward => ({
+//         id: reward.id,
+//         lastUpdate: reward.lastUpdate,
+//         pool: reward.pool,
+//         rewardAmount: reward.rewardAmount,
+//         rewardToken: reward.rewardToken,
+//         user: reward.user,
+//         votingIncentives: reward.pool?.votingIncentive || null,
+//       }))
+
+//       allRewards.push(...rewards)
+//       if (rewards.length < PAGE_SIZE) {
+//         hasMore = false
+//       } else {
+//         skip += PAGE_SIZE
+//       }
+//     } catch (e) {
+//       console.error('Error fetching userRewards:', e)
+//       hasMore = false
+//     }
+//   }
+//   return allRewards
+// }
+
 const fetchUserRewards = async (userId, chainId) => {
-  const allRewards = []
-  const PAGE_SIZE = 1000
-  let skip = 0
-  let hasMore = true
+  try {
+    const data = await getUserVotingRewards({
+      networkId: chainId,
+      address: userId,
+    })
 
-  while (hasMore) {
-    try {
-      const { userRewards } = await voterSubgraph[chainId].request(V3_GET_USER_REWARDS, {
-        user: userId,
-        first: PAGE_SIZE,
-        skip,
-      })
-
-      const rewards = (userRewards || []).map(reward => ({
-        id: reward.id,
-        lastUpdate: reward.lastUpdate,
-        pool: reward.pool,
-        rewardAmount: reward.rewardAmount,
-        rewardToken: reward.rewardToken,
-        user: reward.user,
-        votingIncentives: reward.pool?.votingIncentive || null,
-      }))
-
-      allRewards.push(...rewards)
-      if (rewards.length < PAGE_SIZE) {
-        hasMore = false
-      } else {
-        skip += PAGE_SIZE
-      }
-    } catch (e) {
-      console.error('Error fetching userRewards:', e)
-      hasMore = false
-    }
+    return (data || []).map(reward => ({
+      id: reward.id,
+      lastUpdate: reward.lastUpdate,
+      pool: reward.pool,
+      rewardAmount: reward.rewardAmount,
+      rewardToken: reward.rewardToken,
+      user: reward.user,
+      votingIncentives: reward.votingIncentives,
+    }))
+  } catch (e) {
+    console.error('Error fetching userRewards:', e)
+    return []
   }
-  return allRewards
 }
 
 function RewardsContextProvider({ children }) {
@@ -106,7 +127,7 @@ function RewardsContextProvider({ children }) {
         const result = {}
         const isFeeExist = false
         const isBribeExist = false
-        const userPoolRewards = current.filter(reward => reward?.pool?.id === pool?.address)
+        const userPoolRewards = current.filter(reward => reward?.pool === pool?.address)
         if (userPoolRewards && userPoolRewards.length) {
           userPoolRewards.forEach(userPoolReward => {
             const { rewardAmount, rewardToken } = userPoolReward
