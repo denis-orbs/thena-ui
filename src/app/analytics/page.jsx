@@ -138,13 +138,15 @@ export default function AnalyticsPage() {
       hiddenBackButton
       className={cn(
         '3xl:w-[1464px] 3xl:mt-8! mt-6 max-md:mx-4! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]',
-        showBannerMigrate && 'lg:-mt-8!',
+        showBannerMigrate && 'xl:-mt-8!',
       )}
     >
-      <div className='flex flex-col gap-4 lg:gap-8'>
+      <div className='flex flex-col gap-4 xl:gap-8'>
         <SummaryAnalyticsInfo totalStats={totalStats} />
-        <div className='flex flex-col gap-2 lg:gap-4'>
-          <h2>{t('Analytics')}</h2>
+        <div className='flex flex-col gap-4'>
+          <TextHeading className='font-archia text-xl! leading-6! font-medium xl:text-2xl! xl:leading-8!'>
+            {t('Analytics')}
+          </TextHeading>
           {isLgDown ? (
             <>
               {/* TVL chart */}
@@ -155,7 +157,7 @@ export default function AnalyticsPage() {
                   <div className='h-[143px] w-full overflow-hidden bg-[url("/images/line-chart.png")] bg-[length:100%_143px] bg-center bg-no-repeat' />
                 }
                 className='px-0!'
-                classNames={{ preview: 'px-0!', content: 'pb-4 pr-2 pl-0!', headerClosed: '-mt-11' }}
+                classNames={{ preview: 'px-0!', content: 'pt-0 pb-4 px-2', headerClosed: '-mt-11' }}
               >
                 <AnalyticsChart
                   className='border-none! bg-transparent p-0!'
@@ -167,9 +169,6 @@ export default function AnalyticsPage() {
                   chartConfig={{
                     tvlUSD: {
                       label: t('Total Volume'),
-                    },
-                    currentPrice: {
-                      label: t('Current Price'),
                     },
                   }}
                   chartItemConfigs={[
@@ -198,7 +197,7 @@ export default function AnalyticsPage() {
                 className='min-h-[197px]! px-0!'
                 classNames={{
                   preview: 'px-0!',
-                  content: 'pt-0 pb-4 pr-2 pl-0!',
+                  content: 'pt-0 pb-4 px-2',
                   headerClosed: 'border-t border-t-neutral-700 -mt-[2px]! h-[63px] pt-0 px-4',
                 }}
               >
@@ -243,7 +242,7 @@ export default function AnalyticsPage() {
                 className='min-h-[197px]! px-0!'
                 classNames={{
                   preview: 'px-0!',
-                  content: 'pt-0 pb-4 pr-2 pl-0!',
+                  content: 'pt-0 pb-4 px-2',
                   headerClosed: 'border-t border-t-neutral-700 -mt-[2px]! h-[63px] pt-0 px-4',
                 }}
               >
