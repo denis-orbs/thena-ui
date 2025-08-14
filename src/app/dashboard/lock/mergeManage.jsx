@@ -2,25 +2,53 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
 import { ModalBody, ModalFooter } from '@/components/modal'
+import ConfirmModal from '@/components/modal/ConfirmModal'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useMerge } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount } from '@/lib/utils'
+import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
-export default function MergeManage({ selected, isAutomation }) {
+export default function MergeManage({ selected, status, contract, mutateAutomationData }) {
   const [veTHE, setVeTHE] = useState(null)
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
   const t = useTranslations()
 
   const { onMerge, pending } = useMerge()
+
+  const [warnWithdrawFunds, setWarnWithdrawFunds] = useState(false)
+  const [withdrawFundsPopup, setWithdrawFundsPopup] = useState(false)
+
+  const hasActiveAutomation = useMemo(
+    () => status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED,
+    [status],
+  )
+  const handleMerge = useCallback(
+    (confirm = false) => {
+      if (!veTHE) {
+        warnToast('Select veTHE')
+        return
+      }
+      if (status === AUTOMATION_STATUS.CANCELED && contract.balance > 0 && !confirm) {
+        setWarnWithdrawFunds(true)
+        return
+      }
+      onMerge(veTHE, selected, () => {
+        setVeTHE(null)
+        updateVeTHEs()
+      })
+    },
+    [veTHE, status, contract.balance, onMerge, selected, updateVeTHEs],
+  )
 
   const filtered = useMemo(
     () =>
@@ -47,6 +75,34 @@ export default function MergeManage({ selected, isAutomation }) {
 
   return (
     <>
+      {warnWithdrawFunds && (
+        <ConfirmModal
+          setPopup={setWarnWithdrawFunds}
+          bgIcon='bg-error-600'
+          popup={warnWithdrawFunds}
+          cancelButton={t('Continue')}
+          confirmButton={t('Withdraw Deposit')}
+          title={t('Warning')}
+          desc={t('Warning withdraw fund automation')}
+          onConfirm={() => {
+            setWithdrawFundsPopup(true)
+          }}
+          onCancel={() => {
+            handleMerge(true)
+          }}
+        />
+      )}
+
+      {withdrawFundsPopup && (
+        <WithdrawFundsModal
+          contract={contract}
+          popup={withdrawFundsPopup}
+          setPopup={setWithdrawFundsPopup}
+          onWithdrawSuccess={() => {
+            mutateAutomationData()
+          }}
+        />
+      )}
       <ModalBody>
         <div className='flex flex-col gap-5'>
           <div className='flex flex-col gap-2'>
@@ -87,22 +143,10 @@ export default function MergeManage({ selected, isAutomation }) {
             </div>
           )}
         </div>
-        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
+        {hasActiveAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
-        <PrimaryButton
-          className='w-full'
-          disabled={pending || isAutomation}
-          onClick={() => {
-            if (!veTHE) {
-              warnToast('Select veTHE')
-            }
-            onMerge(veTHE, selected, () => {
-              setVeTHE(null)
-              updateVeTHEs()
-            })
-          }}
-        >
+        <PrimaryButton className='w-full' disabled={pending || hasActiveAutomation} onClick={() => handleMerge()}>
           {t('Merge')}
         </PrimaryButton>
       </ModalFooter>

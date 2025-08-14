@@ -16,6 +16,7 @@ function ConfirmModal({
   cancelButton = 'Cancel',
   bgIcon,
   onConfirm,
+  onCancel,
 }) {
   return (
     <Modal
@@ -39,7 +40,13 @@ function ConfirmModal({
       </ModalBody>
 
       <ModalFooter className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-        <EmphasisButton className='w-full' onClick={() => setPopup()}>
+        <EmphasisButton
+          className='w-full'
+          onClick={() => {
+            onCancel?.()
+            setPopup()
+          }}
+        >
           {cancelButton}
         </EmphasisButton>
         <PrimaryButton

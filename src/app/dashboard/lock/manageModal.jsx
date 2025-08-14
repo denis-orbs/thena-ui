@@ -7,7 +7,7 @@ import Highlight from '@/components/highlight'
 import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
+import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { cn } from '@/lib/utils'
 import { LockIcon, MergeIcon, SplitIcon, TransferIcon } from '@/svgs'
 
@@ -30,6 +30,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
   const { data: veTHEs } = useVeTheAutomations()
   const found = veTHEs?.find(item => item.id === veTHE?.id)
   const status = found?.statusString ?? AUTOMATION_STATUS.NO
+  const { contractData, mutateAutomationData } = useAutomationContractDetail(veTHE?.id)
 
   const typesData = useMemo(
     () => [
@@ -144,7 +145,9 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
       {type === ManageTypes.merge && (
         <MergeManage
           selected={veTHE}
-          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+          status={status}
+          contract={contractData}
+          mutateAutomationData={mutateAutomationData}
         />
       )}
       {type === ManageTypes.split && (
@@ -152,7 +155,9 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           selected={veTHE}
           setPopup={setPopup}
           updateVeTHEs={updateVeTHEs}
-          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+          status={status}
+          contract={contractData}
+          mutateAutomationData={mutateAutomationData}
         />
       )}
       {type === ManageTypes.transfer && (
@@ -160,7 +165,9 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           selected={veTHE}
           setPopup={setPopup}
           updateVeTHEs={updateVeTHEs}
-          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
+          status={status}
+          contract={contractData}
+          mutateAutomationData={mutateAutomationData}
         />
       )}
     </Modal>

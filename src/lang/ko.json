@@ -1622,5 +1622,6 @@
   "No transactions found": "No transactions found.",
   "$THE Single Sided Vault": "$THE Single Sided Vault",
   "This is Idle": "This is Idle",
-  "Degen Mode": "Degen 모드"
+  "Degen Mode": "Degen 모드",
+  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding"
 }
