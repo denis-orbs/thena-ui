@@ -86,7 +86,7 @@ function DepositIcon({ sub, title }) {
     return (
       <div className='flex flex-col items-center gap-1'>
         <CircleImage alt={title} className='size-4' src={sub.allowed.logoURI} />
-        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
       </div>
     )
   }
@@ -100,7 +100,7 @@ function DepositIcon({ sub, title }) {
           logo1={sub.token0.logoURI}
           logo2={sub.token1.logoURI}
         />
-        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
       </div>
     )
   }
@@ -116,7 +116,7 @@ function StrategyItem({ sub, t }) {
         <div className='mt-1 flex flex-wrap gap-2'>
           <div className='flex items-center gap-1'>
             <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
-            <Paragraph className='text-xs font-medium text-neutral-300 lg:text-xs'>
+            <Paragraph className='text-xs font-medium text-neutral-300 xl:text-xs'>
               ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
             </Paragraph>
           </div>
@@ -138,7 +138,7 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
   return (
     <article
       className={cn(
-        'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 font-medium md:px-4 md:py-2',
+        'bg-opacity-50 flex items-center justify-between rounded-xl bg-neutral-900 px-4 py-2 font-medium outline outline-neutral-600',
       )}
     >
       <div className='flex items-center gap-1 md:gap-3 xl:gap-2'>
@@ -326,14 +326,13 @@ export default function HeaderCLSection({
   return (
     <div
       className={cn(
-        'grid gap-4 lg:grid-cols-[1fr_368px] lg:gap-8',
-        !isAutomatic && mintInfo.noLiquidity && 'lg:grid-cols-[476px_1fr]',
-        isAutomatic && 'lg:grid-cols-[1fr_568px]',
-        position && 'lg:grid-cols-[1fr_650px]',
+        'grid gap-4 xl:grid-cols-[479px_1fr] xl:gap-8',
+        !isAutomatic && mintInfo.noLiquidity && 'xl:grid-cols-[470px_1fr]',
+        (isAutomatic || position) && 'xl:grid-cols-[435px_1fr]',
       )}
     >
-      <div className='flex flex-col gap-4 lg:gap-2'>
-        <div className='flex flex-row items-center gap-2 lg:gap-8'>
+      <div className='flex flex-col gap-4 xl:gap-2'>
+        <div className='flex flex-row items-center gap-2 xl:gap-8'>
           <IconGroup
             className='*:not-first:-ml-2'
             classNames={{ image: 'outline-2 size-12' }}
@@ -341,10 +340,10 @@ export default function HeaderCLSection({
             logo2={secondAsset?.logoURI}
           />
           <div className='flex flex-col gap-2'>
-            <NewTextHeading className='text-xl! leading-6! text-neutral-50 lg:text-[36px]! lg:leading-[40px]!'>
+            <NewTextHeading className='text-xl! leading-6! text-neutral-50 xl:text-[36px]! xl:leading-[40px]!'>
               {position ? t('Manage Liquidity') : t('Add Liquidity')}
             </NewTextHeading>
-            <TextHeading className='text-xs font-medium lg:hidden lg:text-2xl'>
+            <TextHeading className='text-xs font-medium text-neutral-300 xl:hidden xl:text-2xl'>
               {position
                 ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}`
                 : t('Concentrated Liquidity')}
@@ -352,7 +351,7 @@ export default function HeaderCLSection({
           </div>
         </div>
 
-        <TextHeading className='hidden text-xs font-medium lg:flex lg:text-2xl'>
+        <TextHeading className='hidden text-xs font-medium xl:flex xl:text-2xl'>
           {position ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}` : t('Concentrated Liquidity')}
         </TextHeading>
 
@@ -370,7 +369,7 @@ export default function HeaderCLSection({
             )}
 
             {position ? (
-              <div className='mt-auto max-lg:hidden'>
+              <div className={cn('mt-auto max-xl:hidden')}>
                 <PoolAttributes
                   pair={pair}
                   strategy={strategy}
@@ -398,38 +397,41 @@ export default function HeaderCLSection({
       {isLoading ? (
         <Skeleton className='h-[150px]' />
       ) : (
-        <div className={cn(position ? 'mt-0' : 'lg:mt-18')}>
-          {!isAutomatic ? (
-            <>
-              {mintInfo.noLiquidity ? (
-                <WarningStartingPrice />
-              ) : position ? (
-                <ManualPositionInfo
-                  baseCurrency={firstAsset}
-                  quoteCurrency={secondAsset}
-                  position={position}
-                  type={type}
-                />
+        <div className='h-full'>
+          <div className={cn(!position && 'xl:mt-18')}>
+            <div className='flex w-full xl:justify-end'>
+              {!isAutomatic ? (
+                <>
+                  {mintInfo.noLiquidity ? (
+                    <WarningStartingPrice />
+                  ) : position ? (
+                    <ManualPositionInfo
+                      baseCurrency={firstAsset}
+                      quoteCurrency={secondAsset}
+                      position={position}
+                      type={type}
+                    />
+                  ) : (
+                    <ManualStrategyDisplay
+                      firstAsset={firstAsset}
+                      secondAsset={secondAsset}
+                      isEarnFees={isEarnFees}
+                      APRs={APRs}
+                      activePreset={activePreset}
+                      strategy={strategy}
+                      t={t}
+                    />
+                  )}
+                </>
               ) : (
-                <ManualStrategyDisplay
-                  firstAsset={firstAsset}
-                  secondAsset={secondAsset}
-                  isEarnFees={isEarnFees}
-                  APRs={APRs}
-                  activePreset={activePreset}
-                  strategy={strategy}
-                  t={t}
-                />
+                <>
+                  {position && (
+                    <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
+                  )}
+                </>
               )}
-            </>
-          ) : (
-            // <ManualPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} type={type} />
-            <>
-              {position && (
-                <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
-              )}
-            </>
-          )}
+            </div>
+          </div>
         </div>
       )}
     </div>

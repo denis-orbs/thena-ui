@@ -1,17 +1,16 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { AnimatePresence, motion } from 'framer-motion'
 import { SettingsIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import Input from '@/components/input'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
-import Selection from '@/components/selection'
+import { TextHeading } from '@/components/typography'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -64,6 +63,7 @@ export default function IchiAdd({
   handleBack,
   isSmall = false,
   classNames,
+  label,
 }) {
   const [amount, setAmount] = useState('')
 
@@ -112,54 +112,23 @@ export default function IchiAdd({
     }
   }, [amount, balance, strategy, addIchiPoolV2, amountToWrap, slippage, onShowModalSuccess, addIchiPoolV3])
 
-  const selections = useMemo(
-    () =>
-      [0.1, 0.5, 1].map(ele => ({
-        label: ele,
-        active: slippage === Number(ele),
-        onClickHandler: () => {
-          setSlippage(Number(ele))
-        },
-      })),
-    [slippage],
-  )
-
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-2', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
         <div className='flex w-full flex-col items-end justify-end gap-2'>
-          <EmphasisIconButton
-            className='size-8 lg:size-11'
-            classNames='size-4 stroke-neutral-400'
-            Icon={SettingsIcon}
-            onClick={() => setSlippageDropdown(prev => !prev)}
-            disabled={false}
-          />
-          <AnimatePresence>
-            {slippageDropdown && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className='w-full overflow-hidden p-1'
-              >
-                <div className='flex min-w-[200px] justify-end gap-3'>
-                  <Selection data={selections} className='bg-transparent text-neutral-200!' />
-                  <Input
-                    classNames={{
-                      input: 'w-[70px] h-9',
-                    }}
-                    val={slippage}
-                    onChange={e => setSlippage(Number(e.target.value) || 0)}
-                    suffix='%'
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className='flex w-full items-center justify-between'>
+            <TextHeading className='font-archia font-semibold'>{label}</TextHeading>
+            <EmphasisIconButton
+              className='size-8 lg:size-11'
+              classNames='size-4 stroke-neutral-400'
+              Icon={SettingsIcon}
+              onClick={() => setSlippageDropdown(prev => !prev)}
+              disabled={false}
+            />
+          </div>
+          <SlippageContent setSlippage={setSlippage} slippage={slippage} show={slippageDropdown} />
         </div>
 
         <TokenAmountInput

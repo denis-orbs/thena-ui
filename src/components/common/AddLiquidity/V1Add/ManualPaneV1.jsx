@@ -184,7 +184,7 @@ export function ManualPaneV1({
         </div>
       </div>
 
-      <div className='mt-2 flex flex-col gap-2'>
+      <div className='mt-4 flex flex-col gap-2'>
         <EmphasisButton className='block w-full lg:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

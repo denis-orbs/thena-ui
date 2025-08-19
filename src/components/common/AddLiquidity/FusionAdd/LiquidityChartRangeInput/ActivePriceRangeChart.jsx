@@ -17,18 +17,15 @@ export default function ActivePriceRangeChart({
   dimensions: { width, height, padding, contentWidth, axisLabelPaneWidth },
   interactive = true,
   brushDomain,
-  brushLabels,
   onBrushDomainChange,
   handleShow,
   disableBrush = false,
   setIsOutOfView,
   isFullRange = false,
-  container,
   divideDistanceWidth,
   showLiquidity,
   setIsFlip = () => {},
 }) {
-  // const [currentHover, setCurrentHover] = useState(null)
   const { isLgDown } = useMediaQuery()
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
@@ -81,18 +78,6 @@ export default function ActivePriceRangeChart({
 
         <g>
           <g clipPath={`url(#${id}-chart-clip)`}>
-            {/* <HorizontalArea
-              series={series}
-              xScale={xScale}
-              yScale={yScale}
-              xValue={xAccessor}
-              yValue={yAccessor}
-              brushDomain={brushDomain}
-              fill='url(#gradient-brush-area)'
-              selectedFill='url(#gradient-brush-area)'
-              containerHeight={height}
-              containerWidth={width - axisLabelPaneWidth}
-            /> */}
             {showLiquidity && (
               <LiquidityBars
                 series={series}
@@ -117,9 +102,7 @@ export default function ActivePriceRangeChart({
             id={id}
             yScale={yScale}
             interactive={interactive}
-            brushLabelValue={brushLabels}
             brushExtent={brushDomain ?? yScale.domain()}
-            hideHandles={!brushDomain}
             width={width - (isLgDown ? 0 : axisLabelPaneWidth - 12)}
             height={height}
             setBrushExtent={onBrushDomainChange}
@@ -128,27 +111,12 @@ export default function ActivePriceRangeChart({
             disableColor={styles.disabled}
             setIsOutOfView={setIsOutOfView}
             isFullRange={isFullRange}
-            // setCurrentHover={setCurrentHover}
-            // currentHover={currentHover}
-            // setLiveLocalBrushExtent={setLiveLocalBrushExtent}
             handleShow={handleShow}
             padding={padding}
-            container={container}
             divideDistanceWidth={divideDistanceWidth}
             currentPrice={current}
-            axisLabelPaneWidth={axisLabelPaneWidth}
             setIsFlip={setIsFlip}
           />
-          {/* <AxisRight
-            yScale={yScale}
-            offset={width - axisLabelPaneWidth}
-            current={current}
-            min={liveLocalBrushExtent?.[0]}
-            max={liveLocalBrushExtent?.[1]}
-            currentHover={currentHover}
-            padding={padding}
-            height={height}
-          /> */}
         </g>
       </svg>
     </div>

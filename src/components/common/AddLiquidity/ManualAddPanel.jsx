@@ -1,9 +1,8 @@
-import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
@@ -13,7 +12,6 @@ import KyberZapperIncreasePane from './FusionAdd/KyberZapperIncreasePane'
 import KyberZapperPane from './FusionAdd/KyberZapperPane'
 import ManualAdd from './FusionAdd/ManualAdd'
 
-const defaultSlippageOptions = [0.1, 0.5, 1]
 export default function ManualAddPanel({
   baseCurrency,
   quoteCurrency,
@@ -63,20 +61,8 @@ export default function ManualAddPanel({
     [isZapper, t],
   )
 
-  const selections = useMemo(
-    () =>
-      defaultSlippageOptions.map(ele => ({
-        label: ele,
-        active: slippage === Number(ele),
-        onClickHandler: () => {
-          setSlippage(Number(ele))
-        },
-      })),
-    [slippage],
-  )
-
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col'>
       <>
         <div className={cn('flex flex-row justify-between gap-2')}>
           <Selection
@@ -97,29 +83,7 @@ export default function ManualAddPanel({
             disabled={false}
           />
         </div>
-        <AnimatePresence>
-          {show && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className='w-full overflow-hidden p-1'
-            >
-              <div className='flex min-w-[200px] justify-end gap-3'>
-                <Selection data={selections} className='bg-transparent text-neutral-200!' />
-                <Input
-                  classNames={{
-                    input: 'w-[70px] h-9',
-                  }}
-                  val={slippage}
-                  onChange={e => setSlippage(Number(e.target.value) || 0)}
-                  suffix='%'
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <SlippageContent setSlippage={setSlippage} slippage={slippage} show={show} marginTop={4} />
       </>
 
       {isZapper ? (
@@ -140,21 +104,23 @@ export default function ManualAddPanel({
           )}
         </>
       ) : (
-        <ManualAdd
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          setBaseCurrency={setBaseCurrency}
-          setQuoteCurrency={setQuoteCurrency}
-          mintInfo={mintInfo}
-          currentPrice={currentPrice}
-          strategy={strategy}
-          onShowModalSuccess={onShowModalSuccess}
-          position={position}
-          handleBack={handleBack}
-          slippage={slippage}
-          className={cn(position && 'grid grid-cols-1! gap-2!')}
-          classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1!' }}
-        />
+        <div className='mt-2'>
+          <ManualAdd
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            setBaseCurrency={setBaseCurrency}
+            setQuoteCurrency={setQuoteCurrency}
+            mintInfo={mintInfo}
+            currentPrice={currentPrice}
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+            position={position}
+            handleBack={handleBack}
+            slippage={slippage}
+            className={cn(position && 'grid grid-cols-1! gap-2!')}
+            classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!' }}
+          />
+        </div>
       )}
     </div>
   )

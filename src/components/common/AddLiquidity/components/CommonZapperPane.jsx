@@ -303,7 +303,7 @@ export function CommonZapperPane({
       {account ? (
         <div
           className={cn(
-            'mt-auto flex w-full flex-col items-center gap-2 lg:flex-row',
+            'mt-4 flex w-full flex-col items-center gap-2 lg:flex-row',
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >

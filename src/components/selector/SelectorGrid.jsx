@@ -8,7 +8,7 @@ function SelectorGrid({ data, classNames, className, canSelect = true, isGrid = 
       {data.map((ele, idx) => (
         <div
           className={cn(
-            'flex items-center gap-2 rounded-xl border-neutral-700 p-2 hover:bg-neutral-800 md:p-4',
+            'flex h-[68px] items-center justify-center gap-2 rounded-xl border-neutral-700 p-2 hover:bg-neutral-800 md:p-4',
             canSelect ? 'cursor-pointer' : 'cursor-default',
             classNames?.item,
             ele.active && 'bg-primary-950/60 hover:bg-primary-950/60',

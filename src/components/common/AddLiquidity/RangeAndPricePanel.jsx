@@ -18,6 +18,13 @@ import RangePriceInfo from './components/RangePriceInfo'
 import { RangeSelector } from './components/RangeSelector'
 import ChartPriceRangeInput from './FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
 
+const CLASS_NAMES = Object.freeze({
+  title: 'xl:text-xl! xl:leading-6!',
+  chart: 'h-full! w-full',
+  handleArea: 'max-xl:bg-chart-gradient!',
+  bottomAxis: 'max-xl:border-none! xl:max-h-11 xl:h-11',
+})
+
 export function RangeAndPricePanel({
   currencyA,
   currencyB,
@@ -40,8 +47,11 @@ export function RangeAndPricePanel({
   const { isLgDown } = useMediaQuery()
 
   const chartHeight = useMemo(() => {
-    if (isLgDown) return 279
-    if (position) return 328
+    if (isLgDown) return 265
+    if (position) {
+      return 324
+    }
+    return 286
   }, [isLgDown, position])
 
   const isStablecoinPair = useMemo(() => {
@@ -106,9 +116,9 @@ export function RangeAndPricePanel({
   )
 
   return (
-    <div className='grid grid-cols-1 gap-4 bg-transparent max-xl:border-none xl:grid-cols-[1fr_368px] xl:gap-8 xl:rounded-xl xl:border xl:border-neutral-600 xl:bg-neutral-900 xl:p-4'>
+    <div className='grid grid-cols-1 gap-4 bg-transparent max-xl:border-none xl:grid-cols-[1fr_368px] xl:gap-8 xl:rounded-xl xl:bg-neutral-900 xl:p-4 xl:outline-1 xl:outline-neutral-600'>
       {/* Main Chart Section */}
-      <div className='order-2 flex h-auto flex-col gap-4 xl:order-1'>
+      <div className='order-2 flex h-auto w-full flex-col gap-4 xl:order-1'>
         {viewMode && (
           <>
             <TextHeading className={cn('font-archia block text-xl! leading-6! font-semibold xl:hidden')}>
@@ -122,7 +132,7 @@ export function RangeAndPricePanel({
           </>
         )}
 
-        <div className='chart-wrapper flex-1'>
+        <div className='chart-wrapper w-full flex-1'>
           <ChartPriceRangeInput
             currencyA={currencyA ?? undefined}
             currencyB={currencyB ?? undefined}
@@ -142,12 +152,7 @@ export function RangeAndPricePanel({
             setLastPrice={setLastPrice}
             label='Your Range against the Price'
             showLabel={!viewMode || !isLgDown}
-            classNames={{
-              title: 'xl:text-5 xl:leading-6',
-              chart: 'h-full!',
-              handleArea: 'max-xl:bg-chart-gradient!',
-              bottomAxis: 'max-xl:border-none! xl:max-h-11 xl:h-11',
-            }}
+            classNames={CLASS_NAMES}
             interactive={!viewMode || !position}
             height={isLgDown ? 279 : chartHeight}
           />
@@ -155,8 +160,8 @@ export function RangeAndPricePanel({
       </div>
 
       {/* Sidebar Section */}
-      <div className={cn('order-1 h-auto items-center justify-center xl:order-2 xl:flex', viewMode && 'max-xl:hidden')}>
-        <div className='flex flex-col gap-4 xl:h-full'>
+      <div className={cn('order-1 h-auto xl:order-2 xl:flex', viewMode && 'max-xl:hidden')}>
+        <div className='flex w-full flex-col gap-4 xl:h-full'>
           {!viewMode ? (
             <>
               <RangeSelector
@@ -185,26 +190,28 @@ export function RangeAndPricePanel({
               />
 
               {/* Desktop PresetRanges */}
-              <div className='mt-auto mb-2.5 max-xl:hidden'>
+              <div className='mt-auto max-xl:hidden'>
                 <PresetRangesComponent className='mt-auto' />
               </div>
             </>
           ) : (
             /* Desktop ViewMode Content */
-            <div className='hidden flex-col gap-3 xl:flex'>
+            <div className='hidden h-full flex-col gap-3 xl:flex'>
               <RangePriceInfoComponent />
-              <AddLiquidityCLPane
-                baseCurrency={currencyA}
-                quoteCurrency={currencyB}
-                setBaseCurrency={null}
-                setQuoteCurrency={null}
-                mintInfo={mintInfo}
-                currentPrice={currentPrice}
-                strategy={null}
-                onShowModalSuccess={null}
-                position={position}
-                handleBack={null}
-              />
+              <div className='mt-auto h-fit'>
+                <AddLiquidityCLPane
+                  baseCurrency={currencyA}
+                  quoteCurrency={currencyB}
+                  setBaseCurrency={null}
+                  setQuoteCurrency={null}
+                  mintInfo={mintInfo}
+                  currentPrice={currentPrice}
+                  strategy={null}
+                  onShowModalSuccess={null}
+                  position={position}
+                  handleBack={null}
+                />
+              </div>
             </div>
           )}
         </div>

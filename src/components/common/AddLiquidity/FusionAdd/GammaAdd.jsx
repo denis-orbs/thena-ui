@@ -1,17 +1,16 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import Input from '@/components/input'
-import Selection from '@/components/selection'
+import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
 import { useCurrency } from '@/hooks/fusion/Tokens'
@@ -74,10 +73,11 @@ export default function GammaAdd({
   handleBack,
   isSmall = false,
   classNames,
+  label,
 }) {
-  const t = useTranslations()
+  // const t = useTranslations()
 
-  const [isZapper, setIsZapper] = useState(false)
+  // const [isZapper, setIsZapper] = useState(false)
 
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
@@ -87,80 +87,56 @@ export default function GammaAdd({
   // const asset0 = useGetAsset(strategy?.token0?.address)
   // const asset1 = useGetAsset(strategy?.token1?.address)
 
-  const selections = useMemo(
-    () =>
-      [0.1, 0.5, 1].map(ele => ({
-        label: ele,
-        active: slippage === Number(ele),
-        onClickHandler: () => {
-          setSlippage(Number(ele))
-        },
-      })),
-    [slippage],
-  )
-
-  const addSelections = useMemo(
-    () => [
-      {
-        label: t('Pool Token Deposit'),
-        active: !isZapper,
-        onClickHandler: () => {
-          setIsZapper(false)
-        },
-      },
-      // {
-      //   label: (
-      //     <div className='flex items-center justify-center gap-1'>
-      //       <ZapperIcon className='size-5' />
-      //       <span>{t('Zapper Deposit')}</span>
-      //     </div>
-      //   ),
-      //   active: isZapper,
-      //   onClickHandler: () => {
-      //     setIsZapper(true)
-      //   },
-      // },
-    ],
-    [isZapper, t],
-  )
+  // const addSelections = useMemo(
+  //   () => [
+  //     {
+  //       label: t('Pool Token Deposit'),
+  //       active: !isZapper,
+  //       onClickHandler: () => {
+  //         setIsZapper(false)
+  //       },
+  //     },
+  // {
+  //   label: (
+  //     <div className='flex items-center justify-center gap-1'>
+  //       <ZapperIcon className='size-5' />
+  //       <span>{t('Zapper Deposit')}</span>
+  //     </div>
+  //   ),
+  //   active: isZapper,
+  //   onClickHandler: () => {
+  //     setIsZapper(true)
+  //   },
+  // },
+  //   ],
+  //   [isZapper, t],
+  // )
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
       <div className='flex flex-col gap-2'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <div className='flex w-full items-center justify-between gap-2'>
-          <Selection data={addSelections} isFull isTranslation={false} className='flex-1' />
-          <EmphasisIconButton
+          {/* <Selection data={addSelections} isFull isTranslation={false} className='flex-1' /> */}
+          {/* <EmphasisIconButton
             className='size-8 lg:size-11'
             classNames='size-4 stroke-neutral-400'
             Icon={SettingsIcon}
             onClick={() => setSlippageDropdown(prev => !prev)}
             disabled={false}
-          />
+          /> */}
+          <div className='flex w-full items-center justify-between'>
+            <TextHeading className='font-archia font-semibold'>{label}</TextHeading>
+            <EmphasisIconButton
+              className='size-8 lg:size-11'
+              classNames='size-4 stroke-neutral-400'
+              Icon={SettingsIcon}
+              onClick={() => setSlippageDropdown(prev => !prev)}
+              disabled={false}
+            />
+          </div>
         </div>
-        <AnimatePresence>
-          {slippageDropdown && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className='w-full overflow-hidden p-1'
-            >
-              <div className='flex min-w-[200px] justify-end gap-3'>
-                <Selection data={selections} className='bg-transparent text-neutral-200!' />
-                <Input
-                  classNames={{
-                    input: 'w-[70px] h-9',
-                  }}
-                  val={slippage}
-                  onChange={e => setSlippage(Number(e.target.value) || 0)}
-                  suffix='%'
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <SlippageContent setSlippage={setSlippage} slippage={slippage} show={slippageDropdown} />
         {/* <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' /> */}
 
         {/* Temporary remove zapper */}
@@ -174,18 +150,18 @@ export default function GammaAdd({
             isSmall={isSmall}
           />
         )  */}
-        {!isZapper && (
-          <ManualPanel
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            strategy={strategy}
-            onShowModalSuccess={onShowModalSuccess}
-            handleBack={handleBack}
-            isSmall={isSmall}
-            classNames={classNames}
-            slippage={slippage}
-          />
-        )}
+        {/* {!isZapper && ( */}
+        <ManualPanel
+          baseCurrency={baseCurrency}
+          quoteCurrency={quoteCurrency}
+          strategy={strategy}
+          onShowModalSuccess={onShowModalSuccess}
+          handleBack={handleBack}
+          isSmall={isSmall}
+          classNames={classNames}
+          slippage={slippage}
+        />
+        {/* )} */}
       </div>
     </div>
   )

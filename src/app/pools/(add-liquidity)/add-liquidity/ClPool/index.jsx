@@ -20,7 +20,7 @@ import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
-import { formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
 import { Bound, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
@@ -30,7 +30,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 function DepositIcon({ sub, title }) {
   if (ICHI_TYPES.includes(title)) {
     return (
-      <div className='flex flex-col items-center gap-1'>
+      <div className='flex flex-col items-center gap-1.5'>
         <CircleImage alt={title} className='size-4' src={sub.allowed.logoURI} />
         <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
       </div>
@@ -100,18 +100,20 @@ function StrategyItem({ sub, t }) {
   return (
     <div className='flex flex-1 items-center justify-between'>
       <div>
-        <TextHeading className='text-sm'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
-        <div className='mt-1 flex flex-wrap gap-2'>
+        <TextHeading className='text-sm text-[10px]! leading-4! font-medium'>
+          {getDisplayedStrategy(sub.title, sub.version)}
+        </TextHeading>
+        <div className='mt-0.5 flex flex-wrap gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
-            <Paragraph className='text-xs font-medium text-neutral-300 xl:text-xs'>
+            <TextHeading className='text-[10px]! leading-4! text-neutral-400'>{t('TVL')}:</TextHeading>
+            <Paragraph className='text-xs text-[10px]! leading-4! font-medium text-neutral-300 xl:text-xs'>
               ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
             </Paragraph>
           </div>
         </div>
       </div>
 
-      <TextHeading className='text-primary-600 text-base font-semibold'>
+      <TextHeading className='text-primary-600 text-sm! leading-5! font-semibold'>
         {formatAmount(sub.gauge.apr, true)}%
       </TextHeading>
 
@@ -303,36 +305,38 @@ function AddLiquidityClPool({ pool, handleBack }) {
     return false
   }, [isAutomatic, mintInfo.noLiquidity, pair, type])
 
-  if (!strategy && position) {
-    setStrategy({
-      title: position?.title,
-      tvl: position?.tvl?.toNumber() ?? 0,
-      apr: position?.gauge?.apr?.toNumber() ?? 0,
-      account: {
-        totalLp: position?.account?.totalLp?.toNumber(),
-        gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
-      },
-      allowed: position?.allowed,
-      token0: {
-        ...position?.token0,
-        reserve: position?.token0?.reserve?.toNumber(),
-        balance: position?.token0?.balance?.toNumber(),
-        totalValue: position?.token0?.totalValue,
-      },
-      token1: {
-        ...position?.token1,
-        reserve: position?.token1?.reserve?.toNumber(),
-        balance: position?.token1?.balance?.toNumber(),
-        totalValue: position?.token1?.totalValue,
-      },
-      address: position?.address,
-      isFarming: position?.title?.includes('Farming'),
-      isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
-      isDefault: true,
-      version: position.version,
-      fee: position?.fee,
-    })
-  }
+  useEffect(() => {
+    if (position && (!strategy || strategy?.title !== position.title)) {
+      setStrategy({
+        title: position?.title,
+        tvl: position?.tvl?.toNumber() ?? 0,
+        apr: position?.gauge?.apr?.toNumber() ?? 0,
+        account: {
+          totalLp: position?.account?.totalLp?.toNumber(),
+          gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+        },
+        allowed: position?.allowed,
+        token0: {
+          ...position?.token0,
+          reserve: position?.token0?.reserve?.toNumber(),
+          balance: position?.token0?.balance?.toNumber(),
+          totalValue: position?.token0?.totalValue,
+        },
+        token1: {
+          ...position?.token1,
+          reserve: position?.token1?.reserve?.toNumber(),
+          balance: position?.token1?.balance?.toNumber(),
+          totalValue: position?.token1?.totalValue,
+        },
+        address: position?.address,
+        isFarming: position?.title?.includes('Farming'),
+        isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+        isDefault: true,
+        version: position.version,
+        fee: position?.fee,
+      })
+    }
+  }, [strategy, position, setStrategy])
 
   return (
     <>
@@ -370,7 +374,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 viewMode={Boolean(position)}
               />
             ) : (
-              <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 xl:grid-cols-[1fr_368px]'>
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-8 rounded-xl bg-neutral-900 p-4 outline-1 outline-neutral-600 xl:grid-cols-[1fr_368px]',
+                  !position && 'pb-2.5',
+                )}
+              >
                 <AutomaticLiquidityChart
                   label='Liquidity Range'
                   currencyA={currencyA ?? undefined}
@@ -389,10 +398,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 )}
                 {position && (
                   <div className='flex flex-col justify-end gap-4'>
-                    <TextHeading className='font-archia text-xl! leading-6! font-semibold'>
-                      {`${getDisplayedStrategy(position.title)} Strategy`}
-                    </TextHeading>
                     <FusionAdd
+                      label={`${getDisplayedStrategy(position.title)} Strategy`}
                       strategy={strategy}
                       onShowModalSuccess={() => {}}
                       handleBack={handleBack}

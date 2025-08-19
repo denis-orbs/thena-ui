@@ -11,12 +11,12 @@ import { zeroAddress } from 'viem'
 import InputTokenMemo from '@/app/pools/(add-liquidity)/add-liquidity/InputTokenMemo'
 import { PairBasicInfo } from '@/app/pools/(add-liquidity)/add-liquidity/PairBasicInfo'
 import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CircleImage from '@/components/image/CircleImage'
-import Input from '@/components/input'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Selection from '@/components/selection'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -257,18 +257,6 @@ function AddLiquidityWeighted({ pool }) {
       return prev
     })
   }, [pool?.tokens])
-
-  const selections = useMemo(
-    () =>
-      [0.1, 0.5, 1].map(ele => ({
-        label: ele,
-        active: slippage === Number(ele),
-        onClickHandler: () => {
-          setSlippage(Number(ele))
-        },
-      })),
-    [slippage],
-  )
 
   const { claimableFee, depositValue, isStake } = position || {}
   const tokensDeposit = depositValue?.tokens || []
@@ -511,29 +499,7 @@ function AddLiquidityWeighted({ pool }) {
                   disabled={false}
                 />
               </div>
-              <AnimatePresence>
-                {showSlippage && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className='w-full overflow-hidden p-1'
-                  >
-                    <div className='flex min-w-[200px] justify-end gap-3'>
-                      <Selection data={selections} className='bg-transparent text-neutral-200!' />
-                      <Input
-                        classNames={{
-                          input: 'w-[70px] h-9',
-                        }}
-                        val={slippage}
-                        onChange={e => setSlippage(Number(e.target.value) || 0)}
-                        suffix='%'
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <SlippageContent setSlippage={setSlippage} slippage={slippage} show={showSlippage} />
             </div>
             {depositType === DEPOSIT_TYPE.ALL && (
               <div

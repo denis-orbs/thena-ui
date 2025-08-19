@@ -1,4 +1,3 @@
-import { scaleTime } from 'd3'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -22,7 +21,7 @@ import { Presets } from '@/state/fusion/reducer'
 import { ResetIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
-import { AxisBottomTime } from './AxisBottomTime'
+import ChartAxisTime from './AxisBottomTime'
 import ChartPrice from './ChartPrice'
 import { useDensityChartData } from './hooks'
 
@@ -42,6 +41,15 @@ const desktopSizes = {
   chartHeight: CHART_HEIGHT,
   bottomAxisHeight: BOTTOM_AXIS_HEIGHT,
   loadedPriceChartWidth,
+}
+
+const chartStyles = {
+  area: { selection: '#BD60BA80' },
+  brush: { handle: { south: '#F199EE', north: '#F199EE' } },
+  disabled: {
+    handle: { south: '#35243D', north: '#35243D' },
+    line: { south: '#685770', north: '#685770' },
+  },
 }
 
 export default function ChartPriceRangeInput({
@@ -102,15 +110,25 @@ export default function ChartPriceRangeInput({
   )
 
   const {
-    data: pairPrices = [],
+    data: _pairPrices = [],
     isLoading,
     error,
   } = useFetchPairPrices({
     token0Address: currencyB?.wrapped?.address,
     token1Address: currencyA?.wrapped?.address,
     timeWindow,
-    currentSwapPrice: { [currencyB?.wrapped?.address]: price },
+    // currentSwapPrice: { [currencyB?.wrapped?.address]: price },
   })
+
+  const pairPrices = useMemo(() => {
+    const data = [..._pairPrices]
+    if (isUninitialized || isLoading) return []
+    data[data.length - 1] = {
+      ...data[data.length - 1],
+      value: price ?? data[data.length - 1]?.value,
+    }
+    return data
+  }, [_pairPrices, isLoading, isUninitialized, price])
 
   const {
     isLoading: isLoadLiquidity,
@@ -210,16 +228,7 @@ export default function ChartPriceRangeInput({
   )
 
   const containerRef = useRef(null)
-  // const sortedFormattedData = useMemo(
-  //   () =>
-  //     pairPrices
-  //       ?.sort((a, b) => a.price0 - b.price0)
-  //       .map(item => ({
-  //         ...item,
-  //         activeLiquidity: item.time.getTime(),
-  //       })),
-  //   [pairPrices],
-  // )
+  const containerWidthRef = useRef(null)
 
   const onBrushDomainChangeEnded = useCallback(
     (domain, mode) => {
@@ -274,7 +283,7 @@ export default function ChartPriceRangeInput({
 
   const chartSize = useMemo(
     () => ({
-      chartContainerWidth: containerRef?.current?.offsetWidth || 300,
+      chartContainerWidth: containerWidthRef?.current?.offsetWidth || 300,
       chartContainerHeight: height ?? containerRef?.current?.offsetHeight,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -283,28 +292,37 @@ export default function ChartPriceRangeInput({
 
   useEffect(() => {
     if (
-      (isOutOfView &&
-        zoomFactor === 1 &&
-        !isFullRange &&
-        priceLower &&
-        priceUpper &&
-        // Full Range
-        !isFullRange) ||
-      (isFlip && !isFullRange)
+      priceLower &&
+      priceUpper &&
+      Number(priceLower?.toSignificant(6)) > 2.9543e-39 &&
+      Number(priceUpper?.toSignificant(6)) < 3.3849e38 &&
+      zoomFactor === 1 &&
+      !isFullRange &&
+      (isOutOfView || isFlip)
     ) {
-      const interval = setInterval(() => {
+      let animationId
+
+      const animate = () => {
         setRange(prev => {
           const newRange = prev * 1.2
           return newRange
         })
-      }, 50)
+        animationId = requestAnimationFrame(animate)
+      }
 
-      return () => clearInterval(interval)
+      animationId = requestAnimationFrame(animate)
+
+      return () => {
+        if (animationId) {
+          cancelAnimationFrame(animationId)
+        }
+      }
     }
+
     if (isFullRange) {
       setRange(2)
     }
-  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper, isFlip])
+  }, [isOutOfView, zoomFactor, isFullRange, range, priceLower, priceUpper, isFlip])
 
   useEffect(() => {
     const pairPricesLength = pairPrices.length
@@ -370,117 +388,104 @@ export default function ChartPriceRangeInput({
   }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
   const chartPriceWidth = useMemo(
-    () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
+    () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 180 : 100),
     [chartSize, windowSize.width],
   )
 
-  const { timeXScale } = useMemo(() => {
-    // Use scaleTime for time-based x-axis
-    const timeScale = pairPrices.map(d => d.time)
-    const domain = [timeScale[0], timeScale[timeScale.length - 1]]
-    const scales = {
-      timeXScale: scaleTime().domain(domain).range([0, chartPriceWidth]),
-    }
+  const activePriceData = useMemo(
+    () => ({
+      series: formattedData || [],
+      current: price ?? pairPrices[pairPrices.length - 1]?.value,
+      min: boundaryPrices?.[0],
+      max: boundaryPrices?.[1],
+    }),
+    [formattedData, price, pairPrices, boundaryPrices],
+  )
 
-    return scales
-  }, [chartPriceWidth, pairPrices])
+  const dimensions = useMemo(
+    () => ({
+      width: chartSize.chartContainerWidth,
+      height: chartSize.chartContainerHeight - 32,
+      contentWidth: chartSize.chartContainerWidth,
+      axisLabelPaneWidth: desktopSizes.rightAxisWidth,
+      padding: (chartSize.chartContainerHeight * 0.2 + 28) / 2,
+    }),
+    [chartSize],
+  )
+
+  const divideDistanceWidth = useMemo(
+    () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
+    [chartSize.chartContainerWidth, windowSize.width],
+  )
 
   return (
-    <div className='flex flex-col'>
-      <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        {showLabel && (
-          <NewTextHeading className={cn('hidden text-base md:text-xl! md:leading-6! lg:block', classNames?.title)}>
-            {t(label ?? 'Your Range against the Price')}
-          </NewTextHeading>
-        )}
-        <div
-          className={cn(
-            'flex items-center justify-between gap-4 lg:hidden',
-            !showLabel && 'justify-end',
-            classNames?.title,
+    <div className='flex w-full! flex-col' ref={containerWidthRef}>
+      <div className='flex flex-col'>
+        <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
+          {showLabel && (
+            <NewTextHeading
+              className={cn('hidden h-6 text-base md:text-xl! md:leading-6! lg:block', classNames?.title)}
+            >
+              {t(label ?? 'Your Range against the Price')}
+            </NewTextHeading>
           )}
-        >
-          {showLabel && <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>}
-          {presetRange && (
-            <TextHeading className={cn('text-primary-600 text-xl')}>
-              {formatAmount(APRs?.[presetRange?.type])}%
-            </TextHeading>
-          )}
-        </div>
-        <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
-          {showPeriod && (
-            <Tabs
-              data={periods}
-              className='flex-1'
-              itemClassName={cn('text-xs h-6! py-1! px-2! w-full max-lg:font-bold!')}
-            />
-          )}
-          <div className='z-40 hidden gap-2 lg:flex'>
-            <EmphasisIconButton
-              className='lg:size-8'
-              classNames='lg:size-4 stroke-neutral-400'
-              Icon={ZoomInIcon}
-              onClick={() => {
-                setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
-              }}
-              disabled={false}
-            />
-            <EmphasisIconButton
-              className='lg:size-8'
-              classNames='lg:size-4 stroke-neutral-400'
-              Icon={ZoomOutIcon}
-              onClick={() => {
-                setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
-              }}
-              disabled={false}
-            />
+          <div
+            className={cn(
+              'flex items-center justify-between gap-4 lg:hidden',
+              !showLabel && 'justify-end',
+              classNames?.title,
+            )}
+          >
+            {showLabel && <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>}
+            {presetRange && (
+              <TextHeading className={cn('text-primary-600 text-xl')}>
+                {formatAmount(APRs?.[presetRange?.type])}%
+              </TextHeading>
+            )}
           </div>
-          <EmphasisButton
-            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-400!'
-            onClick={() => {
-              setZoomFactor(1)
-              setRange(2)
-            }}
-          >
-            <ResetIcon className='h-4 w-4' />
-            {t('Reset')}
-          </EmphasisButton>
+          <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
+            {showPeriod && (
+              <Tabs
+                data={periods}
+                className='flex-1'
+                itemClassName={cn('text-xs h-8! py-2! px-2! w-full max-lg:font-bold! w-[41px]!')}
+              />
+            )}
+            <div className='z-40 hidden gap-2 lg:flex'>
+              <EmphasisIconButton
+                className='lg:size-8'
+                classNames='lg:size-4 stroke-neutral-400'
+                Icon={ZoomInIcon}
+                onClick={() => {
+                  setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+                }}
+                disabled={false}
+              />
+              <EmphasisIconButton
+                className='lg:size-8'
+                classNames='lg:size-4 stroke-neutral-400'
+                Icon={ZoomOutIcon}
+                onClick={() => {
+                  setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+                }}
+                disabled={false}
+              />
+            </div>
+            <EmphasisButton
+              className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-400!'
+              onClick={() => {
+                setZoomFactor(1)
+                setRange(2)
+              }}
+            >
+              <ResetIcon className='h-4 w-4' />
+              {t('Reset')}
+            </EmphasisButton>
+          </div>
         </div>
-      </div>
-      {/* Full range warning */}
-      <AnimatePresence>
-        {isFullRange && fullRangeWarningShown && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='mb-2 overflow-hidden'
-          >
-            <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Out of range warning */}
-      <AnimatePresence>
-        {outOfRange && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='mb-2 overflow-hidden'
-          >
-            <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Invalid range warning */}
-      <AnimatePresence>
-        {invalidRange &&
-          interactive && ( // just show this warning if user can handle brush (interactive = true).
+        {/* Full range warning */}
+        <AnimatePresence>
+          {isFullRange && fullRangeWarningShown && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -488,21 +493,56 @@ export default function ChartPriceRangeInput({
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className='mb-2 overflow-hidden'
             >
-              <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>
+              <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>
             </motion.div>
           )}
-      </AnimatePresence>
-      <div className={cn('flex flex-col gap-2 md:gap-4')}>
-        <div className={cn('relative flex w-full items-center justify-center', classNames?.chart)}>
+        </AnimatePresence>
+
+        {/* Out of range warning */}
+        <AnimatePresence>
+          {outOfRange && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='mb-2 overflow-hidden'
+            >
+              <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Invalid range warning */}
+        <AnimatePresence>
+          {invalidRange &&
+            interactive && ( // just show this warning if user can handle brush (interactive = true).
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className='mb-2 overflow-hidden'
+              >
+                <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>
+              </motion.div>
+            )}
+        </AnimatePresence>
+      </div>
+      <div className={cn('flex h-full w-full flex-col gap-2 md:gap-4')}>
+        <div
+          className={cn('relative flex w-full items-center justify-center', classNames?.chart)}
+          style={{ minHeight: `${chartSize.chartContainerHeight}px` }}
+        >
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading || isLoadLiquidity ? (
-            <Skeleton className={cn('absolute h-[calc(100%-44px)] w-full lg:h-full')} />
+            <Skeleton className={cn('absolute inset-0 top-0 left-0 w-full')} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
             <div className={cn('flex h-full w-full flex-col')}>
-              <div className='flex h-[calc(100%-44px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
+              <div className='flex h-[calc(100%-44px)] w-full! flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
                     className='relative h-full w-full'
@@ -512,7 +552,7 @@ export default function ChartPriceRangeInput({
                     }}
                   >
                     <div className='absolute inset-0 top-0 z-0 h-full'>
-                      <div className={cn('z-0 w-full', classNames?.handleArea)}>
+                      <div className={cn('relative z-0 w-full', classNames?.handleArea)}>
                         <div
                           style={{
                             width: chartPriceWidth || '100%',
@@ -520,7 +560,26 @@ export default function ChartPriceRangeInput({
                           }}
                         >
                           {pairPrices.length > 0 && !isLoading && (
-                            <ChartPrice
+                            <>
+                              <ChartPrice
+                                data={pairPrices}
+                                timeWindow={timeWindow}
+                                setBoundaryPrices={setBoundaryPrices}
+                                minVisiblePrice={minVisiblePrice}
+                                maxVisiblePrice={maxVisiblePrice}
+                                isMobile={chartSize?.chartContainerWidth <= 450}
+                                setFinishedRender={setChartPriceFinishedRender}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div
+                          className='absolute top-0 left-0'
+                          style={{ width: chartPriceWidth || '100%', height: `${chartSize.chartContainerHeight}px` }}
+                        >
+                          {/* Make a chart just show Time Scale */}
+                          {pairPrices.length > 0 && !isLoading && (
+                            <ChartAxisTime
                               data={pairPrices}
                               timeWindow={timeWindow}
                               setBoundaryPrices={setBoundaryPrices}
@@ -534,20 +593,20 @@ export default function ChartPriceRangeInput({
                       </div>
                       <div
                         className={cn(
-                          'flex max-h-8 w-full items-center justify-between border-t-2 border-neutral-800',
+                          'flex max-h-10 w-full items-center justify-between border-t-2 border-neutral-800',
                           classNames?.bottomAxis,
                         )}
                       >
-                        <svg width={chartPriceWidth || '100%'} height='100%' viewBox={`0 0 ${chartPriceWidth} ${32}`}>
-                          <AxisBottomTime timeWindow={timeWindow} xScale={timeXScale} innerHeight={32} offset={32} />
-                        </svg>
-                        <div className='z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
+                        <div className='absolute right-0 bottom-0 z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
                           <CheckBox
                             className='size-5! rounded-sm'
                             checked={showLiquidity}
                             setChecked={setShowLiquidity}
                           />
-                          <span className='cursor-pointer select-none' onClick={() => setShowLiquidity(prev => !prev)}>
+                          <span
+                            className='cursor-pointer leading-5! select-none'
+                            onClick={() => setShowLiquidity(prev => !prev)}
+                          >
                             Show Liquidity
                           </span>
                         </div>
@@ -561,27 +620,9 @@ export default function ChartPriceRangeInput({
                     >
                       {chartSize && !isLoadLiquidity ? (
                         <ActivePriceRangeChart
-                          data={{
-                            series: formattedData || [],
-                            current: price ?? pairPrices[pairPrices.length - 1]?.value,
-                            min: boundaryPrices?.[0],
-                            max: boundaryPrices?.[1],
-                          }}
-                          dimensions={{
-                            width: chartSize.chartContainerWidth,
-                            height: chartSize.chartContainerHeight - 32,
-                            contentWidth: chartSize.chartContainerWidth,
-                            axisLabelPaneWidth: desktopSizes.rightAxisWidth,
-                            padding: (chartSize.chartContainerHeight * 0.2 + 28) / 2,
-                          }}
-                          styles={{
-                            area: { selection: '#BD60BA80' },
-                            brush: { handle: { south: '#F199EE', north: '#F199EE' } },
-                            disabled: {
-                              handle: { south: '#35243D', north: '#35243D' },
-                              line: { south: '#685770', north: '#685770' },
-                            },
-                          }}
+                          data={activePriceData}
+                          dimensions={dimensions}
+                          styles={chartStyles}
                           interactive={interactive}
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}
@@ -590,11 +631,7 @@ export default function ChartPriceRangeInput({
                           isOutOfView={isOutOfView}
                           isFullRange={isFullRange}
                           id={idChart}
-                          divideDistanceWidth={
-                            chartSize.chartContainerWidth -
-                            desktopSizes.rightAxisWidth -
-                            (windowSize.width > 768 ? 133 : 41)
-                          }
+                          divideDistanceWidth={divideDistanceWidth}
                           showLiquidity={showLiquidity}
                           setIsFlip={setIsFlip}
                         />
@@ -605,7 +642,7 @@ export default function ChartPriceRangeInput({
                   </div>
                 </div>
               </div>
-              <div className='z-40 mx-auto mt-2 flex h-8 w-fit gap-2 lg:hidden'>
+              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:hidden'>
                 <EmphasisIconButton
                   className='lg:size-8'
                   classNames='lg:size-4 stroke-neutral-400'

@@ -20,7 +20,7 @@ import { PairBasicInfo } from './PairBasicInfo'
 import { PoolAttributesSection } from './PoolAttributesSection'
 import { PoolReserveSection } from './PoolReserveSection'
 
-function PoolInfo({ pair, pool, showAttributes = true }) {
+function PoolInfo({ pair, pool, showAttributes = true, showMyInfo = false }) {
   return (
     <div className='flex flex-col gap-0 xl:order-2 xl:gap-4'>
       {showAttributes && (
@@ -30,7 +30,7 @@ function PoolInfo({ pair, pool, showAttributes = true }) {
       )}
 
       <div className='order-1 xl:order-2'>
-        <PoolReserveSection pool={pool} className='hidden xl:block' showMyInfo={false} />
+        <PoolReserveSection pool={pool} className='hidden xl:block' showMyInfo={showMyInfo} />
       </div>
     </div>
   )
@@ -76,16 +76,22 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
   return (
     <div className='flex flex-col'>
-      <div className='flex flex-col gap-4 xl:flex-row xl:gap-8'>
+      <div
+        className={cn(
+          'grid gap-4 xl:gap-8',
+          'grid-cols-1 xl:grid-cols-2', // Mobile: 1 col, Tablet: 2 cols
+          isManage ? 'xl:grid-cols-[484px_1fr]' : 'xl:grid-cols-[1fr_483px]',
+        )}
+      >
         {/* Left side */}
-        <div className={cn('order-1 flex flex-col gap-4', isManage ? 'flex-[4]' : 'flex-[6]')}>
+        <div className={cn('order-1 flex flex-col gap-4')}>
           <div className='flex flex-col gap-2'>
             <div className='flex flex-row items-center gap-2 xl:gap-8'>
               <NewIconGroup
                 logo1={(pair ? pair?.token0?.logoURI : firstAsset?.logoURI) ?? UNKNOWN_LOGO}
                 logo2={(pair ? pair?.token1?.logoURI : secondAsset?.logoURI) ?? UNKNOWN_LOGO}
               />
-              <NewTextHeading className='text-xl! leading-6! text-neutral-50 lg:text-[36px]! lg:leading-[40px]!'>
+              <NewTextHeading className='text-xl! leading-6! text-neutral-50 xl:text-[36px]! xl:leading-[40px]!'>
                 {`${
                   (pair ? pair?.token0?.symbol : firstAsset?.symbol) === 'WBNB'
                     ? 'BNB'
@@ -103,7 +109,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
             </div>
             <div className='flex w-full flex-col gap-2'>
               <div className='flex justify-between'>
-                <TextHeading className='text-2xl font-medium text-neutral-50'>
+                <TextHeading className='text-lg font-medium text-neutral-50 xl:text-2xl'>
                   {t((pair?.type || pairType) === PAIR_TYPES.STABLE ? 'Stable' : 'Classic')}
                 </TextHeading>
                 <div className='flex flex-col items-center xl:hidden'>
@@ -144,17 +150,17 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
           </div>
           {pair && (
             <>
-              <div className={cn('flex flex-col gap-2 md:gap-4 xl:gap-8', isManage ? 'xl:mt-1 xl:gap-0' : 'xl:gap-8')}>
-                <div className={cn(isManage ? 'xl:order-2 xl:mt-[1px]' : 'xl:order-1')}>
+              <div className={cn('flex flex-col gap-2 md:gap-4 xl:gap-8', isManage ? 'xl:gap-0' : 'xl:gap-8')}>
+                <div className={cn('my-0.5', isManage ? 'xl:order-2' : 'xl:order-1')}>
                   <PairBasicInfo
                     pair={pair}
                     etApr={!isManage}
                     useSolidBg
                     classNames={{
                       title: 'xl:text-xl! text-xl! xl:leading-6! leading-6! font-archia font-semibold',
-                      subtitle: 'text-sm! text-neutral-300 xl:text-base!',
+                      subtitle: 'text-sm! text-neutral-300 xl:text-base! xl:leading-5! leading-5!',
                       container: 'gap-1',
-                      box: 'bg-neutral-900! ',
+                      box: 'bg-neutral-900!',
                     }}
                   />
                 </div>
@@ -185,13 +191,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
 
         {/* Right side */}
-        <div
-          className={cn(
-            'order-2 flex flex-col gap-6',
-            isManage ? 'flex-[6]' : 'flex-[4] xl:pt-[104px]',
-            !pool && 'xl:pt-[88px]',
-          )}
-        >
+        <div className={cn('order-2 flex flex-col gap-6', !isManage && 'xl:pt-[104px]', !pool && 'xl:pt-[88px]')}>
           {!pair && (
             <div className='mt-4 hidden h-max flex-col gap-2 rounded-md bg-neutral-800 p-4 xl:flex'>
               <NewTextSubHeading className='font-archia text-xl!'>{t('New Deposit')}</NewTextSubHeading>
@@ -201,10 +201,12 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
           {isManage && (
             <>
-              <PositionInfo
-                position={isStaked ? userStakedPosition[0] : userNotStakedPosition[0]}
-                isStaked={isStaked}
-              />
+              <div className='flex w-full xl:justify-end'>
+                <PositionInfo
+                  position={isStaked ? userStakedPosition[0] : userNotStakedPosition[0]}
+                  isStaked={isStaked}
+                />
+              </div>
               {/* deposit to existing position */}
               <V1Add
                 pool={pool}
@@ -217,7 +219,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
               />
             </>
           )}
-          {pool && !isManage && <PoolInfo pair={pair} pool={pool} showReserve={showReserve} />}
+          {pool && !isManage && <PoolInfo pair={pair} pool={pool} showReserve={showReserve} showMyInfo />}
         </div>
       </div>
     </div>

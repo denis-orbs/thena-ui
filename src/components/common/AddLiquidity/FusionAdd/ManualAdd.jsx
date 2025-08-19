@@ -124,7 +124,7 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='flex flex-col gap-6'>
+    <section className='flex flex-col gap-4 xl:gap-6'>
       <div className={cn('flex flex-col gap-4 xl:gap-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <EnterAmounts
           currencyA={baseCurrency}
@@ -139,7 +139,7 @@ export default function ManualAdd({
         />
       </div>
 
-      <div className={cn('flex w-full flex-col items-center gap-2 lg:flex-row')}>
+      <div className={cn('flex w-full flex-col items-center gap-2 xl:flex-row')}>
         <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

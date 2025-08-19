@@ -1,14 +1,13 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
 import { SettingsIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import Input from '@/components/input'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -18,7 +17,6 @@ import { ZapperIcon } from '@/svgs'
 import { ManualPaneV1 } from './ManualPaneV1'
 import { CommonZapperPane } from '../components/CommonZapperPane'
 
-const defaultSlippageOptions = [0.1, 0.5, 1]
 export default function V1Add({
   pool,
   pairType,
@@ -27,6 +25,7 @@ export default function V1Add({
   setFirstAddress,
   setSecondAddress,
   handleBack,
+  className,
 }) {
   const [isZapper, setIsZapper] = useState(false)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
@@ -62,20 +61,8 @@ export default function V1Add({
     [isZapper, t],
   )
 
-  const selections = useMemo(
-    () =>
-      defaultSlippageOptions.map(ele => ({
-        label: ele,
-        active: slippage === Number(ele),
-        onClickHandler: () => {
-          setSlippage(Number(ele))
-        },
-      })),
-    [slippage],
-  )
-
   return (
-    <div className={cn('inline-flex w-full flex-col gap-2 md:gap-4')}>
+    <div className={cn('inline-flex w-full flex-col gap-2', className)}>
       {Boolean(pool) && (
         <>
           <div className={cn('flex flex-row justify-between gap-2')}>
@@ -97,29 +84,7 @@ export default function V1Add({
               disabled={false}
             />
           </div>
-          <AnimatePresence>
-            {show && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className='w-full overflow-hidden p-1'
-              >
-                <div className='flex min-w-[200px] justify-end gap-3'>
-                  <Selection data={selections} className='bg-transparent text-neutral-200!' />
-                  <Input
-                    classNames={{
-                      input: 'w-[70px] h-9',
-                    }}
-                    val={slippage}
-                    onChange={e => setSlippage(Number(e.target.value) || 0)}
-                    suffix='%'
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <SlippageContent setSlippage={setSlippage} slippage={slippage} show={show} />
         </>
       )}
       {isZapper ? (

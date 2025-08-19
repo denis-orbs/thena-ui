@@ -16,9 +16,10 @@ export default function FusionAdd({
   handleBack,
   isSmall = false,
   classNames,
+  label,
 }) {
   return (
-    <div className={cn('flex flex-col gap-6', classNames?.wrapper)}>
+    <div className={cn('flex flex-col gap-4 xl:gap-6', classNames?.wrapper)}>
       {ICHI_TYPES.includes(strategy?.title) ? (
         <IchiAdd
           strategy={strategy}
@@ -28,6 +29,7 @@ export default function FusionAdd({
           handleBack={handleBack}
           isSmall={isSmall}
           classNames={classNames}
+          label={label}
         />
       ) : (
         <GammaAdd
@@ -38,6 +40,7 @@ export default function FusionAdd({
           handleBack={handleBack}
           isSmall={isSmall}
           classNames={classNames}
+          label={label}
         />
       )}
     </div>

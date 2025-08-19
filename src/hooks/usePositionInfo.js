@@ -121,7 +121,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
   const position = useMemo(() => {
-    if (_fusion) {
+    if (_fusion && pool) {
       return new Position({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
@@ -130,7 +130,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
       })
     }
     return undefined
-  }, [liquidity, _fusion, tickLower, tickUpper])
+  }, [_fusion, pool, liquidity, tickLower, tickUpper])
 
   const [token0, token1] = useMemo(
     () =>

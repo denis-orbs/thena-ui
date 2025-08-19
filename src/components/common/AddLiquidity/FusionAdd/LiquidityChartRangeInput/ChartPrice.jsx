@@ -4,7 +4,7 @@ import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
-import Skeleton from '@/components/skeleton'
+// import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
@@ -150,7 +150,7 @@ function ChartPrice({
 
   return (
     <div className='flex h-full w-full flex-1'>
-      {(!chartCreated.current || !transformedData.length) && <Skeleton />}
+      {/* {(!chartCreated.current || !transformedData.length) && <Skeleton />} */}
       <div className='price-chart-container w-full flex-1' ref={chartRef} />
     </div>
   )

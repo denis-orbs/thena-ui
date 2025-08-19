@@ -63,8 +63,8 @@ export function LiquidityBars({
             return (
               <line
                 key={`liquidity-tick-${i}`}
-                x1={xScale(0)}
-                x2={xScale(0) - 16}
+                x1={xScale(0) + 12}
+                x2={xScale(0) - 6}
                 y1={isNaN(y) ? 0 : y}
                 y2={isNaN(y) ? 0 : y}
                 stroke='#685770'

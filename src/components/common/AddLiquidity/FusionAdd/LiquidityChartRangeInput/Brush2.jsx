@@ -7,9 +7,47 @@ import usePrevious from '@/hooks/usePrevious'
 
 import { AxisRight } from './AxisRight'
 
+const useRAFCallback = callback => {
+  const rafRef = useRef(null)
+  const callbackRef = useRef(callback)
+
+  callbackRef.current = callback
+
+  return useCallback((...args) => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+    }
+
+    rafRef.current = requestAnimationFrame(() => {
+      callbackRef.current(...args)
+    })
+  }, [])
+}
+
+// Throttled state setter
+const useThrottledState = (initialValue, delay = 16) => {
+  // ~60fps
+  const [state, setState] = useState(initialValue)
+  const timeoutRef = useRef(null)
+
+  const setThrottledState = useCallback(
+    newValue => {
+      if (timeoutRef.current) return
+
+      timeoutRef.current = setTimeout(() => {
+        setState(newValue)
+        timeoutRef.current = null
+      }, delay)
+    },
+    [delay],
+  )
+
+  return [state, setThrottledState, setState]
+}
+
 export const DEFAULT_LOCALE = 'en-US'
-// Used to format floats representing percent change with fixed decimal places
-function formatDelta(delta, locale = DEFAULT_LOCALE) {
+
+const formatDelta = (delta, locale = DEFAULT_LOCALE) => {
   if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
     return '-'
   }
@@ -21,28 +59,17 @@ function formatDelta(delta, locale = DEFAULT_LOCALE) {
   })}%`
 }
 
-// flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 36
-
-// margin to prevent tick snapping from putting the brush off screen
 const BRUSH_EXTENT_MARGIN_PX = 20
 
-/**
- * Returns true if every element in `a` maps to the
- * same pixel coordinate as elements in `b`
- */
 const compare = (a, b, yScale) => {
-  // normalize pixels to 1 decimals
   const aNorm = a.map(y => yScale(y)?.toFixed(1))
   const bNorm = b.map(y => yScale(y)?.toFixed(1))
   return aNorm.every((v, i) => v === bNorm[i])
 }
-// Convert [minPrice, maxPrice] to [yMax, yMin]
+
 const toYScale = (extent, yScale) => [yScale(extent[1]), yScale(extent[0])]
-
-// Convert [yMax, yMin] to [minPrice, maxPrice]
 const toPriceExtent = (selection, yScale) => [yScale.invert(selection[1]), yScale.invert(selection[0])]
-
 const normalizeExtent = extent => (extent[0] < extent[1] ? extent : [extent[1], extent[0]])
 
 const Brush2 = ({
@@ -58,9 +85,7 @@ const Brush2 = ({
   setIsOutOfView,
   isFullRange,
   padding,
-  container,
   disableColor,
-  setLiveLocalBrushExtent = () => {},
   divideDistanceWidth,
   currentPrice,
   handleShow,
@@ -73,24 +98,20 @@ const Brush2 = ({
   const [localBrushExtent, setLocalBrushExtent] = useState(brushExtent)
   const previousBrushExtent = usePrevious(brushExtent)
   const [brushInProgress, setBrushInProgress] = useState(false)
-  // Use ref for hover to avoid re-rendering the whole component
-  const currentHoverRef = useRef(null)
-  const [, setHoverTick] = useState(0) // dummy state to force update on hover
 
-  // Animation state for north/south out-of-view
-  const [showNorthAnimated, setShowNorthAnimated] = useState(false)
-  const [showSouthAnimated, setShowSouthAnimated] = useState(false)
+  // Use throttled state for hover
+  const [currentHover, setCurrentHoverThrottled, setCurrentHover] = useThrottledState(null)
+
+  const [animationStates, setAnimationStates] = useState({
+    showNorthAnimated: false,
+    showSouthAnimated: false,
+  })
 
   // Only update localBrushExtent if brushInProgress is false and value actually changed
   useEffect(() => {
     if (brushInProgress) return
     if (localBrushExtent !== brushExtent) setLocalBrushExtent(brushExtent)
   }, [brushExtent, brushInProgress, localBrushExtent])
-
-  // Only update live local brush extent if changed
-  useEffect(() => {
-    setLiveLocalBrushExtent(localBrushExtent)
-  }, [localBrushExtent, setLiveLocalBrushExtent])
 
   // Debounced setter for brush extent
   const debounceRef = useRef()
@@ -104,71 +125,124 @@ const Brush2 = ({
     [setBrushExtent],
   )
 
-  // Memoize normalized extent and derived values
-  const normalizedBrushExtent = useMemo(
-    () => normalizeExtent(localBrushExtent ?? brushExtent),
-    [localBrushExtent, brushExtent],
-  )
-  const flipNorthHandle = useMemo(
-    () => yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX + 16,
-    [normalizedBrushExtent, yScale],
-  )
-  const flipSouthHandle = useMemo(
-    () => yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX,
-    [normalizedBrushExtent, yScale, height],
-  )
-
-  const showNorthArrow = useMemo(
-    () => normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) < 0 || yScale(normalizedBrushExtent[1]) < 0),
-    [normalizedBrushExtent, yScale],
-  )
-  const showSouthArrow = useMemo(
-    () =>
-      normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) > height || yScale(normalizedBrushExtent[1]) > height),
-    [normalizedBrushExtent, yScale, height],
-  )
-  const southHandleInView = useMemo(
-    () => normalizedBrushExtent && yScale(normalizedBrushExtent[0]) >= 0 && yScale(normalizedBrushExtent[0]) <= height,
-    [normalizedBrushExtent, yScale, height],
-  )
-  const northHandleInView = useMemo(
-    () => normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height,
-    [normalizedBrushExtent, yScale, height],
-  )
-
-  useEffect(() => {
-    if (flipNorthHandle || flipSouthHandle) {
-      setIsFlip(true)
-    } else {
-      setIsFlip(false)
+  // Memoize expensive calculations with more dependencies
+  const calculations = useMemo(() => {
+    const normalizedBrushExtent = normalizeExtent(localBrushExtent ?? brushExtent)
+    if (!normalizedBrushExtent) {
+      return {
+        normalizedBrushExtent: null,
+        flipNorthHandle: false,
+        flipSouthHandle: false,
+        showNorthArrow: false,
+        showSouthArrow: false,
+        southHandleInView: false,
+        northHandleInView: false,
+      }
     }
-  }, [flipNorthHandle, flipSouthHandle, setIsFlip])
 
-  // Only update out-of-view state if changed
+    const northY = yScale(normalizedBrushExtent[1])
+    const southY = yScale(normalizedBrushExtent[0])
+
+    return {
+      normalizedBrushExtent,
+      flipNorthHandle: northY < FLIP_HANDLE_THRESHOLD_PX + 16,
+      flipSouthHandle: southY > height - FLIP_HANDLE_THRESHOLD_PX,
+      showNorthArrow: northY < 0 || yScale(normalizedBrushExtent[1]) < 0,
+      showSouthArrow: southY > height || yScale(normalizedBrushExtent[0]) > height,
+      southHandleInView: southY >= 0 && southY <= height,
+      northHandleInView: northY >= 0 && northY <= height,
+      northY,
+      southY,
+    }
+  }, [localBrushExtent, brushExtent, yScale, height])
+
+  // Throttled flip state update
+  const throttledSetIsFlip = useRAFCallback(setIsFlip)
+
   useEffect(() => {
-    setIsOutOfView(showNorthArrow || showSouthArrow)
-  }, [setIsOutOfView, showNorthArrow, showSouthArrow])
+    if (brushInProgress) return
+    if (calculations.flipNorthHandle || calculations.flipSouthHandle) {
+      throttledSetIsFlip(true)
+    } else {
+      throttledSetIsFlip(false)
+    }
+  }, [brushInProgress, calculations.flipNorthHandle, calculations.flipSouthHandle, throttledSetIsFlip])
 
-  // Memoize brush label value
+  // Throttled out-of-view state update
+  const throttledSetIsOutOfView = useRAFCallback(setIsOutOfView)
+
+  useEffect(() => {
+    throttledSetIsOutOfView(calculations.showNorthArrow || calculations.showSouthArrow)
+  }, [throttledSetIsOutOfView, calculations.showNorthArrow, calculations.showSouthArrow])
+
+  // Memoize brush label calculation
   const brushLabelValue = useCallback(
     (d, x) => {
-      if (!currentPrice) return ''
+      if (!currentPrice || !x) return ''
       const percent =
         (x < currentPrice ? -1 : 1) * ((Math.max(x, currentPrice) - Math.min(x, currentPrice)) / currentPrice) * 100
-      return currentPrice ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
+      return `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}`
     },
     [currentPrice],
   )
 
+  const handleBrushMouseMove = useCallback(
+    e => {
+      if (!calculations.normalizedBrushExtent || !brushRef.current) return
+
+      const svgRect = brushRef.current.getBoundingClientRect()
+      const mouseY = e.clientY - svgRect.top
+
+      const hoverThreshold = 40
+      const northDistance = calculations.northHandleInView ? Math.abs(mouseY - calculations.northY) : Infinity
+      const southDistance = calculations.southHandleInView ? Math.abs(mouseY - calculations.southY) : Infinity
+
+      let newHover = null
+
+      if (northDistance < hoverThreshold && southDistance < hoverThreshold) {
+        const diff = Math.abs(northDistance - southDistance)
+        if (diff > 5) {
+          newHover = northDistance < southDistance ? 'north' : 'south'
+        } else {
+          newHover = currentHover || (northDistance < southDistance ? 'north' : 'south')
+        }
+      } else if (northDistance < hoverThreshold) {
+        newHover = 'north'
+      } else if (southDistance < hoverThreshold) {
+        newHover = 'south'
+      }
+
+      if (currentHover !== newHover) {
+        setCurrentHoverThrottled(newHover) // Use throttled version
+      }
+    },
+    [calculations, currentHover, setCurrentHoverThrottled],
+  )
+
+  const rafMouseMove = useRAFCallback(handleBrushMouseMove)
+
+  // Throttled mouse leave handler
+  const handleBrushMouseLeave = useCallback(() => {
+    setCurrentHover(null)
+  }, [setCurrentHover])
+
+  const rafMouseLeave = useRAFCallback(handleBrushMouseLeave)
+
   // D3 brush setup
   useEffect(() => {
     if (!brushRef.current || brushInProgress) return
-    brushBehavior.current = brushY()
-      .extent([
-        [0, BRUSH_EXTENT_MARGIN_PX],
-        [width, height - BRUSH_EXTENT_MARGIN_PX],
-      ])
-      .handleSize(50)
+
+    // Only recreate brush behavior when necessary
+    if (!brushBehavior.current) {
+      brushBehavior.current = brushY()
+        .extent([
+          [0, BRUSH_EXTENT_MARGIN_PX],
+          [width, height - BRUSH_EXTENT_MARGIN_PX],
+        ])
+        .handleSize(50)
+    }
+
+    brushBehavior.current
       .filter(() => interactive)
       .filter(event => {
         if (!interactive) return false
@@ -203,28 +277,17 @@ const Brush2 = ({
         select(brushRef.current).selectAll('.handle').style('cursor', 'pointer')
       })
 
-    select(brushRef.current)
-      .selectAll('.handle')
-      .attr('cursor', interactive ? 'pointer' : 'default')
-    brushBehavior.current(select(brushRef.current))
+    const brushSelection = select(brushRef.current)
 
-    if (
-      previousBrushExtent &&
-      compare(normalizeExtent(brushExtent), normalizeExtent(previousBrushExtent), yScale) &&
-      !isNaN(toYScale(normalizeExtent(brushExtent), yScale)[0]) &&
-      !isNaN(toYScale(normalizeExtent(brushExtent), yScale)[1])
-    ) {
-      select(brushRef.current)
-        .transition()
-        .call(brushBehavior.current.move, toYScale(normalizeExtent(brushExtent), yScale))
-    }
+    // Apply all styles at once
+    brushSelection.selectAll('.handle').attr('cursor', interactive ? 'pointer' : 'default')
 
-    select(brushRef.current)
+    brushSelection
       .selectAll('.overlay')
       .attr('cursor', 'default')
       .attr('pointer-events', interactive ? 'all' : 'none')
 
-    select(brushRef.current)
+    brushSelection
       .selectAll('.selection')
       .attr('stroke', 'none')
       .attr('fill-opacity', '1')
@@ -232,57 +295,31 @@ const Brush2 = ({
       .attr('cursor', interactive ? 'grab' : 'default')
       .attr('pointer-events', interactive ? 'all' : 'none')
 
-    const brushSelection = select(brushRef.current)
     brushSelection.selectAll('.handle--n').attr('pointer-events', interactive ? 'all' : 'none')
     brushSelection.selectAll('.handle--s').attr('pointer-events', interactive ? 'all' : 'none')
 
-    // Improved hover handling with better detection
-    function handleBrushMouseMove(e) {
-      if (!interactive || !normalizedBrushExtent) return
+    brushBehavior.current(brushSelection)
 
-      const svgRect = brushRef.current.getBoundingClientRect()
-      const mouseY = e.clientY - svgRect.top
-      const northY = yScale(normalizedBrushExtent[1])
-      const southY = yScale(normalizedBrushExtent[0])
-
-      // Increase threshold and add better detection logic
-      const hoverThreshold = 30
-      const northDistance = northHandleInView ? Math.abs(mouseY - northY) : Infinity
-      const southDistance = southHandleInView ? Math.abs(mouseY - southY) : Infinity
-
-      let newHover = null
-
-      // Determine which handle is closer and within threshold
-      if (northDistance < hoverThreshold && southDistance < hoverThreshold) {
-        // Both are close, choose the closer one
-        newHover = northDistance < southDistance ? 'north' : 'south'
-      } else if (northDistance < hoverThreshold) {
-        newHover = 'north'
-      } else if (southDistance < hoverThreshold) {
-        newHover = 'south'
-      }
-
-      // Only update if hover state actually changed
-      if (currentHoverRef.current !== newHover) {
-        currentHoverRef.current = newHover
-        setHoverTick(tick => tick + 1)
-      }
-    }
-
-    function handleBrushMouseLeave() {
-      if (currentHoverRef.current !== null) {
-        currentHoverRef.current = null
-        setHoverTick(tick => tick + 1)
-      }
+    if (
+      previousBrushExtent &&
+      compare(normalizeExtent(brushExtent), normalizeExtent(previousBrushExtent), yScale) &&
+      !isNaN(toYScale(normalizeExtent(brushExtent), yScale)[0]) &&
+      !isNaN(toYScale(normalizeExtent(brushExtent), yScale)[1])
+    ) {
+      brushSelection.transition().call(brushBehavior.current.move, toYScale(normalizeExtent(brushExtent), yScale))
     }
 
     const brushNode = brushRef.current
-    brushNode.addEventListener('mousemove', handleBrushMouseMove)
-    brushNode.addEventListener('mouseleave', handleBrushMouseLeave)
+    if (brushNode) {
+      brushNode.addEventListener('mousemove', rafMouseMove)
+      brushNode.addEventListener('mouseleave', rafMouseLeave)
+    }
 
     return () => {
-      brushNode.removeEventListener('mousemove', handleBrushMouseMove)
-      brushNode.removeEventListener('mouseleave', handleBrushMouseLeave)
+      if (brushNode) {
+        brushNode.removeEventListener('mousemove', rafMouseMove)
+        brushNode.removeEventListener('mouseleave', rafMouseLeave)
+      }
     }
   }, [
     brushExtent,
@@ -293,48 +330,61 @@ const Brush2 = ({
     yScale,
     width,
     setBrushExtent,
-    container,
     brushInProgress,
     debouncedSetBrushExtent,
-    normalizedBrushExtent,
-    northHandleInView,
-    southHandleInView,
+    rafMouseLeave,
+    rafMouseMove,
   ])
 
-  // Only run once for handle transform
+  // Handle transforms (run only once)
   useEffect(() => {
+    if (!brushRef.current) return
     select(brushRef.current).selectAll('.handle--n').attr('transform', 'translate(0, -15)')
     select(brushRef.current).selectAll('.handle--s').attr('transform', 'translate(0, 15)')
   }, [])
 
-  useEffect(() => {
-    if (showNorthArrow || showSouthArrow) {
-      setIsOutOfView(true)
-    } else {
-      setIsOutOfView(false)
-    }
-  }, [setIsOutOfView, showNorthArrow, showSouthArrow])
+  const prevShowNorthArrow = useRef(false)
+  const prevShowSouthArrow = useRef(false)
+  const prevIsFullRange = useRef(false)
 
   useEffect(() => {
-    let northTimeout
-    let southTimeout
-    if (showNorthArrow || isFullRange) {
-      northTimeout = setTimeout(() => setShowNorthAnimated(true), 200)
-    } else {
-      setShowNorthAnimated(false)
-    }
-    if (showSouthArrow || isFullRange) {
-      southTimeout = setTimeout(() => setShowSouthAnimated(true), 200)
-    } else {
-      setShowSouthAnimated(false)
-    }
-    return () => {
-      clearTimeout(northTimeout)
-      clearTimeout(southTimeout)
-    }
-  }, [showNorthArrow, showSouthArrow, isFullRange])
+    const { showNorthArrow, showSouthArrow } = calculations
+    const timeouts = []
 
-  // respond to yScale changes only
+    // Chỉ xử lý khi input thay đổi thật
+    if (
+      prevShowNorthArrow.current !== showNorthArrow ||
+      prevShowSouthArrow.current !== showSouthArrow ||
+      prevIsFullRange.current !== isFullRange
+    ) {
+      if (showNorthArrow || isFullRange) {
+        timeouts.push(
+          window.setTimeout(() => {
+            setAnimationStates(prev => ({ ...prev, showNorthAnimated: true }))
+          }, 200),
+        )
+      } else {
+        setAnimationStates(prev => ({ ...prev, showNorthAnimated: false }))
+      }
+
+      if (showSouthArrow || isFullRange) {
+        timeouts.push(
+          window.setTimeout(() => {
+            setAnimationStates(prev => ({ ...prev, showSouthAnimated: true }))
+          }, 200),
+        )
+      } else {
+        setAnimationStates(prev => ({ ...prev, showSouthAnimated: false }))
+      }
+
+      // update refs
+      prevShowNorthArrow.current = showNorthArrow
+      prevShowSouthArrow.current = showSouthArrow
+      prevIsFullRange.current = isFullRange
+    }
+  }, [calculations, calculations.showNorthArrow, calculations.showSouthArrow, isFullRange])
+
+  // Respond to yScale changes
   useEffect(() => {
     const brushBehaviorNode = brushBehavior.current
     if (!brushBehaviorNode || !interactive || !brushRef.current) return
@@ -352,17 +402,21 @@ const Brush2 = ({
     } catch (error) {
       console.warn('Brush move failed:', error)
     }
-  }, [brushExtent, interactive, yScale])
+
+    if (!compare(normalizeExtent(brushExtent), normalizeExtent(toPriceExtent(extent, yScale)), yScale)) {
+      debouncedSetBrushExtent(toPriceExtent(extent, yScale))
+    }
+  }, [brushExtent, debouncedSetBrushExtent, interactive, yScale])
 
   return useMemo(
     () => (
       <>
         {handleShow && (
           <>
-            {(showNorthArrow || isFullRange) && (
+            {(calculations.showNorthArrow || isFullRange) && (
               <line x1='0' y1='15' x2={width} y2='15' stroke={interactive ? '#F199EE' : '#35243D'} strokeWidth='2' />
             )}
-            {(showSouthArrow || isFullRange) && (
+            {(calculations.showSouthArrow || isFullRange) && (
               <line
                 x1='0'
                 y1={height}
@@ -374,12 +428,10 @@ const Brush2 = ({
             )}
             <defs>
               {isLgDown ? (
-                <>
-                  <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
-                    <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0} />
-                    <stop offset='100%' stopColor='#83007E' stopOpacity={0.1} />
-                  </linearGradient>
-                </>
+                <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+                  <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0} />
+                  <stop offset='100%' stopColor='#83007E' stopOpacity={0.1} />
+                </linearGradient>
               ) : (
                 <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
                   <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
@@ -396,15 +448,15 @@ const Brush2 = ({
               pointerEvents={interactive ? 'all' : 'none'}
               style={{ cursor: interactive ? 'default' : 'not-allowed' }}
             />
-            {normalizedBrushExtent && (
+            {calculations.normalizedBrushExtent && (
               <>
-                {northHandleInView && !isFullRange ? (
+                {calculations.northHandleInView && !isFullRange && (
                   <g>
                     <line
                       x1='0'
-                      y1={Math.max(0, yScale(normalizedBrushExtent[1]))}
-                      x2={width + 15}
-                      y2={Math.max(0, yScale(normalizedBrushExtent[1]))}
+                      y1={Math.max(0, calculations.northY)}
+                      x2={width}
+                      y2={Math.max(0, calculations.northY)}
                       stroke={interactive ? '#EA66E5' : '#685770'}
                       strokeWidth={isLgDown ? 1 : 2}
                     />
@@ -412,14 +464,18 @@ const Brush2 = ({
                       pointerEvents='none'
                       cursor={interactive ? 'ns-resize' : 'default'}
                       style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-                      transform={`translate(${
-                        (width - (currentHoverRef.current === 'north' ? 106 : isLgDown ? 32 : 52)) / 2
-                      }, ${
-                        Math.max(0, yScale(normalizedBrushExtent[1])) -
-                        (currentHoverRef.current === 'north' ? (flipNorthHandle ? -8 : 35) : flipNorthHandle ? -8 : 15)
+                      transform={`translate(${(width - (currentHover === 'north' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
+                        Math.max(0, calculations.northY) -
+                        (currentHover === 'north'
+                          ? calculations.flipNorthHandle
+                            ? -8
+                            : 35
+                          : calculations.flipNorthHandle
+                            ? -8
+                            : 15)
                       })`}
                     >
-                      {currentHoverRef.current === 'north' ? (
+                      {currentHover === 'north' ? (
                         <g pointerEvents='none' opacity={1}>
                           <rect
                             x='0'
@@ -475,15 +531,15 @@ const Brush2 = ({
                       )}
                     </g>
                   </g>
-                ) : null}
+                )}
 
-                {southHandleInView && !isFullRange ? (
+                {calculations.southHandleInView && !isFullRange && (
                   <g>
                     <line
                       x1='0'
-                      y1={Math.max(0, yScale(normalizedBrushExtent[0]))}
-                      x2={width + 15}
-                      y2={Math.max(0, yScale(normalizedBrushExtent[0]))}
+                      y1={Math.max(0, calculations.southY)}
+                      x2={width}
+                      y2={Math.max(0, calculations.southY)}
                       stroke={interactive ? '#EA66E5' : '#685770'}
                       strokeWidth={isLgDown ? 1 : 2}
                     />
@@ -491,14 +547,18 @@ const Brush2 = ({
                       pointerEvents='none'
                       cursor={interactive ? 'ns-resize' : 'default'}
                       style={{ cursor: interactive ? 'ns-resize' : 'not-allowed' }}
-                      transform={`translate(${
-                        (width - (currentHoverRef.current === 'south' ? 106 : isLgDown ? 32 : 52)) / 2
-                      }, ${
-                        Math.max(0, yScale(normalizedBrushExtent[0])) +
-                        (currentHoverRef.current === 'south' ? (flipSouthHandle ? -35 : 8) : flipSouthHandle ? -15 : 8)
+                      transform={`translate(${(width - (currentHover === 'south' ? 106 : isLgDown ? 32 : 52)) / 2}, ${
+                        Math.max(0, calculations.southY) +
+                        (currentHover === 'south'
+                          ? calculations.flipSouthHandle
+                            ? -35
+                            : 8
+                          : calculations.flipSouthHandle
+                            ? -15
+                            : 8)
                       })`}
                     >
-                      {currentHoverRef.current === 'south' ? (
+                      {currentHover === 'south' ? (
                         <g pointerEvents='none' opacity={1}>
                           <rect
                             x='0'
@@ -554,12 +614,12 @@ const Brush2 = ({
                       )}
                     </g>
                   </g>
-                ) : null}
+                )}
 
-                {(showNorthArrow || isFullRange) && (
+                {(calculations.showNorthArrow || isFullRange) && (
                   <g
                     transform='translate(18, 30) scale(1,-1)'
-                    style={{ opacity: showNorthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
+                    style={{ opacity: animationStates.showNorthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
                   >
                     <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
@@ -595,10 +655,10 @@ const Brush2 = ({
                     opacity={0.8}
                   />
                 )}
-                {showSouthAnimated && (
+                {(calculations.showSouthArrow || isFullRange) && (
                   <g
                     transform={`translate(18, ${height - 15}) `}
-                    style={{ opacity: showSouthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
+                    style={{ opacity: animationStates.showSouthAnimated ? 1 : 0, transition: 'opacity 0.5s' }}
                   >
                     <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
@@ -625,7 +685,6 @@ const Brush2 = ({
                 )}
                 {!isLgDown && (
                   <g width={divideDistanceWidth} transform={`translate(18, ${height + 10}) `}>
-                    {/* Tick lines for bottom axis */}
                     {Array.from({ length: Math.floor(divideDistanceWidth / 40) + 1 }).map((_, i) => (
                       <line
                         key={i}
@@ -650,11 +709,11 @@ const Brush2 = ({
         )}
         <AxisRight
           yScale={yScale}
-          offset={width - (isLgDown ? 60 : 10)}
+          offset={width - (isLgDown ? 60 : -5)}
           current={currentPrice}
           min={localBrushExtent?.[0]}
           max={localBrushExtent?.[1]}
-          currentHover={currentHoverRef.current}
+          currentHover={currentHover}
           padding={padding}
           height={height}
           interactive={interactive}
@@ -663,34 +722,25 @@ const Brush2 = ({
     ),
     [
       handleShow,
-      showNorthArrow,
+      calculations,
       isFullRange,
       width,
-      showSouthArrow,
       height,
+      interactive,
       isLgDown,
       id,
-      interactive,
-      normalizedBrushExtent,
-      northHandleInView,
-      yScale,
-      flipNorthHandle,
       northHandleColor,
-      disableColor.handle.north,
-      disableColor.handle.south,
-      disableColor.line.north,
-      disableColor.line.south,
+      southHandleColor,
+      disableColor,
+      currentHover,
       brushLabelValue,
       localBrushExtent,
-      southHandleInView,
-      flipSouthHandle,
-      southHandleColor,
-      showNorthAnimated,
+      animationStates,
       t,
-      showSouthAnimated,
       divideDistanceWidth,
       currentPrice,
       padding,
+      yScale,
     ],
   )
 }

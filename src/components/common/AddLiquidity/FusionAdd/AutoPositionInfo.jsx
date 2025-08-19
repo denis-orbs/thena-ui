@@ -184,19 +184,24 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     const hasGauge = position?.gauge?.address !== zeroAddress
     return (
       <div className='flex w-full gap-2'>
-        <EmphasisButton className={cn('h-8 flex-1 text-xs md:h-11 md:text-base')} onClick={() => setRemovePopup(true)}>
+        <EmphasisButton className='flex-1' onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
-          className={cn('!h-8 flex-1 md:!h-11 md:!text-base')}
+          className='flex-1'
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}
         >
           {t('Claim')}
         </EmphasisButton>
-        {position?.staked && hasGauge && <EmphasisButton onClick={() => setStakePopup(true)}>UnStaked</EmphasisButton>}
+        {position?.staked && hasGauge && (
+          <EmphasisButton className='flex-1' onClick={() => setStakePopup(true)}>
+            UnStaked
+          </EmphasisButton>
+        )}
         {hasGauge && !position?.staked && (
           <EmphasisButton
+            className='flex-1'
             onClick={() => setStakePopup(true)}
             disabled={stakePending || stakeIchiPending || stakeGammaPending}
           >
@@ -235,14 +240,14 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
 
     return (
       <div className='flex gap-6'>
-        <div className='flex h-12 flex-1 flex-col gap-1 lg:justify-start'>
+        <div className='flex h-12 flex-1 flex-col gap-1 xl:justify-start'>
           <div className='flex items-center gap-2'>
             <CircleImage className='size-5' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
-            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+            <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold'>
               {formatAmount(token0Value)}
             </Paragraph>
           </div>
-          <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
+          <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
             {t('[symbol] deposit [percent]', {
               symbol: baseCurrency.symbol,
               percent: formatAmount(token0Percent),
@@ -253,11 +258,11 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         <div className='flex h-12 flex-1 flex-col gap-1'>
           <div className='flex items-center gap-2'>
             <CircleImage className='size-5' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='quote token' />
-            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+            <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold'>
               {formatAmount(token1Value)}
             </Paragraph>
           </div>
-          <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
+          <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
             {t('[symbol] deposit [percent]', {
               symbol: quoteCurrency.symbol,
               percent: formatAmount(100 - token0Percent),
@@ -283,62 +288,75 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     <>
       <article
         className={cn(
-          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 px-4 py-4 font-medium lg:px-6',
+          'bg-chart-gradient inline-flex w-full flex-col items-start gap-4 rounded-lg px-4 py-4 font-medium outline-1 outline-neutral-600',
+          'xl:ml-auto xl:w-fit xl:self-start xl:px-6',
         )}
       >
-        <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
-          <div className='flex flex-row justify-between gap-4'>
-            <div className='flex flex-col justify-between gap-2'>
+        {/* Top line: title/amount (left) + buttons (right) */}
+        <div className='flex w-full flex-col gap-2 xl:flex-row xl:items-center xl:justify-between'>
+          {/* Left block */}
+          <div className='flex min-w-0 flex-row justify-between gap-4'>
+            <div className='flex flex-col gap-2'>
               <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>
                 {t('Your Position')}
               </TextHeading>
               <Paragraph className='text-sm! font-normal! text-neutral-500'>${formatAmount(depositValueUSD)}</Paragraph>
             </div>
-            <div className='flex flex-col justify-between gap-2 lg:hidden'>
-              <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+
+            {/* APR (mobile) */}
+            <div className='flex flex-col justify-between gap-2 xl:hidden'>
+              <Paragraph className='font-archia text-primary-600 text-xl! leading-6! font-semibold'>
                 {formatAmount(position?.apr)}%
               </Paragraph>
               <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
             </div>
           </div>
-          <div className='flex w-full gap-2 lg:w-fit'>{ButtonsDisplay}</div>
+
+          {/* Buttons - fixed on the right, width doesn’t depend on 2nd line */}
+          <div className='flex w-full shrink-0 gap-2 xl:w-auto xl:justify-end'>{ButtonsDisplay}</div>
         </div>
-        <div className='flex w-full flex-row flex-wrap gap-4 lg:gap-6'>
+
+        {/* Second line */}
+        <div className='flex w-full flex-row flex-wrap gap-4 xl:gap-6'>
           {renderTokenValue}
+
           <div className='flex h-12 flex-1 flex-col gap-1'>
             {rewardsData.totalRewardUsd.gt(0) ? (
               <div className='flex gap-4'>
                 {(rewardsData.rewards || [])
                   .filter(reward => reward.amount.gt(0))
-                  .map(reward => (
-                    <div className='flex flex-nowrap items-center gap-2'>
+                  .map((reward, idx) => (
+                    <div key={reward?.address ?? reward?.symbol ?? idx} className='flex flex-nowrap items-center gap-2'>
                       <CircleImage className='size-5' src={reward.logoURI ?? UNKNOWN_LOGO} alt='reward' />
-                      <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                      <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
                         {formatAmount(reward.amount)}
                       </Paragraph>
                     </div>
                   ))}
                 {isSwapFee && (
-                  <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                  <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
                     Auto Compound
                   </Paragraph>
                 )}
               </div>
             ) : (
-              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>0</Paragraph>
+              <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold'>0</Paragraph>
             )}
-            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
               {t('Rewards')}
             </Paragraph>
           </div>
-          <div className='flex h-12 flex-1 flex-col gap-1 max-lg:hidden'>
-            <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+
+          {/* APR (desktop) */}
+          <div className='flex h-12 flex-1 flex-col gap-1 max-xl:hidden'>
+            <Paragraph className='font-archia text-primary-600 text-xl! leading-6! font-semibold'>
               {formatAmount(position?.apr)}%
             </Paragraph>
-            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>{t('APR')}</Paragraph>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>{t('APR')}</Paragraph>
           </div>
         </div>
       </article>
+
       {position && (
         <GaugeManageModal
           title={position.staked ? 'Unstake LP' : 'Stake LP'}

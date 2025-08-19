@@ -414,11 +414,11 @@ function PairStrategy({ pair }) {
             showPeriod
             classNames={{
               periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
-              chart: 'lg:h-[265px]',
             }}
             handleShow
             isCreate={false}
             label='Your Range against the Price'
+            height={265}
           />
 
           <div className='z-40 mt-4'>

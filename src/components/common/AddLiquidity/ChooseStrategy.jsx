@@ -363,7 +363,7 @@ export function StrategyTitle({
       <div className={cn('flex flex-col items-start gap-4 md:flex-row md:items-center')}>
         <div className={cn('flex items-center gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
-            className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
+            className='w-full max-md:grid max-md:grid-cols-2 md:w-[278px] [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
             isTranslation={false}
             classNames={{
