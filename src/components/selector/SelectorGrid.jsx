@@ -9,8 +9,9 @@ function SelectorGrid({ data, classNames, className, canSelect = true, isGrid = 
         <div
           className={cn(
             'flex items-center gap-2 rounded-xl border-neutral-700 p-2 hover:bg-neutral-800 md:p-4',
-            ele.active ? 'bg-primary-950/60 hover:bg-primary-950/60' : classNames?.item ?? 'bg-neutral-900',
             canSelect ? 'cursor-pointer' : 'cursor-default',
+            classNames?.item,
+            ele.active && 'bg-primary-950/60 hover:bg-primary-950/60',
           )}
           key={`selector-${idx}`}
           onClick={() => canSelect && ele.onClickHandler()}

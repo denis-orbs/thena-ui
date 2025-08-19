@@ -586,7 +586,7 @@ export default function AnalyticsPage() {
               classNames={{ input: 'h-11 px-4 py-3' }}
             />
             {filteredTokens.length > 0 ? (
-              <TokensTable backUrlNumber={3} data={filteredTokens} />
+              <TokensTable backUrlNumber={3} data={filteredTokens} searchTextTokens={searchTextTokens} />
             ) : isLoadingTokens ? (
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <Skeleton className='h-full w-full' />
@@ -614,7 +614,7 @@ export default function AnalyticsPage() {
               />
             </div>
             {filteredTokens.length > 0 ? (
-              <TokensTable backUrlNumber={3} data={filteredTokens} />
+              <TokensTable backUrlNumber={3} data={filteredTokens} searchTextTokens={searchTextTokens} />
             ) : isLoadingTokens ? (
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <Skeleton className='h-full w-full' />
@@ -644,7 +644,7 @@ export default function AnalyticsPage() {
               classNames={{ input: 'h-11 px-4 py-3' }}
             />
             {filteredPairs.length > 0 ? (
-              <PairsTable backUrlNumber={3} data={filteredPairs} />
+              <PairsTable backUrlNumber={3} data={filteredPairs} searchTextPairs={searchTextPairs} />
             ) : isLoadingPairs ? (
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <Skeleton className='h-full w-full' />
@@ -672,7 +672,7 @@ export default function AnalyticsPage() {
               />
             </div>
             {filteredPairs.length > 0 ? (
-              <PairsTable backUrlNumber={3} data={filteredPairs} />
+              <PairsTable backUrlNumber={3} data={filteredPairs} searchTextPairs={searchTextPairs} />
             ) : isLoadingPairs ? (
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <Skeleton className='h-full w-full' />

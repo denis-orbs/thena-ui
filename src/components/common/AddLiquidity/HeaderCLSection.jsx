@@ -7,6 +7,7 @@ import { zeroAddress } from 'viem'
 
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -189,6 +190,7 @@ export default function HeaderCLSection({
   setIsAutomatic,
   lastPrice,
   type,
+  isLoading,
 }) {
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -350,68 +352,82 @@ export default function HeaderCLSection({
           {position ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}` : t('Concentrated Liquidity')}
         </TextHeading>
 
-        {mintInfo.noLiquidity && !isAutomatic && (
-          <StartingPriceInput
-            mintInfo={mintInfo}
-            baseCurrency={firstAsset}
-            quoteCurrency={secondAsset}
-            lastPrice={lastPrice}
-          />
-        )}
-
-        {position ? (
-          <div className='mt-auto max-lg:hidden'>
-            <PoolAttributes pair={pair} strategy={strategy} classNames={{ wrapper: 'w-full', container: 'w-full' }} />
-          </div>
+        {isLoading ? (
+          <Skeleton className='mt-auto h-11' />
         ) : (
-          <div className='flex flex-col gap-0 xl:gap-4'>
-            <StrategyTitle
-              strategyCount={strategyAutoData.length}
-              isAutomatic={isAutomatic}
-              toggleStrategyType={toggleStrategyType}
-              pair={pair}
-              handleChooseStrategy={handleChooseStrategy}
-              firstAsset={firstAsset}
-              secondAsset={secondAsset}
-              strategy={strategy}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className={cn(position ? 'mt-0' : 'lg:mt-16')}>
-        {!isAutomatic ? (
           <>
-            {mintInfo.noLiquidity ? (
-              <WarningStartingPrice />
-            ) : position ? (
-              <ManualPositionInfo
+            {mintInfo.noLiquidity && !isAutomatic && (
+              <StartingPriceInput
+                mintInfo={mintInfo}
                 baseCurrency={firstAsset}
                 quoteCurrency={secondAsset}
-                position={position}
-                type={type}
-              />
-            ) : (
-              <ManualStrategyDisplay
-                firstAsset={firstAsset}
-                secondAsset={secondAsset}
-                isEarnFees={isEarnFees}
-                APRs={APRs}
-                activePreset={activePreset}
-                strategy={strategy}
-                t={t}
+                lastPrice={lastPrice}
               />
             )}
-          </>
-        ) : (
-          // <ManualPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} type={type} />
-          <>
+
             {position ? (
-              <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
-            ) : null}
+              <div className='mt-auto max-lg:hidden'>
+                <PoolAttributes
+                  pair={pair}
+                  strategy={strategy}
+                  classNames={{ wrapper: 'w-full', container: 'w-full' }}
+                />
+              </div>
+            ) : (
+              <div className='flex flex-col gap-0 xl:gap-4'>
+                <StrategyTitle
+                  strategyCount={strategyAutoData.length}
+                  isAutomatic={isAutomatic}
+                  toggleStrategyType={toggleStrategyType}
+                  pair={pair}
+                  handleChooseStrategy={handleChooseStrategy}
+                  firstAsset={firstAsset}
+                  secondAsset={secondAsset}
+                  strategy={strategy}
+                />
+              </div>
+            )}
           </>
         )}
       </div>
+
+      {isLoading ? (
+        <Skeleton className='h-[150px]' />
+      ) : (
+        <div className={cn(position ? 'mt-0' : 'lg:mt-16')}>
+          {!isAutomatic ? (
+            <>
+              {mintInfo.noLiquidity ? (
+                <WarningStartingPrice />
+              ) : position ? (
+                <ManualPositionInfo
+                  baseCurrency={firstAsset}
+                  quoteCurrency={secondAsset}
+                  position={position}
+                  type={type}
+                />
+              ) : (
+                <ManualStrategyDisplay
+                  firstAsset={firstAsset}
+                  secondAsset={secondAsset}
+                  isEarnFees={isEarnFees}
+                  APRs={APRs}
+                  activePreset={activePreset}
+                  strategy={strategy}
+                  t={t}
+                />
+              )}
+            </>
+          ) : (
+            // <ManualPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} type={type} />
+            <>
+              {position ? (
+                <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
+              ) : null}
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

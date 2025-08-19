@@ -11,6 +11,7 @@ import HeaderCLSection from '@/components/common/AddLiquidity/HeaderCLSection'
 import { RangeAndPricePanel } from '@/components/common/AddLiquidity/RangeAndPricePanel'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
@@ -150,7 +151,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
       [...pools, ...vaults].find(
         item =>
           item.account.totalLp.gt(0) &&
-          item.basePool.toLowerCase() === poolAddress.toLowerCase() &&
+          item?.basePool?.toLowerCase() === poolAddress?.toLowerCase() &&
           item.title === title,
       ),
     [poolAddress, pools, title, vaults],
@@ -207,7 +208,14 @@ function AddLiquidityClPool({ pool, handleBack }) {
     poolAddress,
   })
 
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
+  const existingPosition = useMemo(() => {
+    if (position && position?._position) {
+      return position?._position
+    }
+    return undefined
+  }, [position])
+
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, existingPosition)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
@@ -288,6 +296,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
     [sortedSubPools, strategy?.address, handleChooseStrategy, t],
   )
 
+  const isLoading = useMemo(() => {
+    if (pair && mintInfo.noLiquidity && (type === 'CL_Farming' || type === 'CL_SwapFee' || !isAutomatic)) {
+      return true
+    }
+    return false
+  }, [isAutomatic, mintInfo.noLiquidity, pair, type])
+
   if (!strategy && position) {
     setStrategy({
       title: position?.title,
@@ -334,69 +349,76 @@ function AddLiquidityClPool({ pool, handleBack }) {
           fullRangeWarningShown={fullRangeWarningShown}
           lastPrice={lastPrice}
           type={type}
+          isLoading={isLoading}
         />
-        {!strategy?.isAutomatic ? (
-          <RangeAndPricePanel
-            currencyA={baseCurrency ?? undefined}
-            currencyB={quoteCurrency ?? undefined}
-            mintInfo={mintInfo}
-            currentPrice={currentPrice}
-            position={position}
-            priceLower={priceLower}
-            priceUpper={priceUpper}
-            onLeftRangeInput={onLeftRangeInput}
-            onRightRangeInput={onRightRangeInput}
-            setLastPrice={setLastPrice}
-            viewMode={Boolean(position)}
-          />
+        {isLoading ? (
+          <Skeleton className='h-[400px]' />
         ) : (
-          <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 lg:grid-cols-[1fr_368px]'>
-            <AutomaticLiquidityChart
-              label='Liquidity Range'
-              currencyA={currencyA ?? undefined}
-              currencyB={currencyB ?? undefined}
-              strategy={strategy}
-              position={null}
-              pair={pair}
-              handleShow={!!strategy}
-            />
-            {strategyAutoData.length > 0 && !position && (
-              <AutomaticStrategy
-                classNames={{ item: 'bg-neutral-950' }}
-                strategyAutoData={strategyAutoData}
-                isGrid={false}
+          <>
+            {!strategy?.isAutomatic ? (
+              <RangeAndPricePanel
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
+                position={position}
+                priceLower={priceLower}
+                priceUpper={priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                setLastPrice={setLastPrice}
+                viewMode={Boolean(position)}
               />
-            )}
-            {position && (
-              <div className='flex flex-col gap-6'>
-                <TextHeading className='font-archia text-xl! leading-6! font-semibold'>
-                  {`${getDisplayedStrategy(position.title)} Strategy`}
-                </TextHeading>
-                <FusionAdd
+            ) : (
+              <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 lg:grid-cols-[1fr_368px]'>
+                <AutomaticLiquidityChart
+                  label='Liquidity Range'
+                  currencyA={currencyA ?? undefined}
+                  currencyB={currencyB ?? undefined}
                   strategy={strategy}
-                  onShowModalSuccess={() => {}}
-                  handleBack={handleBack}
-                  isSmall={!isXlDown}
-                  classNames={{ wrapperInput: 'grid grid-cols-1! xl:grid-cols-1 gap-2', input: 'bg-neutral-950' }}
+                  position={null}
+                  pair={pair}
+                  handleShow={!!strategy}
                 />
+                {strategyAutoData.length > 0 && !position && (
+                  <AutomaticStrategy
+                    classNames={{ item: 'bg-neutral-950 max-h-[73px]' }}
+                    strategyAutoData={strategyAutoData}
+                    isGrid={false}
+                  />
+                )}
+                {position && (
+                  <div className='flex flex-col gap-6'>
+                    <TextHeading className='font-archia text-xl! leading-6! font-semibold'>
+                      {`${getDisplayedStrategy(position.title)} Strategy`}
+                    </TextHeading>
+                    <FusionAdd
+                      strategy={strategy}
+                      onShowModalSuccess={() => {}}
+                      handleBack={handleBack}
+                      isSmall={!isXlDown}
+                      classNames={{ wrapperInput: 'grid grid-cols-1! xl:grid-cols-1 gap-2', input: 'bg-neutral-950' }}
+                    />
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
-        {!position && (
-          <DepositCLPanel
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
-            setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
-            mintInfo={mintInfo}
-            currentPrice={currentPrice}
-            strategy={strategy}
-            // onShowModalSuccess={onShowModalSuccess}
-            position={position}
-            handleBack={handleBack}
-            pair={pair}
-          />
+            {!position && (
+              <DepositCLPanel
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
+                setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
+                strategy={strategy}
+                // onShowModalSuccess={onShowModalSuccess}
+                position={position}
+                handleBack={handleBack}
+                pair={pair}
+              />
+            )}
+          </>
         )}
       </div>
     </>

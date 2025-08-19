@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import Table from '@/components/table'
@@ -50,12 +50,16 @@ const sortOptions = [
   },
 ]
 
-export default function PairsTable({ data, hidePagination = false, backUrlNumber }) {
+export default function PairsTable({ data, hidePagination = false, backUrlNumber, searchTextPairs }) {
   const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
   const { push } = useRouter()
   const t = useTranslations()
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTextPairs])
 
   const { isLgDown } = useMediaQuery()
 

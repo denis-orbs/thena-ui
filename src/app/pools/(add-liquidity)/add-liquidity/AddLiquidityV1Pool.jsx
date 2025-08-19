@@ -199,7 +199,10 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
           {isManage && (
             <>
-              <PositionInfo position={isStaked ? userStakedPosition[0] : userNotStakedPosition[0]} />
+              <PositionInfo
+                position={isStaked ? userStakedPosition[0] : userNotStakedPosition[0]}
+                isStaked={isStaked}
+              />
               {/* deposit to existing position */}
               <V1Add
                 pool={pool}

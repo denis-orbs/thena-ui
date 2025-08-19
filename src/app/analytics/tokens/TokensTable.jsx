@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import PercentBadge from '@/components/badges/PercentBadge'
 import CircleImage from '@/components/image/CircleImage'
@@ -43,12 +43,16 @@ const sortOptions = [
   },
 ]
 
-export default function TokensTable({ data, hidePagination = false, backUrlNumber }) {
+export default function TokensTable({ data, hidePagination = false, backUrlNumber, searchTextTokens }) {
   const [sort, setSort] = useState(sortOptions[3])
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
   const { isLgDown } = useMediaQuery()
   const { push } = useRouter()
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTextTokens])
 
   const sortedData = useMemo(
     () =>

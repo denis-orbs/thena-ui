@@ -475,17 +475,18 @@ export default function ChartPriceRangeInput({
 
       {/* Invalid range warning */}
       <AnimatePresence>
-        {invalidRange && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='mb-2 overflow-hidden'
-          >
-            <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>
-          </motion.div>
-        )}
+        {invalidRange &&
+          interactive && ( // just show this warning if user can handle brush (interactive = true).
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='mb-2 overflow-hidden'
+            >
+              <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>
+            </motion.div>
+          )}
       </AnimatePresence>
       <div className={cn('flex flex-col gap-2 md:gap-4')}>
         <div className={cn('relative flex w-full items-center justify-center', classNames?.chart)}>

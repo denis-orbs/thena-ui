@@ -17,7 +17,7 @@ import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 
-function PositionInfo({ position }) {
+function PositionInfo({ position, isStaked }) {
   const t = useTranslations()
   const [removePopup, setRemovePopup] = useState(false)
   const [stakePopup, setStakePopup] = useState(false)
@@ -87,9 +87,11 @@ function PositionInfo({ position }) {
   const ButtonsDisplay = useMemo(
     () => (
       <div className='flex w-full gap-2'>
-        <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
-          {t('Remove')}
-        </EmphasisButton>
+        {!isStaked && (
+          <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
+            {t('Remove')}
+          </EmphasisButton>
+        )}
         <EmphasisButton
           disabled={claimPending || harvestPending || feesPending}
           className='max-lg:flex-1'
@@ -118,6 +120,7 @@ function PositionInfo({ position }) {
       handleClaimUnstaked,
       handleHarvestStaked,
       harvestPending,
+      isStaked,
       position.staked,
       stakeGammaPending,
       stakeIchiPending,

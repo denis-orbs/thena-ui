@@ -217,7 +217,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         <ClaimModal
           popup={claimPopup}
           setPopup={setClaimPopup}
-          pool={position.pool}
+          pool={type === 'CL_Farming' ? { ..._position, key: poolKey } : _position}
           reward0={reward0}
           reward1={reward1}
           // mutate={refetchFarm}
