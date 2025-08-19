@@ -143,6 +143,8 @@
   "[symbolA] per [symbolB]": "{symbolA} trên mỗi {symbolB}",
   "Min [symbolA] per [symbolB] price": "Giá tối thiểu {symbolA} trên {symbolB}",
   "Max [symbolA] per [symbolB] price": "Giá tối đa {symbolA} trên {symbolB}",
+  "Min [symbolA] per [symbolB]": "Tối thiểu {symbolA} trên {symbolB}",
+  "Max [symbolA] per [symbolB]": "Tối đa {symbolA} trên {symbolB}",
   "[symbol] deposit [percent]": "Nạp {symbol} ({percent}%)",
   "OUT OF RANGE": "NGOÀI PHẠM VI APR 0%",
   "OUT OF RANGE description": "Vị thế của bạn sẽ không kiếm được phí hoặc tham gia giao dịch cho đến khi giá thị trường nằm trong phạm vi bạn đặt. Để điều chỉnh, hãy rút thanh khoản hiện tại và tạo một phạm vi mới, hoặc nạp thêm một loại token để cân bằng lại.",

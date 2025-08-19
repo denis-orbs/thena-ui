@@ -1,121 +1,149 @@
+import { useState } from 'react'
 import { useTranslations } from 'use-intl'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import { cn, formatAmount } from '@/lib/utils'
-import { CoinUSDIcon } from '@/svgs'
+import { cn, formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
+import ClaimModal from '@/modules/Position/ClaimModal'
+import RemoveManualModal from '@/modules/Position/RemoveManualModal'
+import { InfoIcon } from '@/svgs'
 
-export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, isFullRange }) {
+export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, type }) {
   const t = useTranslations()
+  const [claimPopup, setClaimPopup] = useState(false)
+  const [removePopup, setRemovePopup] = useState(false)
 
   return (
-    <div className='mt-4 md:mt-0 xl:flex xl:flex-col xl:gap-2'>
-      <TextHeading className='font-archia !text-xl !leading-6 max-md:hidden xl:font-semibold'>
-        {t('Your Deposit')}
-      </TextHeading>
+    <>
       <article
         className={cn(
-          'grid grid-cols-2 items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4 xl:px-5 xl:py-4',
+          'max-lg:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
         )}
       >
-        <div className='col-span-2 flex flex-row gap-2 max-md:items-center md:col-span-1 md:flex-col lg:justify-start'>
-          <div className='flex items-center gap-2'>
-            <div className='size-6 min-w-6 md:size-8 md:min-w-8'>
-              <CoinUSDIcon className='size-full' />
-            </div>
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
-              ${position.depositInUSD}
-            </Paragraph>
+        <div className='flex w-full items-center justify-between'>
+          <div className='flex flex-col justify-between gap-2'>
+            <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>{t('Your Deposit')}</TextHeading>
+            <Paragraph className='text-sm! font-normal! text-neutral-500'>${position.depositInUSD}</Paragraph>
           </div>
-          <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
-              ${position.depositInUSD}
-            </Paragraph>
-            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
-              {t('Deposit Value in USD')}
-            </Paragraph>
+          <div className='flex w-fit gap-2'>
+            <EmphasisButton
+              className='leading-4 max-lg:h-8 max-lg:p-2! max-lg:text-sm!'
+              onClick={() => setRemovePopup(true)}
+            >
+              {t('Remove')}
+            </EmphasisButton>
+            {position?.rewardUsd > 0 && (
+              <EmphasisButton
+                className='leading-4 max-lg:h-8 max-lg:p-2! max-lg:text-sm!'
+                onClick={() => setClaimPopup(true)}
+              >
+                {t('Claim')}
+              </EmphasisButton>
+            )}
           </div>
         </div>
-
-        <div className='flex flex-row gap-2 max-md:items-center md:flex-col lg:justify-start'>
-          <div className='flex items-center gap-2'>
-            <CircleImage
-              className='size-6 min-w-6 md:size-8 md:min-w-8'
-              src={baseCurrency.logoURI ?? UNKNOWN_LOGO}
-              alt='base token'
-            />
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
-              {formatAmount(position.amountAsset0)}
-            </Paragraph>
-          </div>
-          <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
-              {formatAmount(position.amountAsset0)}
-            </Paragraph>
-            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
+        <div className='flex w-full flex-row flex-wrap gap-4 lg:gap-6'>
+          <div className='flex h-12 flex-1 flex-col gap-1 lg:justify-start'>
+            <div className='flex items-center gap-2'>
+              <CircleImage className='size-5' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                {formatAmount(position.amountAsset0)}
+              </Paragraph>
+            </div>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
               })}
             </Paragraph>
           </div>
-        </div>
 
-        <div className='flex flex-row gap-2 max-md:items-center md:flex-col md:items-end'>
-          <div className='flex items-center gap-2'>
-            <CircleImage
-              className='size-6 min-w-6 md:size-8 md:min-w-8'
-              src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
-              alt='quote token'
-            />
-            <Paragraph className='text-primary-100 text-xs max-md:hidden md:!text-xl xl:font-medium'>
-              {formatAmount(position.amountAsset1)}
-            </Paragraph>
-          </div>
-          <div className='flex flex-col max-md:gap-1'>
-            <Paragraph className='text-xs font-medium text-neutral-200 md:hidden md:!text-xl'>
-              {formatAmount(position.amountAsset1)}
-            </Paragraph>
-            <Paragraph className='text-xs text-nowrap text-neutral-200 md:!text-base md:!leading-5 xl:text-neutral-300'>
+          <div className='flex h-12 flex-1 flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              <CircleImage className='size-5' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='quote token' />
+              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                {formatAmount(position.amountAsset1)}
+              </Paragraph>
+            </div>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),
               })}
             </Paragraph>
           </div>
+          <div className='flex h-12 flex-1 flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              $
+              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                {formatAmount(position.rewardUsd)}
+              </Paragraph>
+              {position.rewardUsd > 0 &&
+                (type === 'CL_Farming' ? (
+                  <>
+                    <InfoIcon className='h-4 w-4 stroke-neutral-400 max-xl:hidden' data-tooltip-id='net-reward' />
+                    <CustomTooltip id='net-reward'>
+                      <p className={cn(position.rewards && position.rewards[0] === 0n && 'hidden')}>
+                        {`${formatAmount(fromWei(position.rewards?.[0] ?? 0n, 18))} THE`}
+                      </p>
+                      <p className={cn(position.rewards && position.rewards[1] === 0n && 'hidden')}>
+                        {`${formatAmount(fromWei(position.rewards?.[1] ?? 0n, 18))} WBNB`}
+                      </p>
+                    </CustomTooltip>
+                  </>
+                ) : (
+                  <>
+                    <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='net-reward' />
+                    <CustomTooltip id='net-reward'>
+                      <p>
+                        {`${formatAmount(
+                          fromWei(position?.fees[0], position.rewards[0]?.token?.decimals),
+                        )} ${unwrappedSymbol(position?.rewards[0]?.token)}`}
+                      </p>
+                      <p>
+                        {`${formatAmount(
+                          fromWei(position?.fees[1], position.rewards[1]?.token?.decimals),
+                        )} ${unwrappedSymbol(position?.rewards[1]?.token)}`}
+                      </p>
+                    </CustomTooltip>
+                  </>
+                ))}
+            </div>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>
+              {t('Rewards')}
+            </Paragraph>
+          </div>
         </div>
       </article>
+      {position?.rewardUsd > 0 && (
+        <ClaimModal
+          popup={claimPopup}
+          setPopup={setClaimPopup}
+          pool={position.pool}
+          reward0={position.rewards[0]}
+          reward1={position.rewards[1]}
+          // mutate={refetchFarm}
+          outOfRange={position.outOfRange}
+          fee={position.fusion?.fee || 0}
+        />
+      )}
 
-      <div className='mt-8 flex flex-col gap-4 lg:flex-row xl:mt-6 xl:pb-[12px]'>
-        <div className='flex w-full flex-col gap-2'>
-          <Paragraph className='text-xs text-neutral-500 xl:text-xs'>
-            {t('Min [symbolA] per [symbolB] price', {
-              symbolA: baseCurrency.symbol,
-              symbolB: quoteCurrency.symbol,
-            })}
-          </Paragraph>
-          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>
-              {isFullRange ? '0' : position.minPrice}
-            </TextHeading>
-          </div>
-        </div>
-
-        <div className='flex w-full flex-col gap-2'>
-          <Paragraph className='text-xs text-neutral-500 xl:text-xs'>
-            {t('Max [symbolA] per [symbolB] price', {
-              symbolA: baseCurrency.symbol,
-              symbolB: quoteCurrency.symbol,
-            })}
-          </Paragraph>
-          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
-            <TextHeading className='text-xl leading-7 text-neutral-400'>
-              {isFullRange ? '∞' : position.maxPrice}
-            </TextHeading>
-          </div>
-        </div>
-      </div>
-    </div>
+      {position.rewards && (
+        <RemoveManualModal
+          popup={removePopup}
+          setPopup={setRemovePopup}
+          pool={position.pool}
+          position={position}
+          reward0={position.rewards?.[0]}
+          reward1={position.rewards?.[1]}
+          // mutateManual={mutateManual}
+          outOfRange={position.outOfRange}
+          fee={position.fusion?.fee || 0}
+        />
+      )}
+    </>
   )
 }

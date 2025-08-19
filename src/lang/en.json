@@ -142,7 +142,9 @@
   "Enter an amount": "Enter an amount",
   "[symbolA] per [symbolB]": "{symbolA} per {symbolB}",
   "Min [symbolA] per [symbolB] price": "Min {symbolA} per {symbolB} price",
+  "Min [symbolA] per [symbolB]": "Min {symbolA} per {symbolB}",
   "Max [symbolA] per [symbolB] price": "Max {symbolA} per {symbolB} price",
+  "Max [symbolA] per [symbolB]": "Max {symbolA} per {symbolB}",
   "[symbol] deposit [percent]": "{symbol} deposit ({percent}%)",
   "OUT OF RANGE": "OUT OF RANGE APR 0%",
   "OUT OF RANGE description": "Your position will not earn fees or be used in trades until the market price moves into your range. To adjust your position, either remove your current liquidity and create a new range, or deposit a single token to rebalance.",
@@ -1622,5 +1624,6 @@
   "No transactions found": "No transactions found.",
   "$THE Single Sided Vault": "$THE Single Sided Vault",
   "This is Idle": "This is Idle",
-  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding"
+  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding",
+  "Degen Mode": "Degen Mode"
 }

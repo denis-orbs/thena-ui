@@ -775,8 +775,9 @@
 
   .price-chart-container .tv-lightweight-charts table tr:nth-child(2) td:nth-child(2) > div {
     position: absolute !important;
+    top: 240px !important;
     z-index: -1 !important;
-    left: 4px !important;
+    left: 0px !important;
   }
 
   .bg-full-range {

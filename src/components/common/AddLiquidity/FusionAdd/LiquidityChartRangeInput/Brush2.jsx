@@ -226,58 +226,53 @@ const Brush2 = ({
     brushSelection.selectAll('.handle--n').attr('pointer-events', interactive ? 'all' : 'none')
     brushSelection.selectAll('.handle--s').attr('pointer-events', interactive ? 'all' : 'none')
 
-    // Use ref for hover, only force update for handle hover
-    const handleNorth = brushSelection.selectAll('.handle--n')
-    const handleSouth = brushSelection.selectAll('.handle--s')
-    handleNorth
-      .on('mouseenter', () => {
-        currentHoverRef.current = 'north'
-        setHoverTick(tick => tick + 1)
-      })
-      .on('mouseleave', () => {
-        currentHoverRef.current = null
-        setHoverTick(tick => tick + 1)
-      })
-    handleSouth
-      .on('mouseenter', () => {
-        currentHoverRef.current = 'south'
-        setHoverTick(tick => tick + 1)
-      })
-      .on('mouseleave', () => {
-        currentHoverRef.current = null
-        setHoverTick(tick => tick + 1)
-      })
-
-    // Improved hover handling: listen for mousemove on brushRef
+    // Improved hover handling with better detection
     function handleBrushMouseMove(e) {
-      if (!interactive) return
+      if (!interactive || !normalizedBrushExtent) return
+
       const svgRect = brushRef.current.getBoundingClientRect()
       const mouseY = e.clientY - svgRect.top
       const northY = yScale(normalizedBrushExtent[1])
       const southY = yScale(normalizedBrushExtent[0])
-      // Check if mouse is near north or south handle
-      if (northHandleInView && Math.abs(mouseY - northY) < 20) {
-        if (currentHoverRef.current !== 'north') {
-          currentHoverRef.current = 'north'
-          setHoverTick(tick => tick + 1)
-        }
-      } else if (southHandleInView && Math.abs(mouseY - southY) < 20) {
-        if (currentHoverRef.current !== 'south') {
-          currentHoverRef.current = 'south'
-          setHoverTick(tick => tick + 1)
-        }
-      } else if (currentHoverRef.current !== null) {
+
+      // Increase threshold and add better detection logic
+      const hoverThreshold = 30
+      const northDistance = northHandleInView ? Math.abs(mouseY - northY) : Infinity
+      const southDistance = southHandleInView ? Math.abs(mouseY - southY) : Infinity
+
+      let newHover = null
+
+      // Determine which handle is closer and within threshold
+      if (northDistance < hoverThreshold && southDistance < hoverThreshold) {
+        // Both are close, choose the closer one
+        newHover = northDistance < southDistance ? 'north' : 'south'
+      } else if (northDistance < hoverThreshold) {
+        newHover = 'north'
+      } else if (southDistance < hoverThreshold) {
+        newHover = 'south'
+      }
+
+      // Only update if hover state actually changed
+      if (currentHoverRef.current !== newHover) {
+        currentHoverRef.current = newHover
+        setHoverTick(tick => tick + 1)
+      }
+    }
+
+    function handleBrushMouseLeave() {
+      if (currentHoverRef.current !== null) {
         currentHoverRef.current = null
         setHoverTick(tick => tick + 1)
       }
     }
+
     const brushNode = brushRef.current
     brushNode.addEventListener('mousemove', handleBrushMouseMove)
-    // Remove old listeners
+    brushNode.addEventListener('mouseleave', handleBrushMouseLeave)
+
     return () => {
       brushNode.removeEventListener('mousemove', handleBrushMouseMove)
-      handleNorth.on('mouseenter', null).on('mouseleave', null)
-      handleSouth.on('mouseenter', null).on('mouseleave', null)
+      brushNode.removeEventListener('mouseleave', handleBrushMouseLeave)
     }
   }, [
     brushExtent,
@@ -295,15 +290,6 @@ const Brush2 = ({
     northHandleInView,
     southHandleInView,
   ])
-
-  // respond to yScale changes only
-  useEffect(() => {
-    const brushBehaviorNode = brushBehavior.current
-    if (!brushBehaviorNode || !interactive) return
-    const extent = toYScale(brushExtent, yScale)
-    if (isNaN(extent[0]) || isNaN(extent[1])) return
-    brushBehaviorNode.move(select(brushRef.current), normalizeExtent(toYScale(brushExtent, yScale)))
-  }, [brushExtent, interactive, yScale])
 
   // Only run once for handle transform
   useEffect(() => {
@@ -338,16 +324,43 @@ const Brush2 = ({
     }
   }, [showNorthArrow, showSouthArrow, isFullRange])
 
+  // respond to yScale changes only
+  useEffect(() => {
+    const brushBehaviorNode = brushBehavior.current
+    if (!brushBehaviorNode || !interactive || !brushRef.current) return
+
+    if (!brushExtent || !Array.isArray(brushExtent) || brushExtent.length !== 2) return
+
+    const extent = toYScale(brushExtent, yScale)
+    if (isNaN(extent[0]) || isNaN(extent[1])) return
+
+    if (typeof brushBehaviorNode.move !== 'function') return
+
+    try {
+      const selection = select(brushRef.current)
+      selection.call(brushBehaviorNode.move, normalizeExtent(extent))
+    } catch (error) {
+      console.warn('Brush move failed:', error)
+    }
+  }, [brushExtent, interactive, yScale])
+
   return useMemo(
     () => (
       <>
         {handleShow && (
           <>
             {(showNorthArrow || isFullRange) && (
-              <line x1='0' y1='15' x2={width} y2='15' stroke='#F199EE' strokeWidth='2' />
+              <line x1='0' y1='15' x2={width} y2='15' stroke={interactive ? '#F199EE' : '#35243D'} strokeWidth='2' />
             )}
             {(showSouthArrow || isFullRange) && (
-              <line x1='0' y1={height} x2={width} y2={height} stroke='#F199EE' strokeWidth='2' />
+              <line
+                x1='0'
+                y1={height}
+                x2={width}
+                y2={height}
+                stroke={interactive ? '#F199EE' : '#35243D'}
+                strokeWidth='2'
+              />
             )}
             <defs>
               {isLgDown ? (
@@ -382,7 +395,7 @@ const Brush2 = ({
                       y1={Math.max(0, yScale(normalizedBrushExtent[1]))}
                       x2={width + 15}
                       y2={Math.max(0, yScale(normalizedBrushExtent[1]))}
-                      stroke='#EA66E5'
+                      stroke={interactive ? '#EA66E5' : '#685770'}
                       strokeWidth={isLgDown ? 1 : 2}
                     />
                     <g
@@ -409,7 +422,7 @@ const Brush2 = ({
                             strokeWidth='1'
                           />
                           {interactive && (
-                            <g transform='translate(8, 9)' pointerEvents='none'>
+                            <g transform='translate(8, 7)' pointerEvents='none'>
                               <svg
                                 width='11'
                                 height='16'
@@ -429,8 +442,8 @@ const Brush2 = ({
                           )}
                           <text
                             className='font-archia font-semibold'
-                            x={interactive ? '27' : '30'}
-                            y='23'
+                            x={interactive ? '27' : '20'}
+                            y='22'
                             fill={interactive ? '#2C002A' : '#B3ABB7'}
                             fontSize='20'
                             textAnchor='start'
@@ -443,8 +456,8 @@ const Brush2 = ({
                         <rect
                           width={isLgDown ? 32 : 52}
                           height={8}
-                          fill='#F199EE'
-                          stroke='#EA66E5'
+                          fill={interactive ? '#F199EE' : '#35243D'}
+                          stroke={interactive ? '#EA66E5' : '#685770'}
                           strokeWidth='1'
                           rx='4'
                           ry='4'
@@ -461,7 +474,7 @@ const Brush2 = ({
                       y1={Math.max(0, yScale(normalizedBrushExtent[0]))}
                       x2={width + 15}
                       y2={Math.max(0, yScale(normalizedBrushExtent[0]))}
-                      stroke='#EA66E5'
+                      stroke={interactive ? '#EA66E5' : '#685770'}
                       strokeWidth={isLgDown ? 1 : 2}
                     />
                     <g
@@ -488,7 +501,7 @@ const Brush2 = ({
                             strokeWidth='1'
                           />
                           {interactive && (
-                            <g transform='translate(8, 9)' pointerEvents='none'>
+                            <g transform='translate(8, 7)' pointerEvents='none'>
                               <svg
                                 width='11'
                                 height='16'
@@ -508,8 +521,8 @@ const Brush2 = ({
                           )}
                           <text
                             className='font-archia font-semibold'
-                            x={interactive ? '27' : '30'}
-                            y='23'
+                            x={interactive ? '27' : '20'}
+                            y='22'
                             fill={interactive ? '#2C002A' : '#B3ABB7'}
                             fontSize='20'
                             textAnchor='start'
@@ -522,8 +535,8 @@ const Brush2 = ({
                         <rect
                           width={isLgDown ? 32 : 52}
                           height={8}
-                          fill='#F199EE'
-                          stroke='#EA66E5'
+                          fill={interactive ? '#F199EE' : '#35243D'}
+                          stroke={interactive ? '#EA66E5' : '#685770'}
                           strokeWidth='1'
                           rx='4'
                           ry='4'
@@ -541,7 +554,7 @@ const Brush2 = ({
                     <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M11 1.5L6 6.5L1 1.5'
-                        stroke='#F199EE'
+                        stroke={interactive ? '#F199EE' : '#35243D'}
                         strokeWidth='2'
                         strokeLinecap='round'
                         strokeLinejoin='round'
@@ -556,7 +569,7 @@ const Brush2 = ({
                       alignmentBaseline='middle'
                       fontFamily='Archia'
                       transform='scale(1,-1)'
-                      color='#F199EE'
+                      color={interactive ? '#F199EE' : '#35243D'}
                     >
                       {t('range out of view')}
                     </text>
@@ -580,7 +593,7 @@ const Brush2 = ({
                     <svg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M11 1.5L6 6.5L1 1.5'
-                        stroke='#F199EE'
+                        stroke={interactive ? '#F199EE' : '#35243D'}
                         strokeWidth='2'
                         strokeLinecap='round'
                         strokeLinejoin='round'
@@ -594,7 +607,7 @@ const Brush2 = ({
                       fontWeight={600}
                       alignmentBaseline='middle'
                       fontFamily='Archia'
-                      color='#F199EE'
+                      color={interactive ? '#F199EE' : '#35243D'}
                     >
                       {t('range out of view')}
                     </text>
@@ -634,6 +647,7 @@ const Brush2 = ({
           currentHover={currentHoverRef.current}
           padding={padding}
           height={height}
+          interactive={interactive}
         />
       </>
     ),

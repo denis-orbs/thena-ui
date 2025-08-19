@@ -15,6 +15,8 @@ import { useCurrency } from './fusion/Tokens'
 import { useCurrencyBalances } from './fusion/useCurrencyBalances'
 import { useCalculateAPR } from './fusion/useEstimateAPR'
 import { useFusionState } from './fusion/useFusions'
+import { useFarmPositions } from './position/useFarmPosition'
+import { useManualPositions } from './position/useManualPosition'
 import usePrevious from './usePrevious'
 
 export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
@@ -318,6 +320,10 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
     tvl: Number(fiatValueOfLiquidity || 0),
   })
 
+  const farmingPos = useFarmPositions(type === 'CL_Farming' && pool ? [pool] : [])
+
+  const manualPos = useManualPositions(type === 'CL_SwapFee' && pool ? [pool] : [])
+
   return position
     ? {
         dependentField: independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A,
@@ -350,6 +356,21 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
         firstPercent,
         tokenId,
         pos,
+        fees: type === 'CL_SwapFee' ? manualPos?.[0]?.fees : undefined,
+        rewards:
+          type === 'CL_Farming'
+            ? farmingPos?.[0]?.rewards
+            : type === 'CL_SwapFee'
+              ? manualPos?.[0]?.rewards
+              : undefined,
+        rewardUsd:
+          type === 'CL_Farming'
+            ? farmingPos?.[0]?.rewardUsd
+            : type === 'CL_SwapFee'
+              ? manualPos?.[0]?.rewardUsd
+              : undefined,
+        fusion: _fusion,
+        _position: type === 'CL_Farming' ? farmingPos?.[0] : type === 'CL_SwapFee' ? manualPos?.[0] : undefined,
         onFieldAInput,
         onFieldBInput,
         setTypedValue,

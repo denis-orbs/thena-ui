@@ -116,7 +116,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
           />
         )  */}
         {!isZapper && (
-          <ManualPane
+          <ManualPanel
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             strategy={strategy}
@@ -130,7 +130,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
+function ManualPanel({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
   const t = useTranslations()
   const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()

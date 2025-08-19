@@ -67,6 +67,7 @@ export default function ChartPriceRangeInput({
   label = 'Liquidity range',
   feeAmount,
   classNames,
+  showLabel = true,
 }) {
   const activePreset = useActivePreset()
   const t = useTranslations()
@@ -383,11 +384,19 @@ export default function ChartPriceRangeInput({
   return (
     <div className='flex flex-col'>
       <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
-        <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
-          {t(label ?? 'Your Range against the Price')}
-        </NewTextHeading>
-        <div className={cn('flex items-center justify-between gap-4 lg:hidden', classNames?.title)}>
-          <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>
+        {showLabel && (
+          <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
+            {t(label ?? 'Your Range against the Price')}
+          </NewTextHeading>
+        )}
+        <div
+          className={cn(
+            'flex items-center justify-between gap-4 lg:hidden',
+            !showLabel && 'justify-end',
+            classNames?.title,
+          )}
+        >
+          {showLabel && <TextHeading className={cn('text-xl text-neutral-50')}>{t('Your Range APR')}</TextHeading>}
           {presetRange && (
             <TextHeading className={cn('text-primary-600 text-xl')}>
               {formatAmount(APRs?.[presetRange?.type])}%

@@ -143,6 +143,8 @@
   "[symbolA] per [symbolB]": "{symbolA} 당 {symbolB}",
   "Min [symbolA] per [symbolB] price": "{symbolB}당 최소 {symbolA} 가격",
   "Max [symbolA] per [symbolB] price": "{symbolB}당 최대 {symbolA} 가격",
+  "Min [symbolA] per [symbolB]": "{symbolB}당 최소 {symbolA}",
+  "Max [symbolA] per [symbolB]": "{symbolB}당 최대 {symbolA}",
   "[symbol] deposit [percent]": "{symbol} 입금 ({percent}%)",
   "OUT OF RANGE": "범위 초과 연이율 0%",
   "OUT OF RANGE description": "시장 가격이 범위 내로 이동할 때까지 포지션에서 수수료가 발생하거나 거래에 사용되지 않습니다. 포지션을 조정하려면 현재 유동성을 제거하고 새로운 범위를 생성하거나, 단일 토큰을 입금하여 리밸런싱하세요.",

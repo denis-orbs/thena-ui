@@ -15,7 +15,14 @@ const PresetProfits = {
   HIGH: 'HIGH',
 }
 
-export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection, className }) {
+export function PresetRanges({
+  mintInfo,
+  isStablecoinPair,
+  activePreset,
+  handlePresetRangeSelection,
+  className,
+  isMiniItem = false,
+}) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { APRs } = useAprStore()
   const t = useTranslations()
@@ -80,17 +87,17 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
         label: (
           <div className='gap flex flex-col items-center justify-center'>
             <Paragraph className='text-primary-600 font-bold lg:text-sm'>
-              APR: {formatAmount(APRs?.[range.type])}%
+              {isMiniItem ? '' : 'APR:'} {formatAmount(APRs?.[range.type])}%
             </Paragraph>
-            <div className='flex items-center gap-4'>
-              <Paragraph className='text-xs lg:text-xs'>{t(range.title)}</Paragraph>
+            <div className={cn('flex items-center gap-4', isMiniItem && 'flex-col gap-0')}>
+              <Paragraph className={cn('text-xs lg:text-xs', isMiniItem && 'order-2')}>{t(range.title)}</Paragraph>
               {range.percent ? (
-                <div className='flex items-center gap-1'>
+                <div className={cn('flex items-center gap-1', isMiniItem && 'order-1')}>
                   <ChevronSelectorVerticalIcon className='size-4' />
                   <Paragraph className='text-xs lg:text-xs'>{range.percent}</Paragraph>
                 </div>
               ) : (
-                <InfinityIcon className='size-4' />
+                <InfinityIcon className={cn('size-4', isMiniItem && 'order-1')} />
               )}
             </div>
           </div>
@@ -101,7 +108,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
           onChangePresetRange(range)
         },
       })),
-    [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
+    [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange, isMiniItem],
   )
 
   return (
@@ -120,6 +127,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
           className={cn(
             'cursor-pointer rounded-xl bg-neutral-800 px-4 py-2 hover:bg-neutral-700',
             range.active && 'bg-neutral-700',
+            isMiniItem && 'px-2.5',
           )}
         >
           {range.label}

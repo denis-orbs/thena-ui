@@ -143,6 +143,8 @@
   "[symbolA] per [symbolB]": "{symbolA} 每 {symbolB}",
   "Min [symbolA] per [symbolB] price": "每{symbolB}的最小{symbolA}价格",
   "Max [symbolA] per [symbolB] price": "每{symbolB}的最大{symbolA}价格",
+  "Min [symbolA] per [symbolB]": "每{symbolB}的最小{symbolA}",
+  "Max [symbolA] per [symbolB]": "每{symbolB}的最大{symbolA}",
   "[symbol] deposit [percent]": "{symbol} 存入（{percent}%）",
   "OUT OF RANGE": "超出价格区间 年化收益为 0%",
   "OUT OF RANGE description": "当前市场价格未在您的设定区间内，您的头寸将不会赚取手续费，也不会被用于交易。您可以移除流动性并重新设置区间，或通过单币充值进行再平衡。",

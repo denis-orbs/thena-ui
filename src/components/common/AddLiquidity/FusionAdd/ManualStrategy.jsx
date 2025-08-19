@@ -6,45 +6,24 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import CustomTooltip from '@/components/tooltip'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, STABLE_PAIRS, UNKNOWN_LOGO } from '@/constant'
-import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
+import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
+import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
-import {
-  useActivePreset,
-  useRangeHopCallbacks,
-  useV3DerivedMintInfo,
-  useV3MintActionHandlers,
-  useV3MintState,
-} from '@/state/fusion/hooks'
-import { Presets } from '@/state/fusion/reducer'
+import { useActivePreset, useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { TransferIcon, WarningTriangleYellowIcon } from '@/svgs'
 
-import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
-import { PresetRanges } from '../components/PresetRange'
-import { RangeSelector } from '../components/RangeSelector'
 import WarningStartingPrice from '../components/WarningStartingPrice'
 
 const feeAmount = 3000
 
-function ManualStrategy({
-  firstAsset,
-  secondAsset,
-  strategy,
-  position,
-  isEarnFees,
-  setFullRangeWarningShown,
-  fullRangeWarningShown,
-  setLastPrice = () => {},
-}) {
+function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFees }) {
   const dispatch = useDispatch()
   const t = useTranslations()
   const { isReverse } = useSelector(state => state.fusion)
 
-  const stableAssets = useStableTokens()
   const { startPriceTypedValue } = useV3MintState()
   const activePreset = useActivePreset()
   const currencyA = useCurrency(firstAsset?.address)
@@ -62,8 +41,6 @@ function ManualStrategy({
   )
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
-
-  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
@@ -76,47 +53,6 @@ function ManualStrategy({
     onFieldAInput,
     onFieldBInput,
   } = useV3MintActionHandlers(mintInfo.noLiquidity)
-
-  const isStablecoinPair = useMemo(() => {
-    if (STABLE_PAIRS.includes(mintInfo.poolAddress?.toLowerCase())) return true
-    const stableCoins = stableAssets.map(token => token.address)
-    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, mintInfo.poolAddress, quoteCurrency, stableAssets])
-
-  const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
-    useRangeHopCallbacks(
-      baseCurrency ?? undefined,
-      quoteCurrency ?? undefined,
-      mintInfo.dynamicFee,
-      tickLower,
-      tickUpper,
-      mintInfo.pool,
-      mintInfo.tickSpacing,
-    )
-
-  const price = useMemo(() => {
-    if (position) return position.currentPrice
-    if (!mintInfo.price) return
-
-    return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo.invertPrice, mintInfo.price, position])
-
-  const handlePresetRangeSelection = useCallback(
-    preset => {
-      if (!price) return
-      dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
-
-      if (preset && preset.type === Presets.FULL) {
-        setFullRangeWarningShown(true)
-        getSetFullRange()
-      } else {
-        setFullRangeWarningShown(false)
-        onLeftRangeInput(preset ? String(+price * preset.min) : '')
-        onRightRangeInput(preset ? String(+price * preset.max) : '')
-      }
-    },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, setFullRangeWarningShown, price],
-  )
 
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
@@ -227,7 +163,7 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium max-md:mt-4 max-sm:mt-2 md:mt-2 md:px-5 md:py-4 xl:mt-0',
+                'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium md:px-5 md:py-4',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -262,14 +198,14 @@ function ManualStrategy({
                 </div>
               </div>
 
-              <div className='flex flex-col xl:gap-1'>
+              {/* <div className='flex flex-col xl:gap-1'>
                 <NewTextSubHeading className='text-primary-100 xl:text-5 text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
                 <Paragraph className='md:eading-5 xl:text-4 text-xs font-medium text-neutral-300 md:text-base xl:leading-5'>
                   {t('TVL')}
                 </Paragraph>
-              </div>
+              </div> */}
 
               <div className='flex flex-col justify-end xl:gap-1'>
                 <NewTextSubHeading className='xl:text-5 bg-[linear-gradient(90deg,_#B386FF_0%,_#FF86FA_100%)] bg-clip-text text-end text-xs font-bold text-transparent md:text-xl md:leading-6 xl:leading-7'>
@@ -289,7 +225,7 @@ function ManualStrategy({
         )}
       </div>
 
-      {strategy && (
+      {/* {strategy && (
         <div className={cn('flex flex-col gap-2 md:gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div>
             <div className='mt-2 flex flex-col xl:hidden'>
@@ -348,7 +284,7 @@ function ManualStrategy({
             <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
           </CustomTooltip>
         </div>
-      )}
+      )} */}
     </>
   )
 }

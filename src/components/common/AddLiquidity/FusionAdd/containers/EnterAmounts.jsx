@@ -11,7 +11,16 @@ import { useChainSettings } from '@/state/settings/hooks'
 
 import { TokenAmountCard } from './TokenAmountCard'
 
-export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB, mintInfo, position, isSmall }) {
+export function EnterAmounts({
+  currencyA,
+  currencyB,
+  setCurrencyA,
+  setCurrencyB,
+  mintInfo,
+  position,
+  isSmall,
+  className,
+}) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
@@ -85,9 +94,13 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
 
   return (
     <div
-      className={cn('grid grid-cols-1 gap-4', {
-        'xl:grid-cols-2': !depositADisabled && !depositBDisabled,
-      })}
+      className={cn(
+        'grid grid-cols-1 gap-4',
+        {
+          'xl:grid-cols-2': !depositADisabled && !depositBDisabled,
+        },
+        className,
+      )}
     >
       <TokenAmountCard
         currency={currencyA}

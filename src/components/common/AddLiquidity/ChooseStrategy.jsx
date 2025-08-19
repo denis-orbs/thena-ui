@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
@@ -25,7 +24,6 @@ import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import { fetchIchiInfo } from './FusionAdd/IchiAdd'
-import ManualStrategy from './FusionAdd/ManualStrategy'
 
 export const defaultSwapFees = {
   isDefault: false,
@@ -87,17 +85,17 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({
+export default function ChooseStrategyAuto({
   firstAsset,
   secondAsset,
   pair,
   mintInfo,
-  position,
+  // position,
   isAutomatic,
   setIsAutomatic,
-  setFullRangeWarningShown,
-  fullRangeWarningShown,
-  setLastPrice,
+  // setFullRangeWarningShown,
+  // fullRangeWarningShown,
+  // setLastPrice,
 }) {
   const t = useTranslations()
   const dispatch = useDispatch()
@@ -121,10 +119,10 @@ export default function ChooseStrategy({
     { refreshInterval: 0 },
   )
 
-  const isEarnFees = useMemo(
-    () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
-    [position, strategy?.title],
-  )
+  // const isEarnFees = useMemo(
+  //   () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
+  //   [position, strategy?.title],
+  // )
 
   useEffect(() => {
     dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
@@ -218,17 +216,17 @@ export default function ChooseStrategy({
     setIsAutomatic(strategy?.isAutomatic ?? false)
   }, [setIsAutomatic, strategy?.isAutomatic])
 
-  const toggleStrategyType = useCallback(
-    enable => {
-      const _strategy = sortedSubPools.find(item => {
-        if (enable) return !MANUAL_TYPES.includes(item.title)
-        return MANUAL_TYPES.includes(item.title)
-      })
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
-      setIsAutomatic(enable)
-    },
-    [handleChooseStrategy, setIsAutomatic, sortedSubPools],
-  )
+  // const toggleStrategyType = useCallback(
+  //   enable => {
+  //     const _strategy = sortedSubPools.find(item => {
+  //       if (enable) return !MANUAL_TYPES.includes(item.title)
+  //       return MANUAL_TYPES.includes(item.title)
+  //     })
+  //     handleChooseStrategy(_strategy ?? defaultSwapFees)
+  //     setIsAutomatic(enable)
+  //   },
+  //   [handleChooseStrategy, setIsAutomatic, sortedSubPools],
+  // )
 
   const strategyAutoData = useMemo(() => {
     const autoStrategy = sortedSubPools
@@ -285,28 +283,10 @@ export default function ChooseStrategy({
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
       <div className='flex-6'>
-        {!position && (
-          <div className='flex flex-col gap-0 xl:gap-4'>
-            <StrategyTitle
-              strategyCount={strategyAutoData.length}
-              isAutomatic={isAutomatic}
-              toggleStrategyType={toggleStrategyType}
-              pair={pair}
-              handleChooseStrategy={handleChooseStrategy}
-              firstAsset={firstAsset}
-              secondAsset={secondAsset}
-              strategy={strategy}
-            />
-
-            <div className={cn('hidden max-xl:mt-2 max-xl:block')}>
-              <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-            </div>
-          </div>
-        )}
         <div className='mt-2 max-md:mt-4 xl:mt-0'>
           {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
-          {!isAutomatic && (
+          {/* {!isAutomatic && (
             <ManualStrategy
               firstAsset={firstAsset ?? pair?.token0}
               secondAsset={secondAsset ?? pair?.token1}
@@ -317,14 +297,14 @@ export default function ChooseStrategy({
               fullRangeWarningShown={fullRangeWarningShown}
               setLastPrice={setLastPrice}
             />
-          )}
+          )} */}
         </div>
       </div>
     </div>
   )
 }
 
-function StrategyTitle({
+export function StrategyTitle({
   isAutomatic,
   strategyCount,
   toggleStrategyType,
@@ -380,22 +360,8 @@ function StrategyTitle({
 
   return (
     <article className={cn(strategyCount === 0 && !hasToggle && 'hidden')}>
-      <div
-        className={cn(
-          'flex flex-col items-start gap-0 md:flex-row md:items-center md:justify-between xl:mb-2 xl:gap-2.5',
-          !hasToggle && 'md:justify-end',
-        )}
-      >
-        <div className={cn(!hasToggle && 'hidden')}>
-          <Toggle
-            checked={!strategy?.isFarming}
-            onChange={handleChangeManualType}
-            label='Earn Fees'
-            className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
-          />
-        </div>
-
-        <div className={cn('flex items-center gap-2 max-xl:mt-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
+      <div className={cn('flex flex-col items-start gap-4 md:flex-row md:items-center')}>
+        <div className={cn('flex items-center gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
             className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
@@ -415,15 +381,23 @@ function StrategyTitle({
             <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
           </i>
         </div>
+        <div className={cn(!hasToggle && 'hidden')}>
+          <Toggle
+            checked={!strategy?.isFarming}
+            onChange={handleChangeManualType}
+            label='Earn Fees'
+            className={cn('mt-0! [&>span]:text-base', showToggle ? '' : 'hidden')}
+          />
+        </div>
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 0, height: 0 }}
         animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className='overflow-hidden'
+        className='h-full overflow-hidden'
       >
-        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4 pt-5 xl:mt-0 xl:mb-4')}>
+        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4 pt-5')}>
           <Paragraph className='mb-4 block text-base'>
             {t('Depending on the Assets you chose, you will get different Strategies to chose on')}
           </Paragraph>
