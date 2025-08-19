@@ -13,9 +13,12 @@ import { useAlgebraClaim } from '@/hooks/fusion/useAlgebra'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 
 export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mutate, fee, outOfRange }) {
-  const { tokenId, isFarming, key } = pool
+  const { tokenId, isFarming, key } = pool || {}
   const { pending, onAlgebraClaim } = useAlgebraClaim(pool?.version ?? 3)
   const t = useTranslations()
+  if (!pool) {
+    return null
+  }
   return (
     <Modal
       isOpen={popup}
