@@ -9,7 +9,6 @@ import DoubleInput from '@/components/input/DoubleInput'
 import { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { useDefiedgeRemove } from '@/hooks/fusion/useDefiedge'
 import { useGammaRemove } from '@/hooks/fusion/useGamma'
 import { useIchiRemove } from '@/hooks/fusion/useIchi'
 import { useV1Remove } from '@/hooks/useV1Liquidity'
@@ -27,7 +26,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
   const { onV1Remove, pending: v1Pending } = useV1Remove()
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
-  const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
+  // const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
   const t = useTranslations()
 
   const version = useMemo(() => strategy?.account?.version ?? 3, [strategy])
@@ -68,7 +67,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
       return
     }
     if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
-      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
+      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, isStaked, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
       onGammaRemove({
         pool: strategy,
@@ -87,9 +86,10 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
         callback,
         hasRewards: !!strategy.rewardUsd,
       })
-    } else if (strategy.title === 'DefiEdge') {
-      onDefiedgeRemove(strategy, amount, callback)
     }
+    // else if (strategy.title === 'DefiEdge') {
+    //   onDefiedgeRemove(strategy, amount, callback)
+    // }
   }, [
     errorMsg,
     strategy,
@@ -104,7 +104,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
     version,
     isStaked,
     onIchiRemove,
-    onDefiedgeRemove,
+    // onDefiedgeRemove,
   ])
 
   return (
@@ -154,7 +154,7 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
         </TextButton>
         <PrimaryButton
           className='w-full'
-          disabled={v1Pending || gammaPending || ichiPending || defiedgePending}
+          disabled={v1Pending || gammaPending || ichiPending /* || defiedgePending */}
           onClick={() => {
             onRemoveLiquidity()
           }}

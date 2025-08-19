@@ -88,6 +88,9 @@ function PositionInfo({ position }) {
   const ButtonsDisplay = useMemo(
     () => (
       <div className='flex w-full gap-2'>
+        <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
+          {t('Remove')}
+        </EmphasisButton>
         {position.staked && (
           <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
             {t('Withdraw')}
@@ -362,7 +365,12 @@ function PositionInfo({ position }) {
         onGaugeManage={position.staked ? handleUnstake : handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+      <RemovePositionModal
+        isStaked={position.staked}
+        popup={removePopup}
+        setPopup={setRemovePopup}
+        strategy={position}
+      />
     </article>
   )
 }

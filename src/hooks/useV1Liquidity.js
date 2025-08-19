@@ -387,22 +387,59 @@ export const useV1Remove = () => {
   const t = useTranslations()
 
   const onV1Remove = useCallback(
-    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, slippage, callback) => {
+    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, slippage, isStaked, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const removeuuid = uuidv4()
       const claimuuid = uuidv4()
+      const unstakeuuid = uuidv4()
       const routerAddress = Contracts.solidlyRouter[chainId]
       const lpContract = getERC20Contract(pair.address, chainId)
       const allowance = await readCall(lpContract, 'allowance', [account, routerAddress], chainId)
       const isApproved = fromWei(allowance).gte(withdrawAmount)
-      const shouldClaim =
+      let shouldClaim =
         (pair.account.token0claimable.gt(0) || pair.account.token1claimable.gt(0)) &&
         pair.account.walletBalance.eq(withdrawAmount)
+
+      console.log(isStaked)
+      if (isStaked) {
+        shouldClaim = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(withdrawAmount)
+      }
+
+      // for staked positions, we need to check if the user has rewards to claim
+      // const shouldHarvest = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(amount)
+
+      //       setPending(true)
+
+      //       startTxn({
+      //         key,
+      //         title: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
+      //         transactions: {
+      //           [unstakeuuid]: {
+      //             desc: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
+      //             status: TXN_STATUS.START,
+      //             hash: null,
+      //           },
+      //         },
+      //       })
+      //       const gaugeContract = getGaugeContract(pair.gauge.address, chainId)
+      //       const params = shouldHarvest ? [] : [toWei(amount, pair.decimals).toFixed(0)]
+      //       const func = shouldHarvest ? 'withdrawAllAndHarvest' : 'withdraw'
+      //       if (!(await writeTxn(key, unstakeuuid, gaugeContract, func, params))) {
+      //         setPending(false)
+      //         return
+      //       }
       startTxn({
         key,
         title: shouldClaim ? 'Remove and Claim' : t('Remove Liquidity'),
         transactions: {
+          ...(isStaked && {
+            [unstakeuuid]: {
+              desc: shouldClaim ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           ...(!isApproved && {
             [approveuuid]: {
               desc: `${t('Approve')} LP`,
@@ -415,17 +452,30 @@ export const useV1Remove = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
-          ...(shouldClaim && {
-            [claimuuid]: {
-              desc: t('Claim Fees'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
+          ...(shouldClaim &&
+            !isStaked && {
+              [claimuuid]: {
+                desc: t('Claim Fees'),
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
         },
       })
 
       setPending(true)
+      if (isStaked) {
+        const gaugeContract = getGaugeContract(pair.gauge.address, chainId)
+        const params = shouldClaim ? [] : [toWei(withdrawAmount, pair.decimals).toFixed(0)]
+        const func = shouldClaim ? 'withdrawAllAndHarvest' : 'withdraw'
+        if (!(await writeTxn(key, unstakeuuid, gaugeContract, func, params))) {
+          setPending(false)
+          return
+        }
+        // await writeTxn(key, unstakeuuid, pair.gauge, 'withdrawAllAndHarvest', [])
+        // setPending(false)
+        // return
+      }
       if (!isApproved) {
         if (!(await writeTxn(key, approveuuid, lpContract, 'approve', [routerAddress, maxUint256]))) {
           setPending(false)

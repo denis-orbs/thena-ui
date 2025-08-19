@@ -183,14 +183,20 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
   const ButtonsDisplay = useMemo(
     () => (
       <div className={cn('grid grid-cols-3 gap-2', position?.staked && 'grid-cols-2')}>
-        {!position?.staked && (
+        {/* {!position?.staked && (
           <EmphasisButton
             className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
             onClick={() => setRemovePopup(true)}
           >
             {t('Remove')}
           </EmphasisButton>
-        )}
+        )} */}
+        <EmphasisButton
+          className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
+          onClick={() => setRemovePopup(true)}
+        >
+          {t('Remove')}
+        </EmphasisButton>
         <EmphasisButton
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}
@@ -287,7 +293,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     <>
       <article
         className={cn(
-          'max-lg:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
+          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
         )}
       >
         <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
@@ -356,7 +362,12 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         />
       )}
       {position && (
-        <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+        <RemovePositionModal
+          isStaked={position.staked}
+          popup={removePopup}
+          setPopup={setRemovePopup}
+          strategy={position}
+        />
       )}
     </>
   )
