@@ -126,7 +126,7 @@ export default function IchiAdd({
 
   return (
     <>
-      <div className={cn('inline-flex w-full flex-col gap-4', isModal && 'p-3 lg:px-6')}>
+      <div className={cn('inline-flex w-full flex-col gap-2', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
         <div className='flex w-full flex-col items-end justify-end gap-2'>
@@ -173,7 +173,7 @@ export default function IchiAdd({
         />
       </div>
 
-      <div className={cn('mt-4 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
+      <div className={cn('flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
         <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

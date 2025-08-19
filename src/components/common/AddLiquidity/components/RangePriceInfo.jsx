@@ -25,7 +25,7 @@ function RangePriceInfo({ baseCurrency, quoteCurrency, position }) {
           })}
         </Paragraph>
         <div className={cn('flex flex-col rounded-xl bg-neutral-700 px-4 py-3')}>
-          <TextHeading className='text-base! leading-5! text-neutral-400'>
+          <TextHeading className='text-base! leading-5! font-normal text-neutral-500'>
             {isFullRange ? '0' : position.minPrice}
           </TextHeading>
         </div>
@@ -41,7 +41,7 @@ function RangePriceInfo({ baseCurrency, quoteCurrency, position }) {
           })}
         </Paragraph>
         <div className={cn('flex flex-col rounded-xl bg-neutral-700 px-4 py-3')}>
-          <TextHeading className='text-base! leading-5! text-neutral-400'>
+          <TextHeading className='text-base! leading-5! font-normal text-neutral-500'>
             {isFullRange ? '∞' : position.maxPrice}
           </TextHeading>
         </div>

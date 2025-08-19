@@ -28,6 +28,8 @@ function RangePart({
   disabled,
   title,
   description,
+  inputId,
+  nextInputId,
 }) {
   const [localTokenValue, setLocalTokenValue] = useState('')
   const t = useTranslations()
@@ -51,11 +53,18 @@ function RangePart({
     dispatch(updateSelectedPreset({ preset: null }))
   }, [onUserInput, localTokenValue, dispatch])
 
-  const handleKeyDown = useCallback(e => {
-    if (e.key === 'Enter') {
-      e.target.blur()
-    }
-  }, [])
+  const handleKeyDown = useCallback(
+    e => {
+      if (e.key === 'Enter') {
+        e.target.blur()
+      }
+      if (nextInputId && e.key === 'Tab') {
+        e.preventDefault()
+        document.getElementById(nextInputId)?.focus()
+      }
+    },
+    [nextInputId],
+  )
 
   // for button clicks
   const handleDecrement = useCallback(() => {
@@ -106,6 +115,7 @@ function RangePart({
           min={0}
           disabled={disabled || locked}
           onFocus={e => e.target.select()}
+          id={inputId}
         />
         <Paragraph className='min-w-0 truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>
           {description}
@@ -205,6 +215,8 @@ export function RangeSelector({
           disabled={disabled}
           title='Min'
           description={brushLabelValue('w', leftPrice?.toSignificant(5))}
+          inputId='min-price'
+          nextInputId='max-price'
         />
       </div>
       <button
@@ -232,6 +244,8 @@ export function RangeSelector({
           disabled={disabled}
           title='Max'
           description={brushLabelValue('e', rightPrice?.toSignificant(5))}
+          inputId='max-price'
+          nextInputId='min-price'
         />
       </div>
     </div>

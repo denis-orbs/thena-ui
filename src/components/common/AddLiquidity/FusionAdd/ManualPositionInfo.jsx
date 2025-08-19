@@ -73,7 +73,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     )
 
     return (
-      <div className='flex w-full gap-3'>
+      <div className='flex w-full gap-2'>
         <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
         </EmphasisButton>
@@ -116,7 +116,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     <>
       <article
         className={cn(
-          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
+          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 px-4 py-4 font-medium lg:px-6',
         )}
       >
         <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>

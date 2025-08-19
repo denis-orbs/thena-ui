@@ -150,21 +150,25 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
             logo2={secondAsset?.logoURI}
           />
         ) : (
-          <CircleImage className='size-5 md:size-8' src='https://cdn.thena.fi/assets/THE.png' alt='THENA First Logo' />
+          <CircleImage
+            className='size-5 border-[2.5px] border-[#1C2027] md:size-8'
+            src='https://cdn.thena.fi/assets/THE.png'
+            alt='THENA First Logo'
+          />
         )}
 
         <div className='flex flex-col gap-1'>
-          <NewTextSubHeading className='text-primary-100 xl:text-5 text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
+          <NewTextSubHeading className='text-xs font-medium text-neutral-50 md:text-xl md:leading-6 xl:leading-7'>
             {isEarnFees ? 'Fees' : '$THE'}
           </NewTextSubHeading>
-          <Paragraph className='xl:text-4 text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
+          <Paragraph className='text-xs font-normal text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
             {t('Earn')}
           </Paragraph>
         </div>
       </div>
 
       <div className='flex flex-col justify-end xl:gap-1'>
-        <NewTextSubHeading className='xl:text-5 text-primary-600 text-end text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
+        <NewTextSubHeading className='text-primary-600 text-end text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
           {formatAmount(
             APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
               ? strategy?.apr
@@ -172,7 +176,7 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
           )}
           %
         </NewTextSubHeading>
-        <Paragraph className='xl:text-4 text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
+        <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
           {t(isEarnFees ? 'Historical Weekly APR' : 'Estimated APR')}
         </Paragraph>
       </div>

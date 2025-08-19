@@ -388,7 +388,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                   />
                 )}
                 {position && (
-                  <div className='flex flex-col gap-6'>
+                  <div className='flex flex-col justify-end gap-4'>
                     <TextHeading className='font-archia text-xl! leading-6! font-semibold'>
                       {`${getDisplayedStrategy(position.title)} Strategy`}
                     </TextHeading>

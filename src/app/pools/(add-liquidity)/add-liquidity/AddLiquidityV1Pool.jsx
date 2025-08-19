@@ -85,7 +85,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                 logo1={(pair ? pair?.token0?.logoURI : firstAsset?.logoURI) ?? UNKNOWN_LOGO}
                 logo2={(pair ? pair?.token1?.logoURI : secondAsset?.logoURI) ?? UNKNOWN_LOGO}
               />
-              <NewTextHeading>
+              <NewTextHeading className='text-xl! leading-6! text-neutral-50 lg:text-[36px]! lg:leading-[40px]!'>
                 {`${
                   (pair ? pair?.token0?.symbol : firstAsset?.symbol) === 'WBNB'
                     ? 'BNB'
@@ -149,10 +149,12 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                   <PairBasicInfo
                     pair={pair}
                     etApr={!isManage}
+                    useSolidBg
                     classNames={{
-                      title: 'xl:text-xl! text-xl! xl:leading-6! leading-6!',
-                      subtitle: 'text-sm!',
+                      title: 'xl:text-xl! text-xl! xl:leading-6! leading-6! font-archia font-semibold',
+                      subtitle: 'text-sm! text-neutral-300 xl:text-base!',
                       container: 'gap-1',
+                      box: 'bg-neutral-900! ',
                     }}
                   />
                 </div>

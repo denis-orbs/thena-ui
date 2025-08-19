@@ -106,7 +106,7 @@ export function RangeAndPricePanel({
   )
 
   return (
-    <div className='grid grid-cols-1 gap-4 bg-transparent max-xl:border-none xl:grid-cols-[1fr_368px] xl:gap-8 xl:rounded-xl xl:border xl:border-neutral-600 xl:bg-neutral-900 xl:p-4 xl:pb-1.5'>
+    <div className='grid grid-cols-1 gap-4 bg-transparent max-xl:border-none xl:grid-cols-[1fr_368px] xl:gap-8 xl:rounded-xl xl:border xl:border-neutral-600 xl:bg-neutral-900 xl:p-4'>
       {/* Main Chart Section */}
       <div className='order-2 flex h-auto flex-col gap-4 xl:order-1'>
         {viewMode && (
@@ -146,7 +146,7 @@ export function RangeAndPricePanel({
               title: 'xl:text-5 xl:leading-6',
               chart: 'h-full!',
               handleArea: 'max-xl:bg-chart-gradient!',
-              bottomAxis: 'max-xl:border-none!',
+              bottomAxis: 'max-xl:border-none! xl:max-h-11 xl:h-11',
             }}
             interactive={!viewMode || !position}
             height={isLgDown ? 279 : chartHeight}

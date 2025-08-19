@@ -10,19 +10,23 @@ export function PoolReserveSection({ pool, className, showMyInfo = true }) {
   return (
     <div className={cn('flex flex-col gap-4 rounded-md bg-neutral-900 p-4', className)}>
       <div className='flex flex-col gap-2 lg:gap-4'>
-        <NewTextSubHeading className='text-xl!'>{t('Reserve Info')}</NewTextSubHeading>
+        <NewTextSubHeading className='text-[18px]! leading-7! text-neutral-50'>{t('Reserve Info')}</NewTextSubHeading>
         <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>
+            <Paragraph className='text-base font-normal text-neutral-300'>
               {unwrappedSymbol(pool.token0)} {t('Amount')}
             </Paragraph>
-            <Paragraph>{formatAmount(pool.token0.reserve)}</Paragraph>
+            <Paragraph className='text-base font-normal text-neutral-300'>
+              {formatAmount(pool.token0.reserve)}
+            </Paragraph>
           </div>
           <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>
+            <Paragraph className='text-base font-normal text-neutral-300'>
               {unwrappedSymbol(pool.token1)} {t('Amount')}
             </Paragraph>
-            <Paragraph>{formatAmount(pool.token1.reserve)}</Paragraph>
+            <Paragraph className='text-base font-normal text-neutral-300'>
+              {formatAmount(pool.token1.reserve)}
+            </Paragraph>
           </div>
         </div>
       </div>

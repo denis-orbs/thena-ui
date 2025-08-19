@@ -8,7 +8,7 @@ import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 
-export function PairBasicInfo({ pair, className, classNames, etApr = true }) {
+export function PairBasicInfo({ pair, className, classNames, etApr = true, useSolidBg = false }) {
   const t = useTranslations()
   const { isMdDown } = useMediaQuery()
   // const [isExpanded, setIsExpanded] = useState(false)
@@ -20,11 +20,16 @@ export function PairBasicInfo({ pair, className, classNames, etApr = true }) {
         className={cn(
           'w-full items-center justify-between gap-x-4 border border-neutral-600 bg-transparent p-4! max-md:hidden md:flex',
           !isMdDown && 'gap-y-4',
+          classNames?.box,
         )}
-        style={{
-          background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
+        style={
+          useSolidBg
+            ? {}
+            : {
+                background: `linear-gradient(87.54deg, #0D090F 19.75%, #422D4C 240.97%),
                  linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
-        }}
+              }
+        }
       >
         {etApr && (
           <div className={cn('flex flex-col gap-2 md:gap-1', classNames?.container)}>

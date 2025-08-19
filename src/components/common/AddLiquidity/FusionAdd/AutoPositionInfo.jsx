@@ -188,6 +188,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
+          className={cn('!h-8 flex-1 md:!h-11 md:!text-base')}
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}
         >
@@ -282,7 +283,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     <>
       <article
         className={cn(
-          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
+          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 px-4 py-4 font-medium lg:px-6',
         )}
       >
         <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
