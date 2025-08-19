@@ -63,23 +63,22 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
-  const ButtonsDisplay = useMemo(
-    () => (
+  const ButtonsDisplay = useMemo(() => {
+    const isLimbo = !(
+      _position?.isFarming ||
+      !incentiveAddress ||
+      incentiveAddress === zeroAddress ||
+      _position?.deployer !== zeroAddress ||
+      Number(liquidity) <= 0
+    )
+
+    return (
       <div className='flex w-full gap-3'>
         <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
         </EmphasisButton>
-        <EmphasisButton className='max-lg:flex-1' onClick={() => setClaimPopup(true)}>
-          {t('Claim')}
-        </EmphasisButton>
         {/* earn $THE just display if position is Farming and not earning */}
-        {!(
-          _position?.isFarming ||
-          !incentiveAddress ||
-          incentiveAddress === zeroAddress ||
-          _position?.deployer !== zeroAddress ||
-          Number(liquidity) <= 0
-        ) && (
+        {isLimbo ? (
           <EmphasisButton
             className='max-lg:flex-1'
             disabled={isEnterFarmLoading}
@@ -93,22 +92,25 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           >
             {t('Earn $THE')}
           </EmphasisButton>
+        ) : (
+          <EmphasisButton className='max-lg:flex-1' onClick={() => setClaimPopup(true)}>
+            {t('Claim')}
+          </EmphasisButton>
         )}
       </div>
-    ),
-    [
-      t,
-      _position?.isFarming,
-      _position?.deployer,
-      incentiveAddress,
-      liquidity,
-      isEnterFarmLoading,
-      onEnterFarming,
-      position.tokenId,
-      farmingPos,
-      mutateManual,
-    ],
-  )
+    )
+  }, [
+    t,
+    _position?.isFarming,
+    _position?.deployer,
+    incentiveAddress,
+    liquidity,
+    isEnterFarmLoading,
+    onEnterFarming,
+    position.tokenId,
+    farmingPos,
+    mutateManual,
+  ])
 
   return (
     <>

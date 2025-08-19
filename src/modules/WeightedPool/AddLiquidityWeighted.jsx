@@ -19,7 +19,6 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Selection from '@/components/selection'
-import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
@@ -286,66 +285,60 @@ function AddLiquidityWeighted({ pool }) {
     [onClaimFees, position],
   )
 
-  const ButtonsDisplay = useMemo(
-    () =>
-      position ? (
-        <div className='grid w-full grid-cols-3 justify-center gap-2'>
-          {position?.isStake ? (
-            <>
-              <EmphasisButton onClick={() => setIsOpenRemove(true)}>{t('Remove')}</EmphasisButton>
-              <EmphasisButton disabled={unstakePending} className='flex-1' onClick={() => setPopupStake(true)}>
-                {t('Unstake')}
-              </EmphasisButton>
+  const ButtonsDisplay = useMemo(() => {
+    if (!position) return null
 
-              <EmphasisButton
-                className='flex-1'
-                disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
-                onClick={() => onGaugeHarvest(position)}
-              >
-                {t('Claim')}
-              </EmphasisButton>
-            </>
-          ) : (
-            <>
-              <EmphasisButton onClick={() => setIsOpenRemove(true)}>{t('Remove')}</EmphasisButton>
-              <EmphasisButton
-                disabled={pendingClaimFees || isInvalidAmount(claimableFee?.total)}
-                onClick={onClaim}
-                className='h-11 flex-1'
-              >
-                {t('Claim')}
-              </EmphasisButton>
+    return (
+      <div className='grid w-full grid-cols-3 justify-center gap-2'>
+        <EmphasisButton onClick={() => setIsOpenRemove(true)}>{t('Withdraw')}</EmphasisButton>
+        {position.isStake ? (
+          <>
+            <EmphasisButton
+              className='flex-1'
+              disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
+              onClick={() => onGaugeHarvest(position)}
+            >
+              {t('Claim')}
+            </EmphasisButton>
+            <EmphasisButton disabled={unstakePending} className='flex-1' onClick={() => setPopupStake(true)}>
+              {t('Unstake')}
+            </EmphasisButton>
+          </>
+        ) : (
+          <>
+            <EmphasisButton
+              disabled={pendingClaimFees || isInvalidAmount(claimableFee?.total)}
+              onClick={onClaim}
+              className='h-11 flex-1'
+            >
+              {t('Claim')}
+            </EmphasisButton>
 
+            {position.gauge?.address !== zeroAddress && (
               <PrimaryButton
-                disabled={stakePending || position?.gauge?.address === zeroAddress}
+                disabled={stakePending}
                 className='h-11 flex-1'
                 onClick={() => setPopupStake(true)}
                 data-tooltip-id={`stake-position-${position?.address}`}
               >
                 {t('Stake')}
               </PrimaryButton>
-
-              {position.gauge.address === zeroAddress && (
-                <CustomTooltip id={`stake-position-${position?.address}`} className='max-w-[500px]'>
-                  {t('This pool has no Gauge')}
-                </CustomTooltip>
-              )}
-            </>
-          )}
-        </div>
-      ) : null,
-    [
-      claimableFee?.total,
-      onClaim,
-      onGaugeHarvest,
-      pendingClaimFees,
-      pendingHarvest,
-      position,
-      stakePending,
-      unstakePending,
-      t,
-    ],
-  )
+            )}
+          </>
+        )}
+      </div>
+    )
+  }, [
+    claimableFee?.total,
+    onClaim,
+    onGaugeHarvest,
+    pendingClaimFees,
+    pendingHarvest,
+    position,
+    stakePending,
+    unstakePending,
+    t,
+  ])
 
   return (
     <div className='flex flex-col gap-4 xl:gap-8'>

@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
-import { isAddress } from 'viem'
+import { isAddress, zeroAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
@@ -85,17 +85,13 @@ function PositionInfo({ position }) {
     onClaimFees(position)
   }, [onClaimFees, position])
 
-  const ButtonsDisplay = useMemo(
-    () => (
+  const ButtonsDisplay = useMemo(() => {
+    const hasGauge = position.gauge?.address !== zeroAddress
+    return (
       <div className='flex w-full gap-2'>
         <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
-          {t('Remove')}
+          {t('Withdraw')}
         </EmphasisButton>
-        {position.staked && (
-          <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
-            {t('Withdraw')}
-          </EmphasisButton>
-        )}
         <EmphasisButton
           disabled={claimPending || harvestPending || feesPending}
           className='max-lg:flex-1'
@@ -103,32 +99,37 @@ function PositionInfo({ position }) {
         >
           {t('Claim')}
         </EmphasisButton>
-        {!position.staked && (
-          <EmphasisButton
+        {position.staked && (
+          <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
+            {t('Unstake')}
+          </EmphasisButton>
+        )}
+        {hasGauge && !position.staked && (
+          <PrimaryButton
             disabled={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
             className='max-lg:flex-1'
             onClick={() => setStakePopup(true)}
           >
             {t('Stake')}
-          </EmphasisButton>
+          </PrimaryButton>
         )}
       </div>
-    ),
-    [
-      claimPending,
-      feesPending,
-      handleClaimUnstaked,
-      handleHarvestStaked,
-      harvestPending,
-      position.staked,
-      stakeGammaPending,
-      stakeIchiPending,
-      stakePending,
-      stakeV1Pending,
-      t,
-      unstakePending,
-    ],
-  )
+    )
+  }, [
+    claimPending,
+    feesPending,
+    handleClaimUnstaked,
+    handleHarvestStaked,
+    harvestPending,
+    position.staked,
+    position.gauge?.address,
+    stakeGammaPending,
+    stakeIchiPending,
+    stakePending,
+    stakeV1Pending,
+    t,
+    unstakePending,
+  ])
 
   const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
 

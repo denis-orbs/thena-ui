@@ -421,9 +421,9 @@ export default function HeaderCLSection({
           ) : (
             // <ManualPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} type={type} />
             <>
-              {position ? (
+              {position && (
                 <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
-              ) : null}
+              )}
             </>
           )}
         </div>
