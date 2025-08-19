@@ -337,7 +337,7 @@ export default function HeaderCLSection({
             logo2={secondAsset?.logoURI}
           />
           <div className='flex flex-col gap-2'>
-            <NewTextHeading className='text-xl! leading-6! text-neutral-300 lg:text-[36px]! lg:leading-[40px]!'>
+            <NewTextHeading className='text-xl! leading-6! text-neutral-50 lg:text-[36px]! lg:leading-[40px]!'>
               {position ? t('Manage Liquidity') : t('Add Liquidity')}
             </NewTextHeading>
             <TextHeading className='text-xs font-medium lg:hidden lg:text-2xl'>

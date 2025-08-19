@@ -17,7 +17,8 @@ import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 
-function PositionInfo({ position, isStaked }) {
+// for classic, stable
+function PositionInfo({ position }) {
   const t = useTranslations()
   const [removePopup, setRemovePopup] = useState(false)
   const [stakePopup, setStakePopup] = useState(false)
@@ -87,9 +88,9 @@ function PositionInfo({ position, isStaked }) {
   const ButtonsDisplay = useMemo(
     () => (
       <div className='flex w-full gap-2'>
-        {!isStaked && (
-          <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
-            {t('Remove')}
+        {position.staked && (
+          <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
+            {t('Withdraw')}
           </EmphasisButton>
         )}
         <EmphasisButton
@@ -99,11 +100,7 @@ function PositionInfo({ position, isStaked }) {
         >
           {t('Claim')}
         </EmphasisButton>
-        {position.staked ? (
-          <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
-            {t('Unstake')}
-          </EmphasisButton>
-        ) : (
+        {!position.staked && (
           <EmphasisButton
             disabled={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
             className='max-lg:flex-1'
@@ -120,7 +117,6 @@ function PositionInfo({ position, isStaked }) {
       handleClaimUnstaked,
       handleHarvestStaked,
       harvestPending,
-      isStaked,
       position.staked,
       stakeGammaPending,
       stakeIchiPending,
@@ -194,12 +190,46 @@ function PositionInfo({ position, isStaked }) {
     if (!position.staked) return null
     return (
       <>
-        {position.account.gaugeEarned && <p>{`${formatAmount(position.account.gaugeEarned)} THE`}</p>}
-
-        {position.account.earned0 && <p>{`${formatAmount(position.account.earned0)} ${position.token0.symbol}`}</p>}
-        {position.account.earned1 && <p>{`${formatAmount(position.account.earned1)} ${position.token1.symbol}`}</p>}
-        {position.account.earned2 && <p>{`${formatAmount(position.account.earned2)} ${position.reward.symbol}`}</p>}
-        {position.account.earned3 && <p>{`${formatAmount(position.account.earned3)} ${position.reward.symbol}`}</p>}
+        {position?.account?.gaugeEarned && (
+          <div className='flex flex-row items-center gap-2'>
+            <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='base token' />
+            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+              {formatAmount(position?.account?.gaugeEarned)}
+            </Paragraph>
+          </div>
+        )}
+        {position?.account?.earned0 && (
+          <div className='flex flex-row items-center gap-2'>
+            <CircleImage className='size-5' src={position?.token0?.logoURI || UNKNOWN_LOGO} alt='reward token' />
+            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+              {formatAmount(position?.account?.earned0)}
+            </Paragraph>
+          </div>
+        )}
+        {position?.account?.earned1 && (
+          <div className='flex flex-row items-center gap-2'>
+            <CircleImage className='size-5' src={position?.token1?.logoURI || UNKNOWN_LOGO} alt='reward token' />
+            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+              {formatAmount(position?.account?.earned1)}
+            </Paragraph>
+          </div>
+        )}
+        {position?.account?.earned2 && (
+          <div className='flex flex-row items-center gap-2'>
+            <CircleImage className='size-5' src={position?.reward?.logoURI || UNKNOWN_LOGO} alt='reward token' />
+            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+              {formatAmount(position?.account?.earned2)}
+            </Paragraph>
+          </div>
+        )}
+        {position?.account?.earned3 && (
+          <div className='flex flex-row items-center gap-2'>
+            <CircleImage className='size-5' src={position?.reward2?.logoURI || UNKNOWN_LOGO} alt='reward token' />
+            <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+              {formatAmount(position?.account?.earned3)}
+            </Paragraph>
+          </div>
+        )}
       </>
     )
   }, [
@@ -209,9 +239,10 @@ function PositionInfo({ position, isStaked }) {
     position?.account?.earned1,
     position?.account?.earned2,
     position?.account?.earned3,
-    position?.token0?.symbol,
-    position?.token1?.symbol,
-    position?.reward?.symbol,
+    position?.token0?.logoURI,
+    position?.token1?.logoURI,
+    position?.reward?.logoURI,
+    position?.reward2?.logoURI,
   ])
 
   const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title), [position.title])
@@ -223,7 +254,7 @@ function PositionInfo({ position, isStaked }) {
       enable: isV1Pool && isAddress(position.address),
     },
   })
-  const rewardsUnstaked = useMemo(() => {
+  const rewardsNotstaked = useMemo(() => {
     if (position.staked) return null
     const _reward0 = isV1Pool
       ? fromWei(fees?.result?.[0] ?? 0n, position.token0.decimals)
@@ -263,7 +294,7 @@ function PositionInfo({ position, isStaked }) {
   return (
     <article
       className={cn(
-        'max-lg:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
+        'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
       )}
     >
       <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
@@ -311,7 +342,7 @@ function PositionInfo({ position, isStaked }) {
           </Paragraph>
         </div>
         <div className='flex h-12 flex-1 flex-col gap-1 lg:justify-start'>
-          <div className='leading-7'>{rewardsStaked ?? rewardsUnstaked}</div>
+          <div className='leading-7'>{rewardsStaked ?? rewardsNotstaked}</div>
           <Paragraph className='text-sm! font-medium text-neutral-500'>{t('Rewards')}</Paragraph>
         </div>
         <div className='flex h-12 flex-1 flex-col gap-1 max-lg:hidden'>

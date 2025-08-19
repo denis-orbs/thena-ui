@@ -144,7 +144,7 @@ export function Chart({
             />
           )}
           <EmphasisButton
-            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-300!'
+            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-400!'
             onClick={() => {
               setZoom(null)
             }}

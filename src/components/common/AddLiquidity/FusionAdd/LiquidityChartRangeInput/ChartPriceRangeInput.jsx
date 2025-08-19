@@ -385,7 +385,7 @@ export default function ChartPriceRangeInput({
     <div className='flex flex-col'>
       <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
         {showLabel && (
-          <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
+          <NewTextHeading className={cn('hidden text-base md:text-xl! md:leading-6! lg:block', classNames?.title)}>
             {t(label ?? 'Your Range against the Price')}
           </NewTextHeading>
         )}
@@ -432,7 +432,7 @@ export default function ChartPriceRangeInput({
             />
           </div>
           <EmphasisButton
-            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-300!'
+            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-400!'
             onClick={() => {
               setZoomFactor(1)
               setRange(2)

@@ -6,7 +6,6 @@ import { zeroAddress } from 'viem'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
-import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
@@ -15,10 +14,9 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
-import { InfoIcon } from '@/svgs'
 
 export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, type }) {
   const t = useTranslations()
@@ -50,7 +48,6 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     if (!fusion && prevFusion && prevFusionState) {
       return [prevFusionState, prevFusion]
     }
-
     return [fusionState, fusion]
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
@@ -70,7 +67,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     () => (
       <div className='flex w-full gap-3'>
         <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
-          {t('Remove')}
+          {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton className='max-lg:flex-1' onClick={() => setClaimPopup(true)}>
           {t('Claim')}
@@ -117,7 +114,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     <>
       <article
         className={cn(
-          'max-lg:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
+          'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
         )}
       >
         <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
@@ -171,33 +168,44 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           </div>
           <div className='flex h-12 flex-1 flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
-                ${formatAmount(position.rewardUsd)}
-              </Paragraph>
               {position.rewardUsd > 0 &&
                 (type === 'CL_Farming' ? (
                   <>
-                    <InfoIcon className='h-4 w-4 stroke-neutral-400 max-xl:hidden' data-tooltip-id='net-reward' />
-                    <CustomTooltip id='net-reward'>
-                      <p>{`${formatAmount(reward0?.amount?.toSignificant())} THE`}</p>
-                      <p>{`${formatAmount(reward1?.amount?.toSignificant())} WBNB`}</p>
-                    </CustomTooltip>
+                    <div className='flex flex-nowrap items-center gap-2'>
+                      <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='reward THE' />
+                      <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                        {formatAmount(reward0?.amount?.toSignificant())}
+                      </Paragraph>
+                    </div>
+                    <div className='flex flex-nowrap items-center gap-2'>
+                      <CircleImage className='size-5' src='https://cdn.thena.fi/assets/WBNB.png' alt='reward BNB' />
+                      <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                        {formatAmount(reward1?.amount?.toSignificant())}
+                      </Paragraph>
+                    </div>
                   </>
                 ) : (
                   <>
-                    <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='net-reward' />
-                    <CustomTooltip id='net-reward'>
-                      <p>
-                        {`${formatAmount(reward0?.amount?.toSignificant())} ${unwrappedSymbol(
-                          position?.rewards[0]?.token,
-                        )}`}
-                      </p>
-                      <p>
-                        {`${formatAmount(reward1?.amount?.toSignificant())} ${unwrappedSymbol(
-                          position?.rewards[1]?.token,
-                        )}`}
-                      </p>
-                    </CustomTooltip>
+                    <div className='flex flex-nowrap items-center gap-2'>
+                      <CircleImage
+                        className='size-5'
+                        src={position?.rewards[0]?.token?.logoURI || UNKNOWN_LOGO}
+                        alt='reward 0'
+                      />
+                      <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                        {formatAmount(fromWei(reward0))}
+                      </Paragraph>
+                    </div>
+                    <div className='flex flex-nowrap items-center gap-2'>
+                      <CircleImage
+                        className='size-5'
+                        src={position?.rewards[1]?.token?.logoURI || UNKNOWN_LOGO}
+                        alt='reward 1'
+                      />
+                      <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                        {formatAmount(fromWei(reward1))}
+                      </Paragraph>
+                    </div>
                   </>
                 ))}
             </div>

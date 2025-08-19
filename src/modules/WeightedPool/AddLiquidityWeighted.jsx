@@ -416,7 +416,7 @@ function AddLiquidityWeighted({ pool }) {
           <div className='flex flex-col'>
             <article
               className={cn(
-                'max-xl:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium xl:px-6',
+                'bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium xl:px-6',
               )}
             >
               <div className='flex w-full flex-col justify-between max-xl:gap-2 xl:flex-row xl:items-center'>
