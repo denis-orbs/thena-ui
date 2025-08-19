@@ -1,3 +1,5 @@
+import { scaleTime } from 'd3'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
@@ -5,6 +7,7 @@ import { batch, useDispatch, useSelector } from 'react-redux'
 import { Warning } from '@/components/alert'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import CheckBox from '@/components/checkbox'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, TextHeading } from '@/components/typography'
@@ -19,6 +22,7 @@ import { Presets } from '@/state/fusion/reducer'
 import { ResetIcon, ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
+import { AxisBottomTime } from './AxisBottomTime'
 import ChartPrice from './ChartPrice'
 import { useDensityChartData } from './hooks'
 
@@ -38,20 +42,6 @@ const desktopSizes = {
   chartHeight: CHART_HEIGHT,
   bottomAxisHeight: BOTTOM_AXIS_HEIGHT,
   loadedPriceChartWidth,
-}
-
-export const DEFAULT_LOCALE = 'en-US'
-// Used to format floats representing percent change with fixed decimal places
-function formatDelta(delta, locale = DEFAULT_LOCALE) {
-  if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
-    return '-'
-  }
-
-  return `${Number(Math.abs(delta).toFixed(2)).toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    useGrouping: false,
-  })}%`
 }
 
 export default function ChartPriceRangeInput({
@@ -76,7 +66,6 @@ export default function ChartPriceRangeInput({
   idChart = 'chart-price-range',
   label = 'Liquidity range',
   feeAmount,
-  maskColor,
   classNames,
 }) {
   const activePreset = useActivePreset()
@@ -90,11 +79,11 @@ export default function ChartPriceRangeInput({
   const [zoomFactor, setZoomFactor] = useState(1)
   const [boundaryPrices, setBoundaryPrices] = useState()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
-  const [currentHover, setCurrentHover] = useState(null)
   const [chartPriceFinishedRender, setChartPriceFinishedRender] = useState(false)
   const [range, setRange] = useState(2)
   const [midPrice, setMidPrice] = useState(null)
   const [isOutOfView, setIsOutOfView] = useState(false)
+  const [showLiquidity, setShowLiquidity] = useState(true)
 
   const { APRs } = useAprStore()
 
@@ -278,25 +267,6 @@ export default function ChartPriceRangeInput({
   // eslint-disable-next-line unused-imports/no-unused-vars
   interactive = interactive && Boolean(pairPrices?.length)
 
-  const brushLabelValue = useCallback(
-    (d, x) => {
-      let priceVal = price
-      if (!priceVal) {
-        priceVal = pairPrices[pairPrices.length - 1]?.value
-      }
-
-      if (!priceVal) return ''
-
-      if (d === 'w' && ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER]) return '0'
-      if (d === 'e' && ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER]) return '∞'
-
-      const percent = (x < priceVal ? -1 : 1) * ((Math.max(x, priceVal) - Math.min(x, priceVal)) / priceVal) * 100
-
-      return priceVal ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
-    },
-    [isSorted, pairPrices, price, ticksAtLimit],
-  )
-
   const chartSize = useMemo(
     () => ({
       chartContainerWidth: containerRef?.current?.offsetWidth || 300,
@@ -394,9 +364,25 @@ export default function ChartPriceRangeInput({
     }
   }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
 
+  const chartPriceWidth = useMemo(
+    () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
+    [chartSize, windowSize.width],
+  )
+
+  const { timeXScale } = useMemo(() => {
+    // Use scaleTime for time-based x-axis
+    const timeScale = pairPrices.map(d => d.time)
+    const domain = [timeScale[0], timeScale[timeScale.length - 1]]
+    const scales = {
+      timeXScale: scaleTime().domain(domain).range([0, chartPriceWidth]),
+    }
+
+    return scales
+  }, [chartPriceWidth, pairPrices])
+
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
+    <div className='flex flex-col'>
+      <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
         <NewTextHeading className={cn('hidden text-base md:text-xl lg:block', classNames?.title)}>
           {t(label ?? 'Your Range against the Price')}
         </NewTextHeading>
@@ -409,7 +395,13 @@ export default function ChartPriceRangeInput({
           )}
         </div>
         <div className={cn('flex items-center gap-4 max-md:justify-between', classNames?.actions)}>
-          {showPeriod && <Tabs data={periods} className='flex-1' itemClassName='w-full' />}
+          {showPeriod && (
+            <Tabs
+              data={periods}
+              className='flex-1'
+              itemClassName={cn('text-xs h-6! py-1! px-2! w-full max-lg:font-bold!')}
+            />
+          )}
           <div className='z-40 hidden gap-2 lg:flex'>
             <EmphasisIconButton
               className='lg:size-8'
@@ -442,13 +434,52 @@ export default function ChartPriceRangeInput({
           </EmphasisButton>
         </div>
       </div>
-      {isFullRange && fullRangeWarningShown && <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>}
-      {outOfRange && <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>}
-      {invalidRange && <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>}
+      {/* Full range warning */}
+      <AnimatePresence>
+        {isFullRange && fullRangeWarningShown && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='mb-2 overflow-hidden'
+          >
+            <Warning className='my-2 text-sm'>{t('Full range position')}</Warning>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Out of range warning */}
+      <AnimatePresence>
+        {outOfRange && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='mb-2 overflow-hidden'
+          >
+            <Warning className='my-2 text-sm'>{t('Out range warning')}</Warning>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Invalid range warning */}
+      <AnimatePresence>
+        {invalidRange && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='mb-2 overflow-hidden'
+          >
+            <Warning className='my-2 text-sm'>{t('Invalid range warning')}</Warning>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className={cn('flex flex-col gap-2 md:gap-4')}>
-        <div
-          className={cn('relative flex h-[272px] w-full items-center justify-center lg:h-[235px]', classNames?.chart)}
-        >
+        <div className={cn('relative flex w-full items-center justify-center', classNames?.chart)}>
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading || isLoadLiquidity ? (
@@ -456,7 +487,7 @@ export default function ChartPriceRangeInput({
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
-            <div className={cn('flex h-full w-full flex-col gap-4')}>
+            <div className={cn('flex h-full w-full flex-col')}>
               <div className='flex h-[calc(100%-48px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
@@ -466,40 +497,60 @@ export default function ChartPriceRangeInput({
                       height: chartSize.chartContainerHeight,
                     }}
                   >
+                    <div className='absolute inset-0 top-0 z-0 h-full'>
+                      <div className={cn('z-0 w-full', classNames?.handleArea)}>
+                        <div
+                          style={{
+                            width: chartPriceWidth || '100%',
+                            height: chartSize.chartContainerHeight - 40,
+                          }}
+                        >
+                          {pairPrices.length > 0 && !isLoading && (
+                            <ChartPrice
+                              data={pairPrices}
+                              timeWindow={timeWindow}
+                              setBoundaryPrices={setBoundaryPrices}
+                              minVisiblePrice={minVisiblePrice}
+                              maxVisiblePrice={maxVisiblePrice}
+                              isMobile={chartSize?.chartContainerWidth <= 450}
+                              setFinishedRender={setChartPriceFinishedRender}
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <div className='flex w-full items-center justify-between border-t-2 border-neutral-800'>
+                        <svg width={chartPriceWidth || '100%'} height='100%' viewBox={`0 0 ${chartPriceWidth} ${40}`}>
+                          <AxisBottomTime timeWindow={timeWindow} xScale={timeXScale} innerHeight={40} offset={40} />
+                        </svg>
+                        <div className='z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+                          <CheckBox
+                            className='size-5! rounded-sm'
+                            checked={showLiquidity}
+                            setChecked={setShowLiquidity}
+                          />
+                          <span className='cursor-pointer select-none' onClick={() => setShowLiquidity(prev => !prev)}>
+                            Show Liquidity
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                     <div
-                      className='absolute inset-0 z-0 h-full'
+                      className='absolute inset-0 top-0 z-10'
                       style={{
-                        width:
-                          chartSize.chartContainerWidth -
-                          desktopSizes.rightAxisWidth -
-                          (windowSize.width > 768 ? 133 : 41),
+                        height: chartSize.chartContainerHeight - 40,
                       }}
                     >
-                      {pairPrices.length > 0 && !isLoading && (
-                        <ChartPrice
-                          data={pairPrices}
-                          timeWindow={timeWindow}
-                          setBoundaryPrices={setBoundaryPrices}
-                          minVisiblePrice={minVisiblePrice}
-                          maxVisiblePrice={maxVisiblePrice}
-                          isMobile={chartSize?.chartContainerWidth <= 450}
-                          setFinishedRender={setChartPriceFinishedRender}
-                        />
-                      )}
-                    </div>
-                    <div className='absolute inset-0 z-10'>
-                      {chartSize && formattedData?.length > 0 ? (
+                      {chartSize && !isLoadLiquidity ? (
                         <ActivePriceRangeChart
-                          maskColor={maskColor}
                           data={{
-                            series: formattedData,
+                            series: formattedData || [],
                             current: price ?? pairPrices[pairPrices.length - 1]?.value,
                             min: boundaryPrices?.[0],
                             max: boundaryPrices?.[1],
                           }}
                           dimensions={{
                             width: chartSize.chartContainerWidth,
-                            height: chartSize.chartContainerHeight - (chartSize.chartContainerHeight * 0.2 + 28), // margin and time scale
+                            height: chartSize.chartContainerHeight - 40,
                             contentWidth: chartSize.chartContainerWidth,
                             axisLabelPaneWidth: desktopSizes.rightAxisWidth,
                             padding: (chartSize.chartContainerHeight * 0.2 + 28) / 2,
@@ -513,21 +564,19 @@ export default function ChartPriceRangeInput({
                             },
                           }}
                           interactive={interactive}
-                          brushLabels={brushLabelValue}
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}
                           handleShow={handleShow && brushDomain && chartPriceFinishedRender}
                           setIsOutOfView={setIsOutOfView}
                           isOutOfView={isOutOfView}
                           isFullRange={isFullRange}
-                          setCurrentHover={setCurrentHover}
-                          currentHover={currentHover}
                           id={idChart}
                           divideDistanceWidth={
                             chartSize.chartContainerWidth -
                             desktopSizes.rightAxisWidth -
                             (windowSize.width > 768 ? 133 : 41)
                           }
+                          showLiquidity={showLiquidity}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />
@@ -536,7 +585,7 @@ export default function ChartPriceRangeInput({
                   </div>
                 </div>
               </div>
-              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:hidden'>
+              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:mt-4 lg:hidden'>
                 <EmphasisIconButton
                   className='lg:size-8'
                   classNames='lg:size-4 stroke-neutral-400'

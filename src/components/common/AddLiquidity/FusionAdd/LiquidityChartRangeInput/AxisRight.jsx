@@ -17,12 +17,17 @@ function Axis({ axisGenerator }) {
       select(axis)
         .call(axisGenerator)
         .call(g => g.select('.domain').remove())
+        .selectAll('.tick text')
+        .style('font-size', '12px')
+        .style('font-weight', '700')
+        .style('line-height', '16px')
+        .style('color', '#685770')
   }
 
   return <g className='axis-right-ref' ref={axisRef} />
 }
 
-export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height, maskColor }) {
+export function AxisRight({ yScale, offset = 0, min, current, max, currentHover }) {
   const { isLgDown } = useMediaQuery()
 
   const tickFormat = useCallback(d => {
@@ -35,7 +40,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   }, [])
 
   const axisGenerator = useMemo(() => {
-    const tickValues = yScale.ticks(4).filter(tick => tick >= 0)
+    const tickValues = yScale.ticks(5).filter(tick => tick >= 0)
     return axisRight(yScale).tickValues(tickValues).tickFormat(tickFormat)
   }, [tickFormat, yScale])
 
@@ -70,7 +75,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
 
   return (
     <>
-      <g className='axis-right' transform={`translate(${offset + 5}, 0)`}>
+      <g className='axis-right' transform={`translate(${offset}, 0)`}>
         {!isNaN(minY) && !isLgDown && renderHoverLines(minY, 'south')}
         {!isNaN(maxY) && !isLgDown && renderHoverLines(maxY, 'north')}
         <Axis axisGenerator={axisGenerator} />
@@ -125,8 +130,6 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
             </text>
           </g>
         )}
-        <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
-        <rect x='0' y={height} width='100%' height={padding * 2} fill={maskColor} />
       </g>
     </>
   )

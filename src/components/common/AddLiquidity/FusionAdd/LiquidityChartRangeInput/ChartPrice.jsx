@@ -52,7 +52,7 @@ function ChartPrice({
         priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
-        visible: true,
+        visible: false,
         borderVisible: false,
         secondsVisible: false,
         rightOffset: 0,
@@ -124,7 +124,7 @@ function ChartPrice({
 
       chart.priceScale('right').applyOptions({
         scaleMargins: {
-          top: 0.1,
+          top: 0,
           bottom: 0.1,
         },
         autoScale: false,
