@@ -126,7 +126,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           <div className='flex flex-row justify-between gap-4'>
             <div className='flex flex-col justify-between gap-2'>
               <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>
-                {t('Your Deposit')}
+                {t('Your Position')}
               </TextHeading>
               <Paragraph className='text-sm! font-normal! text-neutral-500'>
                 ${formatAmount(position.depositInUSD)}

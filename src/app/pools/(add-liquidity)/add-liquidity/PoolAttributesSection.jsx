@@ -20,14 +20,9 @@ export function PoolAttributesSection({ strategy, pair, className }) {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex h-8 items-end max-xl:w-full md:h-11 xl:h-11 xl:justify-end'>
-        <div className='flex w-full items-center justify-between gap-2 xl:w-fit'>
-          <Box
-            className={cn(
-              'flex h-8 items-center rounded-lg bg-neutral-900 p-4! max-xl:w-full md:h-11 xl:h-11 xl:justify-center',
-              className,
-            )}
-          >
+      <div className='flex h-8 items-end md:h-11 xl:h-11 xl:justify-end'>
+        <div className='flex w-full items-center justify-between gap-2'>
+          <Box className={cn('flex h-8 items-center rounded-lg bg-neutral-900 p-4! md:h-11 xl:h-11', className)}>
             <NewTextSubHeading className='text-xs xl:text-xl! xl:text-neutral-500'>
               {t('Pool Attributes')}
             </NewTextSubHeading>

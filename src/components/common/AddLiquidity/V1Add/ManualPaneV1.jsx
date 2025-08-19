@@ -13,7 +13,6 @@ import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
 export function ManualPaneV1({
@@ -24,12 +23,10 @@ export function ManualPaneV1({
   setSecondAddress,
   pairType,
   handleBack,
+  slippage,
 }) {
   const t = useTranslations()
   const { push } = useRouter()
-
-  const [slippage, setSlippage] = useState(0.5)
-
   const [firstAmount, setFirstAmount] = useState('')
   const [secondAmount, setSecondAmount] = useState('')
   const { account } = useWallet()
@@ -167,7 +164,6 @@ export function ManualPaneV1({
   return (
     <>
       <div className='flex flex-col gap-4'>
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
           <TokenAmountInput
             asset={firstAsset}
@@ -175,6 +171,7 @@ export function ManualPaneV1({
             amount={firstAmount}
             onAmountChange={onFirstChange}
             showPercent={false}
+            classNames={{ input: 'p-4! gap-2!' }}
           />
           <TokenAmountInput
             asset={secondAsset}
@@ -182,11 +179,12 @@ export function ManualPaneV1({
             amount={secondAmount}
             onAmountChange={onSecondChange}
             showPercent={false}
+            classNames={{ input: 'p-4! gap-2!' }}
           />
         </div>
       </div>
 
-      <div className='flex flex-col gap-2 max-md:mt-8!'>
+      <div className='mt-2 flex flex-col gap-2'>
         <EmphasisButton className='block w-full lg:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

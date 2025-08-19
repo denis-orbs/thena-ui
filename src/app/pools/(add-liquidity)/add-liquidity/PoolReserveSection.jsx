@@ -4,7 +4,7 @@ import Divider from '@/components/divider'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 
-export function PoolReserveSection({ pool, className }) {
+export function PoolReserveSection({ pool, className, showMyInfo = true }) {
   const t = useTranslations()
 
   return (
@@ -27,21 +27,25 @@ export function PoolReserveSection({ pool, className }) {
         </div>
       </div>
 
-      <Divider className='my-4' />
+      {showMyInfo && (
+        <>
+          <Divider className='my-4' />
 
-      <div className='flex flex-col gap-2 lg:gap-4'>
-        <NewTextSubHeading className='text-xl!'>{t('My Info')}</NewTextSubHeading>
-        <div className='flex flex-col gap-2 text-base lg:gap-3'>
-          <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-            <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
+          <div className='flex flex-col gap-2 lg:gap-4'>
+            <NewTextSubHeading className='text-xl!'>{t('My Info')}</NewTextSubHeading>
+            <div className='flex flex-col gap-2 text-base lg:gap-3'>
+              <div className='flex items-center justify-between'>
+                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
+              </div>
+              <div className='flex items-center justify-between'>
+                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                <Paragraph>{formatAmount(pool.account.gaugeBalance)} LP</Paragraph>
+              </div>
+            </div>
           </div>
-          <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-            <Paragraph>{formatAmount(pool.account.gaugeBalance)} LP</Paragraph>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   )
 }

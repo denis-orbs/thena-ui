@@ -8,7 +8,7 @@ import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 
-export function PairBasicInfo({ pair, className }) {
+export function PairBasicInfo({ pair, className, classNames, etApr = true }) {
   const t = useTranslations()
   const { isMdDown } = useMediaQuery()
   // const [isExpanded, setIsExpanded] = useState(false)
@@ -26,33 +26,43 @@ export function PairBasicInfo({ pair, className }) {
                  linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
         }}
       >
-        <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
-            {pair?.apr ?? '0%'}
-          </NewTextSubHeading>
-          <Paragraph className='text-sm! text-neutral-500'>
-            {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
-          </Paragraph>
-        </div>
-        <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
+        {etApr && (
+          <div className={cn('flex flex-col gap-2 md:gap-1', classNames?.container)}>
+            <NewTextSubHeading
+              className={cn('text-gradient-primary text-lg! leading-9! xl:text-3xl!', classNames?.title)}
+            >
+              {pair?.apr ?? '0%'}
+            </NewTextSubHeading>
+            <Paragraph className={cn('text-sm! text-neutral-500', classNames?.subtitle)}>
+              {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
+            </Paragraph>
+          </div>
+        )}
+        <div className={cn('flex flex-col gap-2 md:gap-1', classNames?.container)}>
+          <NewTextSubHeading
+            className={cn('text-gradient-primary text-lg! leading-9! xl:text-3xl!', classNames?.title)}
+          >
             ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className={cn('text-sm! text-neutral-500', classNames?.subtitle)}>{t('Volume (24h)')}</Paragraph>
         </div>
 
-        <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
+        <div className={cn('flex flex-col gap-2 md:gap-1', classNames?.container)}>
+          <NewTextSubHeading
+            className={cn('text-gradient-primary text-lg! leading-9! xl:text-3xl!', classNames?.title)}
+          >
             ${formatAmount(pair?.dayFees)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className={cn('text-sm! text-neutral-500', classNames?.subtitle)}>{t('Fees (24h)')}</Paragraph>
         </div>
 
-        <div className='flex flex-col gap-2 md:gap-1'>
-          <NewTextSubHeading className='text-gradient-primary text-lg! leading-9! xl:text-3xl!'>
+        <div className={cn('flex flex-col gap-2 md:gap-1', classNames?.container)}>
+          <NewTextSubHeading
+            className={cn('text-gradient-primary text-lg! leading-9! xl:text-3xl!', classNames?.title)}
+          >
             ${formatAmount(pair?.tvlUSD)}
           </NewTextSubHeading>
-          <Paragraph className='text-sm! text-neutral-500'>{t('TVL')}</Paragraph>
+          <Paragraph className={cn('text-sm! text-neutral-500', classNames?.subtitle)}>{t('TVL')}</Paragraph>
         </div>
       </Box>
 

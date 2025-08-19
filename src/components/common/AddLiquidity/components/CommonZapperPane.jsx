@@ -20,7 +20,6 @@ import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
 import WarningZapper from './WarningZapper'
 
@@ -30,10 +29,18 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
+export function CommonZapperPane({
+  asset0,
+  asset1,
+  strategy,
+  onShowModalSuccess,
+  handleBack,
+  isSmall = false,
+  slippage = 0.5,
+}) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
-  const [slippage, setSlippage] = useState(0.5)
+  // const [slippage, setSlippage] = useState(0.5)
   const zapSwapSlippage = 10000 - slippage * 100
 
   const { account, chainId } = useWallet()
@@ -198,7 +205,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
     <div className='flex flex-col gap-8'>
       <div className='relative flex w-full flex-col gap-2 md:gap-4'>
         <WarningZapper />
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
+        {/* <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' /> */}
         <div className='flex flex-col gap-2'>
           <TokenAmountInput
             type='number'
@@ -212,6 +219,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             showPercent={false}
             assetsSelect={[]}
             isSmall={isSmall}
+            classNames={{ input: 'p-4! gap-2!' }}
           />
           <div
             className={cn(
@@ -295,7 +303,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
       {account ? (
         <div
           className={cn(
-            'mt-auto flex w-full flex-col items-center gap-2 max-md:mt-8! lg:flex-row',
+            'mt-auto flex w-full flex-col items-center gap-2 lg:flex-row',
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
@@ -327,7 +335,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
           </PrimaryButton>
         </div>
       ) : (
-        <ConnectButton className='w-full max-md:mt-8!' />
+        <ConnectButton className='w-full' />
       )}
     </div>
   )
