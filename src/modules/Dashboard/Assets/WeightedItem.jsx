@@ -17,9 +17,9 @@ import {
   useGaugeUnstakeWeighted,
   useWithdrawUserBalanceWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
-import ManageWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
+import RemoveWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
 import { InfoIcon } from '@/svgs'
 
 import WeightedRange from './WeightedRange'
@@ -71,7 +71,7 @@ function WeightedItem({ position, isStake, isXlDown }) {
     return tokenList.map((token, index) => {
       const displayName = token?.name === 'Wrapped BNB' ? 'WBNB' : token?.symbol || 'UNKNOWN'
       if (hasInvalidAmounts || !isInvalidAmount(token?.amount)) {
-        return <p key={`${token.address}-${index}`}>{`${formatAmount(token?.amount)} ${displayName}`}</p>
+        return <p key={`${token.address}-${index}`}>{`${formatAmount(fromWei(token?.amount))} ${displayName}`}</p>
       }
       return null
     })
@@ -262,7 +262,7 @@ function WeightedItem({ position, isStake, isXlDown }) {
       )}
 
       {isOpenRemove && <RemoveWeightedModal isOpen={isOpenRemove} pool={position} setIsOpen={setIsOpenRemove} />}
-      {managePopup && <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={position} />}
+      {managePopup && <RemoveWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={position} />}
       <GaugeWeightedManageModal
         title={!isStake ? 'Stake LP' : 'Unstake LP'}
         onGaugeManage={!isStake ? onGaugeStake : onGaugeUnstake}

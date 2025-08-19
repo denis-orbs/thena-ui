@@ -1,41 +1,16 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Modal from '@/components/modal'
-import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 
 import RemoveWeighted from './RemoveWeighted'
 
-export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
-  const [isRemove, setIsRemove] = useState(true)
-  const { push } = useRouter()
-
-  const manageSelections = useMemo(
-    () => [
-      {
-        label: 'Add',
-        active: !isRemove,
-        onClickHandler: () => {
-          push(`/pools/add-liquidity/weighted/${pool.address}?back=2`)
-        },
-      },
-      {
-        label: 'Remove',
-        active: isRemove,
-        onClickHandler: () => {
-          setIsRemove(true)
-        },
-      },
-    ],
-    [isRemove, pool.address, push],
-  )
-
+export default function RemoveWeightedPositionModal({ popup, setPopup, pool }) {
   return (
     <Modal
       isOpen={popup}
@@ -72,16 +47,9 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
             <NeutralBadge>Weighted</NeutralBadge>
           </div>
         </div>
-        <Selection data={manageSelections} isFull />
       </div>
-      {isRemove ? (
-        <>
-          <p className='px-3 pt-3 font-medium text-white lg:px-6'>Remove Liquidity Options</p>
-          <RemoveWeighted showTitle={false} pool={pool} onCancel={() => setPopup(false)} />
-        </>
-      ) : (
-        <></>
-      )}
+      <p className='px-3 pt-3 font-medium text-white lg:px-6'>Remove Liquidity Options</p>
+      <RemoveWeighted showTitle={false} pool={pool} onCancel={() => setPopup(false)} />
     </Modal>
   )
 }

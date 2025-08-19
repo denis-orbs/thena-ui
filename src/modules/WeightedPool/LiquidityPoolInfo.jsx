@@ -1,11 +1,10 @@
 import { useTranslations } from 'next-intl'
 import React from 'react'
-import { zeroAddress } from 'viem'
 
-import Skeleton from '@/components/skeleton'
-import { Paragraph, TextHeading } from '@/components/typography'
-import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { TokenAnalytics } from '@/app/analytics/pairs/[address]/PoolAttributesAnalytic'
+import Divider from '@/components/divider'
+import { TextHeading } from '@/components/typography'
+import { cn } from '@/lib/utils'
 
 import PieChart from './PieChart'
 
@@ -13,12 +12,12 @@ const colors = ['#F199EE', '#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F'
 
 function LiquidityPoolInfo({ pool, isMobile = false }) {
   const t = useTranslations()
-  const { balance: poolBalance, isLoading: loadingPoolBalance } = useWeightPoolData(pool ? pool.address : null)
-  const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(pool ? pool.gauge.address : zeroAddress)
+  // const { balance: poolBalance, isLoading: loadingPoolBalance } = useWeightPoolData(pool ? pool.address : null)
+  // const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(pool ? pool.gauge.address : zeroAddress)
 
   return (
-    <div className='flex flex-col rounded-xl bg-neutral-800'>
-      <div className='flex flex-2 flex-col gap-2 px-4 pt-2 pb-4 lg:flex-1'>
+    <div className='bg-chart-gradient flex flex-col rounded-xl border border-neutral-600'>
+      <div className='flex flex-2 flex-col items-center gap-2 px-4 pt-8 pb-4 lg:flex-1'>
         <PieChart tokens={pool?.tokens || []} bgColor='#1A121E' showTotalPercent={false} />
         <div
           className={cn(
@@ -34,26 +33,13 @@ function LiquidityPoolInfo({ pool, isMobile = false }) {
           ))}
         </div>
       </div>
-      <div
-        className={cn(
-          'flex-1 rounded-lg bg-neutral-900 p-4 lg:flex-2 xl:p-4',
-          isMobile && 'border-none bg-transparent',
-        )}
-      >
+      <div className={cn('flex-1 rounded-lg p-4 lg:flex-2 xl:p-4', isMobile && 'border-none bg-transparent')}>
         <div className='flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-          <div className='flex flex-col gap-3'>
-            {(pool?.tokens || []).map(token => (
-              <div key={token.address} className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {unwrappedSymbol(token)} {t('Amount')}
-                </Paragraph>
-                <Paragraph>{formatAmount(token.reserve)}</Paragraph>
-              </div>
-            ))}
-          </div>
+          <Divider />
+          <TokenAnalytics pair={pool} classNames={{ items: 'bg-neutral-900' }} />
         </div>
-        <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+        {/* <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
           <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
@@ -73,7 +59,7 @@ function LiquidityPoolInfo({ pool, isMobile = false }) {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

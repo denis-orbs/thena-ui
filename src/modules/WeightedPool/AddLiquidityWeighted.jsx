@@ -1,31 +1,48 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 
-import MenuTab from '@/app/arena/MenuTab'
 import InputTokenMemo from '@/app/pools/(add-liquidity)/add-liquidity/InputTokenMemo'
 import { PairBasicInfo } from '@/app/pools/(add-liquidity)/add-liquidity/PairBasicInfo'
 import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
+import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
+import CircleImage from '@/components/image/CircleImage'
+import Input from '@/components/input'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
-import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
+import Selection from '@/components/selection'
+import CustomTooltip from '@/components/tooltip'
+import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
+import { useWeightedPositions } from '@/hooks/position/useWeightedPosition'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import {
+  useClaimWeightedPoolFees,
+  useGaugeBalance,
+  useGaugeHarvestWeighted,
+  useGaugeStakeWeighted,
+  useGaugeUnstakeWeighted,
+  useWeightedPool,
+  useWeightedPositionList,
+  useWeightPoolData,
+} from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
-import { cn, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
-import { InfoNeutralIcon } from '@/svgs'
+import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
+import { InfoIcon, SettingsIcon } from '@/svgs'
 
 import LiquidityPoolInfo from './LiquidityPoolInfo'
-import SettingSlippageDropDown from '../Position/SettingSlippageDropDown'
+import GaugeWeightedManageModal from '../Position/GaugeWeightedManageModal'
 
 const DEPOSIT_TYPE = {
   SINGLE: 'single',
@@ -38,6 +55,7 @@ function AddLiquidityWeighted({ pool }) {
   const debounceTimeout = useRef(null)
   const windowSize = useWindowSize()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
   const {
     onAddLiquiditySingleToken,
     onAddLiquidityAllToken,
@@ -46,30 +64,47 @@ function AddLiquidityWeighted({ pool }) {
   } = useWeightedPool()
   const { mutatePoolBalance } = useWeightPoolData(pool?.address)
 
+  const weightedPositionList = useWeightedPositionList()
+  const userPositions = useWeightedPositions(weightedPositionList)
+  const position = useMemo(() => {
+    if (userPositions.length === 0) return null
+    const findPosition = userPositions.filter(item => item.address.toLowerCase() === pool?.address.toLowerCase())
+    if (!findPosition.length) return null
+    return findPosition[0]
+  }, [pool?.address, userPositions])
+
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.ALL)
   const [slippage, setSlippage] = useState(0.5)
   const [amountDeposit, setAmountDeposit] = useState('')
   const [tokensData, setTokensData] = useState([])
   const [tokenDeposit, setTokenDeposit] = useState(null)
   const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
-  const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
+  const [showSlippage, setShowSlippage] = useState(false)
+  const [popupStake, setPopupStake] = useState(false)
+  const [isOpenRemove, setIsOpenRemove] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
+
+  const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
+  const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
+  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
+  const { gaugeBalance } = useGaugeBalance(position?.gauge?.address)
+  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
 
   const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
   const isLaptop = useMemo(() => windowSize.width > 1024, [windowSize.width])
+  const { isLgDown } = useMediaQuery()
 
   const toggleDepositType = useMemo(
     () => [
       {
-        title: t('Pool Token Deposit'),
-        isActive: depositType === DEPOSIT_TYPE.ALL,
-        isLink: false,
-        onClick: () => setDepositType(DEPOSIT_TYPE.ALL),
+        label: t('Pool Token Deposit'),
+        active: depositType === DEPOSIT_TYPE.ALL,
+        onClickHandler: () => setDepositType(DEPOSIT_TYPE.ALL),
       },
       {
-        title: t('Single Token Deposit'),
-        isActive: depositType === DEPOSIT_TYPE.SINGLE,
-        isLink: false,
-        onClick: () => setDepositType(DEPOSIT_TYPE.SINGLE),
+        label: t('Single Token Deposit'),
+        active: depositType === DEPOSIT_TYPE.SINGLE,
+        onClickHandler: () => setDepositType(DEPOSIT_TYPE.SINGLE),
       },
     ],
     [depositType, t],
@@ -224,74 +259,293 @@ function AddLiquidityWeighted({ pool }) {
     })
   }, [pool?.tokens])
 
-  return (
-    <div className='flex flex-col'>
-      <div className='flex flex-col gap-2'>
-        <div className='flex flex-row gap-4 lg:gap-8'>
-          <GroupIconTokens
-            height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
-            width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
-            tokens={pool?.tokens || []}
-            classNames={{
-              images: 'size-6 lg:size-10 xl:size-[64px]',
-            }}
-          />
-          <NewTextHeading
-            style={{
-              lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
-              fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 36}px`,
-            }}
-            className='text-wrap break-all whitespace-normal'
-          >
-            {pool?.symbol}
-          </NewTextHeading>
-        </div>
-        <div className='flex flex-col xl:hidden'>
-          <div className='flex flex-row items-center justify-between'>
-            <NewTextSubHeading>{t('Weighted')}</NewTextSubHeading>
-            <EmphasisButton
-              className={cn(
-                'size-8 p-2 outline-0 hover:bg-neutral-900 md:size-11',
-                showLiquidityInfo ? 'bg-neutral-600!' : 'bg-neutral-900',
+  const selections = useMemo(
+    () =>
+      [0.1, 0.5, 1].map(ele => ({
+        label: ele,
+        active: slippage === Number(ele),
+        onClickHandler: () => {
+          setSlippage(Number(ele))
+        },
+      })),
+    [slippage],
+  )
+
+  const { claimableFee, depositValue, isStake } = position || {}
+  const tokensDeposit = depositValue?.tokens || []
+  const getTokenDisplayName = useCallback(
+    token => (token?.name === 'Wrapped BNB' ? 'WBNB' : token?.symbol || 'UNKNOWN'),
+    [],
+  )
+
+  const onClaim = useCallback(
+    () =>
+      onClaimFees(position, () => {
+        // mutatePosition()
+      }),
+    [onClaimFees, position],
+  )
+
+  const ButtonsDisplay = useMemo(
+    () =>
+      position ? (
+        <div className='grid w-full grid-cols-3 justify-center gap-2'>
+          {position?.isStake ? (
+            <>
+              <EmphasisButton onClick={() => setIsOpenRemove(true)}>{t('Remove')}</EmphasisButton>
+              <EmphasisButton disabled={unstakePending} className='flex-1' onClick={() => setPopupStake(true)}>
+                {t('Unstake')}
+              </EmphasisButton>
+
+              <EmphasisButton
+                className='flex-1'
+                disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
+                onClick={() => onGaugeHarvest(position)}
+              >
+                {t('Claim')}
+              </EmphasisButton>
+            </>
+          ) : (
+            <>
+              <EmphasisButton onClick={() => setIsOpenRemove(true)}>{t('Remove')}</EmphasisButton>
+              <EmphasisButton
+                disabled={pendingClaimFees || isInvalidAmount(claimableFee?.total)}
+                onClick={onClaim}
+                className='h-11 flex-1'
+              >
+                {t('Claim')}
+              </EmphasisButton>
+
+              <PrimaryButton
+                disabled={stakePending || position?.gauge?.address === zeroAddress}
+                className='h-11 flex-1'
+                onClick={() => setPopupStake(true)}
+                data-tooltip-id={`stake-position-${position?.address}`}
+              >
+                {t('Stake')}
+              </PrimaryButton>
+
+              {position.gauge.address === zeroAddress && (
+                <CustomTooltip id={`stake-position-${position?.address}`} className='max-w-[500px]'>
+                  {t('This pool has no Gauge')}
+                </CustomTooltip>
               )}
-              onClick={() => setShowLiquidityInfo(prev => !prev)}
-            >
-              <InfoNeutralIcon className='size-4 md:size-5' />
-            </EmphasisButton>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='overflow-hidden'
-          >
-            <div className='mt-4 block w-full bg-neutral-900 xl:hidden'>
-              <LiquidityPoolInfo pool={pool} isMobile />
-            </div>
-          </motion.div>
+            </>
+          )}
         </div>
-      </div>
-      <div className='xl:grid-cols-add-liquidity-layout grid gap-4 max-xl:grid-cols-1'>
-        <div className='flex w-full flex-col gap-4'>
-          <div className='flex h-11 flex-col justify-end max-xl:hidden'>
-            <NewTextSubHeading className='text-2xl!'>{t('Weighted')}</NewTextSubHeading>
+      ) : null,
+    [
+      claimableFee?.total,
+      onClaim,
+      onGaugeHarvest,
+      pendingClaimFees,
+      pendingHarvest,
+      position,
+      stakePending,
+      unstakePending,
+      t,
+    ],
+  )
+
+  return (
+    <div className='flex flex-col gap-4 xl:gap-8'>
+      <div className={cn('grid gap-2 xl:gap-8', position ? 'xl:grid-cols-[483px_1fr]' : 'xl:grid-cols-[1fr_500px]')}>
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-row gap-4 xl:gap-8'>
+            <GroupIconTokens
+              height={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
+              width={!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}
+              tokens={pool?.tokens || []}
+              classNames={{
+                images: 'size-6 lg:size-10 xl:size-[64px]',
+              }}
+            />
+            <NewTextHeading
+              style={{
+                lineHeight: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 40}px`,
+                fontSize: `${!isLaptop ? ((pool?.tokens || []).length > 4 ? 16 : 28) : 36}px`,
+              }}
+              className='text-wrap break-all whitespace-normal'
+            >
+              {pool?.symbol}
+            </NewTextHeading>
+          </div>
+          <div className='flex flex-col gap-2'>
+            <div className='flex flex-row justify-between'>
+              <TextSubHeading className='text-lg font-medium text-neutral-50 lg:text-xl xl:text-2xl'>
+                {t('Weighted')}
+              </TextSubHeading>
+              <div className='flex items-center xl:hidden'>
+                <i
+                  onClick={() => setShowInfo(!showInfo)}
+                  className={cn(
+                    'flex cursor-pointer items-center justify-center rounded-lg',
+                    'size-8 min-w-8 md:size-11 md:min-w-11',
+                    showInfo ? 'bg-neutral-600' : 'bg-neutral-900',
+                  )}
+                >
+                  <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+                </i>
+              </div>
+            </div>
+            <AnimatePresence>
+              {showInfo && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: 'easeInOut',
+                    height: { duration: 0.4 },
+                  }}
+                  className='overflow-hidden'
+                >
+                  <LiquidityPoolInfo pool={pool} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <div className='flex flex-col gap-2 md:gap-4'>
-            <PairBasicInfo pair={pool} isMobile />
-            <div className='block xl:hidden'>
-              <PoolAttributesSection pair={pool} />
+          <div className='mt-auto'>
+            <PoolAttributesSection className='w-full' pair={pool} />
+          </div>
+        </div>
+
+        {position && (
+          <div className='flex flex-col'>
+            <article
+              className={cn(
+                'max-xl:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium xl:px-6',
+              )}
+            >
+              <div className='flex w-full flex-col justify-between max-xl:gap-2 xl:flex-row xl:items-center'>
+                <div className='flex flex-row justify-between gap-4'>
+                  <div className='flex flex-col justify-between gap-2'>
+                    <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>
+                      {t('Your Position')}
+                    </TextHeading>
+                    <Paragraph className='text-sm! font-normal! text-neutral-500'>
+                      ${formatAmount(depositValue?.depositUsd)}
+                    </Paragraph>
+                  </div>
+                  <div className='flex flex-col justify-between gap-2 xl:hidden'>
+                    <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+                      {formatAmount(position.apr)}%
+                    </Paragraph>
+                    <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
+                  </div>
+                </div>
+                <div className='flex w-full gap-2 xl:w-fit'>{ButtonsDisplay}</div>
+              </div>
+              <div className='flex w-full flex-row flex-wrap gap-4 xl:gap-6'>
+                {tokensDeposit.length > 0 &&
+                  tokensDeposit.map(token => (
+                    <div key={token.address} className='flex h-12 flex-1 flex-col gap-1 xl:justify-start'>
+                      <div className='flex items-center gap-2'>
+                        <CircleImage className='size-5' src={token.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+                        <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                          {formatAmount(fromWei(token.amount))}
+                        </Paragraph>
+                      </div>
+                      <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
+                        {t('[symbol] deposit [percent]', {
+                          symbol: getTokenDisplayName(token),
+                          percent: formatAmount(
+                            fromWei(token.amount).times(token.price).div(depositValue.depositUsd) * 100,
+                          ),
+                        })}
+                      </Paragraph>
+                    </div>
+                  ))}
+                <div className='flex h-12 flex-1 flex-col gap-1'>
+                  {claimableFee.tokenList.length > 0 &&
+                    claimableFee.tokenList.map(token => (
+                      <div className='flex items-center gap-2'>
+                        <CircleImage className='size-5' src={token.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+                        <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
+                          {formatAmount(token.fee)}
+                        </Paragraph>
+                      </div>
+                    ))}
+                  <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
+                    {t('Rewards')}
+                  </Paragraph>
+                </div>
+                <div className='flex h-12 flex-1 flex-col gap-1 max-xl:hidden'>
+                  <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+                    {formatAmount(position.apr)}%
+                  </Paragraph>
+                  <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
+                    {t('APR')}
+                  </Paragraph>
+                </div>
+              </div>
+            </article>
+          </div>
+        )}
+      </div>
+      <div className='grid grid-cols-1 gap-4 xl:grid-cols-[1fr_500px] xl:gap-8'>
+        <div className='flex flex-col gap-4'>
+          <div className='flex w-full flex-col gap-4'>
+            <div className='flex flex-col gap-2 md:gap-4'>
+              <PairBasicInfo pair={pool} isMobile />
             </div>
           </div>
-
+          <div className='hidden w-full flex-col gap-4 xl:flex'>
+            <LiquidityPoolInfo pool={pool} />
+          </div>
+        </div>
+        <div className='flex flex-col gap-4'>
           <div className='flex flex-col gap-2 md:gap-4'>
-            <MenuTab className='grid h-8 w-full grid-cols-2 md:h-11' menuData={toggleDepositType} />
-            <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
+            <div className='flex w-full flex-col gap-2'>
+              <div className='flex justify-between gap-2'>
+                <Selection
+                  className='h-8 w-full flex-1 items-stretch lg:h-11'
+                  classNames={{
+                    items: 'md:text-sm text-xs',
+                  }}
+                  data={toggleDepositType}
+                  isFull
+                  isTranslation={false}
+                  isSmall={isLgDown}
+                />
+                <EmphasisIconButton
+                  className='size-8 lg:size-11'
+                  classNames='size-4 stroke-neutral-400'
+                  Icon={SettingsIcon}
+                  onClick={() => setShowSlippage(prev => !prev)}
+                  disabled={false}
+                />
+              </div>
+              <AnimatePresence>
+                {showSlippage && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className='w-full overflow-hidden p-1'
+                  >
+                    <div className='flex min-w-[200px] justify-end gap-3'>
+                      <Selection data={selections} className='bg-transparent text-neutral-200!' />
+                      <Input
+                        classNames={{
+                          input: 'w-[70px] h-9',
+                        }}
+                        val={slippage}
+                        onChange={e => setSlippage(Number(e.target.value) || 0)}
+                        suffix='%'
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             {depositType === DEPOSIT_TYPE.ALL && (
               <div
                 className={cn(
-                  'grid grid-cols-1 gap-2 lg:grid-cols-2',
+                  'grid grid-cols-1 gap-2 xl:grid-cols-2',
                   (tokensData || []).length <= 2 && 'xl:grid-cols-2',
                 )}
               >
@@ -361,11 +615,18 @@ function AddLiquidityWeighted({ pool }) {
             )}
           </div>
         </div>
-        <div className='hidden w-full flex-col gap-4 xl:flex'>
-          <PoolAttributesSection pair={pool} />
-          <LiquidityPoolInfo pool={pool} />
-        </div>
       </div>
+      <GaugeWeightedManageModal
+        title={!isStake ? 'Stake LP' : 'Unstake LP'}
+        onGaugeManage={!isStake ? onGaugeStake : onGaugeUnstake}
+        pending={false}
+        pool={position}
+        popup={popupStake}
+        setPopup={setPopupStake}
+        label={!isStake ? 'Stake' : 'Unstake'}
+        isStake={isStake}
+      />
+      <RemoveWeightedModal isOpen={isOpenRemove} pool={position} setIsOpen={setIsOpenRemove} />
     </div>
   )
 }
