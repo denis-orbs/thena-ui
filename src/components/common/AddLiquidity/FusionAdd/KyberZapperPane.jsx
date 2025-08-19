@@ -13,7 +13,7 @@ import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
+import { useGetZapInRoute, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
@@ -36,7 +36,7 @@ function KyberZapperPane({
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
   const stableAssets = useStableTokens()
-  const { handleAddLiquidity } = useZapperAddLiquidity()
+  const { handleAddLiquidity } = useKyberZapperAddLiquidity()
 
   const [token0, token1] = useMemo(() => {
     const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]

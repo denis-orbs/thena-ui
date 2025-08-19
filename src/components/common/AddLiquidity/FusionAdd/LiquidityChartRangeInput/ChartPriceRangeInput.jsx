@@ -594,7 +594,7 @@ export default function ChartPriceRangeInput({
                   </div>
                 </div>
               </div>
-              <div className='z-40 mx-auto flex h-8 w-fit gap-2 lg:mt-4 lg:hidden'>
+              <div className='z-40 mx-auto mt-2 flex h-8 w-fit gap-2 lg:hidden'>
                 <EmphasisIconButton
                   className='lg:size-8'
                   classNames='lg:size-4 stroke-neutral-400'

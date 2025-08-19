@@ -81,24 +81,6 @@ export function RangeAndPricePanel({
     [currencyA, currencyB, position],
   )
 
-  const AddLiquidityComponent = useCallback(
-    () => (
-      <AddLiquidityCLPane
-        baseCurrency={currencyA}
-        quoteCurrency={currencyB}
-        setBaseCurrency={null}
-        setQuoteCurrency={null}
-        mintInfo={mintInfo}
-        currentPrice={currentPrice}
-        strategy={null}
-        onShowModalSuccess={null}
-        position={position}
-        handleBack={null}
-      />
-    ),
-    [currencyA, currencyB, mintInfo, currentPrice, position],
-  )
-
   const PresetRangesComponent = useCallback(
     ({ isMobile = false, className = '' }) => (
       <PresetRanges
@@ -188,7 +170,7 @@ export function RangeAndPricePanel({
                 toggleId='degen-mode'
                 checked={degenMode}
                 className='mt-0!'
-                onChange={setDegenMode}
+                onChange={() => setDegenMode(prev => !prev)}
                 label='Degen Mode'
               />
 
@@ -201,7 +183,18 @@ export function RangeAndPricePanel({
             /* Desktop ViewMode Content */
             <div className='hidden flex-col gap-3 lg:flex'>
               <RangePriceInfoComponent />
-              <AddLiquidityComponent />
+              <AddLiquidityCLPane
+                baseCurrency={currencyA}
+                quoteCurrency={currencyB}
+                setBaseCurrency={null}
+                setQuoteCurrency={null}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
+                strategy={null}
+                onShowModalSuccess={null}
+                position={position}
+                handleBack={null}
+              />
             </div>
           )}
         </div>
@@ -209,7 +202,22 @@ export function RangeAndPricePanel({
 
       {/* Mobile Bottom Section */}
       <div className='order-3 lg:hidden'>
-        {viewMode ? <AddLiquidityComponent /> : <PresetRangesComponent isMobile className='mt-auto' />}
+        {viewMode ? (
+          <AddLiquidityCLPane
+            baseCurrency={currencyA}
+            quoteCurrency={currencyB}
+            setBaseCurrency={null}
+            setQuoteCurrency={null}
+            mintInfo={mintInfo}
+            currentPrice={currentPrice}
+            strategy={null}
+            onShowModalSuccess={null}
+            position={position}
+            handleBack={null}
+          />
+        ) : (
+          <PresetRangesComponent isMobile className='mt-auto' />
+        )}
       </div>
     </div>
   )

@@ -8,6 +8,7 @@ import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
 import { SettingsIcon, ZapperIcon } from '@/svgs'
 
+import KyberZapperIncreasePane from './FusionAdd/KyberZapperIncreasePane'
 import KyberZapperPane from './FusionAdd/KyberZapperPane'
 import ManualAdd from './FusionAdd/ManualAdd'
 
@@ -75,18 +76,16 @@ export default function ManualAddPanel({
   return (
     <div className='flex flex-col'>
       <>
-        <div className={cn('flex flex-row justify-between gap-2', position && 'justify-end')}>
-          {!mintInfo?.noLiquidity && !position && (
-            <Selection
-              className='w-full flex-1 items-stretch md:h-11'
-              classNames={{
-                items: 'md:text-sm text-xs',
-              }}
-              data={addSelections}
-              isFull
-              isTranslation={false}
-            />
-          )}
+        <div className={cn('flex flex-row justify-between gap-2')}>
+          <Selection
+            className='w-full flex-1 items-stretch md:h-11'
+            classNames={{
+              items: 'md:text-sm text-xs',
+            }}
+            data={addSelections}
+            isFull
+            isTranslation={false}
+          />
           <EmphasisIconButton
             className='size-11'
             classNames='size-4 stroke-neutral-400'
@@ -125,15 +124,21 @@ export default function ManualAddPanel({
       )} */}
 
       {isZapper ? (
-        <KyberZapperPane
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          mintInfo={mintInfo}
-          currentPrice={currentPrice}
-          strategy={strategy}
-          onShowModalSuccess={onShowModalSuccess}
-          handleBack={handleBack}
-        />
+        <>
+          {position ? (
+            <KyberZapperIncreasePane position={position} onShowModalSuccess={onShowModalSuccess} />
+          ) : (
+            <KyberZapperPane
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              mintInfo={mintInfo}
+              currentPrice={currentPrice}
+              strategy={strategy}
+              onShowModalSuccess={onShowModalSuccess}
+              handleBack={handleBack}
+            />
+          )}
+        </>
       ) : (
         <ManualAdd
           baseCurrency={baseCurrency}
