@@ -30,7 +30,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const pid = searchParams.get('pid')
 
   const position = usePositionInfo({ tokenId: pid, poolAddress, type })
-  console.log({ position })
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 

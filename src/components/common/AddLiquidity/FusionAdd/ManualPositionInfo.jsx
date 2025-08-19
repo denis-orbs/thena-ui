@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import BigNumber from 'bignumber.js'
+import { useContext, useMemo, useState } from 'react'
+import { Position } from 'thenafi-fusion-sdk'
 import { useTranslations } from 'use-intl'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -6,6 +8,10 @@ import CircleImage from '@/components/image/CircleImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
+import { ManualsContext } from '@/context/manualsContext'
+import { useFarmPositions } from '@/hooks/position/useFarmPosition'
+import { useManualPositions } from '@/hooks/position/useManualPosition'
+import usePrevious from '@/hooks/usePrevious'
 import { cn, formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
@@ -15,6 +21,37 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
   const t = useTranslations()
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
+
+  const { mutateManual } = useContext(ManualsContext)
+
+  const farmingPos = useFarmPositions(type === 'CL_Farming' && position.pool ? [position.pool] : [])
+  const manualPos = useManualPositions(type === 'CL_SwapFee' && position.pool ? [position.pool] : [])
+
+  const _position = type === 'CL_Farming' ? farmingPos?.[0] : manualPos?.[0]
+
+  const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fusionState, fusion } = _position || {}
+  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
+  const [reward0, reward1] = rewards || []
+
+  const [, _fusion] = useMemo(() => {
+    if (!fusion && prevFusion && prevFusionState) {
+      return [prevFusionState, prevFusion]
+    }
+
+    return [fusionState, fusion]
+  }, [fusion, fusionState, prevFusion, prevFusionState])
+
+  const _position2 = useMemo(() => {
+    if (_fusion) {
+      return new Position({
+        pool: _fusion,
+        liquidity: new BigNumber(liquidity).toString(10),
+        tickLower,
+        tickUpper,
+      })
+    }
+    return undefined
+  }, [liquidity, _fusion, tickLower, tickUpper])
 
   return (
     <>
@@ -131,17 +168,17 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         />
       )}
 
-      {position.rewards && (
+      {position.rewards && _position && (
         <RemoveManualModal
           popup={removePopup}
           setPopup={setRemovePopup}
-          pool={position.pool}
-          position={position}
-          reward0={position.rewards?.[0]}
-          reward1={position.rewards?.[1]}
-          // mutateManual={mutateManual}
+          pool={type === 'CL_Farming' ? { ..._position, key: poolKey } : { _position }}
+          position={_position2}
+          reward0={type === 'CL_Farming' ? _position?.rewards[0] : reward0}
+          reward1={type === 'CL_Farming' ? _position?.rewards[1] : reward1}
+          mutateManual={mutateManual}
           outOfRange={position.outOfRange}
-          fee={position.fusion?.fee || 0}
+          fee={_fusion?.fee || 0}
         />
       )}
     </>

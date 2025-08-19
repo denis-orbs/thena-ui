@@ -44,8 +44,8 @@ export default function RemoveManualModal({
   const onRemove = useCallback(() => {
     const farmReward = pool?.isFarming
       ? {
-          reward0: reward0.amount,
-          reward1: reward1.amount,
+          reward0: reward0?.amount,
+          reward1: reward1?.amount,
           poolkey: pool.key,
         }
       : {}
@@ -79,8 +79,8 @@ export default function RemoveManualModal({
     onAlgebraRemove,
     pool,
     position,
-    reward0.amount,
-    reward1.amount,
+    reward0?.amount,
+    reward1?.amount,
     setPopup,
     slippage,
   ])
