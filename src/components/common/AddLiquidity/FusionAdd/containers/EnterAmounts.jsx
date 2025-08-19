@@ -20,6 +20,7 @@ export function EnterAmounts({
   position,
   isSmall,
   className,
+  classNames,
 }) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
@@ -114,7 +115,7 @@ export function EnterAmounts({
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
-        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
       />
       <TokenAmountCard
         currency={currencyB}
@@ -128,7 +129,7 @@ export function EnterAmounts({
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
-        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
       />
     </div>
   )

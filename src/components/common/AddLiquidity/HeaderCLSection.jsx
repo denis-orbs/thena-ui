@@ -163,7 +163,7 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
       </div>
 
       <div className='flex flex-col justify-end xl:gap-1'>
-        <NewTextSubHeading className='xl:text-5 bg-[linear-gradient(90deg,_#B386FF_0%,_#FF86FA_100%)] bg-clip-text text-end text-xs font-bold text-transparent md:text-xl md:leading-6 xl:leading-7'>
+        <NewTextSubHeading className='xl:text-5 text-primary-600 text-end text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
           {formatAmount(
             APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
               ? strategy?.apr
@@ -341,16 +341,18 @@ export default function HeaderCLSection({
           />
           <div className='flex flex-col gap-2'>
             <NewTextHeading className='text-xl! leading-6! text-neutral-300 lg:text-[36px]! lg:leading-[40px]!'>
-              {t('Add Liquidity')}
+              {position ? t('Manage Liquidity') : t('Add Liquidity')}
             </NewTextHeading>
             <TextHeading className='text-xs font-medium lg:hidden lg:text-2xl'>
-              {t('Concentrated Liquidity')}
+              {position
+                ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}`
+                : t('Concentrated Liquidity')}
             </TextHeading>
           </div>
         </div>
 
         <TextHeading className='hidden text-xs font-medium lg:flex lg:text-2xl'>
-          {t('Concentrated Liquidity')}
+          {position ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}` : t('Concentrated Liquidity')}
         </TextHeading>
 
         {mintInfo.noLiquidity && (
@@ -382,7 +384,7 @@ export default function HeaderCLSection({
         )}
       </div>
 
-      <div className='lg:mt-auto'>
+      <div className={cn(position ? 'mt-0' : 'lg:mt-16')}>
         {isAutomatic ? (
           strategyAutoData.length > 0 && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />
         ) : (

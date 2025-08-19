@@ -95,13 +95,14 @@ export function RangeAndPricePanel({
           className,
         )}
         isMiniItem={!isMobile}
+        classNames={{ items: 'border border-neutral-600' }}
       />
     ),
     [mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection],
   )
 
   return (
-    <div className='grid grid-cols-1 gap-4 border-none border-neutral-600 bg-transparent lg:grid-cols-[1fr_368px] lg:rounded-xl lg:border lg:bg-neutral-900 lg:p-4'>
+    <div className='grid grid-cols-1 gap-4 bg-transparent max-lg:border-none lg:grid-cols-[1fr_368px] lg:rounded-xl lg:border lg:border-neutral-600 lg:bg-neutral-900 lg:p-4'>
       {/* Main Chart Section */}
       <div className='order-2 flex h-auto flex-col gap-4 lg:order-1'>
         {viewMode && (
@@ -182,7 +183,7 @@ export function RangeAndPricePanel({
               />
 
               {/* Desktop PresetRanges */}
-              <div className='max-lg:hidden'>
+              <div className='mt-auto max-lg:hidden'>
                 <PresetRangesComponent className='mt-auto' />
               </div>
             </>

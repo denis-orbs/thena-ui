@@ -130,8 +130,9 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                     className='overflow-hidden xl:hidden'
                   >
                     {!pool ? (
-                      <div className='mt-2 h-max flex-col gap-2 rounded-md bg-neutral-800 p-4'>
-                        {/* new deposit content */}
+                      <div className='mt-2 flex h-max flex-col gap-2 rounded-md bg-neutral-800 p-4'>
+                        <NewTextSubHeading className='font-archia text-xl!'>{t('New Deposit')}</NewTextSubHeading>
+                        <Paragraph className='text-neutral-400'>{t('New Deposit description')}</Paragraph>
                       </div>
                     ) : (
                       <PoolReserveSection pool={pool} className='mb-4 block xl:hidden' showMyInfo={!isManage} />
@@ -153,7 +154,6 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                       subtitle: 'text-sm!',
                       container: 'gap-1',
                     }}
-                    className='p-4!'
                   />
                 </div>
                 <div className={cn('hidden max-xl:block', isManage ? 'block! xl:order-1 xl:mb-6' : 'xl:order-2')}>
@@ -183,7 +183,13 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
 
         {/* Right side */}
-        <div className={cn('order-2 flex flex-col gap-6', isManage ? 'flex-[6]' : 'flex-[4] xl:pt-[104px]')}>
+        <div
+          className={cn(
+            'order-2 flex flex-col gap-6',
+            isManage ? 'flex-[6]' : 'flex-[4] xl:pt-[104px]',
+            !pool && 'xl:pt-[88px]',
+          )}
+        >
           {!pair && (
             <div className='mt-4 hidden h-max flex-col gap-2 rounded-md bg-neutral-800 p-4 xl:flex'>
               <NewTextSubHeading className='font-archia text-xl!'>{t('New Deposit')}</NewTextSubHeading>

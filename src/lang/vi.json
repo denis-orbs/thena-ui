@@ -1626,5 +1626,6 @@
   "This is Idle": "This is Idle",
   "Degen Mode": "Chế độ Degen",
   "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding",
-  "Your Position": "Your Position"
+  "Your Position": "Your Position",
+  "Manage Liquidity": "Manage Liquidity"
 }

@@ -99,7 +99,7 @@ export default function ActivePriceRangeChart({
                 yScale={yScale}
                 xValue={xAccessor}
                 yValue={yAccessor}
-                maxBarWidth={117}
+                maxBarWidth={isLgDown ? 66 : 117}
               />
             )}
             {!disableBrush && (

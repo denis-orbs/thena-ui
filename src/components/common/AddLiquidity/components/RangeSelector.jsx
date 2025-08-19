@@ -79,7 +79,7 @@ function RangePart({
   }, [activePreset, title, value])
 
   return (
-    <div className='flex min-w-0 items-center justify-between rounded-xl border border-neutral-700 bg-neutral-950 px-3 py-2'>
+    <div className='flex min-w-0 items-center justify-between rounded-xl bg-neutral-950 px-3 py-2 max-lg:border max-lg:border-neutral-700'>
       <div className='flex min-w-0 flex-1 flex-col p-0'>
         <TextSubHeading className='truncate text-[10px]! leading-4!'>
           {t(title === 'Min' ? 'Min [symbol0] per [symbol1] price' : 'Max [symbol0] per [symbol1] price', {

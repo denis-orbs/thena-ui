@@ -15,7 +15,7 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
-import { cn, formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import { InfoIcon } from '@/svgs'
@@ -42,9 +42,9 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     return undefined
   }, [farmingPos, manualPos, type])
 
-  const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fusionState, fusion } = _position || {}
+  const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fees, fusionState, fusion } = _position || {}
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
-  const [reward0, reward1] = rewards || []
+  const [reward0, reward1] = type === 'CL_Farming' ? rewards || [] : fees || []
 
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {
@@ -65,8 +65,6 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     }
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
-
-  console.log({ incentiveAddress, position })
 
   const ButtonsDisplay = useMemo(
     () => (
@@ -181,12 +179,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                   <>
                     <InfoIcon className='h-4 w-4 stroke-neutral-400 max-xl:hidden' data-tooltip-id='net-reward' />
                     <CustomTooltip id='net-reward'>
-                      <p className={cn(position.rewards && position.rewards[0] === 0n && 'hidden')}>
-                        {`${formatAmount(fromWei(position.rewards?.[0] ?? 0n, 18))} THE`}
-                      </p>
-                      <p className={cn(position.rewards && position.rewards[1] === 0n && 'hidden')}>
-                        {`${formatAmount(fromWei(position.rewards?.[1] ?? 0n, 18))} WBNB`}
-                      </p>
+                      <p>{`${formatAmount(reward0?.amount?.toSignificant())} THE`}</p>
+                      <p>{`${formatAmount(reward1?.amount?.toSignificant())} WBNB`}</p>
                     </CustomTooltip>
                   </>
                 ) : (
@@ -194,14 +188,14 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                     <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='net-reward' />
                     <CustomTooltip id='net-reward'>
                       <p>
-                        {`${formatAmount(
-                          fromWei(position?.fees[0], position.rewards[0]?.token?.decimals),
-                        )} ${unwrappedSymbol(position?.rewards[0]?.token)}`}
+                        {`${formatAmount(reward0?.amount?.toSignificant())} ${unwrappedSymbol(
+                          position?.rewards[0]?.token,
+                        )}`}
                       </p>
                       <p>
-                        {`${formatAmount(
-                          fromWei(position?.fees[1], position.rewards[1]?.token?.decimals),
-                        )} ${unwrappedSymbol(position?.rewards[1]?.token)}`}
+                        {`${formatAmount(reward1?.amount?.toSignificant())} ${unwrappedSymbol(
+                          position?.rewards[1]?.token,
+                        )}`}
                       </p>
                     </CustomTooltip>
                   </>
@@ -224,8 +218,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           popup={claimPopup}
           setPopup={setClaimPopup}
           pool={position.pool}
-          reward0={position.rewards[0]}
-          reward1={position.rewards[1]}
+          reward0={reward0}
+          reward1={reward1}
           // mutate={refetchFarm}
           outOfRange={position.outOfRange}
           fee={position.fusion?.fee || 0}
@@ -238,8 +232,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           setPopup={setRemovePopup}
           pool={type === 'CL_Farming' ? { ..._position, key: poolKey } : _position}
           position={_position2}
-          reward0={type === 'CL_Farming' ? _position?.rewards[0] : reward0}
-          reward1={type === 'CL_Farming' ? _position?.rewards[1] : reward1}
+          reward0={reward0}
+          reward1={reward1}
           mutateManual={mutateManual}
           outOfRange={position.outOfRange}
           fee={_fusion?.fee || 0}

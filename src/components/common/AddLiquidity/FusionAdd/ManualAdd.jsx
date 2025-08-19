@@ -31,6 +31,7 @@ export default function ManualAdd({
   handleBack,
   slippage = 0.5,
   className,
+  classNames,
 }) {
   const t = useTranslations()
   const stableAssets = useStableTokens()
@@ -134,6 +135,7 @@ export default function ManualAdd({
           position={position}
           isSmall
           className={className}
+          classNames={classNames}
         />
       </div>
 

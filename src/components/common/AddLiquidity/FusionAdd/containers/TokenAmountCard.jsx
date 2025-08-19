@@ -131,6 +131,7 @@ export function TokenAmountCard({
               'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
               isSmall && 'box-border gap-1! px-3! py-2!',
               isInvalidAmount && 'border-error-600 focus-within:border-error-500',
+              classNames?.inputWrapper,
             )}
             onClick={onfocusInput}
           >
