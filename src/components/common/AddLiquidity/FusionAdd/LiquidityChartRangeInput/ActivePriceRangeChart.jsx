@@ -26,6 +26,7 @@ export default function ActivePriceRangeChart({
   container,
   divideDistanceWidth,
   showLiquidity,
+  setIsFlip = () => {},
 }) {
   // const [currentHover, setCurrentHover] = useState(null)
   const { isLgDown } = useMediaQuery()
@@ -136,6 +137,7 @@ export default function ActivePriceRangeChart({
             divideDistanceWidth={divideDistanceWidth}
             currentPrice={current}
             axisLabelPaneWidth={axisLabelPaneWidth}
+            setIsFlip={setIsFlip}
           />
           {/* <AxisRight
             yScale={yScale}

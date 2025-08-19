@@ -26,7 +26,6 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
   const { onV1Remove, pending: v1Pending } = useV1Remove()
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
-  // const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
   const t = useTranslations()
 
   const version = useMemo(() => strategy?.account?.version ?? 3, [strategy])
@@ -87,9 +86,6 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
         hasRewards: !!strategy.rewardUsd,
       })
     }
-    // else if (strategy.title === 'DefiEdge') {
-    //   onDefiedgeRemove(strategy, amount, callback)
-    // }
   }, [
     errorMsg,
     strategy,

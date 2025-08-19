@@ -75,7 +75,7 @@ export default function DepositCLPanel({
   pair,
 }) {
   return (
-    <div className='z-20 grid flex-row gap-2 lg:grid-cols-[1fr_384px]'>
+    <div className='z-20 grid flex-row gap-4 xl:grid-cols-[1fr_384px]'>
       <AddLiquidityCLPane
         baseCurrency={baseCurrency}
         quoteCurrency={quoteCurrency}
@@ -89,7 +89,7 @@ export default function DepositCLPanel({
         handleBack={handleBack}
         slippage={slippage}
       />
-      <div className='hidden lg:block'>
+      <div className='hidden xl:block'>
         <PoolAttributes pair={pair} strategy={strategy} />
       </div>
     </div>

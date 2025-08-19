@@ -189,7 +189,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                     <div className='flex flex-nowrap items-center gap-2'>
                       <CircleImage
                         className='size-5'
-                        src={position?.rewards[0]?.token?.logoURI || UNKNOWN_LOGO}
+                        src={position?.rewards?.[0]?.token?.logoURI || UNKNOWN_LOGO}
                         alt='reward 0'
                       />
                       <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
@@ -199,7 +199,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                     <div className='flex flex-nowrap items-center gap-2'>
                       <CircleImage
                         className='size-5'
-                        src={position?.rewards[1]?.token?.logoURI || UNKNOWN_LOGO}
+                        src={position?.rewards?.[1]?.token?.logoURI || UNKNOWN_LOGO}
                         alt='reward 1'
                       />
                       <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>

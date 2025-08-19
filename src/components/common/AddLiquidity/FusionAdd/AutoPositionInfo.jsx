@@ -182,20 +182,12 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
 
   const ButtonsDisplay = useMemo(
     () => (
-      <div className={cn('grid grid-cols-3 gap-2', position?.staked && 'grid-cols-2')}>
-        {/* {!position?.staked && (
-          <EmphasisButton
-            className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-            onClick={() => setRemovePopup(true)}
-          >
-            {t('Remove')}
-          </EmphasisButton>
-        )} */}
+      <div className={cn('grid grid-cols-3 gap-2')}>
         <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
           onClick={() => setRemovePopup(true)}
         >
-          {t('Remove')}
+          {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}

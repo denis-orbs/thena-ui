@@ -76,6 +76,7 @@ export default function ChartPriceRangeInput({
   const { startPriceTypedValue, presetRange } = useV3MintState()
   const dispatch = useDispatch()
   const { isReverse } = useSelector(state => state.fusion)
+  const [isFlip, setIsFlip] = useState(false)
 
   const [zoomFactor, setZoomFactor] = useState(1)
   const [boundaryPrices, setBoundaryPrices] = useState()
@@ -88,7 +89,10 @@ export default function ChartPriceRangeInput({
 
   const { APRs } = useAprStore()
 
-  const isFullRange = useMemo(() => activePreset === Presets.FULL, [activePreset])
+  const isFullRange = useMemo(
+    () => activePreset === Presets.FULL || (ticksAtLimit[Bound.LOWER] && ticksAtLimit[Bound.UPPER]),
+    [activePreset, ticksAtLimit],
+  )
 
   const isUninitialized = useMemo(() => !currencyA || !currencyB, [currencyA, currencyB])
 
@@ -271,22 +275,22 @@ export default function ChartPriceRangeInput({
   const chartSize = useMemo(
     () => ({
       chartContainerWidth: containerRef?.current?.offsetWidth || 300,
-      chartContainerHeight: containerRef?.current?.offsetHeight || height,
+      chartContainerHeight: height ?? containerRef?.current?.offsetHeight,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [containerRef?.current, windowSize],
+    [containerRef?.current, windowSize, height],
   )
 
   useEffect(() => {
     if (
-      isOutOfView &&
-      zoomFactor === 1 &&
-      !isFullRange &&
-      priceLower &&
-      priceUpper &&
-      // Full Range
-      Number(priceLower.toSignificant(6)) > 2.9543e-39 &&
-      Number(priceUpper.toSignificant(6)) < 3.3849e38
+      (isOutOfView &&
+        zoomFactor === 1 &&
+        !isFullRange &&
+        priceLower &&
+        priceUpper &&
+        // Full Range
+        !isFullRange) ||
+      (isFlip && !isFullRange)
     ) {
       const interval = setInterval(() => {
         setRange(prev => {
@@ -300,7 +304,7 @@ export default function ChartPriceRangeInput({
     if (isFullRange) {
       setRange(2)
     }
-  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper])
+  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper, isFlip])
 
   useEffect(() => {
     const pairPricesLength = pairPrices.length
@@ -530,14 +534,14 @@ export default function ChartPriceRangeInput({
                       </div>
                       <div
                         className={cn(
-                          'flex w-full items-center justify-between border-t-2 border-neutral-800',
+                          'flex max-h-8 w-full items-center justify-between border-t-2 border-neutral-800',
                           classNames?.bottomAxis,
                         )}
                       >
-                        <svg width={chartPriceWidth || '100%'} height='100%' viewBox={`0 0 ${chartPriceWidth} ${40}`}>
-                          <AxisBottomTime timeWindow={timeWindow} xScale={timeXScale} innerHeight={40} offset={40} />
+                        <svg width={chartPriceWidth || '100%'} height='100%' viewBox={`0 0 ${chartPriceWidth} ${32}`}>
+                          <AxisBottomTime timeWindow={timeWindow} xScale={timeXScale} innerHeight={32} offset={32} />
                         </svg>
-                        <div className='z-20 flex items-center gap-2 rounded-md text-base text-neutral-300 max-lg:hidden'>
+                        <div className='z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
                           <CheckBox
                             className='size-5! rounded-sm'
                             checked={showLiquidity}
@@ -565,7 +569,7 @@ export default function ChartPriceRangeInput({
                           }}
                           dimensions={{
                             width: chartSize.chartContainerWidth,
-                            height: chartSize.chartContainerHeight - 40,
+                            height: chartSize.chartContainerHeight - 32,
                             contentWidth: chartSize.chartContainerWidth,
                             axisLabelPaneWidth: desktopSizes.rightAxisWidth,
                             padding: (chartSize.chartContainerHeight * 0.2 + 28) / 2,
@@ -592,6 +596,7 @@ export default function ChartPriceRangeInput({
                             (windowSize.width > 768 ? 133 : 41)
                           }
                           showLiquidity={showLiquidity}
+                          setIsFlip={setIsFlip}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />

@@ -32,7 +32,7 @@ function DepositIcon({ sub, title }) {
     return (
       <div className='flex flex-col items-center gap-1'>
         <CircleImage alt={title} className='size-4' src={sub.allowed.logoURI} />
-        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
       </div>
     )
   }
@@ -46,7 +46,7 @@ function DepositIcon({ sub, title }) {
           logo1={sub.token0.logoURI}
           logo2={sub.token1.logoURI}
         />
-        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
       </div>
     )
   }
@@ -104,7 +104,7 @@ function StrategyItem({ sub, t }) {
         <div className='mt-1 flex flex-wrap gap-2'>
           <div className='flex items-center gap-1'>
             <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
-            <Paragraph className='text-xs font-medium text-neutral-300 lg:text-xs'>
+            <Paragraph className='text-xs font-medium text-neutral-300 xl:text-xs'>
               ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
             </Paragraph>
           </div>
@@ -370,7 +370,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 viewMode={Boolean(position)}
               />
             ) : (
-              <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 lg:grid-cols-[1fr_368px]'>
+              <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 xl:grid-cols-[1fr_368px]'>
                 <AutomaticLiquidityChart
                   label='Liquidity Range'
                   currencyA={currencyA ?? undefined}

@@ -138,7 +138,7 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
   return (
     <article
       className={cn(
-        'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 p-4 font-medium md:px-5 md:py-4',
+        'bg-opacity-50 flex items-center justify-between rounded-xl border border-neutral-600 bg-neutral-900 font-medium md:px-4 md:py-2',
       )}
     >
       <div className='flex items-center gap-1 md:gap-3 xl:gap-2'>
@@ -394,7 +394,7 @@ export default function HeaderCLSection({
       {isLoading ? (
         <Skeleton className='h-[150px]' />
       ) : (
-        <div className={cn(position ? 'mt-0' : 'lg:mt-16')}>
+        <div className={cn(position ? 'mt-0' : 'lg:mt-18')}>
           {!isAutomatic ? (
             <>
               {mintInfo.noLiquidity ? (

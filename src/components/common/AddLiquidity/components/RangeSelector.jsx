@@ -51,6 +51,12 @@ function RangePart({
     dispatch(updateSelectedPreset({ preset: null }))
   }, [onUserInput, localTokenValue, dispatch])
 
+  const handleKeyDown = useCallback(e => {
+    if (e.key === 'Enter') {
+      e.target.blur()
+    }
+  }, [])
+
   // for button clicks
   const handleDecrement = useCallback(() => {
     onUserInput(decrement())
@@ -93,10 +99,10 @@ function RangePart({
           placeholder='0.0'
           value={localTokenValue}
           onChange={e => {
-            // replace commas with periods, because uniswap exclusively uses period as the decimal separator
             enforcer(e.target.value.replace(/,/g, '.'))
           }}
           onBlur={handleOnBlur}
+          onKeyDown={handleKeyDown}
           min={0}
           disabled={disabled || locked}
           onFocus={e => e.target.select()}

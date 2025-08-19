@@ -97,7 +97,11 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 
           onAmountChange={setAmount}
           showPercent={false}
           assetsSelect={[asset0, asset1, BNB]}
-          classNames={{ dropdown: 'lg:grid-cols-1! md:grid-cols-2!', input: 'bg-neutral-950 hover:bg-neutral-900' }}
+          classNames={{
+            dropdown: 'lg:grid-cols-1! md:grid-cols-2!',
+            input: 'bg-neutral-950 hover:bg-neutral-900 px-3! py-2!',
+          }}
+          isSmall
         />
 
         <div

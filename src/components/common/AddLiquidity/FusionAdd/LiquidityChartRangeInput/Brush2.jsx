@@ -64,6 +64,7 @@ const Brush2 = ({
   divideDistanceWidth,
   currentPrice,
   handleShow,
+  setIsFlip = () => {},
 }) => {
   const { isLgDown } = useMediaQuery()
   const t = useTranslations()
@@ -109,13 +110,14 @@ const Brush2 = ({
     [localBrushExtent, brushExtent],
   )
   const flipNorthHandle = useMemo(
-    () => yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX,
+    () => yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX + 16,
     [normalizedBrushExtent, yScale],
   )
   const flipSouthHandle = useMemo(
     () => yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX,
     [normalizedBrushExtent, yScale, height],
   )
+
   const showNorthArrow = useMemo(
     () => normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) < 0 || yScale(normalizedBrushExtent[1]) < 0),
     [normalizedBrushExtent, yScale],
@@ -133,6 +135,14 @@ const Brush2 = ({
     () => normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height,
     [normalizedBrushExtent, yScale, height],
   )
+
+  useEffect(() => {
+    if (flipNorthHandle || flipSouthHandle) {
+      setIsFlip(true)
+    } else {
+      setIsFlip(false)
+    }
+  }, [flipNorthHandle, flipSouthHandle, setIsFlip])
 
   // Only update out-of-view state if changed
   useEffect(() => {
@@ -571,7 +581,7 @@ const Brush2 = ({
                       transform='scale(1,-1)'
                       color={interactive ? '#F199EE' : '#35243D'}
                     >
-                      {t('range out of view')}
+                      {t(isFullRange ? 'Full Range' : 'range out of view')}
                     </text>
                   </g>
                 )}
@@ -609,7 +619,7 @@ const Brush2 = ({
                       fontFamily='Archia'
                       color={interactive ? '#F199EE' : '#35243D'}
                     >
-                      {t('range out of view')}
+                      {t(isFullRange ? 'Full Range' : 'range out of view')}
                     </text>
                   </g>
                 )}

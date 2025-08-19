@@ -124,7 +124,7 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='flex flex-col gap-4'>
+    <section className='flex flex-col gap-6'>
       <div className={cn('flex flex-col gap-4 xl:gap-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <EnterAmounts
           currencyA={baseCurrency}

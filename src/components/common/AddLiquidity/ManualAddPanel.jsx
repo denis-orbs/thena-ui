@@ -152,8 +152,8 @@ export default function ManualAddPanel({
           position={position}
           handleBack={handleBack}
           slippage={slippage}
-          className={cn(position && 'grid grid-cols-1!')}
-          classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900' }}
+          className={cn(position && 'grid grid-cols-1! gap-2!')}
+          classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1!' }}
         />
       )}
     </div>

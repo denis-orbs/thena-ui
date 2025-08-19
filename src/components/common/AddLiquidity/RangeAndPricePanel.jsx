@@ -34,11 +34,15 @@ export function RangeAndPricePanel({
   const t = useTranslations()
   const [degenMode, setDegenMode] = useState(false)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
-
   const activePreset = useActivePreset()
   const stableAssets = useStableTokens()
   const dispatch = useDispatch()
   const { isLgDown } = useMediaQuery()
+
+  const chartHeight = useMemo(() => {
+    if (isLgDown) return 279
+    if (position) return 328
+  }, [isLgDown, position])
 
   const isStablecoinPair = useMemo(() => {
     if (STABLE_PAIRS.includes(mintInfo.poolAddress?.toLowerCase())) return true
@@ -102,59 +106,57 @@ export function RangeAndPricePanel({
   )
 
   return (
-    <div className='grid grid-cols-1 gap-4 bg-transparent max-lg:border-none lg:grid-cols-[1fr_368px] lg:rounded-xl lg:border lg:border-neutral-600 lg:bg-neutral-900 lg:p-4'>
+    <div className='grid grid-cols-1 gap-4 bg-transparent max-xl:border-none xl:grid-cols-[1fr_368px] xl:gap-8 xl:rounded-xl xl:border xl:border-neutral-600 xl:bg-neutral-900 xl:p-4 xl:pb-1.5'>
       {/* Main Chart Section */}
-      <div className='order-2 flex h-auto flex-col gap-4 lg:order-1'>
+      <div className='order-2 flex h-auto flex-col gap-4 xl:order-1'>
         {viewMode && (
           <>
-            <TextHeading className={cn('font-archia block text-xl! leading-6! font-semibold lg:hidden')}>
+            <TextHeading className={cn('font-archia block text-xl! leading-6! font-semibold xl:hidden')}>
               {t('Your Range against the Price')}
             </TextHeading>
 
             {/* Mobile ViewMode: Show RangePriceInfo */}
-
-            <div className='block lg:hidden'>
+            <div className='block xl:hidden'>
               <RangePriceInfoComponent />
             </div>
           </>
         )}
 
-        <ChartPriceRangeInput
-          currencyA={currencyA ?? undefined}
-          currencyB={currencyB ?? undefined}
-          feeAmount={mintInfo.dynamicFee}
-          ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-          price={currentPrice ? parseFloat(currentPrice) : undefined}
-          priceLower={position?.priceLower ?? priceLower}
-          priceUpper={position?.priceUpper ?? priceUpper}
-          onLeftRangeInput={onLeftRangeInput}
-          onRightRangeInput={onRightRangeInput}
-          showPeriod
-          handleShow
-          outOfRange={position?.outOfRange ?? mintInfo.outOfRange}
-          invalidRange={mintInfo.invalidRange}
-          fullRangeWarningShown={fullRangeWarningShown}
-          isCreate={mintInfo.noLiquidity}
-          setLastPrice={setLastPrice}
-          label='Your Range against the Price'
-          // view mode === true and isLgDown === true => hide label
-          // view mode === false => show label
-          // view mode === true and isLgDown === false => show label
-          showLabel={!viewMode || !isLgDown}
-          classNames={{
-            title: 'xl:text-5 xl:leading-6',
-            chart: 'h-full!',
-            handleArea: 'max-lg:bg-chart-gradient!',
-            bottomAxis: 'max-lg:border-none!',
-          }}
-          interactive={!viewMode || !position}
-          height={279}
-        />
+        <div className='chart-wrapper flex-1'>
+          <ChartPriceRangeInput
+            currencyA={currencyA ?? undefined}
+            currencyB={currencyB ?? undefined}
+            feeAmount={mintInfo.dynamicFee}
+            ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+            price={currentPrice ? parseFloat(currentPrice) : undefined}
+            priceLower={position?.priceLower ?? priceLower}
+            priceUpper={position?.priceUpper ?? priceUpper}
+            onLeftRangeInput={onLeftRangeInput}
+            onRightRangeInput={onRightRangeInput}
+            showPeriod
+            handleShow
+            outOfRange={position?.outOfRange ?? mintInfo.outOfRange}
+            invalidRange={mintInfo.invalidRange}
+            fullRangeWarningShown={fullRangeWarningShown}
+            isCreate={mintInfo.noLiquidity}
+            setLastPrice={setLastPrice}
+            label='Your Range against the Price'
+            showLabel={!viewMode || !isLgDown}
+            classNames={{
+              title: 'xl:text-5 xl:leading-6',
+              chart: 'h-full!',
+              handleArea: 'max-xl:bg-chart-gradient!',
+              bottomAxis: 'max-xl:border-none!',
+            }}
+            interactive={!viewMode || !position}
+            height={isLgDown ? 279 : chartHeight}
+          />
+        </div>
       </div>
 
       {/* Sidebar Section */}
-      <div className={cn('order-1 h-auto items-center justify-center lg:order-2 lg:flex', viewMode && 'max-lg:hidden')}>
-        <div className='flex flex-col gap-4 lg:h-full'>
+      <div className={cn('order-1 h-auto items-center justify-center xl:order-2 xl:flex', viewMode && 'max-xl:hidden')}>
+        <div className='flex flex-col gap-4 xl:h-full'>
           {!viewMode ? (
             <>
               <RangeSelector
@@ -183,13 +185,13 @@ export function RangeAndPricePanel({
               />
 
               {/* Desktop PresetRanges */}
-              <div className='mt-auto max-lg:hidden'>
+              <div className='mt-auto mb-2.5 max-xl:hidden'>
                 <PresetRangesComponent className='mt-auto' />
               </div>
             </>
           ) : (
             /* Desktop ViewMode Content */
-            <div className='hidden flex-col gap-3 lg:flex'>
+            <div className='hidden flex-col gap-3 xl:flex'>
               <RangePriceInfoComponent />
               <AddLiquidityCLPane
                 baseCurrency={currencyA}
@@ -209,7 +211,7 @@ export function RangeAndPricePanel({
       </div>
 
       {/* Mobile Bottom Section */}
-      <div className='order-3 lg:hidden'>
+      <div className='order-3 xl:hidden'>
         {viewMode ? (
           <AddLiquidityCLPane
             baseCurrency={currencyA}

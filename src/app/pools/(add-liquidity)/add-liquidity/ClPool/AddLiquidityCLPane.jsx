@@ -34,7 +34,7 @@ export default function AddLiquidityCLPane({
   if (!strategy) return <div />
 
   return (
-    <div className='flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
+    <div className='flex w-full flex-col gap-6 xl:flex-row xl:gap-8'>
       <div className='w-full flex-6 flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
           <FusionAdd
