@@ -317,20 +317,15 @@ export default function HeaderCLSection({
     [handleChooseStrategy, setIsAutomatic, sortedSubPools],
   )
 
-  // Memoize grid class names
-  const gridClassName = useMemo(
-    () =>
-      cn(
+  return (
+    <div
+      className={cn(
         'grid gap-4 lg:grid-cols-[1fr_368px] lg:gap-8',
         !isAutomatic && mintInfo.noLiquidity && 'lg:grid-cols-[476px_1fr]',
         isAutomatic && 'lg:grid-cols-[1fr_568px]',
-        position && 'lg:grid-cols-[1fr_568px]',
-      ),
-    [isAutomatic, mintInfo.noLiquidity, position],
-  )
-
-  return (
-    <div className={gridClassName}>
+        position && 'lg:grid-cols-[1fr_650px]',
+      )}
+    >
       <div className='flex flex-col gap-4 lg:gap-2'>
         <div className='flex flex-row items-center gap-2 lg:gap-8'>
           {/* <NewIconGroup
@@ -369,11 +364,7 @@ export default function HeaderCLSection({
 
         {position ? (
           <div className='mt-auto max-lg:hidden'>
-            <PoolAttributes
-              pair={pair}
-              strategy={strategy}
-              classNames={{ wrapper: 'w-full', container: 'w-[426px]' }}
-            />
+            <PoolAttributes pair={pair} strategy={strategy} classNames={{ wrapper: 'w-full', container: 'w-full' }} />
           </div>
         ) : (
           <div className='flex flex-col gap-0 xl:gap-4'>

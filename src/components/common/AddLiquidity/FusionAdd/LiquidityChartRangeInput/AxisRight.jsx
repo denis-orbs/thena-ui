@@ -128,7 +128,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
               fill='#292929'
             />
             <text x={(5 + labelWidth) / 2} y={maxY + paddingY / 2} textAnchor='middle' fontSize='12' fill='#F199EE'>
-              {max <= 1e-3 ? max.toExponential(0) : formatPrice(max)}
+              {max <= 1e-5 ? max.toExponential(0) : formatPrice(max)}
             </text>
           </g>
         )}

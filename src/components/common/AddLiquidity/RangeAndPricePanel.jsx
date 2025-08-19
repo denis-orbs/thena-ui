@@ -176,7 +176,7 @@ export function RangeAndPricePanel({
               <Toggle
                 toggleId='degen-mode'
                 checked={degenMode}
-                className='mt-0!'
+                className='mt-0! hidden' // TODO: remove hidden when degen mode is ready
                 onChange={() => setDegenMode(prev => !prev)}
                 label='Degen Mode'
               />

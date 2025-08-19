@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useContext, useMemo, useState } from 'react'
 import { Position } from 'thenafi-fusion-sdk'
 import { useTranslations } from 'use-intl'
+import { zeroAddress } from 'viem'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
@@ -9,6 +10,8 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
+import { useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
@@ -26,7 +29,9 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
 
   const farmingPos = useFarmPositions(type === 'CL_Farming' && position.pool ? [position.pool] : [])
   const manualPos = useManualPositions(type === 'CL_SwapFee' && position.pool ? [position.pool] : [])
+  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
 
+  const { incentiveAddress } = usePoolAlgebraInfo(baseCurrency?.address, quoteCurrency?.address)
   const _position = useMemo(() => {
     if (type === 'CL_Farming') {
       return farmingPos?.[0]
@@ -61,6 +66,55 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
+  console.log({ incentiveAddress, position })
+
+  const ButtonsDisplay = useMemo(
+    () => (
+      <div className='flex w-full gap-3'>
+        <EmphasisButton className='max-lg:flex-1' onClick={() => setRemovePopup(true)}>
+          {t('Remove')}
+        </EmphasisButton>
+        <EmphasisButton className='max-lg:flex-1' onClick={() => setClaimPopup(true)}>
+          {t('Claim')}
+        </EmphasisButton>
+        {/* earn $THE just display if position is Farming and not earning */}
+        {!(
+          _position?.isFarming ||
+          !incentiveAddress ||
+          incentiveAddress === zeroAddress ||
+          _position?.deployer !== zeroAddress ||
+          Number(liquidity) <= 0
+        ) && (
+          <EmphasisButton
+            className='max-lg:flex-1'
+            disabled={isEnterFarmLoading}
+            onClick={
+              () =>
+                onEnterFarming({ tokenId: position.tokenId, poolAddress: farmingPos?.[0]?.poolAddress }, () =>
+                  mutateManual(),
+                )
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
+          >
+            {t('Earn $THE')}
+          </EmphasisButton>
+        )}
+      </div>
+    ),
+    [
+      t,
+      _position?.isFarming,
+      _position?.deployer,
+      incentiveAddress,
+      liquidity,
+      isEnterFarmLoading,
+      onEnterFarming,
+      position.tokenId,
+      farmingPos,
+      mutateManual,
+    ],
+  )
+
   return (
     <>
       <article
@@ -85,12 +139,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
             </div>
           </div>
-          <div className='flex w-fit gap-2'>
-            <EmphasisButton onClick={() => setRemovePopup(true)}>{t('Remove')}</EmphasisButton>
-            {position?.rewardUsd > 0 && (
-              <EmphasisButton onClick={() => setClaimPopup(true)}>{t('Claim')}</EmphasisButton>
-            )}
-          </div>
+          <div className='flex w-full gap-2 lg:w-fit'>{ButtonsDisplay}</div>
         </div>
         <div className='flex w-full flex-row flex-wrap gap-4 lg:gap-6'>
           <div className='flex h-12 flex-1 flex-col gap-1 lg:justify-start'>
@@ -124,9 +173,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           </div>
           <div className='flex h-12 flex-1 flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              $
-              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold'>
-                {formatAmount(position.rewardUsd)}
+              <Paragraph className='text-primary-50 font-archia text-xl! font-semibold text-nowrap'>
+                ${formatAmount(position.rewardUsd)}
               </Paragraph>
               {position.rewardUsd > 0 &&
                 (type === 'CL_Farming' ? (
@@ -185,31 +233,6 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
       )}
 
       {position.rewards && _position && (
-        // for farming
-        //  <RemoveManualModal
-        //         popup={removePopup}
-        //         setPopup={setRemovePopup}
-        //         pool={{ ...position, key: poolKey }}
-        //         position={_position}
-        //         reward0={position.rewards[0]}
-        //         reward1={position.rewards[1]}
-        //         mutateManual={mutateManual}
-        //         outOfRange={outOfRange}
-        //         fee={_fusion?.fee || 0}
-        //       />
-
-        // for manual
-        //  <RemoveManualModal
-        //         popup={removePopup}
-        //         setPopup={setRemovePopup}
-        //         pool={position}
-        //         position={_position}
-        //         reward0={reward0}
-        //         reward1={reward1}
-        //         mutateManual={mutateManual}
-        //         outOfRange={outOfRange}
-        //         fee={_fusion?.fee || 0}
-        //       />
         <RemoveManualModal
           popup={removePopup}
           setPopup={setRemovePopup}
