@@ -1,35 +1,167 @@
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useTranslations } from 'next-intl'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { WBNB } from 'thena-sdk-core'
 
 import DepositCLPanel from '@/components/common/AddLiquidity/DepositCLPanel'
+import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
+import AutomaticStrategy from '@/components/common/AddLiquidity/FusionAdd/AutomaticStrategy'
 import HeaderCLSection from '@/components/common/AddLiquidity/HeaderCLSection'
 import { RangeAndPricePanel } from '@/components/common/AddLiquidity/RangeAndPricePanel'
-import { PAIR_TYPES } from '@/constant'
+import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { useVaults } from '@/context/vaultsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
+import { useStakedPosition } from '@/hooks/position/useStakedPosition'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
-import { wrappedAddress } from '@/lib/utils'
+import { formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
-import { Bound } from '@/state/fusion/actions'
+import { Bound, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { usePairInfo } from '@/state/pools/hooks'
+import { usePairInfo, usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+
+function DepositIcon({ sub, title }) {
+  if (ICHI_TYPES.includes(title)) {
+    return (
+      <div className='flex flex-col items-center gap-1'>
+        <CircleImage alt={title} className='size-4' src={sub.allowed.logoURI} />
+        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+      </div>
+    )
+  }
+
+  if (GAMMA_TYPES.includes(title)) {
+    return (
+      <div className='flex flex-col items-center gap-1'>
+        <IconGroup
+          className='*:not-first:-ml-2'
+          classNames={{ image: 'outline-2 size-4' }}
+          logo1={sub.token0.logoURI}
+          logo2={sub.token1.logoURI}
+        />
+        <Paragraph className='text-xs text-neutral-400 lg:text-xs'>Deposit</Paragraph>
+      </div>
+    )
+  }
+
+  return null
+}
+
+const transformStrategy = sub => ({
+  title: sub.title,
+  tvl: sub.tvl?.toNumber() ?? sub.gauge?.tvl?.toNumber() ?? 0,
+  apr: sub.gauge?.apr?.toNumber() ?? 0,
+  account: {
+    totalLp: sub.account?.totalLp?.toNumber(),
+    gaugeBalance: sub.account?.gaugeBalance?.toNumber(),
+  },
+  allowed: { ...sub.allowed, balance: sub.allowed?.balance?.toNumber() },
+  token0: {
+    ...sub.token0,
+    reserve: sub.token0?.reserve?.toNumber(),
+    balance: sub.token0?.balance?.toNumber(),
+    totalValue: sub.token0?.totalValue,
+  },
+  token1: {
+    ...sub.token1,
+    reserve: sub.token1?.reserve?.toNumber(),
+    balance: sub.token1?.balance?.toNumber(),
+    totalValue: sub.token1?.totalValue,
+  },
+  address: sub.address,
+  isFarming: sub.title.includes('Farming'),
+  isAutomatic: !MANUAL_TYPES.includes(sub.title),
+  isDefault: sub.isDefault ?? true,
+  fee: sub.fee,
+  version: sub.version,
+  gauge: {
+    ...sub.gauge,
+    apr: sub.gauge?.apr?.toNumber(),
+    bribeUsd: sub.gauge?.bribeUsd?.toNumber(),
+    pooled0: sub.gauge?.pooled0?.toNumber(),
+    pooled1: sub.gauge?.pooled1?.toNumber(),
+    projectedApr: sub.gauge?.projectedApr?.toNumber(),
+    voteApr: sub.gauge?.voteApr?.toNumber(),
+    tvl: sub.gauge?.tvl?.toNumber(),
+    weight: sub.gauge?.weight?.toNumber(),
+    weightPercent: sub.gauge?.weightPercent?.toNumber(),
+    apr_list: undefined,
+  },
+})
+
+function StrategyItem({ sub, t }) {
+  return (
+    <div className='flex flex-1 items-center justify-between'>
+      <div>
+        <TextHeading className='text-sm'>{getDisplayedStrategy(sub.title, sub.version)}</TextHeading>
+        <div className='mt-1 flex flex-wrap gap-2'>
+          <div className='flex items-center gap-1'>
+            <TextHeading className='text-xs text-neutral-400'>{t('TVL')}:</TextHeading>
+            <Paragraph className='text-xs font-medium text-neutral-300 lg:text-xs'>
+              ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
+            </Paragraph>
+          </div>
+        </div>
+      </div>
+
+      <TextHeading className='text-primary-600 text-base font-semibold'>
+        {formatAmount(sub.gauge.apr, true)}%
+      </TextHeading>
+
+      <div className='flex flex-wrap justify-end gap-2'>
+        <DepositIcon sub={sub} title={sub.title} />
+      </div>
+    </div>
+  )
+}
 
 function AddLiquidityClPool({ pool, handleBack }) {
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
-  // const stableAssets = useStableTokens()
+  const prevStrategyRef = useRef()
+  const dispatch = useDispatch()
+  const t = useTranslations()
+  const { isXlDown } = useMediaQuery()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
+
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
   const pid = searchParams.get('pid')
 
-  const position = usePositionInfo({ tokenId: pid, poolAddress, type })
+  // Logic for automated pool ex: ichi, gama
+  const title = searchParams.get('title')
+  const staked = searchParams.get('staked')
+  const isStaked = useMemo(() => staked === 'true', [staked])
+
+  const pools = usePools()
+  const vaults = useVaults()
+  const userPool = useMemo(
+    () =>
+      [...pools, ...vaults].find(
+        item =>
+          item.account.totalLp.gt(0) &&
+          item.basePool.toLowerCase() === poolAddress.toLowerCase() &&
+          item.title === title,
+      ),
+    [poolAddress, pools, title, vaults],
+  )
+
+  const positionStaked = useStakedPosition(isStaked && userPool ? [userPool] : [])
+  const positionNotStaked = useNotStakedPositions(!isStaked && userPool ? [userPool] : [])
+
+  const manualPosition = usePositionInfo({ tokenId: pid, poolAddress, type })
+
+  const position = title ? (isStaked ? positionStaked[0] : positionNotStaked[0]) : manualPosition
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 
@@ -48,7 +180,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
-  const [isAutomatic, setIsAutomatic] = useState(strategy?.isAutomatic ?? false)
+  const [isAutomatic, setIsAutomatic] = useState(!!(strategy?.isAutomatic ?? title))
   const [lastPrice, setLastPrice] = useState(null)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -77,7 +209,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
-  const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
+    mintInfo.noLiquidity,
+  )
 
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
@@ -98,9 +232,92 @@ function AddLiquidityClPool({ pool, handleBack }) {
     if (price) return parseFloat(price)
   }, [baseCurrency, mintInfo.invertPrice, mintInfo.price, position, quoteCurrency])
 
+  const setStrategy = useCallback(
+    strategyInfo => {
+      // Prevent unnecessary updates
+      if (prevStrategyRef.current?.address === strategyInfo?.address) return
+
+      onLeftRangeInput('')
+      onRightRangeInput('')
+      dispatch(updateStrategy({ strategy: strategyInfo }))
+      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
+
+      prevStrategyRef.current = strategyInfo
+    },
+    [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
+  )
+
   useEffect(() => {
     setIsAutomatic(strategy?.isAutomatic ?? false)
   }, [strategy])
+
+  const sortedSubPools = useMemo(() => {
+    const priority = {
+      CL_Farming: 1,
+      CL_SwapFee: 2,
+      ICHI_Farming: 3,
+      Narrow_Farming: 4,
+      Wide_Farming: 5,
+    }
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+  }, [pair?.subpools])
+
+  // Stable callback for choosing strategy
+  const handleChooseStrategy = useCallback(
+    sub => {
+      if (!sub) return setStrategy(null)
+
+      const transformedStrategy = transformStrategy(sub)
+      const _isAutomatic = transformedStrategy.isAutomatic
+
+      setIsAutomatic(_isAutomatic)
+      setStrategy(transformedStrategy)
+    },
+    [setIsAutomatic, setStrategy],
+  )
+
+  const strategyAutoData = useMemo(
+    () =>
+      sortedSubPools
+        .filter(item => !MANUAL_TYPES.includes(item.title))
+        .map(sub => ({
+          content: <StrategyItem sub={sub} t={t} />,
+          active: strategy?.address === sub.address,
+          onClickHandler: () => strategy?.address !== sub.address && handleChooseStrategy(sub),
+        })),
+    [sortedSubPools, strategy?.address, handleChooseStrategy, t],
+  )
+
+  if (!strategy && position) {
+    setStrategy({
+      title: position?.title,
+      tvl: position?.tvl?.toNumber() ?? 0,
+      apr: position?.gauge?.apr?.toNumber() ?? 0,
+      account: {
+        totalLp: position?.account?.totalLp?.toNumber(),
+        gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: position?.allowed,
+      token0: {
+        ...position?.token0,
+        reserve: position?.token0?.reserve?.toNumber(),
+        balance: position?.token0?.balance?.toNumber(),
+        totalValue: position?.token0?.totalValue,
+      },
+      token1: {
+        ...position?.token1,
+        reserve: position?.token1?.reserve?.toNumber(),
+        balance: position?.token1?.balance?.toNumber(),
+        totalValue: position?.token1?.totalValue,
+      },
+      address: position?.address,
+      isFarming: position?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+      isDefault: true,
+      version: position.version,
+      fee: position?.fee,
+    })
+  }
 
   return (
     <>
@@ -133,15 +350,38 @@ function AddLiquidityClPool({ pool, handleBack }) {
             viewMode={Boolean(position)}
           />
         ) : (
-          <AutomaticLiquidityChart
-            label='Liquidity Range'
-            currencyA={currencyA ?? undefined}
-            currencyB={currencyB ?? undefined}
-            strategy={strategy}
-            position={position}
-            pair={pair}
-            handleShow={!!strategy}
-          />
+          <div className='grid grid-cols-1 gap-8 rounded-xl border-neutral-600 bg-neutral-900 p-4 lg:grid-cols-[1fr_368px]'>
+            <AutomaticLiquidityChart
+              label='Liquidity Range'
+              currencyA={currencyA ?? undefined}
+              currencyB={currencyB ?? undefined}
+              strategy={strategy}
+              position={null}
+              pair={pair}
+              handleShow={!!strategy}
+            />
+            {strategyAutoData.length > 0 && !position && (
+              <AutomaticStrategy
+                classNames={{ item: 'bg-neutral-950' }}
+                strategyAutoData={strategyAutoData}
+                isGrid={false}
+              />
+            )}
+            {position && (
+              <div className='flex flex-col gap-6'>
+                <TextHeading className='font-archia text-xl! leading-6! font-semibold'>
+                  {`${getDisplayedStrategy(position.title)} Strategy`}
+                </TextHeading>
+                <FusionAdd
+                  strategy={strategy}
+                  onShowModalSuccess={() => {}}
+                  handleBack={handleBack}
+                  isSmall={!isXlDown}
+                  classNames={{ wrapperInput: 'grid grid-cols-1! xl:grid-cols-1 gap-2', input: 'bg-neutral-950' }}
+                />
+              </div>
+            )}
+          </div>
         )}
         {!position && (
           <DepositCLPanel

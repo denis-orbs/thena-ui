@@ -18,7 +18,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { defaultSwapFees, StrategyTitle } from './ChooseStrategy'
 import WarningStartingPrice from './components/WarningStartingPrice'
 import { PoolAttributes } from './DepositCLPanel'
-import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
+import AutoPositionInfo from './FusionAdd/AutoPositionInfo'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import { fetchIchiInfo } from './FusionAdd/IchiAdd'
@@ -328,11 +328,6 @@ export default function HeaderCLSection({
     >
       <div className='flex flex-col gap-4 lg:gap-2'>
         <div className='flex flex-row items-center gap-2 lg:gap-8'>
-          {/* <NewIconGroup
-            logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
-            logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
-            className={{ image: 'size-12!' }}
-          /> */}
           <IconGroup
             className='*:not-first:-ml-2'
             classNames={{ image: 'outline-2 size-12' }}
@@ -355,7 +350,7 @@ export default function HeaderCLSection({
           {position ? `${firstAsset.symbol}/${secondAsset.symbol} ${t('Concentrated')}` : t('Concentrated Liquidity')}
         </TextHeading>
 
-        {mintInfo.noLiquidity && (
+        {mintInfo.noLiquidity && !isAutomatic && (
           <StartingPriceInput
             mintInfo={mintInfo}
             baseCurrency={firstAsset}
@@ -385,9 +380,7 @@ export default function HeaderCLSection({
       </div>
 
       <div className={cn(position ? 'mt-0' : 'lg:mt-16')}>
-        {isAutomatic ? (
-          strategyAutoData.length > 0 && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />
-        ) : (
+        {!isAutomatic ? (
           <>
             {mintInfo.noLiquidity ? (
               <WarningStartingPrice />
@@ -409,6 +402,13 @@ export default function HeaderCLSection({
                 t={t}
               />
             )}
+          </>
+        ) : (
+          // <ManualPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} type={type} />
+          <>
+            {position ? (
+              <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
+            ) : null}
           </>
         )}
       </div>

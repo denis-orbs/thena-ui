@@ -20,8 +20,8 @@ function RangePriceInfo({ baseCurrency, quoteCurrency, position }) {
       <div className='flex w-full flex-col gap-2'>
         <Paragraph className='text-base! leading-5 font-medium text-neutral-500'>
           {t('Min [symbolA] per [symbolB]', {
-            symbolA: baseCurrency.symbol,
-            symbolB: quoteCurrency.symbol,
+            symbolA: baseCurrency?.symbol,
+            symbolB: quoteCurrency?.symbol,
           })}
         </Paragraph>
         <div className={cn('flex flex-col rounded-xl bg-neutral-700 px-4 py-3')}>
@@ -36,8 +36,8 @@ function RangePriceInfo({ baseCurrency, quoteCurrency, position }) {
       <div className='flex w-full flex-col gap-2'>
         <Paragraph className='text-base! leading-5 font-medium text-neutral-500'>
           {t('Max [symbolA] per [symbolB]', {
-            symbolA: baseCurrency.symbol,
-            symbolB: quoteCurrency.symbol,
+            symbolA: baseCurrency?.symbol,
+            symbolB: quoteCurrency?.symbol,
           })}
         </Paragraph>
         <div className={cn('flex flex-col rounded-xl bg-neutral-700 px-4 py-3')}>

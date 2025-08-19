@@ -3,9 +3,11 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading } from '@/components/typography'
 import { Bound } from '@/state/fusion/actions'
 import { Presets } from '@/state/fusion/reducer'
+import { ResetIcon } from '@/svgs'
 
 import { Area } from './Area'
 import { AxisBottom } from './AxisBottom'
@@ -121,25 +123,36 @@ export function Chart({
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between gap-4 md:gap-8'>
-        {label && <NewTextHeading className='text-base md:text-xl'>{t(label)}</NewTextHeading>}
+        {label && <NewTextHeading className='text-xl!'>{t(label)}</NewTextHeading>}
 
-        {showZoom && (
-          <Zoom
-            svg={zoomRef.current}
-            xScale={xScale}
-            setZoom={setZoom}
-            width={innerWidth}
-            height={
-              // allow zooming inside the x-axis
-              height
-            }
-            resetBrush={() => {
-              onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+        <div className='flex gap-4'>
+          {showZoom && (
+            <Zoom
+              svg={zoomRef.current}
+              xScale={xScale}
+              setZoom={setZoom}
+              width={innerWidth}
+              height={
+                // allow zooming inside the x-axis
+                height
+              }
+              resetBrush={() => {
+                onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+              }}
+              showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
+              zoomLevels={zoomLevels}
+            />
+          )}
+          <EmphasisButton
+            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-300!'
+            onClick={() => {
+              setZoom(null)
             }}
-            showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
-            zoomLevels={zoomLevels}
-          />
-        )}
+          >
+            <ResetIcon className='h-4 w-4' />
+            {t('Reset')}
+          </EmphasisButton>
+        </div>
       </div>
 
       <div className='content-center justify-center' style={{ height: `${chartHeight}px` }}>

@@ -7,7 +7,15 @@ import { ICHI_TYPES } from '@/constant'
 import GammaAdd from './GammaAdd'
 import IchiAdd from './IchiAdd'
 
-export default function FusionAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack, isSmall = false }) {
+export default function FusionAdd({
+  strategy,
+  isModal,
+  isAdd,
+  onShowModalSuccess,
+  handleBack,
+  isSmall = false,
+  classNames,
+}) {
   return (
     <>
       {ICHI_TYPES.includes(strategy?.title) ? (
@@ -18,6 +26,7 @@ export default function FusionAdd({ strategy, isModal, isAdd, onShowModalSuccess
           onShowModalSuccess={onShowModalSuccess}
           handleBack={handleBack}
           isSmall={isSmall}
+          classNames={classNames}
         />
       ) : (
         <GammaAdd
@@ -27,6 +36,7 @@ export default function FusionAdd({ strategy, isModal, isAdd, onShowModalSuccess
           onShowModalSuccess={onShowModalSuccess}
           handleBack={handleBack}
           isSmall={isSmall}
+          classNames={classNames}
         />
       )}
     </>

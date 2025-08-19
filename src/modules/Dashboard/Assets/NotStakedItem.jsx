@@ -212,7 +212,7 @@ function NotStakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&staked=false&title=${position.title}&back=2`)
   }, [dispatch, position.basePool, position.title, push, strategy])
 
   const pairCell = useMemo(

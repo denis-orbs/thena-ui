@@ -1,12 +1,17 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { AnimatePresence, motion } from 'framer-motion'
+import { SettingsIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import Input from '@/components/input'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import Selection from '@/components/selection'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -15,7 +20,6 @@ import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
 export const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
@@ -52,7 +56,15 @@ export const fetchIchiInfo = async (chainId, strategy) => {
   }
 }
 
-export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, handleBack, isSmall = false }) {
+export default function IchiAdd({
+  strategy,
+  isAdd,
+  isModal,
+  onShowModalSuccess,
+  handleBack,
+  isSmall = false,
+  classNames,
+}) {
   const [amount, setAmount] = useState('')
 
   const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
@@ -63,6 +75,7 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
   const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy?.allowed?.address)
   const t = useTranslations()
+  const [slippageDropdown, setSlippageDropdown] = useState(false)
 
   const isDouble = useMemo(() => depositToken?.symbol === 'WBNB', [depositToken])
 
@@ -99,12 +112,55 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
     }
   }, [amount, balance, strategy, addIchiPoolV2, amountToWrap, slippage, onShowModalSuccess, addIchiPoolV3])
 
+  const selections = useMemo(
+    () =>
+      [0.1, 0.5, 1].map(ele => ({
+        label: ele,
+        active: slippage === Number(ele),
+        onClickHandler: () => {
+          setSlippage(Number(ele))
+        },
+      })),
+    [slippage],
+  )
+
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-4', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
-        <SettingSlippageDropDown className='mb-0' slippage={slippage} updateSlippage={setSlippage} />
+        <div className='flex w-full flex-col items-end justify-end gap-2'>
+          <EmphasisIconButton
+            className='size-8 lg:size-11'
+            classNames='size-4 stroke-neutral-400'
+            Icon={SettingsIcon}
+            onClick={() => setSlippageDropdown(prev => !prev)}
+            disabled={false}
+          />
+          <AnimatePresence>
+            {slippageDropdown && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className='w-full overflow-hidden p-1'
+              >
+                <div className='flex min-w-[200px] justify-end gap-3'>
+                  <Selection data={selections} className='bg-transparent text-neutral-200!' />
+                  <Input
+                    classNames={{
+                      input: 'w-[70px] h-9',
+                    }}
+                    val={slippage}
+                    onChange={e => setSlippage(Number(e.target.value) || 0)}
+                    suffix='%'
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         <TokenAmountInput
           asset={depositToken}
@@ -113,10 +169,11 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, 
           onAmountChange={setAmount}
           showPercent={false}
           isSmall={isSmall}
+          classNames={classNames}
         />
       </div>
 
-      <div className={cn('mt-4 flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
+      <div className={cn('mt-auto flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
         <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>
