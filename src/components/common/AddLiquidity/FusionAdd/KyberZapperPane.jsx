@@ -16,7 +16,6 @@ import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
 
@@ -31,6 +30,7 @@ function KyberZapperPane({
   strategy,
   onShowModalSuccess,
   handleBack,
+  slippage = 0.5,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -51,7 +51,6 @@ function KyberZapperPane({
 
   const [amount, setAmount] = useState(0)
   const [tokenDeposit, setTokenDeposit] = useState(asset0)
-  const [slippage, setSlippage] = useState(0.5)
 
   const amountIn = useDebounce(amount, 500)
   const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
@@ -171,7 +170,6 @@ function KyberZapperPane({
     <div className='mt-4! flex flex-col md:gap-4'>
       <div className='flex flex-col gap-2 md:gap-4'>
         <WarningZapper />
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='relative flex w-full flex-col gap-2'>
           <TokenAmountInput
             type='number'

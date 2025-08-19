@@ -6,10 +6,9 @@ import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
 import IconGroup from '@/components/icongroup'
-import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
@@ -145,12 +144,12 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
         {isEarnFees ? (
           <IconGroup
             className='*:not-first:-ml-2'
-            classNames={{ image: 'outline-2 size-4 md:size-8' }}
+            classNames={{ image: 'outline-2 size-5 md:size-8' }}
             logo1={firstAsset?.logoURI}
             logo2={secondAsset?.logoURI}
           />
         ) : (
-          <CircleImage className='size-4 md:size-8' src='https://cdn.thena.fi/assets/THE.png' alt='THENA First Logo' />
+          <CircleImage className='size-5 md:size-8' src='https://cdn.thena.fi/assets/THE.png' alt='THENA First Logo' />
         )}
 
         <div className='flex flex-col gap-1'>
@@ -334,7 +333,17 @@ export default function HeaderCLSection({
     <div className={gridClassName}>
       <div className='flex flex-col gap-4 lg:gap-2'>
         <div className='flex flex-row items-center gap-2 lg:gap-8'>
-          <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
+          {/* <NewIconGroup
+            logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
+            logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
+            className={{ image: 'size-12!' }}
+          /> */}
+          <IconGroup
+            className='*:not-first:-ml-2'
+            classNames={{ image: 'outline-2 size-12' }}
+            logo1={firstAsset?.logoURI}
+            logo2={secondAsset?.logoURI}
+          />
           <div className='flex flex-col gap-2'>
             <NewTextHeading className='text-xl! leading-6! text-neutral-300 lg:text-[36px]! lg:leading-[40px]!'>
               {t('Add Liquidity')}
@@ -359,8 +368,12 @@ export default function HeaderCLSection({
         )}
 
         {position ? (
-          <div className='mt-auto'>
-            <PoolAttributes pair={pair} strategy={strategy} />
+          <div className='mt-auto max-lg:hidden'>
+            <PoolAttributes
+              pair={pair}
+              strategy={strategy}
+              classNames={{ wrapper: 'w-full', container: 'w-[426px]' }}
+            />
           </div>
         ) : (
           <div className='flex flex-col gap-0 xl:gap-4'>

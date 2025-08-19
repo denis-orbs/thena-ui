@@ -1,10 +1,11 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { SettingsIcon, ZapperIcon } from '@/svgs'
 
@@ -29,6 +30,7 @@ export default function ManualAddPanel({
   const [show, setShow] = useState(false)
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
+  const { isLgDown } = useMediaQuery()
 
   useEffect(() => {
     if (!strategy?.isFarming) {
@@ -48,7 +50,7 @@ export default function ManualAddPanel({
       {
         label: (
           <div className='flex items-center justify-center gap-1'>
-            <ZapperIcon className='size-5' />
+            <ZapperIcon className='size-4' />
             <span>{t('Zapper Deposit')}</span>
           </div>
         ),
@@ -74,59 +76,56 @@ export default function ManualAddPanel({
   )
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
       <>
         <div className={cn('flex flex-row justify-between gap-2')}>
           <Selection
-            className='w-full flex-1 items-stretch md:h-11'
+            className='h-8 w-full flex-1 items-stretch lg:h-11'
             classNames={{
               items: 'md:text-sm text-xs',
             }}
             data={addSelections}
             isFull
             isTranslation={false}
+            isSmall={isLgDown}
           />
           <EmphasisIconButton
-            className='size-11'
+            className='size-8 lg:size-11'
             classNames='size-4 stroke-neutral-400'
             Icon={SettingsIcon}
             onClick={() => setShow(prev => !prev)}
             disabled={false}
           />
         </div>
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={show ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className='w-full overflow-hidden p-1'
-        >
-          <div className='flex min-w-[200px] justify-end gap-3'>
-            <Selection data={selections} className='bg-transparent text-neutral-200!' />
-            <Input
-              classNames={{
-                input: 'w-[70px] h-9',
-              }}
-              val={slippage}
-              onChange={e => setSlippage(Number(e.target.value) || 0)}
-              suffix='%'
-            />
-          </div>
-        </motion.div>
+        <AnimatePresence>
+          {show && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='w-full overflow-hidden p-1'
+            >
+              <div className='flex min-w-[200px] justify-end gap-3'>
+                <Selection data={selections} className='bg-transparent text-neutral-200!' />
+                <Input
+                  classNames={{
+                    input: 'w-[70px] h-9',
+                  }}
+                  val={slippage}
+                  onChange={e => setSlippage(Number(e.target.value) || 0)}
+                  suffix='%'
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </>
-
-      {/* {position && (
-        <ManualPositionInfo
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          position={position}
-          isFullRange={isFullRange}
-        />
-      )} */}
 
       {isZapper ? (
         <>
           {position ? (
-            <KyberZapperIncreasePane position={position} onShowModalSuccess={onShowModalSuccess} />
+            <KyberZapperIncreasePane position={position} onShowModalSuccess={onShowModalSuccess} slippage={slippage} />
           ) : (
             <KyberZapperPane
               baseCurrency={baseCurrency}
@@ -136,6 +135,7 @@ export default function ManualAddPanel({
               strategy={strategy}
               onShowModalSuccess={onShowModalSuccess}
               handleBack={handleBack}
+              slippage={slippage}
             />
           )}
         </>

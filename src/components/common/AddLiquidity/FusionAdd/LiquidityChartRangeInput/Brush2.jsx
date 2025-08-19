@@ -613,7 +613,7 @@ const Brush2 = ({
                     </text>
                   </g>
                 )}
-                {!showSouthAnimated && !isLgDown && (
+                {!isLgDown && (
                   <g width={divideDistanceWidth} transform={`translate(18, ${height + 10}) `}>
                     {/* Tick lines for bottom axis */}
                     {Array.from({ length: Math.floor(divideDistanceWidth / 40) + 1 }).map((_, i) => (

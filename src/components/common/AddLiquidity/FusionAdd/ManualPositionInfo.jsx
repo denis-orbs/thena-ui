@@ -27,7 +27,15 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
   const farmingPos = useFarmPositions(type === 'CL_Farming' && position.pool ? [position.pool] : [])
   const manualPos = useManualPositions(type === 'CL_SwapFee' && position.pool ? [position.pool] : [])
 
-  const _position = type === 'CL_Farming' ? farmingPos?.[0] : manualPos?.[0]
+  const _position = useMemo(() => {
+    if (type === 'CL_Farming') {
+      return farmingPos?.[0]
+    }
+    if (type === 'CL_SwapFee') {
+      return manualPos?.[0]
+    }
+    return undefined
+  }, [farmingPos, manualPos, type])
 
   const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fusionState, fusion } = _position || {}
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
@@ -60,25 +68,27 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           'max-lg:bg-chart-gradient flex flex-col items-start gap-4 rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-4 font-medium lg:px-6',
         )}
       >
-        <div className='flex w-full items-center justify-between'>
-          <div className='flex flex-col justify-between gap-2'>
-            <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>{t('Your Deposit')}</TextHeading>
-            <Paragraph className='text-sm! font-normal! text-neutral-500'>${position.depositInUSD}</Paragraph>
+        <div className='flex w-full flex-col justify-between max-lg:gap-2 lg:flex-row lg:items-center'>
+          <div className='flex flex-row justify-between gap-4'>
+            <div className='flex flex-col justify-between gap-2'>
+              <TextHeading className='font-archia !text-xl !leading-6 xl:font-semibold'>
+                {t('Your Deposit')}
+              </TextHeading>
+              <Paragraph className='text-sm! font-normal! text-neutral-500'>
+                ${formatAmount(position.depositInUSD)}
+              </Paragraph>
+            </div>
+            <div className='flex flex-col justify-between gap-2 lg:hidden'>
+              <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+                {formatAmount(position.apr)}%
+              </Paragraph>
+              <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
+            </div>
           </div>
           <div className='flex w-fit gap-2'>
-            <EmphasisButton
-              className='leading-4 max-lg:h-8 max-lg:p-2! max-lg:text-sm!'
-              onClick={() => setRemovePopup(true)}
-            >
-              {t('Remove')}
-            </EmphasisButton>
+            <EmphasisButton onClick={() => setRemovePopup(true)}>{t('Remove')}</EmphasisButton>
             {position?.rewardUsd > 0 && (
-              <EmphasisButton
-                className='leading-4 max-lg:h-8 max-lg:p-2! max-lg:text-sm!'
-                onClick={() => setClaimPopup(true)}
-              >
-                {t('Claim')}
-              </EmphasisButton>
+              <EmphasisButton onClick={() => setClaimPopup(true)}>{t('Claim')}</EmphasisButton>
             )}
           </div>
         </div>
@@ -153,6 +163,12 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               {t('Rewards')}
             </Paragraph>
           </div>
+          <div className='flex h-12 flex-1 flex-col gap-1 max-lg:hidden'>
+            <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+              {formatAmount(position.apr)}%
+            </Paragraph>
+            <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 lg:text-sm'>{t('APR')}</Paragraph>
+          </div>
         </div>
       </article>
       {position?.rewardUsd > 0 && (
@@ -169,10 +185,35 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
       )}
 
       {position.rewards && _position && (
+        // for farming
+        //  <RemoveManualModal
+        //         popup={removePopup}
+        //         setPopup={setRemovePopup}
+        //         pool={{ ...position, key: poolKey }}
+        //         position={_position}
+        //         reward0={position.rewards[0]}
+        //         reward1={position.rewards[1]}
+        //         mutateManual={mutateManual}
+        //         outOfRange={outOfRange}
+        //         fee={_fusion?.fee || 0}
+        //       />
+
+        // for manual
+        //  <RemoveManualModal
+        //         popup={removePopup}
+        //         setPopup={setRemovePopup}
+        //         pool={position}
+        //         position={_position}
+        //         reward0={reward0}
+        //         reward1={reward1}
+        //         mutateManual={mutateManual}
+        //         outOfRange={outOfRange}
+        //         fee={_fusion?.fee || 0}
+        //       />
         <RemoveManualModal
           popup={removePopup}
           setPopup={setRemovePopup}
-          pool={type === 'CL_Farming' ? { ..._position, key: poolKey } : { _position }}
+          pool={type === 'CL_Farming' ? { ..._position, key: poolKey } : _position}
           position={_position2}
           reward0={type === 'CL_Farming' ? _position?.rewards[0] : reward0}
           reward1={type === 'CL_Farming' ? _position?.rewards[1] : reward1}

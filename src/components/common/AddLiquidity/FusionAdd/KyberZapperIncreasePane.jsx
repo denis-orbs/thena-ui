@@ -13,15 +13,13 @@ import useWallet from '@/hooks/useWallet'
 import { useGetZapInRouteForExisting, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
-function KyberZapperIncreasePane({ position, onShowModalSuccess }) {
+function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { handleIncreaseLiquidity } = useKyberZapperAddLiquidity()
 
   const [amount, setAmount] = useState(0)
-  const [slippage, setSlippage] = useState(0.5)
 
   const amountIn = useDebounce(amount, 500)
 
@@ -90,9 +88,6 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess }) {
   return (
     <div className='mt-4! flex flex-col md:gap-4'>
       <div className='flex flex-col gap-2 md:gap-4'>
-        {/* <WarningZapper /> */}
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-
         <TokenAmountInput
           type='number'
           amount={amount}
@@ -102,6 +97,7 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess }) {
           onAmountChange={setAmount}
           showPercent={false}
           assetsSelect={[asset0, asset1, BNB]}
+          classNames={{ dropdown: 'lg:grid-cols-1! md:grid-cols-2!' }}
         />
 
         <div

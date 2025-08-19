@@ -9,13 +9,13 @@ import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
 import { InfoIcon } from '@/svgs'
 
-export function PoolAttributes({ pair, strategy }) {
+export function PoolAttributes({ pair, strategy, classNames }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
   return (
-    <div>
-      <div className='flex w-full items-center gap-2'>
+    <div className={cn(classNames?.wrapper)}>
+      <div className={cn('flex w-full items-center gap-2', classNames?.container)}>
         <div className={cn('flex h-11 flex-1 items-center rounded-lg bg-neutral-800 px-3')}>
           <TextHeading className='text-sm! font-normal! lg:text-neutral-300'>{t('Pool Attributes')}</TextHeading>
         </div>

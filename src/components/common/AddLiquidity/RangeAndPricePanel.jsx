@@ -104,15 +104,18 @@ export function RangeAndPricePanel({
     <div className='grid grid-cols-1 gap-4 border-none border-neutral-600 bg-transparent lg:grid-cols-[1fr_368px] lg:rounded-xl lg:border lg:bg-neutral-900 lg:p-4'>
       {/* Main Chart Section */}
       <div className='order-2 flex h-auto flex-col gap-4 lg:order-1'>
-        <TextHeading className={cn('font-archia block text-xl! leading-6! font-semibold lg:hidden')}>
-          {t('Your Range against the Price')}
-        </TextHeading>
-
-        {/* Mobile ViewMode: Show RangePriceInfo */}
         {viewMode && (
-          <div className='block lg:hidden'>
-            <RangePriceInfoComponent />
-          </div>
+          <>
+            <TextHeading className={cn('font-archia block text-xl! leading-6! font-semibold lg:hidden')}>
+              {t('Your Range against the Price')}
+            </TextHeading>
+
+            {/* Mobile ViewMode: Show RangePriceInfo */}
+
+            <div className='block lg:hidden'>
+              <RangePriceInfoComponent />
+            </div>
+          </>
         )}
 
         <ChartPriceRangeInput
@@ -133,11 +136,15 @@ export function RangeAndPricePanel({
           isCreate={mintInfo.noLiquidity}
           setLastPrice={setLastPrice}
           label='Your Range against the Price'
-          showLabel={!isLgDown}
+          // view mode === true and isLgDown === true => hide label
+          // view mode === false => show label
+          // view mode === true and isLgDown === false => show label
+          showLabel={!viewMode || !isLgDown}
           classNames={{
             title: 'xl:text-5 xl:leading-6',
             chart: 'h-full!',
             handleArea: 'max-lg:bg-chart-gradient!',
+            bottomAxis: 'max-lg:border-none!',
           }}
           interactive={!viewMode || !position}
           height={279}
@@ -145,7 +152,7 @@ export function RangeAndPricePanel({
       </div>
 
       {/* Sidebar Section */}
-      <div className={cn('order-1 h-auto items-center justify-center lg:order-2 lg:flex')}>
+      <div className={cn('order-1 h-auto items-center justify-center lg:order-2 lg:flex', viewMode && 'max-lg:hidden')}>
         <div className='flex flex-col gap-4 lg:h-full'>
           {!viewMode ? (
             <>

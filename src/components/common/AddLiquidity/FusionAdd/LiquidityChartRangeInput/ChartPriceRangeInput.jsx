@@ -432,7 +432,7 @@ export default function ChartPriceRangeInput({
             />
           </div>
           <EmphasisButton
-            className='flex h-8 gap-1 bg-transparent p-2! text-neutral-500'
+            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-300!'
             onClick={() => {
               setZoomFactor(1)
               setRange(2)
@@ -492,12 +492,12 @@ export default function ChartPriceRangeInput({
           {isUninitialized ? (
             <TextHeading>{t('Your position will appear here')}</TextHeading>
           ) : isLoading || isLoadLiquidity ? (
-            <Skeleton className={cn('absolute h-[calc(100%-48px)] w-full lg:h-full')} />
+            <Skeleton className={cn('absolute h-[calc(100%-44px)] w-full lg:h-full')} />
           ) : error ? (
             <TextHeading>{t('Liquidity data not available')}</TextHeading>
           ) : (
             <div className={cn('flex h-full w-full flex-col')}>
-              <div className='flex h-[calc(100%-48px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
+              <div className='flex h-[calc(100%-44px)] w-full flex-col gap-8 lg:h-full' ref={containerRef}>
                 <div ref={zoomRef} className='h-full w-full'>
                   <div
                     className='relative h-full w-full'
@@ -527,7 +527,12 @@ export default function ChartPriceRangeInput({
                           )}
                         </div>
                       </div>
-                      <div className='flex w-full items-center justify-between border-t-2 border-neutral-800'>
+                      <div
+                        className={cn(
+                          'flex w-full items-center justify-between border-t-2 border-neutral-800',
+                          classNames?.bottomAxis,
+                        )}
+                      >
                         <svg width={chartPriceWidth || '100%'} height='100%' viewBox={`0 0 ${chartPriceWidth} ${40}`}>
                           <AxisBottomTime timeWindow={timeWindow} xScale={timeXScale} innerHeight={40} offset={40} />
                         </svg>
