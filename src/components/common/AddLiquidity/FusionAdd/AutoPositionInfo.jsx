@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
@@ -179,14 +180,11 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
   }, [isSwapFee, position?.account.stakedUsd, position?.account.totalUsd, position?.staked])
 
   const rewardsData = calculateRewardData(position, isSwapFee)
-
-  const ButtonsDisplay = useMemo(
-    () => (
-      <div className={cn('grid grid-cols-3 gap-2')}>
-        <EmphasisButton
-          className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-          onClick={() => setRemovePopup(true)}
-        >
+  const ButtonsDisplay = useMemo(() => {
+    const hasGauge = position?.gauge?.address !== zeroAddress
+    return (
+      <div className='flex w-full gap-2'>
+        <EmphasisButton className={cn('h-8 flex-1 text-xs md:h-11 md:text-base')} onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
@@ -195,9 +193,8 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         >
           {t('Claim')}
         </EmphasisButton>
-        {position?.staked ? (
-          <EmphasisButton onClick={() => setStakePopup(true)}>UnStaked</EmphasisButton>
-        ) : (
+        {position?.staked && hasGauge && <EmphasisButton onClick={() => setStakePopup(true)}>UnStaked</EmphasisButton>}
+        {hasGauge && !position?.staked && (
           <EmphasisButton
             onClick={() => setStakePopup(true)}
             disabled={stakePending || stakeIchiPending || stakeGammaPending}
@@ -206,19 +203,19 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           </EmphasisButton>
         )}
       </div>
-    ),
-    [
-      claimPending,
-      handleHarvest,
-      isSwapFee,
-      position?.staked,
-      rewardsData.totalRewardUsd,
-      stakeGammaPending,
-      stakeIchiPending,
-      stakePending,
-      t,
-    ],
-  )
+    )
+  }, [
+    claimPending,
+    handleHarvest,
+    isSwapFee,
+    position?.gauge?.address,
+    position?.staked,
+    rewardsData.totalRewardUsd,
+    stakeGammaPending,
+    stakeIchiPending,
+    stakePending,
+    t,
+  ])
 
   const renderTokenValue = useMemo(() => {
     let token0Value = isSwapFee ? position?.account?.total0?.toNumber() : position?.account?.staked0?.toNumber()

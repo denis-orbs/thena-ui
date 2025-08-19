@@ -99,7 +99,7 @@ function PositionInfo({ position }) {
         >
           {t('Claim')}
         </EmphasisButton>
-        {position.staked && (
+        {hasGauge && position.staked && (
           <EmphasisButton disabled={unstakePending} className='max-lg:flex-1' onClick={() => setStakePopup(true)}>
             {t('Unstake')}
           </EmphasisButton>

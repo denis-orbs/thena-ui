@@ -107,9 +107,9 @@ export function EnterAmounts({
         currency={currencyA}
         setCurrency={!position ? setCurrencyA : undefined}
         assetsSelect={assetsSelect}
-        value={formattedAmounts[Field.CURRENCY_A]}
+        value={formattedAmounts?.[Field.CURRENCY_A]}
         handleInput={onFieldAInput}
-        maxAmount={maxAmounts[Field.CURRENCY_A]}
+        maxAmount={maxAmounts?.[Field.CURRENCY_A]}
         locked={depositADisabled}
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
@@ -121,9 +121,9 @@ export function EnterAmounts({
         currency={currencyB}
         setCurrency={!position ? setCurrencyB : undefined}
         assetsSelect={assetsSelect}
-        value={formattedAmounts[Field.CURRENCY_B]}
+        value={formattedAmounts?.[Field.CURRENCY_B]}
         handleInput={onFieldBInput}
-        maxAmount={maxAmounts[Field.CURRENCY_B]}
+        maxAmount={maxAmounts?.[Field.CURRENCY_B]}
         locked={depositBDisabled}
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
