@@ -137,7 +137,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
             </div>
           </div>
-          <div className='flex w-full shrink-0 gap-2 xl:w-auto xl:justify-end'>{ButtonsDisplay}</div>
+          <div className='flex w-full shrink-0 gap-2 max-xl:hidden xl:w-auto xl:justify-end'>{ButtonsDisplay}</div>
         </div>
         <div className='flex w-full flex-row flex-wrap gap-4 xl:gap-6'>
           <div className='flex h-12 flex-1 flex-col gap-1 xl:justify-start'>
@@ -223,6 +223,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>{t('APR')}</Paragraph>
           </div>
         </div>
+        <div className='flex w-full shrink-0 gap-2 xl:hidden xl:w-auto'>{ButtonsDisplay}</div>
       </article>
       {position?.rewardUsd > 0 && (
         <ClaimModal

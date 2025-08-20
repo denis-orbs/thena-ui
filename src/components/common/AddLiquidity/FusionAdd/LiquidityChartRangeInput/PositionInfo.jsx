@@ -314,7 +314,7 @@ function PositionInfo({ position }) {
         </div>
 
         {/* Buttons - fixed on the right, width doesn’t depend on 2nd line */}
-        <div className='flex w-full shrink-0 gap-2 xl:w-auto xl:justify-end'>{ButtonsDisplay}</div>
+        <div className='flex w-auto shrink-0 justify-end gap-2 max-xl:hidden'>{ButtonsDisplay}</div>
       </div>
       <div className='flex w-full flex-wrap gap-4 xl:gap-6'>
         <div className='flex h-12 flex-1 flex-col gap-1 xl:justify-start'>
@@ -356,6 +356,7 @@ function PositionInfo({ position }) {
           <Paragraph className='text-sm! font-medium text-neutral-500'>{t('APR')}</Paragraph>
         </div>
       </div>
+      <div className='flex w-full shrink-0 justify-end gap-2 xl:hidden'>{ButtonsDisplay}</div>
       <GaugeManageModal
         title={position.staked ? 'Unstake LP' : 'Stake LP'}
         pair={position}

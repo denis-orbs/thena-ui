@@ -417,7 +417,7 @@ function AddLiquidityWeighted({ pool }) {
                     <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
                   </div>
                 </div>
-                <div className='flex w-full gap-2 xl:w-fit'>{ButtonsDisplay}</div>
+                <div className='flex w-fit gap-2 max-xl:hidden'>{ButtonsDisplay}</div>
               </div>
               <div className='flex w-full flex-row flex-wrap gap-4 xl:gap-6'>
                 {tokensDeposit.length > 0 &&
@@ -462,6 +462,7 @@ function AddLiquidityWeighted({ pool }) {
                   </Paragraph>
                 </div>
               </div>
+              <div className='flex w-full gap-2 xl:hidden'>{ButtonsDisplay}</div>
             </article>
           </div>
         )}

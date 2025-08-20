@@ -20,7 +20,7 @@ function ChartAxisTime({
   const transformedData = useMemo(() => {
     if (data) {
       const baseData = data.map(({ time, value }) => ({
-        time: time.getTime(),
+        time: Math.floor(time.getTime() / 1000),
         value,
       }))
 
@@ -54,8 +54,13 @@ function ChartAxisTime({
         borderVisible: false,
         secondsVisible: false,
         timeVisible: true,
+        rightOffset: 3,
+        rightBarStaysOnScroll: true,
+        // fixRightEdge: true,
         tickMarkFormatter: unixTime =>
-          timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
+          timeWindow === PairDataTimeWindow.DAY
+            ? dayjs.unix(unixTime).format('HH:mm')
+            : dayjs.unix(unixTime).format('MMM D'),
       },
       grid: {
         horzLines: { visible: false },

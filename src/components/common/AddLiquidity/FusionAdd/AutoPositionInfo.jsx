@@ -313,7 +313,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           </div>
 
           {/* Buttons - fixed on the right, width doesn’t depend on 2nd line */}
-          <div className='flex w-full shrink-0 gap-2 xl:w-auto xl:justify-end'>{ButtonsDisplay}</div>
+          <div className='flex w-auto shrink-0 justify-end gap-2 max-xl:hidden'>{ButtonsDisplay}</div>
         </div>
 
         {/* Second line */}
@@ -355,6 +355,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
             <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>{t('APR')}</Paragraph>
           </div>
         </div>
+        <div className='flex w-full shrink-0 gap-2 xl:hidden'>{ButtonsDisplay}</div>
       </article>
 
       {position && (

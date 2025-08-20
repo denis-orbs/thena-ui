@@ -117,18 +117,14 @@ export default function ChartPriceRangeInput({
     token0Address: currencyB?.wrapped?.address,
     token1Address: currencyA?.wrapped?.address,
     timeWindow,
-    // currentSwapPrice: { [currencyB?.wrapped?.address]: price },
+    currentSwapPrice: { [currencyB?.wrapped?.address]: price },
   })
 
   const pairPrices = useMemo(() => {
     const data = [..._pairPrices]
     if (isUninitialized || isLoading) return []
-    data[data.length - 1] = {
-      ...data[data.length - 1],
-      value: price ?? data[data.length - 1]?.value,
-    }
     return data
-  }, [_pairPrices, isLoading, isUninitialized, price])
+  }, [_pairPrices, isLoading, isUninitialized])
 
   const {
     isLoading: isLoadLiquidity,
@@ -419,7 +415,7 @@ export default function ChartPriceRangeInput({
   )
 
   return (
-    <div className='flex w-full! flex-col' ref={containerWidthRef}>
+    <div className='flex w-full! flex-col xl:mb-2' ref={containerWidthRef}>
       <div className='flex flex-col'>
         <div className='mb-2 flex flex-col justify-between gap-2 md:flex-row md:gap-4'>
           {showLabel && (
@@ -575,7 +571,10 @@ export default function ChartPriceRangeInput({
                         </div>
                         <div
                           className='absolute top-0 left-0'
-                          style={{ width: chartPriceWidth || '100%', height: `${chartSize.chartContainerHeight}px` }}
+                          style={{
+                            width: chartPriceWidth || '100%',
+                            height: `${chartSize.chartContainerHeight}px`,
+                          }}
                         >
                           {/* Make a chart just show Time Scale */}
                           {pairPrices.length > 0 && !isLoading && (
@@ -590,14 +589,7 @@ export default function ChartPriceRangeInput({
                             />
                           )}
                         </div>
-                      </div>
-                      <div
-                        className={cn(
-                          'flex max-h-10 w-full items-center justify-between border-t-2 border-neutral-800',
-                          classNames?.bottomAxis,
-                        )}
-                      >
-                        <div className='absolute right-0 bottom-0 z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
+                        <div className='absolute right-0 -bottom-[44px] z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
                           <CheckBox
                             className='size-5! rounded-sm'
                             checked={showLiquidity}
@@ -611,6 +603,12 @@ export default function ChartPriceRangeInput({
                           </span>
                         </div>
                       </div>
+                      <div
+                        className={cn(
+                          'flex max-h-10 w-full items-center justify-between border-t-2 border-neutral-800',
+                          classNames?.bottomAxis,
+                        )}
+                      />
                     </div>
                     <div
                       className='absolute inset-0 top-0 z-10'
