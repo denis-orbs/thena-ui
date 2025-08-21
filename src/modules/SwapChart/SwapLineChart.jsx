@@ -15,7 +15,7 @@ function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }
   const transformedData = useMemo(() => {
     if (data) {
       return data.map(({ time, value }) => ({
-        time: time.getTime(),
+        time: Math.floor(time.getTime() / 1000),
         value,
       }))
     }
@@ -45,7 +45,9 @@ function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }
         borderVisible: false,
         secondsVisible: false,
         tickMarkFormatter: unixTime =>
-          timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
+          timeWindow === PairDataTimeWindow.DAY
+            ? dayjs.unix(unixTime).format('HH:mm')
+            : dayjs.unix(unixTime).format('MMM D'),
       },
       grid: {
         horzLines: {
@@ -95,7 +97,7 @@ function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }
 
     chart.subscribeCrosshairMove(param => {
       if (newSeries && param) {
-        const timestamp = param.time
+        const timestamp = param.time * 1000
         if (!timestamp) return
         const now = new Date(timestamp)
         const time = `${now.toLocaleString(locale, {
