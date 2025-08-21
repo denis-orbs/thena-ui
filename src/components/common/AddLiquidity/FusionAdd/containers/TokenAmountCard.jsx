@@ -124,13 +124,16 @@ export function TokenAmountCard({
             <p className='font-medium text-white'>{title}</p>
             {showPercent && <Tabs data={percents} />}
           </div>
+
           <div
             className={cn(
               'flex flex-col gap-3 self-stretch rounded-xl p-4',
-              'border border-neutral-700 hover:bg-neutral-900',
-              'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
-              isSmall && 'box-border gap-1! px-3! py-2!',
-              isInvalidAmount && 'border-error-600 focus-within:border-error-500',
+              'shadow-[inset_0_0_0_1px_theme(colors.neutral.700)] hover:bg-neutral-900',
+              'focus-within:shadow-[inset_0_0_0_1px_theme(colors.neutral.500)] focus-within:hover:bg-transparent!',
+              isSmall && 'box-sizing:border-box gap-1! px-3! py-2!',
+              isInvalidAmount &&
+                'shadow-[inset_0_0_0_1px_theme(colors.error.600)] focus-within:shadow-[inset_0_0_0_1px_theme(colors.error.500)]',
+              classNames?.inputWrapper,
             )}
             onClick={onfocusInput}
           >

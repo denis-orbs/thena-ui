@@ -17,12 +17,17 @@ function Axis({ axisGenerator }) {
       select(axis)
         .call(axisGenerator)
         .call(g => g.select('.domain').remove())
+        .selectAll('.tick text')
+        .style('font-size', '12px')
+        .style('font-weight', '700')
+        .style('line-height', '16px')
+        .style('color', '#685770')
   }
 
   return <g className='axis-right-ref' ref={axisRef} />
 }
 
-export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, padding, height, maskColor }) {
+export function AxisRight({ yScale, offset = 0, min, current, max, currentHover, interactive = true }) {
   const { isLgDown } = useMediaQuery()
 
   const tickFormat = useCallback(d => {
@@ -35,7 +40,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
   }, [])
 
   const axisGenerator = useMemo(() => {
-    const tickValues = yScale.ticks(4).filter(tick => tick >= 0)
+    const tickValues = yScale.ticks(5).filter(tick => tick >= 0)
     return axisRight(yScale).tickValues(tickValues).tickFormat(tickFormat)
   }, [tickFormat, yScale])
 
@@ -60,17 +65,19 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
         <svg x={10} y={y - 4} width='20' height='8' viewBox='0 0 20 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
           <path
             d='M1.68588 5.69486C0.434957 4.91118 0.434956 3.08882 1.68588 2.30514L4.02288 0.841036C4.34115 0.641646 4.70912 0.535899 5.08469 0.535899L14.994 0.535898C15.3696 0.535898 15.7376 0.641646 16.0558 0.841035L18.3928 2.30514C19.6437 3.08882 19.6438 4.91118 18.3928 5.69486L16.0558 7.15896C15.7376 7.35835 15.3696 7.4641 14.994 7.4641L5.08469 7.4641C4.70912 7.4641 4.34115 7.35835 4.02288 7.15896L1.68588 5.69486Z'
-            fill='#F199EE'
+            fill={interactive ? '#F199EE' : '#35243D'}
+            stroke={interactive ? '#EA66E5' : '#685770'}
+            strokeWidth='1'
           />
         </svg>
       )
     },
-    [currentHover],
+    [currentHover, interactive],
   )
 
   return (
     <>
-      <g className='axis-right' transform={`translate(${offset + 5}, 0)`}>
+      <g className='axis-right' transform={`translate(${offset}, 0)`}>
         {!isNaN(minY) && !isLgDown && renderHoverLines(minY, 'south')}
         {!isNaN(maxY) && !isLgDown && renderHoverLines(maxY, 'north')}
         <Axis axisGenerator={axisGenerator} />
@@ -121,12 +128,10 @@ export function AxisRight({ yScale, offset = 0, min, current, max, currentHover,
               fill='#292929'
             />
             <text x={(5 + labelWidth) / 2} y={maxY + paddingY / 2} textAnchor='middle' fontSize='12' fill='#F199EE'>
-              {max <= 1e-3 ? max.toExponential(0) : formatPrice(max)}
+              {max <= 1e-5 ? max.toExponential(0) : formatPrice(max)}
             </text>
           </g>
         )}
-        <rect x='0' y={-padding} width='100%' height={padding} fill={maskColor} />
-        <rect x='0' y={height} width='100%' height={padding * 2} fill={maskColor} />
       </g>
     </>
   )

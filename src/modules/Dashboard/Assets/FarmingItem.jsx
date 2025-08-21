@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, ErrorButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -19,7 +19,6 @@ import usePrevious from '@/hooks/usePrevious'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
-import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, WarningTriangleIcon } from '@/svgs'
@@ -33,7 +32,6 @@ function FarmingItem({ position, isXlDown }) {
   const { push } = useRouter()
 
   const [claimPopup, setClaimPopup] = useState(false)
-  const [removePopup, setRemovePopup] = useState(false)
 
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
@@ -182,7 +180,6 @@ function FarmingItem({ position, isXlDown }) {
   const hideButton = useMemo(
     () => ({
       remove: Number(liquidity) <= 0,
-      claim: position.feesInUsd.isZero(),
       burn: position?.isFarming || Number(liquidity) > 0,
       earn:
         position?.isFarming ||
@@ -191,19 +188,19 @@ function FarmingItem({ position, isXlDown }) {
         position?.deployer !== zeroAddress ||
         Number(liquidity) <= 0,
     }),
-    [incentiveAddress, liquidity, position?.deployer, position.feesInUsd, position?.isFarming],
+    [incentiveAddress, liquidity, position?.deployer, position?.isFarming],
   )
 
   const actionButtonCount = useMemo(() => {
-    let count = 5
+    let count = 3
 
-    if (hideButton.remove) count -= 1
-    if (hideButton.claim) count -= 1
+    // if (hideButton.remove) count -= 1
+    // if (hideButton.claim) count -= 1
     if (hideButton.burn) count -= 1
-    if (hideButton.earn) count -= 1
+    // if (hideButton.earn) count -= 1
 
     return count
-  }, [hideButton.burn, hideButton.claim, hideButton.remove, hideButton.earn])
+  }, [hideButton.burn])
 
   const rangeCell = useMemo(
     () => (
@@ -327,14 +324,14 @@ function FarmingItem({ position, isXlDown }) {
   const actionCell = useMemo(
     () => (
       <div className={`grid grid-cols-${actionButtonCount} w-full gap-2`}>
-        <EmphasisButton
+        {/* <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
             hidden: hideButton.remove,
           })}
           onClick={() => setRemovePopup(true)}
         >
           {t('Remove')}
-        </EmphasisButton>
+        </EmphasisButton> */}
 
         <EmphasisButton
           className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', {
@@ -347,17 +344,18 @@ function FarmingItem({ position, isXlDown }) {
         </EmphasisButton>
 
         <EmphasisButton
-          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: hideButton.claim })}
+          className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base')}
+          disabled={position.feesInUsd.isZero()}
           onClick={() => setClaimPopup(true)}
         >
           {t('Claim')}
         </EmphasisButton>
 
         <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-          {t('Add')}
+          {t('Manage')}
         </EmphasisButton>
 
-        <PrimaryButton
+        {/* <PrimaryButton
           className={cn('h-8 w-full flex-1 text-xs text-nowrap md:h-11 md:text-base', {
             hidden: hideButton.earn,
           })}
@@ -365,23 +363,17 @@ function FarmingItem({ position, isXlDown }) {
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
         >
           {t('Earn $THE')}
-        </PrimaryButton>
+        </PrimaryButton> */}
       </div>
     ),
     [
       actionButtonCount,
       handleAdd,
       hideButton.burn,
-      hideButton.claim,
-      hideButton.earn,
-      hideButton.remove,
-      isEnterFarmLoading,
       mutateManual,
       onAlgebraBurn,
-      onEnterFarming,
       pending,
-      poolAddress,
-      position?.isFarming,
+      position.feesInUsd,
       t,
       tokenId,
     ],
@@ -421,7 +413,7 @@ function FarmingItem({ position, isXlDown }) {
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />
-      <RemoveManualModal
+      {/* <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
         pool={{ ...position, key: poolKey }}
@@ -431,7 +423,7 @@ function FarmingItem({ position, isXlDown }) {
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
-      />
+      /> */}
     </>
   )
 }

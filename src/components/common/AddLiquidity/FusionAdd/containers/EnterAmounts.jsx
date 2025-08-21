@@ -11,7 +11,17 @@ import { useChainSettings } from '@/state/settings/hooks'
 
 import { TokenAmountCard } from './TokenAmountCard'
 
-export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB, mintInfo, position, isSmall }) {
+export function EnterAmounts({
+  currencyA,
+  currencyB,
+  setCurrencyA,
+  setCurrencyB,
+  mintInfo,
+  position,
+  isSmall,
+  className,
+  classNames,
+}) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
@@ -85,37 +95,41 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
 
   return (
     <div
-      className={cn('grid grid-cols-1 gap-4', {
-        'xl:grid-cols-2': !depositADisabled && !depositBDisabled,
-      })}
+      className={cn(
+        'grid grid-cols-1 gap-4',
+        {
+          'xl:grid-cols-2': !depositADisabled && !depositBDisabled,
+        },
+        className,
+      )}
     >
       <TokenAmountCard
         currency={currencyA}
         setCurrency={!position ? setCurrencyA : undefined}
         assetsSelect={assetsSelect}
-        value={formattedAmounts[Field.CURRENCY_A]}
+        value={formattedAmounts?.[Field.CURRENCY_A]}
         handleInput={onFieldAInput}
-        maxAmount={maxAmounts[Field.CURRENCY_A]}
+        maxAmount={maxAmounts?.[Field.CURRENCY_A]}
         locked={depositADisabled}
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
-        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
       />
       <TokenAmountCard
         currency={currencyB}
         setCurrency={!position ? setCurrencyB : undefined}
         assetsSelect={assetsSelect}
-        value={formattedAmounts[Field.CURRENCY_B]}
+        value={formattedAmounts?.[Field.CURRENCY_B]}
         handleInput={onFieldBInput}
-        maxAmount={maxAmounts[Field.CURRENCY_B]}
+        maxAmount={maxAmounts?.[Field.CURRENCY_B]}
         locked={depositBDisabled}
         liquidityRangeType={liquidityRangeType}
         showPercent={false}
         showOutsideWarning={!position}
         isSmall={isSmall}
-        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium' }}
+        classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
       />
     </div>
   )

@@ -144,8 +144,8 @@ export function TokenAmountInput({
       )}
       <div
         className={cn(
-          'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-3 lg:py-4',
-          'border border-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
+          'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-2 lg:py-4',
+          'outline-1 outline-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
           classNames?.input,
           isSmall && 'xl:gap-1! xl:px-3! xl:py-2!',
@@ -202,7 +202,7 @@ export function TokenAmountInput({
                   style={SELECT_TOKEN_STYLE.BADGE}
                   allowDouble={!singleMode && Boolean(maxBalance) && !isSwapChainLink}
                   assetOptions={assetsSelect}
-                  classNames={{ dropdown: '2xl:grid-cols-2' }}
+                  classNames={{ dropdown: classNames?.dropdown ?? '2xl:grid-cols-2' }}
                 />
               ) : (
                 <AssetDropdown
@@ -243,10 +243,10 @@ export function TokenAmountInput({
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading className={cn('truncate text-neutral-500', isSmall && 'xl:text-xs!')}>
+          <TextSubHeading className={cn('truncate text-xs! leading-4! text-neutral-500')}>
             ${formatAmount(amount * (asset?.price || 0))}
           </TextSubHeading>
-          <TextSubHeading className={cn('flex gap-4 text-nowrap text-neutral-500', isSmall && 'xl:text-xs!')}>
+          <TextSubHeading className={cn('flex gap-4 text-xs! leading-4! text-nowrap text-neutral-500')}>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>

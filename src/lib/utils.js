@@ -145,10 +145,10 @@ export const formatPrice = (price, decimals = 5) => {
   }
 
   if (decPart.length > decimals) {
-    return `${formatAmount(intPart)}.${decPart.slice(0, decimals)}`
+    return `${intPart}.${decPart.slice(0, decimals)}`
   }
 
-  return `${formatAmount(price)}`
+  return `${price}`
 }
 
 export const formatPriceForChart = num => {

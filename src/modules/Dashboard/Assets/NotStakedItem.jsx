@@ -29,9 +29,7 @@ import {
   ZERO_VALUE,
 } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
-import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
-import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -46,8 +44,8 @@ function NotStakedItem({ position, isXlDown }) {
   const { push } = useRouter()
 
   const [popup, setPopup] = useState(false)
-  const [removePopup, setRemovePopup] = useState(false)
-  const [managePopup, setManagePopup] = useState(false)
+  // const [removePopup, setRemovePopup] = useState(false)
+  // const [managePopup, setManagePopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
   const { networkId } = useChainSettings()
@@ -214,7 +212,7 @@ function NotStakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&staked=false&title=${position.title}&back=2`)
   }, [dispatch, position.basePool, position.title, push, strategy])
 
   const pairCell = useMemo(
@@ -354,10 +352,10 @@ function NotStakedItem({ position, isXlDown }) {
   const actionCell = useMemo(
     () => (
       <div
-        className={cn('flex w-full justify-center gap-2', {
-          'grid grid-cols-2': !!migrationOptions && !isSingleSided,
-          'grid grid-cols-3': !migrationOptions && isSingleSided,
-        })}
+        className={cn(
+          'flex w-full grid-cols-2 justify-center gap-2',
+          !(version === 3 && isSingleSided) && 'grid-cols-1',
+        )}
       >
         {isV1Pool ? (
           <>
@@ -368,28 +366,37 @@ function NotStakedItem({ position, isXlDown }) {
             >
               {t('Claim')}
             </EmphasisButton>
-            <EmphasisButton
-              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-              onClick={() => setManagePopup(true)}
-            >
+            <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
               {t('Manage')}
             </EmphasisButton>
           </>
         ) : (
           <>
-            <EmphasisButton
+            {/* <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setRemovePopup(true)}
             >
               {t('Remove')}
-            </EmphasisButton>
+            </EmphasisButton> */}
 
             {version === 3 || isSingleSided ? (
-              <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
-                {t('Add')}
-              </EmphasisButton>
+              <>
+                <EmphasisButton
+                  className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
+                  onClick={() => onClaimFees(position)}
+                  disabled={feesInUsd.isZero() || feesPending}
+                >
+                  {t('Claim')}
+                </EmphasisButton>
+                <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
+                  {t('Manage')}
+                </EmphasisButton>
+              </>
             ) : migrationOptions?.length > 0 ? (
-              <Link href={`/pools/migration?address=${position.address}`} className={cn('h-8 px-1 md:h-11')}>
+              <Link
+                href={`/pools/migration?address=${position.address}&staked=false`}
+                className={cn('h-8 px-1 md:h-11')}
+              >
                 <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
@@ -403,11 +410,11 @@ function NotStakedItem({ position, isXlDown }) {
           </>
         )}
 
-        {(!migrationOptions || isSingleSided) && (
+        {/* {(!migrationOptions || isSingleSided) && (
           <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
             {t('Stake')}
           </PrimaryButton>
-        )}
+        )} */}
       </div>
     ),
     [feesInUsd, feesPending, handleAdd, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, t, version],
@@ -457,8 +464,8 @@ function NotStakedItem({ position, isXlDown }) {
         onGaugeManage={handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} />
-      <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} />
+      {/* <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} /> */}
+      {/* <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} /> */}
     </>
   )
 }

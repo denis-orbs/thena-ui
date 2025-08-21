@@ -135,7 +135,59 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
     enabled: Boolean(!!poolId && !!tickLower && !!tickUpper && !!tokenIn && !!amountIn),
   })
 
-export const useZapperAddLiquidity = () => {
+export const useGetZapInRouteForExisting = ({
+  // tickLower,
+  // tickUpper,
+  tokenId,
+  poolId,
+  tokenIn,
+  amountIn,
+  slippage = 100,
+}) =>
+  useQuery({
+    queryKey: [
+      'zapInRouteExisting',
+      // tickLower, tickUpper,
+      tokenId,
+      poolId,
+      tokenIn,
+      amountIn,
+      slippage,
+    ],
+    queryFn: async () => {
+      const amount = toWei(
+        new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
+        tokenIn.decimals,
+      )
+
+      const params = {
+        dex: 'DEX_THENAALGEBRAINTEGRAL',
+        'pool.id': getAddress(poolId),
+        'position.id': tokenId,
+        // 'position.tickLower': tickLower,
+        // 'position.tickUpper': tickUpper,
+        tokenIn: getAddress(wrappedAddress(tokenIn)),
+        amountIn: amount,
+        slippage,
+      }
+
+      const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
+        params,
+        headers: {
+          'X-Client-Id': 'thenakyberid',
+        },
+      })
+      return response.data?.data
+    },
+    enabled: Boolean(tokenId && poolId && tokenIn && amountIn > 0),
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchInterval: false,
+  })
+
+export const useKyberZapperAddLiquidity = () => {
   const t = useTranslations()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
 
@@ -295,7 +347,118 @@ export const useZapperAddLiquidity = () => {
     [account, t, startTxn, chainId, sendTxn, endTxn, writeTxn],
   )
 
-  return { handleAddLiquidity, pending }
+  const handleIncreaseLiquidity = useCallback(
+    async ({ token, amount, route, deadline = 1800000000 }, callback) => {
+      try {
+        if (!account) throw new Error('Please connect your wallet')
+
+        const isBNB = token.address === 'BNB'
+        if (isBNB) token = WBNB[chainId]
+
+        const amountIn = toWei(
+          new BigNumber(amount).decimalPlaces(token.decimals, BigNumber.ROUND_DOWN).toString(),
+          token.decimals,
+        )
+
+        const key = uuidv4()
+        const wrapId = uuidv4()
+        const approveId = uuidv4()
+        const increaseLiquidityId = uuidv4()
+
+        const transactions = {}
+
+        let buildData = {
+          routerAddress: null,
+          callData: null,
+          value: null,
+        }
+
+        try {
+          const response = await axios.post(
+            `${BASE_ZAPPER_URL}/in/route/build`,
+            {
+              sender: getAddress(account),
+              route,
+              deadline,
+              source: 'thenakyberid',
+            },
+            {
+              headers: {
+                'x-client-id': 'thenakyberid',
+              },
+            },
+          )
+
+          buildData = response.data.data
+        } catch (error) {
+          return
+        }
+
+        const tokenContract = getERC20Contract(token.address, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, buildData.routerAddress])
+        const isApproved = fromWei(allowance, token.decimals).gte(amount)
+
+        if (isBNB) {
+          transactions[wrapId] = {
+            desc: 'Wrap BNB',
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        if (!isApproved) {
+          transactions[approveId] = {
+            desc: `Approving ${token.symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        transactions[increaseLiquidityId] = {
+          desc: t('Increase Liquidity'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+
+        startTxn({ key, transactions, title: t('Increase Liquidity') })
+        setPending(true)
+
+        if (isBNB) {
+          const wbnb = getWBNBContract(chainId)
+          if (!(await writeTxn(key, wrapId, wbnb, 'deposit', [], amountIn))) {
+            setPending(false)
+            return
+          }
+        }
+
+        if (!isApproved) {
+          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [buildData.routerAddress, amountIn]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        const hash = await sendTxn(
+          key,
+          increaseLiquidityId,
+          buildData.routerAddress,
+          buildData.callData,
+          buildData.value,
+        )
+        await waitCall(hash)
+
+        endTxn({ key, final: 'Liquidity Increased Successfully' })
+        setPending(false)
+        if (callback) callback()
+      } catch (e) {
+        setPending(false)
+        throw e
+      }
+    },
+    [account, t, startTxn, chainId, sendTxn, endTxn, writeTxn],
+  )
+
+  return { handleAddLiquidity, handleIncreaseLiquidity, pending }
 }
 
 export const useV1Zapper = () => {
@@ -585,3 +748,12 @@ export const useGammaZapper = () => {
 
   return { onAddLiquidity, pending }
 }
+
+// export const useZapperIncreaseLiquidity = () => {
+//   const t = useTranslations()
+//   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
+//   const [pending, setPending] = useState(false)
+//   const { account, chainId } = useWallet()
+
+//   return { handleIncreaseLiquidity, pending }
+// }

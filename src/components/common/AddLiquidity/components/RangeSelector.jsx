@@ -2,10 +2,10 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { OutlineIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { formatDelta } from '@/lib/helper'
-import { unwrappedSymbol } from '@/lib/utils'
+import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useInitialTokenPrice, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
@@ -28,6 +28,8 @@ function RangePart({
   disabled,
   title,
   description,
+  inputId,
+  nextInputId,
 }) {
   const [localTokenValue, setLocalTokenValue] = useState('')
   const t = useTranslations()
@@ -50,6 +52,19 @@ function RangePart({
     onUserInput(localTokenValue)
     dispatch(updateSelectedPreset({ preset: null }))
   }, [onUserInput, localTokenValue, dispatch])
+
+  const handleKeyDown = useCallback(
+    e => {
+      if (e.key === 'Enter') {
+        e.target.blur()
+      }
+      if (nextInputId && e.key === 'Tab') {
+        e.preventDefault()
+        document.getElementById(nextInputId)?.focus()
+      }
+    },
+    [nextInputId],
+  )
 
   // for button clicks
   const handleDecrement = useCallback(() => {
@@ -79,48 +94,46 @@ function RangePart({
   }, [activePreset, title, value])
 
   return (
-    <div className='flex w-full flex-col gap-1.5'>
-      <TextSubHeading className='truncate text-xs'>
-        {t(title === 'Min' ? 'Min [symbol0] per [symbol1] price' : 'Max [symbol0] per [symbol1] price', {
-          symbol0: unwrappedSymbol(tokenB),
-          symbol1: unwrappedSymbol(tokenA),
-        })}
-      </TextSubHeading>
-
-      <div className='flex min-w-0 items-center justify-between rounded-xl border border-neutral-700 px-3 py-2'>
-        <div className='flex min-w-0 flex-1 flex-col gap-1.5 p-0 pr-2'>
-          <input
-            type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base xl:font-medium'
-            placeholder='0.0'
-            value={localTokenValue}
-            onChange={e => {
-              // replace commas with periods, because uniswap exclusively uses period as the decimal separator
-              enforcer(e.target.value.replace(/,/g, '.'))
-            }}
-            onBlur={handleOnBlur}
-            min={0}
-            disabled={disabled || locked}
-            onFocus={e => e.target.select()}
-          />
-          <Paragraph className='min-w-0 truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>
-            {description}
-          </Paragraph>
-        </div>
-        <div className='flex flex-shrink-0 gap-4 md:flex-col md:gap-1'>
-          <OutlineIconButton
-            className='order-2 size-6! rounded-xs md:order-1'
-            Icon={PlusIcon}
-            onClick={handleIncrement}
-            disabled={incrementDisabled || disabled}
-          />
-          <OutlineIconButton
-            className='order-1 size-6! rounded-xs md:order-2'
-            Icon={MinusIcon}
-            onClick={handleDecrement}
-            disabled={decrementDisabled || disabled}
-          />
-        </div>
+    <div className='flex min-w-0 items-center justify-between rounded-xl bg-neutral-950 px-3 py-2 max-lg:border max-lg:border-neutral-700'>
+      <div className='flex min-w-0 flex-1 flex-col p-0'>
+        <TextSubHeading className='truncate text-[10px]! leading-4!'>
+          {t(title === 'Min' ? 'Min [symbol0] per [symbol1] price' : 'Max [symbol0] per [symbol1] price', {
+            symbol0: unwrappedSymbol(tokenB),
+            symbol1: unwrappedSymbol(tokenA),
+          })}
+        </TextSubHeading>
+        <input
+          type={activePreset === Presets.FULL ? 'text' : 'number'}
+          className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base xl:font-medium'
+          placeholder='0.0'
+          value={localTokenValue}
+          onChange={e => {
+            enforcer(e.target.value.replace(/,/g, '.'))
+          }}
+          onBlur={handleOnBlur}
+          onKeyDown={handleKeyDown}
+          min={0}
+          disabled={disabled || locked}
+          onFocus={e => e.target.select()}
+          id={inputId}
+        />
+        <Paragraph className='min-w-0 truncate text-[10px]! leading-4! text-neutral-300 md:max-w-52'>
+          {description}
+        </Paragraph>
+      </div>
+      <div className='flex flex-shrink-0 gap-2'>
+        <EmphasisIconButton
+          className='size-8! rounded-sm'
+          Icon={MinusIcon}
+          onClick={handleDecrement}
+          disabled={decrementDisabled || disabled}
+        />
+        <EmphasisIconButton
+          className='size-8! rounded-sm'
+          Icon={PlusIcon}
+          onClick={handleIncrement}
+          disabled={incrementDisabled || disabled}
+        />
       </div>
     </div>
   )
@@ -140,6 +153,7 @@ export function RangeSelector({
   currencyB,
   disabled,
   mintInfo,
+  className,
 }) {
   const dispatch = useDispatch()
   const { onFieldAInput, onFieldBInput, onStartPriceInput } = useV3MintActionHandlers(mintInfo?.noLiquidity)
@@ -186,8 +200,8 @@ export function RangeSelector({
   )
 
   return (
-    <div className='flex flex-col items-center gap-2 md:flex-row'>
-      <div className='w-full md:min-w-0 md:flex-1'>
+    <div className={cn('relative flex flex-col items-center gap-1.5 md:flex-row', className)}>
+      <div className='w-full lg:min-w-0 lg:flex-1'>
         <RangePart
           value={leftValue}
           onUserInput={onLeftRangeInput}
@@ -201,19 +215,21 @@ export function RangeSelector({
           disabled={disabled}
           title='Min'
           description={brushLabelValue('w', leftPrice?.toSignificant(5))}
+          inputId='min-price'
+          nextInputId='max-price'
         />
       </div>
-
       <button
-        className='flex h-fit w-full cursor-pointer items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400 md:h-[68px] md:w-fit md:flex-shrink-0'
+        className='absolute top-[60px] left-1/2 flex h-6 w-10 -translate-x-1/2 cursor-pointer items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}
+        disabled={disabled}
       >
-        <ReverseIcon className='size-4 rotate-90 md:rotate-0' />
+        <ReverseIcon className='size-4 rotate-90' />
       </button>
 
-      <div className='w-full md:min-w-0 md:flex-1'>
+      <div className='w-full lg:min-w-0 lg:flex-1'>
         <RangePart
           value={rightValue}
           onUserInput={onRightRangeInput}
@@ -228,6 +244,8 @@ export function RangeSelector({
           disabled={disabled}
           title='Max'
           description={brushLabelValue('e', rightPrice?.toSignificant(5))}
+          inputId='max-price'
+          nextInputId='min-price'
         />
       </div>
     </div>

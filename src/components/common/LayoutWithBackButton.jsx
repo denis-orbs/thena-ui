@@ -31,14 +31,14 @@ function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }
       className={cn(
         'flex flex-col',
         showBannerMigrate && 'mt-2 max-md:mt-[72px]',
-        !showBannerMigrate && 'mt-[72px] lg:mt-[100px]',
+        !showBannerMigrate && 'mt-[72px] mb-2 lg:mt-[100px]',
         hiddenBackButton && 'lg:mt-[92px]',
       )}
     >
       {!hiddenBackButton && (
-        <div className='hidden 2xl:block'>
+        <div className='hidden xl:block'>
           <TextButton
-            className='ml-4 w-fit outline-0 max-2xl:pl-0 2xl:ml-10'
+            className='ml-4 w-fit outline-0 max-xl:pl-0 xl:ml-10'
             LeadingIcon={ArrowLeftIcon}
             onClick={() => {
               if (backUrl) {

@@ -1,12 +1,16 @@
 'use client'
 
+import { SettingsIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { ZapperIcon } from '@/svgs'
 
@@ -21,11 +25,16 @@ export default function V1Add({
   setFirstAddress,
   setSecondAddress,
   handleBack,
+  className,
 }) {
   const [isZapper, setIsZapper] = useState(false)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
   const { push } = useRouter()
   const t = useTranslations()
+  const [show, setShow] = useState(false)
+  const { isLgDown } = useMediaQuery()
+
+  const [slippage, setSlippage] = useState(0.5)
 
   const addSelections = useMemo(
     () => [
@@ -53,8 +62,31 @@ export default function V1Add({
   )
 
   return (
-    <div className={cn('inline-flex w-full flex-col gap-2 md:gap-4')}>
-      {Boolean(pool) && <Selection className='items-stretch' data={addSelections} isFull isTranslation={false} />}
+    <div className={cn('inline-flex w-full flex-col gap-2', className)}>
+      {Boolean(pool) && (
+        <>
+          <div className={cn('flex flex-row justify-between gap-2')}>
+            <Selection
+              className='h-8 w-full flex-1 items-stretch lg:h-11'
+              classNames={{
+                items: 'md:text-sm text-xs',
+              }}
+              data={addSelections}
+              isFull
+              isTranslation={false}
+              isSmall={isLgDown}
+            />
+            <EmphasisIconButton
+              className='size-8 lg:size-11'
+              classNames='size-4 stroke-neutral-400'
+              Icon={SettingsIcon}
+              onClick={() => setShow(prev => !prev)}
+              disabled={false}
+            />
+          </div>
+          <SlippageContent setSlippage={setSlippage} slippage={slippage} show={show} />
+        </>
+      )}
       {isZapper ? (
         <CommonZapperPane
           asset0={firstAsset}
@@ -62,6 +94,8 @@ export default function V1Add({
           strategy={pool}
           onShowModalSuccess={() => setShowModalSuccess(true)}
           handleBack={handleBack}
+          slippage={slippage}
+          isSmall={isLgDown}
         />
       ) : (
         <ManualPaneV1
@@ -72,6 +106,8 @@ export default function V1Add({
           setFirstAddress={setFirstAddress}
           setSecondAddress={setSecondAddress}
           handleBack={handleBack}
+          slippage={slippage}
+          isSmall={isLgDown}
         />
       )}
 

@@ -143,6 +143,8 @@
   "[symbolA] per [symbolB]": "1 {symbolB} あたりの {symbolA}",
   "Min [symbolA] per [symbolB] price": "{symbolB}あたりの最小{symbolA}価格",
   "Max [symbolA] per [symbolB] price": "{symbolB}あたりの最大{symbolA}価格",
+  "Min [symbolA] per [symbolB]": "1 {symbolB} あたりの最小 {symbolA}",
+  "Max [symbolA] per [symbolB]": "1 {symbolB} あたりの最大 {symbolA}",
   "[symbol] deposit [percent]": "{symbol}の入金（{percent}%）",
   "OUT OF RANGE": "価格範囲外 APR 0%",
   "OUT OF RANGE description": "現在の市場価格は設定した価格範囲外にあるため、ポジションは手数料を得られず、取引にも使用されません。調整するには、現在の流動性を削除して新しい範囲を作成するか、単一トークンを入金してリバランスしてください。",
@@ -1622,5 +1624,7 @@
   "No transactions found": "No transactions found.",
   "$THE Single Sided Vault": "$THE Single Sided Vault",
   "This is Idle": "This is Idle",
-  "Degen Mode": "Degenモード"
+  "Degen Mode": "Degenモード",
+  "Your Position": "Your Position",
+  "Manage Liquidity": "Manage Liquidity"
 }

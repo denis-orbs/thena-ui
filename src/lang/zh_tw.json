@@ -143,6 +143,8 @@
   "[symbolA] per [symbolB]": "{symbolA} 每 {symbolB}",
   "Min [symbolA] per [symbolB] price": "每 {symbolB} 的最小 {symbolA} 價格",
   "Max [symbolA] per [symbolB] price": "每 {symbolB} 的最大 {symbolA} 價格",
+  "Min [symbolA] per [symbolB]": "每 {symbolB} 的最小 {symbolA}",
+  "Max [symbolA] per [symbolB]": "每 {symbolB} 的最大 {symbolA}",
   "[symbol] deposit [percent]": "{symbol} 存入（{percent}%）",
   "OUT OF RANGE": "超出價格區間的年化收益為 0%",
   "OUT OF RANGE description": "目前市場價格不在您設定的價格區間內，您的持倉將無法賺取手續費，也不會參與交易。您可以選擇移除流動性並重新設定區間，或透過單幣注入來進行再平衡。",
@@ -1623,5 +1625,7 @@
   "$THE Single Sided Vault": "$THE Single Sided Vault",
   "This is Idle": "This is Idle",
   "Degen Mode": "Degen 模式",
-  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding"
+  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding",
+  "Your Position": "Your Position",
+  "Manage Liquidity": "Manage Liquidity"
 }

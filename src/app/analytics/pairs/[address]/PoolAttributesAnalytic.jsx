@@ -12,13 +12,13 @@ import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import { TargetIcon } from '@/svgs'
 
-function TokenAnalytics({ pair, classNames }) {
-  const { tokens } = pair
+export function TokenAnalytics({ pair, classNames }) {
+  const { tokens } = pair || {}
   const t = useTranslations()
   return (
-    <div className={cn('grid grid-cols-1 gap-2 md:gap-4 lg:grid-cols-2', tokens.length === 2 && 'md:grid-cols-2')}>
+    <div className={cn('grid grid-cols-1 gap-2 md:gap-4 lg:grid-cols-2', tokens?.length === 2 && 'md:grid-cols-2')}>
       {(tokens || []).map((token, index) => (
-        <div className={cn('flex flex-col gap-4 rounded-md bg-neutral-900 p-4', classNames.items)} key={token.address}>
+        <div className={cn('flex flex-col gap-4 rounded-md bg-neutral-900 p-4', classNames?.items)} key={token.address}>
           <div className='flex justify-between gap-2'>
             <div className='flex items-center gap-2'>
               <CircleImage className='size-7' alt='weighted token logo' src={token.logoURI} />

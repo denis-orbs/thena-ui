@@ -141,8 +141,10 @@
   "Select a Token": "เลือกโทเค็น",
   "Enter an amount": "ป้อนจำนวน",
   "[symbolA] per [symbolB]": "{symbolA} สำหรับ {symbolB}",
-  "Min [symbolA] per [symbolB] price": "ขั้นต่ำ {สัญลักษณ์A} ต่อราคา {สัญลักษณ์B}",
-  "Max [symbolA] per [symbolB] price": "สูงสุด {สัญลักษณ์A} ต่อราคา {สัญลักษณ์B}",
+  "Min [symbolA] per [symbolB] price": "ขั้นต่ำ {symbolA} ต่อราคา {symbolB}",
+  "Max [symbolA] per [symbolB] price": "สูงสุด {symbolA} ต่อราคา {symbolB}",
+  "Min [symbolA] per [symbolB]": "ขั้นต่ำ {symbolA} ต่อราคา {symbolB}",
+  "Max [symbolA] per [symbolB]": "สูงสุด {symbolA} ต่อราคา {symbolB}",
   "[symbol] deposit [percent]": "{สัญลักษณ์} เงินฝาก ({เปอร์เซ็นต์}%)",
   "OUT OF RANGE": "อยู่นอกช่วงที่กำหนด อัตราผลตอบแทน (APR) 0%",
   "OUT OF RANGE description": "ตำแหน่งของคุณจะไม่ได้รับค่าธรรมเนียมหรือถูกนำไปใช้ในการซื้อ\nขายจนกว่าราคาตลาดจะเคลื่อนเข้าสู่ช่วงราคาของคุณ หากต้องการ\nปรับตำแหน่งของคุณ ให้ลบสภาพคล่องปัจจุบันของคุณและสร้างช่วง\nราคาใหม่ หรือฝากโทเค็นเพียงอันเดียวเพื่อปรับสมดุลใหม่",
@@ -1623,5 +1625,7 @@
   "$THE Single Sided Vault": "$THE Single Sided Vault",
   "This is Idle": "This is Idle",
   "Degen Mode": "โหมด Degen",
-  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding"
+  "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding",
+  "Your Position": "Your Position",
+  "Manage Liquidity": "Manage Liquidity"
 }

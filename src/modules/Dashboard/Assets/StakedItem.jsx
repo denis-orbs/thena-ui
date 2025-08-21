@@ -142,7 +142,7 @@ function StakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2&title=${position.title}&staked=true`)
   }, [dispatch, position.basePool, position.title, push, strategy])
 
   const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
@@ -327,7 +327,7 @@ function StakedItem({ position, isXlDown }) {
   const actionCell = useMemo(() => {
     let actions = (
       <>
-        <EmphasisButton
+        {/* <EmphasisButton
           className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base'
           onClick={() => {
             if (position.type === PAIR_TYPES.LSD) {
@@ -338,18 +338,18 @@ function StakedItem({ position, isXlDown }) {
           }}
         >
           {t('Remove')}
-        </EmphasisButton>
+        </EmphasisButton> */}
 
         <EmphasisButton
-          className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
+          className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
           onClick={handleHarvest}
-          disabled={claimPending}
+          disabled={claimPending || isSwapFee}
         >
           {t('Claim')}
         </EmphasisButton>
 
         <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
-          {t('Add')}
+          {t('Manage')}
         </EmphasisButton>
       </>
     )
@@ -357,28 +357,28 @@ function StakedItem({ position, isXlDown }) {
       if (isSingleSided) {
         actions = (
           <>
-            <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+            {/* <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
               {t('Unstake')}
-            </EmphasisButton>
+            </EmphasisButton> */}
             <EmphasisButton
-              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base', isSwapFee && 'hidden')}
+              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={handleHarvest}
-              disabled={claimPending}
+              disabled={claimPending || isSwapFee}
             >
               {t('Claim')}
             </EmphasisButton>
 
             <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
-              {t('Add')}
+              {t('Manage')}
             </EmphasisButton>
           </>
         )
       } else {
         actions = (
           <>
-            <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
+            {/* <EmphasisButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
               {t('Unstake')}
-            </EmphasisButton>
+            </EmphasisButton> */}
 
             {migrationOptions?.length > 0 ? (
               <Link href={migrationLink} className='h-8 flex-1 md:h-11'>
@@ -398,10 +398,7 @@ function StakedItem({ position, isXlDown }) {
     }
     return (
       <div
-        className={cn('grid w-full justify-center gap-2', {
-          'grid-cols-2': (version === 2 || isSwapFee) && !isSingleSided,
-          'grid-cols-3': (version === 3 && !isSwapFee) || isSingleSided,
-        })}
+        className={cn('grid w-full grid-cols-2 justify-center gap-2', version === 2 && !isSingleSided && 'grid-cols-1')}
       >
         {actions}
       </div>
@@ -414,7 +411,6 @@ function StakedItem({ position, isXlDown }) {
     isSwapFee,
     migrationLink,
     migrationOptions?.length,
-    position.type,
     t,
     version,
   ])

@@ -1,14 +1,12 @@
-import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
 // import Skeleton from '@/components/skeleton'
-import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function ChartPrice({
+function ChartAxisTime({
   data,
   timeWindow,
   minVisiblePrice,
@@ -38,7 +36,7 @@ function ChartPrice({
       layout: {
         background: { color: 'transparent' },
         textColor: '#685770',
-        fontFamily: 'Inter',
+        fontFamily: 'Inter, sans-serif',
         fontSize: 12,
       },
       autoSize: true,
@@ -52,12 +50,13 @@ function ChartPrice({
         priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
-        visible: false,
+        visible: true,
         borderVisible: false,
         secondsVisible: false,
+        timeVisible: true,
+        rightOffset: 3,
         rightBarStaysOnScroll: true,
         // fixRightEdge: true,
-        rightOffset: 3,
         tickMarkFormatter: unixTime =>
           timeWindow === PairDataTimeWindow.DAY
             ? dayjs.unix(unixTime).format('HH:mm')
@@ -83,15 +82,9 @@ function ChartPrice({
       },
     })
 
-    chart.applyOptions({
-      localization: {
-        priceFormatter: priceValue => `${new BigNumber(priceValue).gte(1e13) ? '' : formatAmount(priceValue, true, 5)}`,
-      },
-    })
-
     const newSeries = chart.addAreaSeries({
-      lineWidth: 3,
-      lineColor: '#F199EE',
+      lineWidth: 0,
+      lineColor: 'transparent',
       topColor: darken(0.01, 'transparent'),
       bottomColor: 'transparent',
       priceFormat: {
@@ -108,17 +101,6 @@ function ChartPrice({
     newSeries.setData(transformedData)
 
     if (transformedData.length > 0) {
-      const lastDataPoint = transformedData[transformedData.length - 1]
-      newSeries.setMarkers([
-        {
-          time: lastDataPoint.time,
-          position: 'inBar',
-          color: '#F8CCF6',
-          shape: 'circle',
-          size: 0.5,
-        },
-      ])
-
       const values = transformedData.map(item => item.value)
       const minValueFromData = Math.min(...values)
       const maxValueFromData = Math.max(...values)
@@ -155,9 +137,9 @@ function ChartPrice({
   return (
     <div className='flex h-full w-full flex-1'>
       {/* {(!chartCreated.current || !transformedData.length) && <Skeleton />} */}
-      <div className='price-chart-container w-full flex-1' ref={chartRef} />
+      <div className='axis-bottom-time w-full flex-1' ref={chartRef} />
     </div>
   )
 }
 
-export default ChartPrice
+export default ChartAxisTime
