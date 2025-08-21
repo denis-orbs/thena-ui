@@ -85,11 +85,15 @@ export default function ManualAddPanel({
         </div>
         <SlippageContent setSlippage={setSlippage} slippage={slippage} show={show} marginTop={4} />
       </>
-
-      {isZapper ? (
+      {isZapper && (
         <>
-          {position ? (
-            <KyberZapperIncreasePane position={position} onShowModalSuccess={onShowModalSuccess} slippage={slippage} />
+          {position && position?._position?.tokenId ? (
+            <KyberZapperIncreasePane
+              position={position}
+              onShowModalSuccess={onShowModalSuccess}
+              slippage={slippage}
+              classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!' }}
+            />
           ) : (
             <KyberZapperPane
               baseCurrency={baseCurrency}
@@ -100,10 +104,13 @@ export default function ManualAddPanel({
               onShowModalSuccess={onShowModalSuccess}
               handleBack={handleBack}
               slippage={slippage}
+              classNames={{ input: 'bg-neutral-950! hover:bg-neutral-900! gap-1! max-xl:py-4!' }}
             />
           )}
         </>
-      ) : (
+      )}
+
+      {!isZapper && (
         <div className='mt-2'>
           <ManualAdd
             baseCurrency={baseCurrency}

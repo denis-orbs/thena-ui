@@ -14,7 +14,7 @@ import { useGetZapInRouteForExisting, useKyberZapperAddLiquidity } from '@/hooks
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
-function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 }) {
+function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5, classNames }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { handleIncreaseLiquidity } = useKyberZapperAddLiquidity()
@@ -86,7 +86,7 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 
   }, [amountIn, data?.route, handleIncreaseLiquidity, onShowModalSuccess, tokenDeposit])
 
   return (
-    <div className='mt-4! flex flex-col md:gap-4'>
+    <div className='mt-2! flex flex-col md:gap-4'>
       <div className='flex flex-col gap-2 md:gap-4'>
         <TokenAmountInput
           type='number'
@@ -97,10 +97,7 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 
           onAmountChange={setAmount}
           showPercent={false}
           assetsSelect={[asset0, asset1, BNB]}
-          classNames={{
-            dropdown: 'lg:grid-cols-1! md:grid-cols-2!',
-            input: 'bg-neutral-950 hover:bg-neutral-900 px-3! py-2!',
-          }}
+          classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
           isSmall
         />
 
@@ -159,17 +156,19 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5 
         </div>
       </div>
 
-      {account ? (
-        <PrimaryButton
-          className='mt-4 w-full'
-          onClick={handleKyberIncreaseLiquidity}
-          disabled={!data || isFetching || !amountIn}
-        >
-          {t('Deposit')}
-        </PrimaryButton>
-      ) : (
-        <ConnectButton className='mt-4 w-full' />
-      )}
+      <div className='mt-2 flex w-full flex-col items-center xl:flex-row'>
+        {account ? (
+          <PrimaryButton
+            className='w-full'
+            onClick={handleKyberIncreaseLiquidity}
+            disabled={!data || isFetching || !amountIn}
+          >
+            {t('Deposit')}
+          </PrimaryButton>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
     </div>
   )
 }

@@ -174,18 +174,22 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               {position.rewardUsd > 0 &&
                 (type === 'CL_Farming' ? (
                   <>
-                    <div className='flex flex-nowrap items-center gap-2'>
-                      <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='reward THE' />
-                      <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                        {formatAmount(reward0?.amount?.toSignificant())}
-                      </Paragraph>
-                    </div>
-                    <div className='flex flex-nowrap items-center gap-2'>
-                      <CircleImage className='size-5' src='https://cdn.thena.fi/assets/WBNB.png' alt='reward BNB' />
-                      <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                        {formatAmount(reward1?.amount?.toSignificant())}
-                      </Paragraph>
-                    </div>
+                    {Number(reward0?.amount.toSignificant()) > 0 && (
+                      <div className='flex flex-nowrap items-center gap-2'>
+                        <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='reward THE' />
+                        <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
+                          {formatAmount(reward0?.amount?.toSignificant())}
+                        </Paragraph>
+                      </div>
+                    )}
+                    {Number(reward1?.amount.toSignificant()) > 0 && (
+                      <div className='flex flex-nowrap items-center gap-2'>
+                        <CircleImage className='size-5' src='https://cdn.thena.fi/assets/WBNB.png' alt='reward BNB' />
+                        <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
+                          {formatAmount(reward1?.amount?.toSignificant())}
+                        </Paragraph>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>

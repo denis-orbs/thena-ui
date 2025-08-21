@@ -134,53 +134,69 @@ function StrategyItem({ sub, t }) {
   )
 }
 
-function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, activePreset, strategy, t }) {
+function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, activePreset, strategy, t, pair }) {
   return (
-    <article
-      className={cn(
-        'bg-opacity-50 flex items-center justify-between rounded-xl bg-neutral-900 px-4 py-2 font-medium outline outline-neutral-600',
-      )}
-    >
-      <div className='flex items-center gap-1 md:gap-3 xl:gap-2'>
-        {isEarnFees ? (
-          <IconGroup
-            className='*:not-first:-ml-2'
-            classNames={{ image: 'outline-2 size-5 md:size-8' }}
-            logo1={firstAsset?.logoURI}
-            logo2={secondAsset?.logoURI}
-          />
-        ) : (
-          <CircleImage
-            className='size-5 border-[2.5px] border-[#1C2027] md:size-8'
-            src='https://cdn.thena.fi/assets/THE.png'
-            alt='THENA First Logo'
-          />
-        )}
-
-        <div className='flex flex-col gap-1'>
-          <NewTextSubHeading className='text-xs font-medium text-neutral-50 md:text-xl md:leading-6 xl:leading-7'>
-            {isEarnFees ? 'Fees' : '$THE'}
+    <div className='flex flex-col gap-4 max-md:w-full md:flex-row'>
+      <div className='flex items-center gap-6 p-4 max-md:w-full'>
+        <div className={cn('flex flex-col')}>
+          <NewTextSubHeading className={cn('text-gradient-primary text-xl! leading-6!')}>
+            ${formatAmount(pair?.dayVolume)}
           </NewTextSubHeading>
-          <Paragraph className='text-xs font-normal text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
-            {t('Earn')}
-          </Paragraph>
+          <Paragraph className={cn('text-bas leading-5! text-neutral-300')}>{t('Volume (24h)')}</Paragraph>
+        </div>
+        <div className={cn('flex flex-col')}>
+          <NewTextSubHeading className={cn('text-gradient-primary text-xl! leading-6!')}>
+            ${formatAmount(pair?.tvlUSD)}
+          </NewTextSubHeading>
+          <Paragraph className={cn('text-base leading-5! text-neutral-300')}>{t('TVL')}</Paragraph>
         </div>
       </div>
-
-      <div className='flex flex-col justify-end xl:gap-1'>
-        <NewTextSubHeading className='text-primary-600 text-end text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
-          {formatAmount(
-            APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
-              ? strategy?.apr
-              : APRs?.[activePreset ?? 'current'],
+      <article
+        className={cn(
+          'bg-opacity-50 flex items-center justify-between gap-6 rounded-xl bg-neutral-900 px-4 py-2 font-medium outline outline-neutral-600',
+        )}
+      >
+        <div className='flex items-center gap-1 md:gap-3 xl:gap-2'>
+          {isEarnFees ? (
+            <IconGroup
+              className='*:not-first:-ml-2'
+              classNames={{ image: 'outline-2 size-5 md:size-8' }}
+              logo1={firstAsset?.logoURI}
+              logo2={secondAsset?.logoURI}
+            />
+          ) : (
+            <CircleImage
+              className='size-5 border-[2.5px] border-[#1C2027] md:size-8'
+              src='https://cdn.thena.fi/assets/THE.png'
+              alt='THENA First Logo'
+            />
           )}
-          %
-        </NewTextSubHeading>
-        <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
-          {t(isEarnFees ? 'Historical Weekly APR' : 'Estimated APR')}
-        </Paragraph>
-      </div>
-    </article>
+
+          <div className='flex flex-col gap-1'>
+            <NewTextSubHeading className='text-gradient-primary text-xl font-medium md:leading-6 xl:leading-6!'>
+              {isEarnFees ? 'FEES' : '$THE'}
+            </NewTextSubHeading>
+            <Paragraph className='text-xs font-normal text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
+              {t('Earn')}
+            </Paragraph>
+          </div>
+        </div>
+
+        <div className='flex flex-col justify-end xl:gap-1'>
+          <NewTextSubHeading className='text-gradient-primary text-end text-xs font-bold md:text-xl md:leading-6 xl:leading-7'>
+            {formatAmount(
+              APRs?.[activePreset ?? 'current'] && APRs[activePreset ?? 'current'].isZero()
+                ? strategy?.apr
+                : APRs?.[activePreset ?? 'current'],
+            )}
+            %
+          </NewTextSubHeading>
+          <Paragraph className='text-end text-xs font-medium text-neutral-300 md:text-base md:leading-5 xl:leading-5'>
+            {t('Estimated APR')}
+          </Paragraph>
+        </div>
+      </article>
+    </div>
   )
 }
 
@@ -420,6 +436,7 @@ export default function HeaderCLSection({
                       activePreset={activePreset}
                       strategy={strategy}
                       t={t}
+                      pair={pair}
                     />
                   )}
                 </>
