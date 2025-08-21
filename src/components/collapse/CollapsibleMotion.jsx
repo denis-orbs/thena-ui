@@ -28,7 +28,7 @@ export function CollapsibleMotion({
         duration,
         ease: easing,
         opacity: {
-          duration: show ? duration * 0.8 : duration * 0.8,
+          duration: duration * 1.5,
           delay: show ? opacityDelay : 0,
         },
         height: {

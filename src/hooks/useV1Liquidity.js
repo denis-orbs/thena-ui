@@ -401,7 +401,6 @@ export const useV1Remove = () => {
         (pair.account.token0claimable.gt(0) || pair.account.token1claimable.gt(0)) &&
         pair.account.walletBalance.eq(withdrawAmount)
 
-      console.log(isStaked)
       if (isStaked) {
         shouldClaim = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(withdrawAmount)
       }

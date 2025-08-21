@@ -131,7 +131,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
 
             {/* APR (mobile) */}
             <div className='flex flex-col justify-between gap-2 xl:hidden'>
-              <Paragraph className='font-archia text-primary-600 text-xl! leading-6! font-semibold'>
+              <Paragraph className='font-archia text-primary-600 text-xl! leading-6! font-semibold text-nowrap'>
                 {formatAmount(position?.apr)}%
               </Paragraph>
               <Paragraph className='text-sm! font-medium text-nowrap text-neutral-500'>{t('APR')}</Paragraph>
@@ -217,7 +217,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             </Paragraph>
           </div>
           <div className='flex h-12 flex-1 flex-col gap-1 max-xl:hidden'>
-            <Paragraph className='font-archia text-primary-600 text-xl! font-semibold'>
+            <Paragraph className='font-archia text-primary-600 text-xl! font-semibold text-nowrap'>
               {formatAmount(position.apr)}%
             </Paragraph>
             <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>{t('APR')}</Paragraph>
