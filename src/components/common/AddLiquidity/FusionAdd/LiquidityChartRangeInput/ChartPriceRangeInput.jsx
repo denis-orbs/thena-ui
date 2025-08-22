@@ -409,10 +409,10 @@ export default function ChartPriceRangeInput({
     [chartSize],
   )
 
-  const divideDistanceWidth = useMemo(
-    () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
-    [chartSize.chartContainerWidth, windowSize.width],
-  )
+  // const divideDistanceWidth = useMemo(
+  //   () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
+  //   [chartSize.chartContainerWidth, windowSize.width],
+  // )
 
   return (
     <div className='flex w-full! flex-col xl:mb-2' ref={containerWidthRef}>
@@ -629,7 +629,7 @@ export default function ChartPriceRangeInput({
                           isOutOfView={isOutOfView}
                           isFullRange={isFullRange}
                           id={idChart}
-                          divideDistanceWidth={divideDistanceWidth}
+                          divideDistanceWidth={chartPriceWidth - 0.05 * chartPriceWidth}
                           showLiquidity={showLiquidity}
                           setIsFlip={setIsFlip}
                         />

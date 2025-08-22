@@ -51,7 +51,7 @@ export default function ActivePriceRangeChart({
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} className='z-10' ref={svgRef}>
+      <svg width='100%' height='100%' viewBox={`10 14 ${width} ${height}`} className='z-10' ref={svgRef}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>
             <rect x='0' y='0' width={width} height={height} />

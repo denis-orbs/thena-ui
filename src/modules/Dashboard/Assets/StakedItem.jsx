@@ -142,8 +142,11 @@ function StakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2&title=${position.title}&staked=true`)
-  }, [dispatch, position.basePool, position.title, push, strategy])
+    push(
+      // eslint-disable-next-line max-len
+      `/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2&title=${position.title}&staked=true&version=${version}`,
+    )
+  }, [dispatch, position.basePool, position.title, push, strategy, version])
 
   const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
 

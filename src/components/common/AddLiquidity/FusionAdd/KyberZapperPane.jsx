@@ -31,6 +31,7 @@ function KyberZapperPane({
   onShowModalSuccess,
   handleBack,
   slippage = 0.5,
+  classNames,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -180,6 +181,8 @@ function KyberZapperPane({
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={isToken0Wbnb || isToken1Wbnb ? [asset0, asset1, BNB] : [asset0, asset1]}
+            classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
+            isSmall
           />
 
           <div

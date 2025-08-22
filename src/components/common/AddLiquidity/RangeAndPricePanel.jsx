@@ -163,7 +163,14 @@ export function RangeAndPricePanel({
       <div className={cn('order-1 h-auto xl:order-2 xl:flex', viewMode && 'max-xl:hidden')}>
         <div className='flex w-full flex-col gap-4 xl:h-full'>
           {!viewMode ? (
-            <>
+            <div className='flex flex-col gap-4 xl:mt-auto'>
+              <Toggle
+                toggleId='degen-mode'
+                checked={degenMode}
+                className='mt-0! hidden' // TODO: remove hidden when degen mode is ready
+                onChange={() => setDegenMode(prev => !prev)}
+                label='Degen Mode'
+              />
               <RangeSelector
                 price={currentPrice ? parseFloat(currentPrice) : undefined}
                 priceLower={position?.priceLower ?? priceLower}
@@ -181,22 +188,14 @@ export function RangeAndPricePanel({
                 className='flex-col!'
               />
 
-              <Toggle
-                toggleId='degen-mode'
-                checked={degenMode}
-                className='mt-0! hidden' // TODO: remove hidden when degen mode is ready
-                onChange={() => setDegenMode(prev => !prev)}
-                label='Degen Mode'
-              />
-
               {/* Desktop PresetRanges */}
-              <div className='mt-auto max-xl:hidden'>
+              <div className='max-xl:hidden'>
                 <PresetRangesComponent className='mt-auto' />
               </div>
-            </>
+            </div>
           ) : (
             /* Desktop ViewMode Content */
-            <div className='hidden h-full flex-col gap-3 xl:flex'>
+            <div className='mt-auto hidden flex-col gap-3 xl:flex'>
               <RangePriceInfoComponent />
               <div className='mt-auto h-fit'>
                 <AddLiquidityCLPane

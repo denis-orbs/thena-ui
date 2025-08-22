@@ -135,7 +135,7 @@ export function TokenAmountInput({
   }, [amount, max])
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 px-[1px]'>
       {(typeof title === 'string' || showPercent) && (
         <div className='flex items-center justify-between'>
           {title && <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>}
@@ -146,10 +146,11 @@ export function TokenAmountInput({
         className={cn(
           'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-2 lg:py-4',
           'outline-1 outline-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
-          'focus-within:border-neutral-500 focus-within:hover:bg-transparent!',
-          classNames?.input,
+          'focus-within:outline-neutral-500 focus-within:hover:bg-transparent!',
           isSmall && 'xl:gap-1! xl:px-3! xl:py-2!',
-          isInvalidAmount && 'border-error-600 focus-within:border-error-500',
+          isInvalidAmount && 'outline-error-600 focus-within:outline-error-500',
+          'bg-neutral-950',
+          classNames?.inputWrapper,
         )}
         onClick={onfocusInput}
         ref={wrapperSelectRef}
@@ -160,7 +161,6 @@ export function TokenAmountInput({
             type='number'
             className={cn(
               'w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400',
-              isSmall && 'text-sm!',
             )}
             placeholder='0.0'
             value={amount ?? ''}
@@ -175,7 +175,6 @@ export function TokenAmountInput({
               }
               onAmountChange(value)
             }}
-            min={0}
             autoFocus={autoFocus}
           />
           {setAsset ? (
