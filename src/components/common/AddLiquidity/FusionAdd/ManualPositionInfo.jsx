@@ -171,8 +171,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           </div>
           <div className='flex h-12 flex-1 flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              {position.rewardUsd > 0 &&
-                (type === 'CL_Farming' ? (
+              {position.rewardUsd > 0 ? (
+                type === 'CL_Farming' ? (
                   <>
                     {Number(reward0?.amount.toSignificant()) > 0 && (
                       <div className='flex flex-nowrap items-center gap-2'>
@@ -193,28 +193,37 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                   </>
                 ) : (
                   <>
-                    <div className='flex flex-nowrap items-center gap-2'>
-                      <CircleImage
-                        className='size-5'
-                        src={position?.rewards?.[0]?.token?.logoURI || UNKNOWN_LOGO}
-                        alt='reward 0'
-                      />
-                      <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                        {formatAmount(fromWei(reward0))}
-                      </Paragraph>
-                    </div>
-                    <div className='flex flex-nowrap items-center gap-2'>
-                      <CircleImage
-                        className='size-5'
-                        src={position?.rewards?.[1]?.token?.logoURI || UNKNOWN_LOGO}
-                        alt='reward 1'
-                      />
-                      <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                        {formatAmount(fromWei(reward1))}
-                      </Paragraph>
-                    </div>
+                    {fromWei(reward0) > 0 && (
+                      <div className='flex flex-nowrap items-center gap-2'>
+                        <CircleImage
+                          className='size-5'
+                          src={position?.rewards?.[0]?.token?.logoURI || UNKNOWN_LOGO}
+                          alt='reward 0'
+                        />
+                        <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
+                          {formatAmount(fromWei(reward0))}
+                        </Paragraph>
+                      </div>
+                    )}
+                    {fromWei(reward1) > 0 && (
+                      <div className='flex flex-nowrap items-center gap-2'>
+                        <CircleImage
+                          className='size-5'
+                          src={position?.rewards?.[1]?.token?.logoURI || UNKNOWN_LOGO}
+                          alt='reward 1'
+                        />
+                        <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
+                          {formatAmount(fromWei(reward1))}
+                        </Paragraph>
+                      </div>
+                    )}
                   </>
-                ))}
+                )
+              ) : (
+                <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
+                  0
+                </Paragraph>
+              )}
             </div>
             <Paragraph className='text-xs font-medium text-nowrap text-neutral-500 xl:text-sm'>
               {t('Rewards')}

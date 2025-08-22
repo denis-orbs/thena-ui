@@ -112,7 +112,6 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
 }
 
 function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFromChart }) {
-  console.log({ positions })
   const renderPosition = useCallback(
     position => {
       if (position.type === 'Manual') {

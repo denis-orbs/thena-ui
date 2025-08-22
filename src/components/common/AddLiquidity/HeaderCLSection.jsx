@@ -135,20 +135,32 @@ function StrategyItem({ sub, t }) {
 }
 
 function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, activePreset, strategy, t, pair }) {
+  const subpool = useMemo(
+    () => (pair?.subpools || []).find(sub => sub.address === strategy?.address),
+
+    [pair?.subpools, strategy?.address],
+  )
+
   return (
     <div className='flex flex-col gap-4 max-md:w-full md:flex-row'>
       <div className='flex items-center gap-6 p-4 max-md:w-full'>
         <div className={cn('flex flex-col')}>
           <NewTextSubHeading className={cn('text-gradient-primary text-xl! leading-6!')}>
-            ${formatAmount(pair?.dayVolume)}
+            ${formatAmount(subpool?.oneDayVolumeUSD)}
           </NewTextSubHeading>
           <Paragraph className={cn('text-bas leading-5! text-neutral-300')}>{t('Volume (24h)')}</Paragraph>
         </div>
         <div className={cn('flex flex-col')}>
           <NewTextSubHeading className={cn('text-gradient-primary text-xl! leading-6!')}>
-            ${formatAmount(pair?.tvlUSD)}
+            ${formatAmount(strategy?.tvl)}
           </NewTextSubHeading>
           <Paragraph className={cn('text-base leading-5! text-neutral-300')}>{t('TVL')}</Paragraph>
+        </div>
+        <div className={cn('flex flex-col')}>
+          <NewTextSubHeading className={cn('text-gradient-primary text-xl! leading-6!')}>
+            ${formatAmount(subpool?.oneDayFeesUSD)}
+          </NewTextSubHeading>
+          <Paragraph className={cn('text-base leading-5! text-neutral-300')}>{t('Fees (24h)')}</Paragraph>
         </div>
       </div>
       <article
@@ -338,8 +350,6 @@ export default function HeaderCLSection({
     },
     [handleChooseStrategy, setIsAutomatic, sortedSubPools],
   )
-
-  console.log({ pair })
 
   return (
     <div
