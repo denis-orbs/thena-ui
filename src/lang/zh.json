@@ -1577,5 +1577,6 @@
   "Per Epoch": "per Epoch",
   "Fee Distribution": "Fee Distribution",
   "veTHE owners": "veTHE owners",
-  "Manual LP'ers": "Manual LP'ers"
+  "Manual LP'ers": "Manual LP'ers",
+  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper"
 }

@@ -3,16 +3,17 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
-import { useReadContracts } from 'wagmi'
+import { useReadContract, useReadContracts } from 'wagmi'
 
+import { Alert } from '@/components/alert'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
-import { TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
-import { vammZapAbi } from '@/constant/abi'
+import { routerAbi, vammZapAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
@@ -20,13 +21,18 @@ import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
 
 import WarningZapper from './WarningZapper'
 
 const getZapAddress = (strategy, chainId) => {
   if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.gammaZap[chainId], isV1: false }
-  if (strategy.type === PAIR_TYPES.CLASSIC) return { address: Contracts.classicZap[chainId], isV1: true }
-  if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
+  if (strategy.type === PAIR_TYPES.CLASSIC) {
+    return { address: Contracts.classicZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
+  }
+  if (strategy.type === PAIR_TYPES.STABLE) {
+    return { address: Contracts.stableZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
+  }
 }
 
 export function CommonZapperPane({
@@ -58,7 +64,7 @@ export function CommonZapperPane({
       (asset1.address === WBNB[chainId].address.toLowerCase() ||
         asset0.address === WBNB[chainId].address.toLowerCase()))
 
-  const { address: zapAddress, isV1 } = getZapAddress(strategy, chainId)
+  const { address: zapAddress, routerAddress, isV1 } = getZapAddress(strategy, chainId)
 
   // Get quote swap to token0/token1 to check best quote
   const { data: quoteO } = useOdosQuoteSwapTradeTC(
@@ -106,11 +112,11 @@ export function CommonZapperPane({
     }
   }, [assemble0, assemble1, asset0, asset1])
 
-  const tokenInRecieveAmount = formatAmount(fromWei(bestQuote?.[0].outputMin ?? 0n, tokenIn?.decimals))
+  const tokenInReceiveAmount = formatAmount(fromWei(bestQuote?.[0].outputMin ?? 0n, tokenIn?.decimals))
   const theOther = (isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol ? asset1 : asset0
   const args = isUseTokenInPair
     ? [tokenDeposit.address, toWei(amountIn, tokenDeposit?.decimals), strategy.address]
-    : [tokenIn?.address, toWei(tokenInRecieveAmount, tokenIn?.decimals), strategy.address]
+    : [tokenIn?.address, toWei(tokenInReceiveAmount, tokenIn?.decimals), strategy.address]
 
   const { data } = useReadContracts({
     contracts: [
@@ -130,13 +136,41 @@ export function CommonZapperPane({
     query: {
       enabled: isUseTokenInPair
         ? Boolean(tokenDeposit.address && amountIn && strategy.address)
-        : Boolean(tokenIn && tokenInRecieveAmount && strategy.address),
+        : Boolean(tokenIn && tokenInReceiveAmount && strategy.address),
     },
   })
 
   const amountToSwap = formatAmount(fromWei(data?.[0]?.result?.[0] ?? 0n))
   const amountToReceive = formatAmount(fromWei(data?.[0]?.result?.[1] ?? 0n))
   const liquidityAdded = formatAmount(fromWei(data?.[1]?.result ?? 0n))
+
+  const { data: amounts } = useReadContract({
+    abi: routerAbi,
+    address: routerAddress,
+    functionName: 'quoteRemoveLiquidity',
+    args: [asset0.address, asset1.address, strategy.type === PAIR_TYPES.STABLE, toWei(liquidityAdded)],
+    query: {
+      enabled: isV1,
+    },
+  })
+
+  const amountDepositInUSD = useMemo(() => {
+    const amountDeposit = isUseTokenInPair ? amountIn : tokenInReceiveAmount
+    const token = isUseTokenInPair ? tokenDeposit : tokenIn
+    return new BigNumber(amountDeposit).times(token?.price ?? 0)
+  }, [isUseTokenInPair, tokenDeposit, tokenIn, amountIn, tokenInReceiveAmount])
+
+  const amountReceiveInUSD = useMemo(() => {
+    if (!amounts) return new BigNumber(0)
+    const amountA = fromWei(amounts[0], asset0.decimals)
+    const amountB = fromWei(amounts[1], asset1.decimals)
+    return amountA.times(asset0.price).plus(amountB.times(asset1.price))
+  }, [amounts, asset0, asset1])
+
+  const priceImpact = useMemo(() => {
+    if (!amountDepositInUSD || !amountReceiveInUSD) return 0
+    return amountReceiveInUSD.minus(amountDepositInUSD).div(amountDepositInUSD).times(100).toNumber()
+  }, [amountDepositInUSD, amountReceiveInUSD])
 
   const handleAddLiquidity = useCallback(
     ({ isStake = true }) => {
@@ -267,14 +301,14 @@ export function CommonZapperPane({
                 ) : (
                   <>
                     <li>
-                      Swap {Number(amountIn)} {tokenDeposit.symbol} to {tokenInRecieveAmount} {tokenIn?.symbol} via
+                      Swap {Number(amountIn)} {tokenDeposit.symbol} to {tokenInReceiveAmount} {tokenIn?.symbol} via
                       ODOS.
                     </li>
                     <li>
                       Swap {amountToSwap} {tokenIn?.symbol} to {amountToReceive} {theOther.symbol}.
                     </li>
                     <li>
-                      Build LP using {formatAmount(Number(tokenInRecieveAmount) - Number(amountToSwap))}{' '}
+                      Build LP using {formatAmount(Number(tokenInReceiveAmount) - Number(amountToSwap))}{' '}
                       {tokenIn?.symbol} and {amountToReceive} {theOther.symbol} on THENA
                     </li>
                     <li>
@@ -282,6 +316,19 @@ export function CommonZapperPane({
                     </li>
                   </>
                 )}
+
+                <div className='mt-2 flex flex-col gap-2'>
+                  <div className='flex items-center gap-2'>
+                    <TextHeading className='text-sm lg:text-base'>{t('Price Impact')}:</TextHeading>
+                    <Paragraph className='text-neutral-200'> {formatAmount(priceImpact)}%</Paragraph>
+                  </div>
+                  {priceImpact > 4.9 && (
+                    <Alert>
+                      <InfoIcon className='stroke-error-600 h-4 w-4' />
+                      <p>{t('High Slippage Warning')}</p>
+                    </Alert>
+                  )}
+                </div>
               </ol>
             </article>
           </div>
@@ -309,17 +356,6 @@ export function CommonZapperPane({
         >
           <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
             {t('Cancel')}
-          </EmphasisButton>
-
-          <EmphasisButton
-            onClick={() => handleAddLiquidity({ isStake: false })}
-            className={cn(
-              'w-full',
-              (!gauge || gauge?.address === zeroAddress || strategy.version === 2) &&
-                'bg-primary-600 text-primary-100 hover:bg-primary-700 hover:text-primary-200 active:bg-primary-600 active:text-primary-100',
-            )}
-          >
-            {t('Deposit')}
           </EmphasisButton>
 
           <PrimaryButton

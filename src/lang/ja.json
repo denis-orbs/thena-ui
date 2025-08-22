@@ -1626,5 +1626,6 @@
   "This is Idle": "This is Idle",
   "Degen Mode": "Degenモード",
   "Your Position": "Your Position",
-  "Manage Liquidity": "Manage Liquidity"
+  "Manage Liquidity": "Manage Liquidity",
+  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper"
 }
