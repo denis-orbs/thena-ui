@@ -358,6 +358,18 @@ export function CommonZapperPane({
             {t('Cancel')}
           </EmphasisButton>
 
+          <EmphasisButton
+            onClick={() => handleAddLiquidity({ isStake: false })}
+            className={cn(
+              'w-full',
+              'bg-primary-600 text-primary-100 hover:bg-primary-700 hover:text-primary-200 active:bg-primary-600 active:text-primary-100',
+              gauge && strategy.version !== 2 && 'hidden',
+              gauge?.address !== zeroAddress && strategy.version !== 2 && 'hidden',
+            )}
+          >
+            {t('Deposit')}
+          </EmphasisButton>
+
           <PrimaryButton
             onClick={() => handleAddLiquidity({ isStake: true })}
             className={cn(
