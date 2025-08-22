@@ -43,9 +43,13 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
   const pools = usePools()
   const vaults = useVaults()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
+  const version = searchParams.get('version')
   const _userPools = useMemo(
-    () => userPools.filter(item => item.address.toLowerCase() === pair?.address.toLowerCase()),
-    [pair, userPools],
+    () =>
+      userPools.filter(
+        item => item.address.toLowerCase() === pair?.address.toLowerCase() && Number(item.version) === Number(version),
+      ),
+    [pair, userPools, version],
   )
 
   const isManage = useMemo(

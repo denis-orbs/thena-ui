@@ -212,8 +212,11 @@ function NotStakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&staked=false&title=${position.title}&back=2`)
-  }, [dispatch, position.basePool, position.title, push, strategy])
+    push(
+      // eslint-disable-next-line max-len
+      `/pools/add-liquidity?step=3&poolAddress=${position.basePool}&staked=false&title=${position.title}&back=2&version=${version}`,
+    )
+  }, [dispatch, position.basePool, position.title, push, strategy, version])
 
   const pairCell = useMemo(
     () => (

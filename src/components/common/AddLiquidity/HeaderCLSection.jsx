@@ -339,6 +339,8 @@ export default function HeaderCLSection({
     [handleChooseStrategy, setIsAutomatic, sortedSubPools],
   )
 
+  console.log({ pair })
+
   return (
     <div
       className={cn(

@@ -136,8 +136,10 @@ function PositionInfo({ position }) {
   const depositValueUSD = useMemo(
     () =>
       position.staked
-        ? formatAmount(isSwapFee ? position.account.totalUsd : position.account.stakedUsd)
-        : formatAmount(position.account.totalUsd.minus(position.account.stakedUsd)),
+        ? isSwapFee
+          ? position.account.totalUsd
+          : position.account.stakedUsd
+        : position.account.totalUsd.minus(position.account.stakedUsd),
     [position.account.stakedUsd, position.account.totalUsd, position.staked, isSwapFee],
   )
 
