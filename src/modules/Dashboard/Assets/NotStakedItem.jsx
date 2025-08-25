@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -33,7 +33,7 @@ import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -264,16 +264,40 @@ function NotStakedItem({ position, isXlDown }) {
               </div>
             </div>
           ) : position.title.includes('ICHI') || GAMMA_TYPES.includes(position.title) ? (
-            <div className='flex h-15 w-full items-center'>
-              <div
-                className={cn(
-                  'relative flex h-5 w-full items-center justify-center overflow-hidden',
-                  'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
-                )}
-              >
-                {t('Automated')}
+            position.staked ? (
+              <div className='flex h-15 w-full items-center'>
+                <div
+                  className={cn(
+                    'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                    'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+                  )}
+                >
+                  {t('Automated')}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className='flex h-12! w-full'>
+                <div
+                  className={cn(
+                    'relative flex h-12 w-full items-center justify-between overflow-hidden',
+                    'bg-error-950 border-error-800 rounded-md border px-2 text-xs leading-4 text-neutral-500',
+                  )}
+                >
+                  <div className='flex items-center gap-2 text-xs'>
+                    <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                    <span className='text-error-100'>{t('This is Idle')}</span>
+                  </div>
+                  <ErrorButton
+                    className={cn('h-8 w-[77px]! rounded-md text-xs leading-4 text-nowrap', {
+                      // hidden: hideButton.earn,
+                    })}
+                    onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
+                  >
+                    {t('Earn $THE')}
+                  </ErrorButton>
+                </div>
+              </div>
+            )
           ) : (
             <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
           )
@@ -291,7 +315,18 @@ function NotStakedItem({ position, isXlDown }) {
         )}
       </div>
     ),
-    [position.type, position.title, isSingleSided, t, currentPrice, priceUpper, priceLower],
+    [
+      position.type,
+      position.title,
+      position.staked,
+      position?.account?.walletBalance,
+      isSingleSided,
+      t,
+      currentPrice,
+      priceUpper,
+      priceLower,
+      handleStake,
+    ],
   )
 
   const aprCell = useMemo(
@@ -412,12 +447,6 @@ function NotStakedItem({ position, isXlDown }) {
             )}
           </>
         )}
-
-        {/* {(!migrationOptions || isSingleSided) && (
-          <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-            {t('Stake')}
-          </PrimaryButton>
-        )} */}
       </div>
     ),
     [feesInUsd, feesPending, handleAdd, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, t, version],

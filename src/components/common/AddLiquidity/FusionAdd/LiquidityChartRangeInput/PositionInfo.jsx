@@ -10,7 +10,6 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
-import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -24,9 +23,7 @@ function PositionInfo({ position }) {
   const [stakePopup, setStakePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGaugeStake()
   const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstake()
-  // const { onIchiClaim, pending: claimIchiPending } = useIchiClaim()
   const { onGaugeHarvest, pending: harvestPending } = useGaugeHarvest()
-  const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { stakeGamma, pending: stakeGammaPending } = useStakeGamma()
   const { onV1Stake, pending: stakeV1Pending } = useV1Stake()
@@ -48,20 +45,13 @@ function PositionInfo({ position }) {
         } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(position.type)) {
           // V1 pools
           onV1Stake(position, amount, () => setStakePopup(false))
-        } else {
-          // Ichi pools
-          stakeIchiPool({
-            vaultAddress: position.address,
-            amount,
-            callback: () => setStakePopup(false),
-          })
         }
         return
       }
 
       onGaugeStake(position, amount, () => setStakePopup(false))
     },
-    [version, onGaugeStake, position, stakeGamma, onV1Stake, stakeIchiPool],
+    [version, onGaugeStake, position, stakeGamma, onV1Stake],
   )
 
   const handleUnstake = useCallback(
@@ -106,7 +96,7 @@ function PositionInfo({ position }) {
         )}
         {hasGauge && !position.staked && (
           <PrimaryButton
-            disabled={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
+            disabled={stakePending || stakeV1Pending || stakeGammaPending}
             className='max-xl:flex-1'
             onClick={() => setStakePopup(true)}
           >
@@ -124,7 +114,6 @@ function PositionInfo({ position }) {
     position.staked,
     position.gauge?.address,
     stakeGammaPending,
-    stakeIchiPending,
     stakePending,
     stakeV1Pending,
     t,
@@ -367,7 +356,7 @@ function PositionInfo({ position }) {
         popup={stakePopup}
         setPopup={setStakePopup}
         onGaugeManage={position.staked ? handleUnstake : handleStake}
-        pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
+        pending={stakePending || stakeV1Pending || stakeGammaPending}
       />
       <RemovePositionModal
         isStaked={position.staked}
