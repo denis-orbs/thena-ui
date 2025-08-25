@@ -112,7 +112,7 @@ export function CommonZapperPane({
     }
   }, [assemble0, assemble1, asset0, asset1])
 
-  const tokenInReceiveAmount = formatAmount(fromWei(bestQuote?.[0].outputMin ?? 0n, tokenIn?.decimals))
+  const tokenInReceiveAmount = fromWei(bestQuote?.[0].outputMin ?? 0n, tokenIn?.decimals)
   const theOther = (isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol ? asset1 : asset0
   const args = isUseTokenInPair
     ? [tokenDeposit.address, toWei(amountIn, tokenDeposit?.decimals), strategy.address]
@@ -140,9 +140,12 @@ export function CommonZapperPane({
     },
   })
 
-  const amountToSwap = formatAmount(fromWei(data?.[0]?.result?.[0] ?? 0n))
-  const amountToReceive = formatAmount(fromWei(data?.[0]?.result?.[1] ?? 0n))
-  const liquidityAdded = formatAmount(fromWei(data?.[1]?.result ?? 0n))
+  const [amountToSwap, amountToReceive, liquidityAdded] = useMemo(() => {
+    const _amountToSwap = fromWei(data?.[0]?.result?.[0] ?? 0n)
+    const _amountToReceive = fromWei(data?.[0]?.result?.[1] ?? 0n)
+    const _liquidityAdded = fromWei(data?.[1]?.result ?? 0n)
+    return [_amountToSwap, _amountToReceive, _liquidityAdded]
+  }, [data])
 
   const { data: amounts } = useReadContract({
     abi: routerAbi,
@@ -169,7 +172,7 @@ export function CommonZapperPane({
 
   const priceImpact = useMemo(() => {
     if (!amountDepositInUSD || !amountReceiveInUSD) return 0
-    return amountReceiveInUSD.minus(amountDepositInUSD).div(amountDepositInUSD).times(100).toNumber()
+    return amountDepositInUSD.minus(amountReceiveInUSD).div(amountDepositInUSD).times(100).toNumber()
   }, [amountDepositInUSD, amountReceiveInUSD])
 
   const handleAddLiquidity = useCallback(
@@ -277,7 +280,7 @@ export function CommonZapperPane({
                 </p>
               </div>
               <p className='flex gap-2'>
-                <span>{liquidityAdded}</span>
+                <span>{formatAmount(liquidityAdded)}</span>
                 <TextSubHeading className='text-sm'>LP</TextSubHeading>
               </p>
             </article>
@@ -288,31 +291,33 @@ export function CommonZapperPane({
                 {isUseTokenInPair ? (
                   <>
                     <li>
-                      Swap {amountToSwap} {tokenDeposit.symbol} to {amountToReceive} {theOther.symbol}.
+                      Swap {formatAmount(amountToSwap)} {tokenDeposit.symbol} to {formatAmount(amountToReceive)}{' '}
+                      {theOther.symbol}.
                     </li>
                     <li>
                       Build LP using {formatAmount(Number(amountIn) - Number(amountToSwap))} {tokenDeposit.symbol} and{' '}
-                      {amountToReceive} {theOther.symbol} on THENA
+                      {formatAmount(amountToReceive)} {theOther.symbol} on THENA
                     </li>
                     <li>
-                      Deposit estimated {liquidityAdded} {asset0.symbol}/{asset1.symbol} LP
+                      Deposit estimated {formatAmount(liquidityAdded)} {asset0.symbol}/{asset1.symbol} LP
                     </li>
                   </>
                 ) : (
                   <>
                     <li>
-                      Swap {Number(amountIn)} {tokenDeposit.symbol} to {tokenInReceiveAmount} {tokenIn?.symbol} via
-                      ODOS.
+                      Swap {formatAmount(amountIn)} {tokenDeposit.symbol} to {formatAmount(tokenInReceiveAmount)}{' '}
+                      {tokenIn?.symbol} via ODOS.
                     </li>
                     <li>
-                      Swap {amountToSwap} {tokenIn?.symbol} to {amountToReceive} {theOther.symbol}.
+                      Swap {formatAmount(amountToSwap)} {tokenIn?.symbol} to {formatAmount(amountToReceive)}{' '}
+                      {theOther.symbol}.
                     </li>
                     <li>
                       Build LP using {formatAmount(Number(tokenInReceiveAmount) - Number(amountToSwap))}{' '}
-                      {tokenIn?.symbol} and {amountToReceive} {theOther.symbol} on THENA
+                      {tokenIn?.symbol} and {formatAmount(amountToReceive)} {theOther.symbol} on THENA
                     </li>
                     <li>
-                      Deposit estimated {liquidityAdded} {asset0.symbol}/{asset1.symbol} LP
+                      Deposit estimated {formatAmount(liquidityAdded)} {asset0.symbol}/{asset1.symbol} LP
                     </li>
                   </>
                 )}
