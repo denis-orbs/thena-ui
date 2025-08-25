@@ -275,7 +275,7 @@ function PairStrategy({ pair }) {
       <div className='rounded-xl bg-neutral-900 p-4 max-lg:hidden lg:w-[35%] xl:w-[30%]'>
         <div className={cn('mb-4 flex items-center justify-between')}>
           <TextHeading className='text-primary-100 text-xl font-medium lg:text-2xl'>
-            {t('Automatic Strategy')}
+            {t('Automated Strategy')}
           </TextHeading>
 
           <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('automatic')}>
@@ -363,11 +363,11 @@ function PairStrategy({ pair }) {
                 : `${formatAmount(getAprRange(sortedSubPools).min)}%`}
             </TextSubHeading>
             <TextHeading className='font-archia text-xl! leading-6! font-semibold text-neutral-50'>
-              {t('Automatic Strategy')}
+              {t('Automated Strategy')}
             </TextHeading>
           </div>
         }
-        subtitle={t('ICHI / GAMA / Single Sided')}
+        subtitle={t('ICHI / GAMMA / $THE Single Sided')}
       >
         <AutomaticStrategy
           className='divide-y-1 divide-neutral-700'

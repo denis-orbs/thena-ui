@@ -300,26 +300,27 @@ export const useIchiRemove = () => {
       const claimuuid = uuidv4()
       const unstakeuuid = uuidv4()
       const isFarming = pool.title === ICHI_TYPES[0] && version === 3
-
+      const isSingleSided = pool.title === ICHI_TYPES[3] && version === 2
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
-          ...(isFarming &&
+          ...((isFarming || isSingleSided) &&
             isStaked && {
               [unstakeuuid]: {
-                desc: t('Unstake'),
+                desc: t(hasRewards && isSingleSided ? 'Unstake and Harvest' : 'Unstake'),
                 status: TXN_STATUS.START,
                 hash: null,
               },
             }),
-          ...(hasRewards && {
-            [claimuuid]: {
-              desc: t('Claim Rewards'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
+          ...(hasRewards &&
+            !isSingleSided && {
+              [claimuuid]: {
+                desc: t('Claim Rewards'),
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -346,6 +347,14 @@ export const useIchiRemove = () => {
             setPending(false)
             return
           }
+        }
+      } else if (isSingleSided && isStaked) {
+        const gaugeContract = getGaugeContract(pool.gauge.address, networkId)
+        const params = hasRewards ? [] : [toWei(amount, pool.decimals).toFixed(0)]
+        const func = hasRewards ? 'withdrawAllAndHarvest' : 'withdraw'
+        if (!(await writeTxn(key, unstakeuuid, gaugeContract, func, params))) {
+          setPending(false)
+          return
         }
       }
       if (!(await writeTxn(key, removeuuid, vaultContract, 'withdraw', [toWei(amount).toFixed(0), account]))) {
