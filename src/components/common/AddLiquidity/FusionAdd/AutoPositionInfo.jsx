@@ -1,20 +1,18 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiClaim, useIchiManageV3 } from '@/hooks/fusion/useIchi'
-import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
+import { useGaugeHarvest, useGaugeStake } from '@/hooks/useGauge'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
-import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 
 const calculateRewardData = (position, isSwapFee) => {
@@ -114,9 +112,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const t = useTranslations()
   const isSwapFee = useMemo(() => position?.title.includes('SwapFee'), [position])
-  const [stakePopup, setStakePopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
-  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
@@ -128,14 +124,6 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     () => ICHI_VAULTS[chainId].some(v => v.address === position?.address),
     [position?.address, chainId],
   )
-  const handleUnstake = useCallback(
-    amount => {
-      onGaugeUnstake(position, amount, () => {
-        setStakePopup(false)
-      })
-    },
-    [onGaugeUnstake, position],
-  )
 
   const handleStake = useCallback(
     amount => {
@@ -145,21 +133,19 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           stakeGamma({
             position,
             amount,
-            callback: () => setStakePopup(false),
           })
         } else {
           // Ichi pools
           stakeIchiPool({
             vaultAddress: position?.address,
             amount,
-            callback: () => setStakePopup(false),
           })
         }
         return
       }
 
       // for ichi single sided
-      onGaugeStake(position, amount, () => setStakePopup(false))
+      onGaugeStake(position, amount)
     },
     [position, stakeGamma, stakeIchiPool, onGaugeStake],
   )
@@ -180,9 +166,8 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
   }, [isSwapFee, position?.account.stakedUsd, position?.account.totalUsd, position?.staked])
 
   const rewardsData = calculateRewardData(position, isSwapFee)
-  const ButtonsDisplay = useMemo(() => {
-    const hasGauge = position?.gauge?.address !== zeroAddress
-    return (
+  const ButtonsDisplay = useMemo(
+    () => (
       <div className='flex w-full gap-2'>
         <EmphasisButton className='flex-1' onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
@@ -194,34 +179,31 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         >
           {t('Claim')}
         </EmphasisButton>
-        {position?.staked && hasGauge && (
-          <EmphasisButton className='flex-1' onClick={() => setStakePopup(true)}>
-            UnStaked
-          </EmphasisButton>
-        )}
-        {hasGauge && !position?.staked && (
-          <EmphasisButton
-            className='flex-1'
-            onClick={() => setStakePopup(true)}
+        {!position?.staked && (
+          <PrimaryButton
+            className='flex-1 text-nowrap'
+            onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
             disabled={stakePending || stakeIchiPending || stakeGammaPending}
           >
-            {t('Staked')}
-          </EmphasisButton>
+            {t('Earn $THE')}
+          </PrimaryButton>
         )}
       </div>
-    )
-  }, [
-    claimPending,
-    handleHarvest,
-    isSwapFee,
-    position?.gauge?.address,
-    position?.staked,
-    rewardsData.totalRewardUsd,
-    stakeGammaPending,
-    stakeIchiPending,
-    stakePending,
-    t,
-  ])
+    ),
+    [
+      claimPending,
+      handleHarvest,
+      handleStake,
+      isSwapFee,
+      position?.account?.walletBalance,
+      position?.staked,
+      rewardsData.totalRewardUsd,
+      stakeGammaPending,
+      stakeIchiPending,
+      stakePending,
+      t,
+    ],
+  )
 
   const renderTokenValue = useMemo(() => {
     let token0Value = isSwapFee ? position?.account?.total0?.toNumber() : position?.account?.staked0?.toNumber()
@@ -357,19 +339,6 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         </div>
         <div className='flex w-full shrink-0 gap-2 xl:hidden'>{ButtonsDisplay}</div>
       </article>
-
-      {position && (
-        <GaugeManageModal
-          title={position.staked ? 'Unstake LP' : 'Stake LP'}
-          pair={position}
-          balance={position.staked ? position?.account.gaugeBalance : position.account.walletBalance}
-          label={position.staked ? 'Unstake' : 'Stake'}
-          popup={stakePopup}
-          setPopup={setStakePopup}
-          onGaugeManage={position.staked ? handleUnstake : handleStake}
-          pending={unstakePending}
-        />
-      )}
       {position && (
         <RemovePositionModal
           isStaked={position.staked}
