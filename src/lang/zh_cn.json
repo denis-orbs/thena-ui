@@ -495,8 +495,8 @@
   "Live": "Live",
   "Ended": "Ended",
   "Free To Enter": "Free To Enter",
-  "Month": "month",
-  "Year": "year",
+  "Month": "月",
+  "Year": "年",
   "Months": "月",
   "Years": "年",
   "Start Date Time": "Start Date & Time",
@@ -945,8 +945,8 @@
   "at": "at",
   "Rank": "Rank",
   "Edit Profile": "Edit Profile",
-  "Days": "Days",
-  "Hours": "Hours",
+  "Days": "天",
+  "Hours": "小时",
   "Minutes": "Minutes",
   "Seconds": "Seconds",
   "Completed": "Completed",
@@ -1628,5 +1628,8 @@
   "Warning withdraw fund automation": "Make sure that you have withdrawn your deposit from the automation contract. Otherwise, you will no longer have access to your deposit after proceeding",
   "Your Position": "Your Position",
   "Manage Liquidity": "Manage Liquidity",
-  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper"
+  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper",
+  "idleAssets": "<line1>YOU HAVE <amount>${value}</amount> IN IDLE ASSETS.</line1><line2>PUT THEM TO WORK NOW!</line2>",
+  "Provide Liquidity": "Provide Liquidity",
+  "Not Voted": "Not Voted"
 }
