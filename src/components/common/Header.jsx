@@ -65,6 +65,7 @@ const langs = [
   { iso: 'es', lang: LOCALES.es, label: 'Español' },
   { iso: 'ja', lang: LOCALES.ja, label: '日本語' },
   { iso: 'ko', lang: LOCALES.ko, label: '한국어' },
+  { iso: 'pt', lang: LOCALES.pt, label: 'Português' },
   { iso: 'th', lang: LOCALES.th, label: 'ภาษาไทย' },
   { iso: 'vi', lang: LOCALES.vi, label: 'Tiếng Việt' },
   { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
