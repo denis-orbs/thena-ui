@@ -40,6 +40,7 @@ export const LOCALES = {
   zh_CN: 'zh-CN', // Mandarin (Simplified)
   zh_TW: 'zh-TW', // Mandarin (Traditional)
   vi: 'vi', // Vietnamese
+  pt: 'pt', // Portuguese
   th: 'th', // Thai
   ja: 'ja', // Japanese
   ko: 'ko', // Korean
