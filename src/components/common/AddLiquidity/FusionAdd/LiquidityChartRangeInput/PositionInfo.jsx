@@ -76,25 +76,25 @@ function PositionInfo({ position }) {
   }, [onClaimFees, position])
 
   const ButtonsDisplay = useMemo(() => {
-    const hasGauge = position.gauge?.address !== zeroAddress
+    const hasGauge = position?.gauge?.address !== zeroAddress
     return (
       <div className='flex w-full gap-2'>
         <EmphasisButton className='max-xl:flex-1' onClick={() => setRemovePopup(true)}>
           {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
-          disabled={claimPending || harvestPending || feesPending}
+          disabled={claimPending || harvestPending || feesPending || position?.rewardUsd <= 0}
           className='max-xl:flex-1'
-          onClick={position.staked ? handleHarvestStaked : handleClaimUnstaked}
+          onClick={position?.staked ? handleHarvestStaked : handleClaimUnstaked}
         >
           {t('Claim')}
         </EmphasisButton>
-        {hasGauge && position.staked && (
+        {hasGauge && position?.staked && (
           <EmphasisButton disabled={unstakePending} className='max-xl:flex-1' onClick={() => setStakePopup(true)}>
             {t('Unstake')}
           </EmphasisButton>
         )}
-        {hasGauge && !position.staked && (
+        {hasGauge && !position?.staked && (
           <PrimaryButton
             disabled={stakePending || stakeV1Pending || stakeGammaPending}
             className='max-xl:flex-1'
@@ -106,30 +106,31 @@ function PositionInfo({ position }) {
       </div>
     )
   }, [
-    claimPending,
-    feesPending,
-    handleClaimUnstaked,
-    handleHarvestStaked,
-    harvestPending,
-    position.staked,
     position.gauge?.address,
-    stakeGammaPending,
+    position?.rewardUsd,
+    position.staked,
+    t,
+    claimPending,
+    harvestPending,
+    feesPending,
+    handleHarvestStaked,
+    handleClaimUnstaked,
+    unstakePending,
     stakePending,
     stakeV1Pending,
-    t,
-    unstakePending,
+    stakeGammaPending,
   ])
 
   const getDisplayName = useCallback(token => (token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol || 'UNKNOWN'), [])
 
   const depositValueUSD = useMemo(
     () =>
-      position.staked
+      position?.staked
         ? isSwapFee
-          ? position.account.totalUsd
-          : position.account.stakedUsd
-        : position.account.totalUsd.minus(position.account.stakedUsd),
-    [position.account.stakedUsd, position.account.totalUsd, position.staked, isSwapFee],
+          ? position?.account?.totalUsd
+          : position?.account?.stakedUsd
+        : position?.account?.totalUsd.minus(position?.account?.stakedUsd),
+    [position?.account?.stakedUsd, position?.account?.totalUsd, position?.staked, isSwapFee],
   )
 
   const token0Percent = useMemo(() => {

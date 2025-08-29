@@ -14,7 +14,7 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 
@@ -40,9 +40,9 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     return undefined
   }, [farmingPos, manualPos, type])
 
-  const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fees, fusionState, fusion } = _position || {}
+  const { liquidity, key: poolKey, tickLower, tickUpper, rewards, fusionState, fusion } = _position || {}
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
-  const [reward0, reward1] = type === 'CL_Farming' ? rewards || [] : fees || []
+  const [reward0, reward1] = rewards || []
 
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {
@@ -93,21 +93,26 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
             {t('Earn $THE')}
           </PrimaryButton>
         ) : (
-          <EmphasisButton className='max-xl:flex-1' onClick={() => setClaimPopup(true)}>
+          <EmphasisButton
+            className='max-xl:flex-1'
+            disabled={position.rewardUsd <= 0}
+            onClick={() => setClaimPopup(true)}
+          >
             {t('Claim')}
           </EmphasisButton>
         )}
       </div>
     )
   }, [
-    t,
     _position?.isFarming,
     _position?.deployer,
     incentiveAddress,
     liquidity,
+    t,
     isEnterFarmLoading,
-    onEnterFarming,
+    position.rewardUsd,
     position.tokenId,
+    onEnterFarming,
     farmingPos,
     mutateManual,
   ])
@@ -193,7 +198,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                   </>
                 ) : (
                   <>
-                    {fromWei(reward0) > 0 && (
+                    {Number(reward0?.amount?.toSignificant()) > 0 && (
                       <div className='flex flex-nowrap items-center gap-2'>
                         <CircleImage
                           className='size-5'
@@ -201,11 +206,11 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                           alt='reward 0'
                         />
                         <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                          {formatAmount(fromWei(reward0))}
+                          {formatAmount(reward0?.amount?.toSignificant())}
                         </Paragraph>
                       </div>
                     )}
-                    {fromWei(reward1) > 0 && (
+                    {Number(reward1?.amount?.toSignificant()) > 0 && (
                       <div className='flex flex-nowrap items-center gap-2'>
                         <CircleImage
                           className='size-5'
@@ -213,7 +218,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                           alt='reward 1'
                         />
                         <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
-                          {formatAmount(fromWei(reward1))}
+                          {formatAmount(reward1?.amount?.toSignificant())}
                         </Paragraph>
                       </div>
                     )}
