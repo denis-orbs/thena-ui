@@ -61,7 +61,7 @@ export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' 
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{getDisplayedStrategy(pool.title)}</TextSubHeading>
+            <TextSubHeading>{getDisplayedStrategy(strategy ? strategy.type : pool.title)}</TextSubHeading>
           </div>
         </div>
         <PrimaryBadge

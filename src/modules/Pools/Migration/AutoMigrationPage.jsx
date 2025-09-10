@@ -101,7 +101,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(sub?.apr)}%</Paragraph>
+                  <Paragraph className='text-sm'>{formatAmount(sub?.gauge?.apr)}%</Paragraph>
                 </div>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>

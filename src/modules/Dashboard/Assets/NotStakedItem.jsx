@@ -290,7 +290,7 @@ function NotStakedItem({ position, isXlDown }) {
               )}
             </>
           ) : position.title.includes('ICHI') || GAMMA_TYPES.includes(position.title) ? (
-            position.staked ? (
+            position.staked || (version === 2 && !isSingleSided) ? (
               <div className='flex h-15 w-full items-center'>
                 <div
                   className={cn(
@@ -343,11 +343,12 @@ function NotStakedItem({ position, isXlDown }) {
     ),
     [
       position.type,
-      position.title,
       position.staked,
+      position.title,
       position?.account?.walletBalance,
       isSingleSided,
       t,
+      version,
       currentPrice,
       priceUpper,
       priceLower,
@@ -459,13 +460,13 @@ function NotStakedItem({ position, isXlDown }) {
             ) : migrationOptions?.length > 0 ? (
               <Link
                 href={`/pools/migration?address=${position.address}&staked=false`}
-                className={cn('h-8 px-1 md:h-11')}
+                className={cn('h-8 w-full px-1 md:h-11')}
               >
                 <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
               <PrimaryButton
-                className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
+                className={cn('h-8 w-full flex-1 px-1 text-xs md:h-11 md:text-base')}
                 onClick={() => setMigrateWarningPopup(true)}
               >
                 {t('Migrate')}
