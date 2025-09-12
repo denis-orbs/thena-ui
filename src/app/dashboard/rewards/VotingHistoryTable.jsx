@@ -148,7 +148,7 @@ export default function VotingHistoryTable({ userVotes }) {
   const finalData = useMemo(
     () =>
       (sortedData || []).map(vote => ({
-        veTHEId: <span>{`${vote.tokenId}`}</span>,
+        veTHEId: vote.tokenId,
         pair: (
           <div className='flex flex-row items-center gap-1'>
             {vote?.pool?.type === PAIR_TYPES.WEIGHTED ? (
