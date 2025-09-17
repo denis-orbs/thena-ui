@@ -1631,5 +1631,6 @@
   "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper",
   "idleAssets": "<line1>YOU HAVE <amount>${value}</amount> IN IDLE ASSETS.</line1><line2>PUT THEM TO WORK NOW!</line2>",
   "Provide Liquidity": "Provide Liquidity",
-  "Not Voted": "Not Voted"
+  "Not Voted": "Not Voted",
+  "Automatic Strategy": "Automatic Strategy"
 }

@@ -10,6 +10,13 @@ import { LiquidityBars } from './LiquidityBars'
 const xAccessor = d => d.activeLiquidity
 const yAccessor = d => d.price0
 
+const ZOOM_LEVEL = {
+  stableMin: 0.9995,
+  stableMax: 1.0005,
+  initialMin: 0.95,
+  initialMax: 1.05,
+}
+
 export default function ActivePriceRangeChart({
   id,
   data: { series, current, min, max },
@@ -24,6 +31,7 @@ export default function ActivePriceRangeChart({
   isFullRange = false,
   divideDistanceWidth,
   showLiquidity,
+  isStablecoinPair = false,
   setIsFlip = () => {},
 }) {
   const { isLgDown } = useMediaQuery()
@@ -42,12 +50,11 @@ export default function ActivePriceRangeChart({
 
   useEffect(() => {
     if (!brushDomain) {
-      const [minValue, maxValue] = yScale.domain()
-      const lowerBound = minValue + (maxValue - minValue) * 0.2
-      const upperBound = minValue + (maxValue - minValue) * 0.8
+      const lowerBound = isStablecoinPair ? current * ZOOM_LEVEL.stableMin : current * ZOOM_LEVEL.initialMin
+      const upperBound = isStablecoinPair ? current * ZOOM_LEVEL.stableMax : current * ZOOM_LEVEL.initialMax
       onBrushDomainChange([lowerBound, upperBound], 'reset')
     }
-  }, [brushDomain, onBrushDomainChange, yScale])
+  }, [brushDomain, current, isStablecoinPair, onBrushDomainChange, yScale])
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>

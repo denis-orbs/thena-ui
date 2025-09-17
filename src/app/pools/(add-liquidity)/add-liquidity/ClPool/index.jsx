@@ -22,7 +22,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
-import { Bound, updateStrategy } from '@/state/fusion/actions'
+import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo, usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -222,6 +222,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   )
+
+  useEffect(() => {
+    onLeftRangeInput('')
+    onRightRangeInput('')
+    dispatch(updateSelectedPreset({ preset: null }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
