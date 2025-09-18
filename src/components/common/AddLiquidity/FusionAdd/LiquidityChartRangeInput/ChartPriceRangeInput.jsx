@@ -10,6 +10,7 @@ import CheckBox from '@/components/checkbox'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, TextHeading } from '@/components/typography'
+import { useStableTokens } from '@/hooks/fusion/Tokens'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -77,6 +78,12 @@ export default function ChartPriceRangeInput({
   classNames,
   showLabel = true,
 }) {
+  const stableAssets = useStableTokens()
+  const isStablecoinPair = useMemo(() => {
+    const stableCoins = stableAssets.map(token => token.address)
+    return stableCoins.includes(currencyA?.address) && stableCoins.includes(currencyB?.address)
+  }, [currencyA?.address, currencyB?.address, stableAssets])
+
   const activePreset = useActivePreset()
   const t = useTranslations()
   const zoomRef = useRef(null)
@@ -632,6 +639,7 @@ export default function ChartPriceRangeInput({
                           divideDistanceWidth={chartPriceWidth - 0.05 * chartPriceWidth}
                           showLiquidity={showLiquidity}
                           setIsFlip={setIsFlip}
+                          isStablecoinPair={isStablecoinPair}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />
