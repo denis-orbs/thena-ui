@@ -12,8 +12,10 @@ import { Presets } from '@/state/fusion/reducer'
 import { MinusIcon, PlusIcon, ReverseIcon } from '@/svgs'
 
 const inputRegex = /^\d*(?:\\[.])?\d*$/ // match escaped "." characters via in a non-capturing group
+const percentageRegex = /^[+-]?\d+(?:[.]\d+)?%$/
+const percentagePartialRegex = /^[+-]?\d*(?:[.]\d*)?%?$/
 
-const escapeRegExp = string => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+// const escapeRegExp = string => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 
 function RangePart({
   value,
@@ -30,6 +32,7 @@ function RangePart({
   description,
   inputId,
   nextInputId,
+  price,
 }) {
   const [localTokenValue, setLocalTokenValue] = useState('')
   const t = useTranslations()
@@ -38,10 +41,38 @@ function RangePart({
 
   const initialTokenPrice = useInitialTokenPrice()
 
+  const calculateFromPercentage = useCallback((input, currentPrice) => {
+    if (!currentPrice || !percentageRegex.test(input)) return null
+
+    const m = input.match(/^([+-]?)(\d+(?:[.,]\d+)?)%$/)
+    if (!m) return null
+
+    const sign = m[1] === '-' ? -1 : 1 // blank ('') or '+'
+    const pct = parseFloat(m[2].replace(',', '.'))
+    if (Number.isNaN(pct)) return null
+
+    const factor = 1 + sign * (pct / 100)
+    const calculatedValue = currentPrice * factor
+
+    return Number.isFinite(calculatedValue) ? String(calculatedValue) : null
+  }, [])
+
+  // Function to check if input is percentage format
+  const isPercentageInput = useCallback(input => percentageRegex.test(input), [])
+  // const isNumberInput = useCallback(s => inputRegex.test(s), [])
   const enforcer = useCallback(
     nextUserInput => {
-      if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
-        setLocalTokenValue(nextUserInput.trim())
+      if (nextUserInput === '%') {
+        return
+      }
+      if (nextUserInput === '') {
+        setLocalTokenValue('')
+        dispatch(updateSelectedPreset({ preset: null }))
+        return
+      }
+
+      if (percentagePartialRegex.test(nextUserInput) || inputRegex.test(nextUserInput)) {
+        setLocalTokenValue(nextUserInput)
         dispatch(updateSelectedPreset({ preset: null }))
       }
     },
@@ -49,9 +80,19 @@ function RangePart({
   )
 
   const handleOnBlur = useCallback(() => {
-    onUserInput(localTokenValue)
+    let finalValue = localTokenValue
+
+    if (isPercentageInput(localTokenValue)) {
+      const calculatedValue = calculateFromPercentage(localTokenValue, price)
+      if (calculatedValue !== null) {
+        finalValue = calculatedValue
+        setLocalTokenValue(calculatedValue)
+      }
+    }
+
+    onUserInput(finalValue)
     dispatch(updateSelectedPreset({ preset: null }))
-  }, [onUserInput, localTokenValue, dispatch])
+  }, [onUserInput, localTokenValue, dispatch, isPercentageInput, calculateFromPercentage, price])
 
   const handleKeyDown = useCallback(
     e => {
@@ -103,7 +144,7 @@ function RangePart({
           })}
         </TextSubHeading>
         <input
-          type={activePreset === Presets.FULL ? 'text' : 'number'}
+          type={activePreset === Presets.FULL ? 'text' : 'text'} // Changed to 'text' to allow percentage input
           className='w-full min-w-0 truncate border-0 bg-transparent p-0 text-sm !leading-5 text-neutral-50 placeholder-neutral-400 xl:!text-base xl:font-medium'
           placeholder='0.0'
           value={localTokenValue}
@@ -203,34 +244,6 @@ export function RangeSelector({
     <div className={cn('relative flex flex-col items-center gap-1.5 md:flex-row', className)}>
       <div className='w-full lg:min-w-0 lg:flex-1'>
         <RangePart
-          value={leftValue}
-          onUserInput={onLeftRangeInput}
-          decrement={isSorted ? getDecrementLower : getIncrementUpper}
-          increment={isSorted ? getIncrementLower : getDecrementUpper}
-          decrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
-          incrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
-          label={leftPrice ? `${currencyB?.symbol}` : '-'}
-          tokenA={currencyA}
-          tokenB={currencyB}
-          disabled={disabled}
-          title='Min'
-          description={brushLabelValue('w', leftPrice?.toSignificant(5))}
-          inputId='min-price'
-          nextInputId='max-price'
-        />
-      </div>
-      <button
-        className='absolute top-[60px] left-1/2 flex h-6 w-10 -translate-x-1/2 cursor-pointer items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400'
-        aria-label='Swap price range bounds'
-        type='button'
-        onClick={handleRevert}
-        disabled={disabled}
-      >
-        <ReverseIcon className='size-4 rotate-90' />
-      </button>
-
-      <div className='w-full lg:min-w-0 lg:flex-1'>
-        <RangePart
           value={rightValue}
           onUserInput={onRightRangeInput}
           decrement={isSorted ? getDecrementUpper : getIncrementLower}
@@ -246,6 +259,37 @@ export function RangeSelector({
           description={brushLabelValue('e', rightPrice?.toSignificant(5))}
           inputId='max-price'
           nextInputId='min-price'
+          price={price}
+        />
+      </div>
+
+      <button
+        className='absolute top-[60px] left-1/2 flex h-6 w-10 -translate-x-1/2 cursor-pointer items-center justify-center self-end rounded-md bg-neutral-600 p-1 text-neutral-400'
+        aria-label='Swap price range bounds'
+        type='button'
+        onClick={handleRevert}
+        disabled={disabled}
+      >
+        <ReverseIcon className='size-4 rotate-90' />
+      </button>
+
+      <div className='w-full lg:min-w-0 lg:flex-1'>
+        <RangePart
+          value={leftValue}
+          onUserInput={onLeftRangeInput}
+          decrement={isSorted ? getDecrementLower : getIncrementUpper}
+          increment={isSorted ? getIncrementLower : getDecrementUpper}
+          decrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
+          incrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
+          label={leftPrice ? `${currencyB?.symbol}` : '-'}
+          tokenA={currencyA}
+          tokenB={currencyB}
+          disabled={disabled}
+          title='Min'
+          description={brushLabelValue('w', leftPrice?.toSignificant(5))}
+          inputId='min-price'
+          nextInputId='max-price'
+          price={price}
         />
       </div>
     </div>
