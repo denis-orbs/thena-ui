@@ -1,9 +1,10 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { JSBI, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
+import { useSimulateContract } from 'wagmi'
 
 import { TXN_STATUS } from '@/constant'
 import { pluginFactoryAbi } from '@/constant/abi'
@@ -19,6 +20,7 @@ import {
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { errorToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
+import { useFarmRewards } from '@/state/farmReward/store'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -240,6 +242,50 @@ export const useAlgebraAdd = () => {
   )
 
   return { onAlgebraAdd, pending }
+}
+
+export const useSimulateFarmReward = () => {
+  const { account, chainId } = useWallet()
+  const { rewards: _rewards } = useFarmRewards()
+  const { manual } = _rewards
+  const farmingCenter = getFarmingCenterContract(chainId)
+  // Handle positions array (existing logic)
+  const calldata = collectAndClaimRewards({
+    positions: Array.from(manual).map(pair => ({
+      poolKey: pair[1].args[1],
+      tokenId: pair[1].args[2],
+    })),
+    // positions: [],
+    chainId,
+    account,
+  })
+
+  const { data } = useSimulateContract({
+    ...farmingCenter,
+    functionName: 'multicall',
+    args: [calldata],
+    query: {
+      enabled: !!account,
+    },
+  })
+
+  const result = useMemo(() => {
+    if (!data?.result) return null
+
+    const { result: results } = data
+    let rewardAmount = JSBI.BigInt(0)
+
+    // The last result is always the claimReward call
+    const claimRewardResult = results[results.length - 1]
+    if (claimRewardResult && claimRewardResult !== '0x') {
+      // Decode claimReward result (uint256)
+      rewardAmount = JSBI.BigInt(claimRewardResult)
+    }
+
+    return fromWei(rewardAmount)
+  }, [data])
+
+  return result || fromWei(JSBI.BigInt(0))
 }
 
 export const useAlgebraClaim = (version = 3) => {
