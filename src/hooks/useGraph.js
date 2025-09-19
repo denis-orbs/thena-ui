@@ -223,8 +223,9 @@ const fetchAnalyticsChartData = async networkId => {
       result.push(
         ...data.map(item => ({
           ...item,
-          veTheUSD: item.feesUSD * 0.9,
-          theNftUSD: item.feesUSD * 0.1,
+          veTheUSD: item.poolFeesUSD * 0.9,
+          theNftUSD: item.poolFeesUSD * 0.1,
+          vaultSingleSideFeesUSD: item.vaultSingleSideFeesUSD,
         })),
       )
       if (data.length < PAGE_SIZE) {

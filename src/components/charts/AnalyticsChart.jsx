@@ -205,6 +205,9 @@ function AnalyticsChart({
         case 'bribeUSD':
           label = t('Incentives')
           break
+        case 'vaultSingleSideFeesUSD':
+          label = t('THE Single Sided Vaults')
+          break
         default:
           break
       }
