@@ -301,6 +301,11 @@ export const useIchiRemove = () => {
       const unstakeuuid = uuidv4()
       const isFarming = pool.title === ICHI_TYPES[0] && version === 3
       const isSingleSided = pool.title === ICHI_TYPES[3] && version === 2
+
+      const isRemoveAll = pool?.staked
+        ? pool?.account?.gaugeBalance?.eq(amount)
+        : pool?.account?.walletBalance?.eq(amount)
+
       startTxn({
         key,
         title: 'Remove Liquidity',
@@ -362,7 +367,7 @@ export const useIchiRemove = () => {
         return
       }
       endTxn({ key, final: 'Liquidity Remove Successful' })
-      callback()
+      callback(isRemoveAll)
       setPending(false)
     },
     [account, startTxn, writeTxn, endTxn, networkId, t],

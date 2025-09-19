@@ -9,7 +9,7 @@ import { maxUint256 } from 'viem'
 import { TAX_ASSETS, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
+import { readCall, simulateCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getPairContract, getRouterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -397,13 +397,23 @@ export const useV1Remove = () => {
       const lpContract = getERC20Contract(pair.address, chainId)
       const allowance = await readCall(lpContract, 'allowance', [account, routerAddress], chainId)
       const isApproved = fromWei(allowance).gte(withdrawAmount)
-      let shouldClaim =
-        (pair.account.token0claimable.gt(0) || pair.account.token1claimable.gt(0)) &&
-        pair.account.walletBalance.eq(withdrawAmount)
+      let shouldClaim = false
+      const isRemoveAll =
+        pair.account.walletBalance.eq(withdrawAmount) || (isStaked && pair.account.gaugeBalance.eq(withdrawAmount))
 
       if (isStaked) {
         shouldClaim = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(withdrawAmount)
+      } else {
+        shouldClaim = (pair.reward0.gt(0) || pair.reward1.gt(0)) && pair.account.walletBalance.eq(withdrawAmount)
       }
+
+      const pairContract = getPairContract(pair.address, chainId)
+      const estimatedFees = await simulateCall(pairContract, 'claimFees', [], chainId)
+      const shouldClaimFees =
+        estimatedFees &&
+        Array.isArray(estimatedFees) &&
+        estimatedFees?.length >= 1 &&
+        (estimatedFees?.[0] > 0n || estimatedFees?.[1] > 0n)
 
       startTxn({
         key,
@@ -423,19 +433,19 @@ export const useV1Remove = () => {
               hash: null,
             },
           }),
-          [removeuuid]: {
-            desc: t('Remove Liquidity'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          ...(shouldClaim &&
-            !isStaked && {
+          ...(isRemoveAll &&
+            shouldClaimFees && {
               [claimuuid]: {
                 desc: t('Claim Fees'),
                 status: TXN_STATUS.START,
                 hash: null,
               },
             }),
+          [removeuuid]: {
+            desc: t('Remove Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
         },
       })
 
@@ -506,24 +516,22 @@ export const useV1Remove = () => {
           : 'removeLiquidityETH'
         params = [pair.token0.address, pair.stable, sendAmount, sendAmount0Min, sendAmount1Min, account, deadlineVal]
       }
-      if (!(await writeTxn(key, removeuuid, routerContract, func, params))) {
-        setPending(false)
-        return
-      }
-
-      if (shouldClaim) {
-        const pairContract = getPairContract(pair.address, chainId)
+      if (shouldClaimFees && isRemoveAll) {
         if (!(await writeTxn(key, claimuuid, pairContract, 'claimFees', []))) {
           setPending(false)
           return
         }
+      }
+      if (!(await writeTxn(key, removeuuid, routerContract, func, params))) {
+        setPending(false)
+        return
       }
 
       endTxn({
         key,
         final: 'Liquidity Remove Successful',
       })
-      callback()
+      callback(isRemoveAll)
       setPending(false)
     },
     [account, chainId, startTxn, writeTxn, endTxn, t],
@@ -621,6 +629,9 @@ export const useV1Stake = () => {
       const key = uuidv4()
       const approveId = uuidv4()
       const stakeId = uuidv4()
+      const claimuuid = uuidv4()
+      const isStakedAll = pool.account.walletBalance.eq(amount)
+      const shouldClaim = (pool.reward0.gt(0) || pool.reward1.gt(0)) && pool.account.walletBalance.eq(amount)
 
       startTxn({
         key,
@@ -631,6 +642,13 @@ export const useV1Stake = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          ...(shouldClaim && {
+            [claimuuid]: {
+              desc: t('Claim Fees'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [stakeId]: {
             desc: t('Stake LP'),
             status: TXN_STATUS.START,
@@ -657,6 +675,15 @@ export const useV1Stake = () => {
       const depositAmount = toWei(amount).dp(0).toString(10)
       setPending(true)
       const gaugeContractV3 = getGaugeContract(pool.gauge.address, chainId)
+
+      if (shouldClaim) {
+        const pairContract = getPairContract(pool.address, chainId)
+        if (!(await writeTxn(key, claimuuid, pairContract, 'claimFees', []))) {
+          setPending(false)
+          return
+        }
+      }
+
       if (!(await writeTxn(key, stakeId, gaugeContractV3, 'deposit', [depositAmount]))) {
         setPending(false)
         return
@@ -664,7 +691,7 @@ export const useV1Stake = () => {
 
       endTxn({ key, final: 'Staked' })
       setPending(false)
-      callback()
+      callback(isStakedAll)
     },
     [startTxn, t, chainId, writeTxn, account, endTxn, updateTxn],
   )

@@ -12,6 +12,7 @@ import { pairAbi } from '@/constant/abi'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
+import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
@@ -44,7 +45,13 @@ function PositionInfo({ position }) {
           })
         } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(position.type)) {
           // V1 pools
-          onV1Stake(position, amount, () => setStakePopup(false))
+          onV1Stake(position, amount, (isStakedAll = false) => {
+            // update search url param staked=true
+            if (isStakedAll) {
+              addOrReplaceURLParams('staked', 'true')
+            }
+            setStakePopup(false)
+          })
         }
         return
       }
@@ -56,7 +63,11 @@ function PositionInfo({ position }) {
 
   const handleUnstake = useCallback(
     amount => {
-      onGaugeUnstake(position, amount, () => {
+      onGaugeUnstake(position, amount, (isUnstakingAll = false) => {
+        // update search url param staked=false
+        if (isUnstakingAll) {
+          addOrReplaceURLParams('staked', 'false')
+        }
         setStakePopup(false)
       })
     },

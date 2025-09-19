@@ -94,7 +94,8 @@ export const useGaugeUnstake = () => {
     async (pair, amount, callback) => {
       const key = uuidv4()
       const unstakeuuid = uuidv4()
-      const shouldHarvest = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(amount)
+      const isUnstakingAll = pair?.account?.gaugeBalance?.eq(amount)
+      const shouldHarvest = pair?.account?.earnedUsd?.gt(0) && pair?.account?.gaugeBalance?.eq(amount)
 
       setPending(true)
 
@@ -122,7 +123,7 @@ export const useGaugeUnstake = () => {
         final: 'Unstake Successful',
       })
       setPending(false)
-      callback()
+      callback(isUnstakingAll)
     },
     [chainId, startTxn, writeTxn, endTxn, t],
   )
