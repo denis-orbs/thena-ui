@@ -11,7 +11,7 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { rewriteS3Host } from '@/lib/utils'
 import { DownloadIcon } from '@/svgs'
 
-export default function DownloadButton() {
+export default function DownloadButton({ fileName }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
@@ -59,11 +59,11 @@ export default function DownloadButton() {
           // If PC: Direct download
           const tempLink = document.createElement('a')
           tempLink.href = URL.createObjectURL(blob)
-          tempLink.download = 'profile.png'
+          tempLink.download = `${fileName}.png`
           tempLink.target = '_blank'
           tempLink.click()
         } else {
-          const file = new File([blob], 'fileName.jpg', { type: 'image/jpeg' })
+          const file = new File([blob], `${fileName}.png`, { type: 'image/jpeg' })
           uploadToS3AndDownload(file)
         }
       })

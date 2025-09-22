@@ -1,18 +1,63 @@
+import { usePathname } from 'next/navigation'
+import { useMemo } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
+import { usePairs } from '@/context/pairsContext'
+import { isInvalidAmount } from '@/lib/utils'
 import DownloadButton from '@/modules/Profile/DownloadImage'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
 import DisplayCountPickerField from './fields/DisplayCountPickerField'
 import PairPickerField from './fields/PairPickerField'
-
-const map = {
-  select: DisplayCountPickerField,
-  pair: PairPickerField,
-}
+import { PATH_NAME } from '../../lib/utils'
 
 export default function TemplateSidebar({ title, subTitle = '', fields, state, setField }) {
   const t = useTranslations()
+
+  // For Pool apr
+  const { pairs } = usePairs()
+  const pairFilteredSubpools = pairs.map(ele => {
+    let { subpools } = ele
+    if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(ele.type)) {
+      subpools = ele.subpools.filter(sub => sub.version === 3)
+    }
+    if (ele.type === PAIR_TYPES.LSD) {
+      const hasCLFarming = ele.subpools.some(sub => sub.title === 'CL_Farming')
+      if (hasCLFarming) {
+        subpools = ele.subpools.filter(sub => sub.title !== 'CL_SwapFee')
+      }
+    }
+    return { ...ele, subpools }
+  })
+
+  const poolApr = pairFilteredSubpools.filter(ele => {
+    if (ele.type === PAIR_TYPES.WEIGHTED) {
+      return !isInvalidAmount(ele.aprNumber)
+    }
+    return ele.highApr > 0
+  })
+
+  // For incentives
+  const v3PoolsWithGauge = useV3PoolsWithGauge()
+  const incentivesPool = useMemo(
+    () => v3PoolsWithGauge.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()),
+    [v3PoolsWithGauge],
+  )
+
+  const pathname = usePathname()
+
+  const map = {
+    select: {
+      component: DisplayCountPickerField,
+      options: pathname === PATH_NAME.POOL_APR ? [1, 2, 3, 4, 5, 6] : [1, 2, 3],
+    },
+    pair: {
+      component: PairPickerField,
+      options: pathname === PATH_NAME.POOL_APR ? poolApr : PATH_NAME.INCENTIVES === pathname ? incentivesPool : [],
+    },
+  }
 
   // ---- expand fields have repeatBy ----
   const expandedFields = fields.flatMap(f => {
@@ -67,13 +112,21 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
       </div>
       <div className='max-h-[360px] space-y-6 overflow-y-auto'>
         {expandedFields.map(f => {
-          const Field = map[f.type] ?? null
+          const Field = map[f.type].component ?? null
           if (!Field) return null
-          return <Field key={f.name} {...f} value={getValue(f)} onChange={v => handleChange(f, v)} />
+          return (
+            <Field
+              key={f.name}
+              {...f}
+              options={map[f.type].options || []}
+              value={getValue(f)}
+              onChange={v => handleChange(f, v)}
+            />
+          )
         })}
       </div>
       <div className='mt-auto w-full'>
-        <DownloadButton />
+        <DownloadButton fileName={title.replace(/ /g, '_')} />
       </div>
     </aside>
   )

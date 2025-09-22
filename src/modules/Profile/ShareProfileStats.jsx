@@ -82,7 +82,7 @@ export default function ShareProfileStats({
             onSelected={setSelectedAchievement}
           />
         </div>
-        <DownloadButton />
+        <DownloadButton fileName='profile' />
         <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
       </div>
     </div>

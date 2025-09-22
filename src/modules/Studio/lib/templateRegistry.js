@@ -1,3 +1,4 @@
+import IncentivesPreview from '../Preview/previews/IncentivesPreview'
 import PoolsAprPreview from '../Preview/previews/PoolsAprPreview'
 
 const TEMPLATES = {
@@ -21,10 +22,16 @@ const TEMPLATES = {
     title: 'Voting Incentives Template',
     fields: [
       { type: 'select', name: 'displayCount', label: 'Pools to Display' },
-      { type: 'pair', name: 'pair', label: 'Pair' },
+      {
+        type: 'pair',
+        name: 'pairs',
+        label: 'Pair',
+        repeatBy: 'displayCount',
+        max: 3,
+      },
     ],
-    Preview: null, // IncentivesPreview,
-    defaults: { displayCount: '1', pair: [] },
+    Preview: IncentivesPreview,
+    defaults: { displayCount: '1', pairs: [] },
   },
   portfolio: {
     title: 'Portfolio Growth Template',
