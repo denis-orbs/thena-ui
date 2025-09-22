@@ -137,22 +137,22 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
         {
           ...sortOptions[0],
           width: 'w-[20%]',
-          disabled: true,
+          // disabled: true,
         },
         {
           ...sortOptions[1],
           width: 'w-[30%]',
-          disabled: true,
+          // disabled: true,
         },
         {
           ...sortOptions[2],
           width: 'w-[30%]',
-          disabled: true,
+          // disabled: true,
         },
         {
           ...sortOptions[4],
           width: 'w-[20%]',
-          disabled: true,
+          // disabled: true,
         },
       ]
     }
