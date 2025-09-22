@@ -1,42 +1,46 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
-export default function useTemplateState(tpl, searchParams) {
-  console.log({ searchParams })
-  // defaults state
-  const initial = useMemo(
-    () => ({
-      ...(tpl?.defaults || {}),
-      background: '3d',
-      gridStyle: '3d',
-    }),
-    [tpl],
-  )
+import { useTemplateStore } from '@/state/contentStudio/store'
 
-  const [state, setState] = useState(initial)
+// background is global state for all slug, it'll not update if slug change
+export default function useTemplateState(slug, tpl, searchParams) {
+  const initTemplate = useTemplateStore(s => s.initTemplate)
+  const setFieldStore = useTemplateStore(s => s.setField)
+  const setManyStore = useTemplateStore(s => s.setMany)
+  const resetStore = useTemplateStore(s => s.reset)
 
-  // if tpl change -> reset state
+  const perSlugState = useTemplateStore(s => s.templates[slug]?.state)
+  const background = useTemplateStore(s => s.background)
+  const setBackground = useTemplateStore(s => s.setBackground)
+
+  // init value slug + tpl
   useEffect(() => {
-    setState(initial)
-  }, [initial])
+    if (!slug && !tpl) return
+    initTemplate(slug, tpl)
+  }, [slug, tpl, initTemplate])
+
+  // hydrate from searchParams
+  useEffect(() => {
+    if (!slug || !searchParams) return
+    const displayCount = searchParams.get?.('displayCount')
+    if (displayCount != null) {
+      setFieldStore(slug, 'displayCount', displayCount)
+    }
+  }, [slug, searchParams, setFieldStore])
+
+  // view state
+  const state = useMemo(() => ({ ...(perSlugState || {}), background }), [perSlugState, background])
 
   const setField = (k, v) => {
-    setState(prev => {
-      const next = { ...prev, [k]: v }
-
-      // change displayCount Sync pairs again
-      if (k === 'displayCount') {
-        const count = Number(v) || 0
-        const pairs = Array.isArray(prev.pairs) ? [...prev.pairs] : []
-        next.pairs = pairs.slice(0, count)
-      }
-
-      return next
-    })
+    if (k === 'background') setBackground(v)
+    else setFieldStore(slug, k, v)
   }
 
-  const reset = () => setState(initial)
+  const setMany = patch => setManyStore(slug, patch)
 
-  return { state, setField, reset }
+  const reset = () => resetStore(slug)
+
+  return { state, setField, setMany, reset }
 }

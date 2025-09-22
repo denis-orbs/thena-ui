@@ -7,7 +7,7 @@ import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 
-import EmptyPair from './EmptyPair'
+import EmptyShow from './EmptyShow'
 import { normalizeAssetUrl } from '../../lib/utils'
 import BorderGradient from '../../StudioLayout/BorderGradient'
 
@@ -24,14 +24,14 @@ function IncentiveInfo({ pair, size = 'lg' }) {
           size === 'lg' ? 'mb-13 text-base' : 'mb-[22px] px-2 py-0.5 text-xs leading-4',
         )}
       >
-        {pair.type === 'Conc Liquidity' ? 'C. Liquidity' : pair.type}
+        {pair?.type === 'Conc Liquidity' ? 'C. Liquidity' : pair?.type}
       </div>
       <IconGroup
         classNames={{
           image: cn('outline-4', size === 'lg' ? '!size-[166px]' : size === 'md' ? '!size-[60px]' : '!size-[52px'),
         }}
-        logo1={normalizeAssetUrl(pair.token0.logoURI ?? UNKNOWN_LOGO)}
-        logo2={normalizeAssetUrl(pair.token1.logoURI ?? UNKNOWN_LOGO)}
+        logo1={normalizeAssetUrl(pair?.token0?.logoURI ?? UNKNOWN_LOGO)}
+        logo2={normalizeAssetUrl(pair?.token1?.logoURI ?? UNKNOWN_LOGO)}
         width={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         height={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
       />
@@ -41,7 +41,7 @@ function IncentiveInfo({ pair, size = 'lg' }) {
           size !== 'lg' && 'mt-3 text-[28px] leading-7',
         )}
       >
-        {pair.symbol}
+        {pair?.symbol}
       </TextHeading>
       {size !== 'lg' && <Divider className='my-5 h-px w-full' />}
       <TextHeading
@@ -51,7 +51,7 @@ function IncentiveInfo({ pair, size = 'lg' }) {
         )}
         style={{ color: '#D642DB' }}
       >
-        ${formatAmount(pair.gauge.bribeUsd)}
+        ${formatAmount(pair?.gauge?.bribeUsd)}
       </TextHeading>
       <TextHeading
         className={cn('text-2xl leading-[31px] font-medium', size === 'lg' && 'text-4xl leading-[43px]')}
@@ -64,10 +64,13 @@ function IncentiveInfo({ pair, size = 'lg' }) {
 }
 
 function IncentivesPreview({ state }) {
-  const { pairs } = state
-  if (pairs.length === 0) {
-    return <EmptyPair />
+  const { pairs: _pairs } = state
+  if ((_pairs || []).length === 0) {
+    return <EmptyShow />
   }
+
+  const pairs = _pairs.filter(Boolean)
+
   return (
     <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-16')}>
       <div

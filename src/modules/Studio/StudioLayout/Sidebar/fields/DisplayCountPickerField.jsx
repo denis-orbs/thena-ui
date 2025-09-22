@@ -13,9 +13,9 @@ function DisplayCountPickerField({ label, value, onChange, options = [] }) {
     <div className='flex flex-col gap-2'>
       <TextHeading>{t(label)}</TextHeading>
       <Dropdown
-        selected={value}
+        selected={options.find(opt => opt.value === value)?.label}
         setSelected={handleSelect}
-        data={options.map(option => ({ label: option, value: option }))}
+        data={options}
         className='h-11 w-full'
         classNames={{ input: 'px-4' }}
       />

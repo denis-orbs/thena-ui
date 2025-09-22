@@ -5,9 +5,11 @@ import Tabs from '@/modules/Studio/StudioLayout/Tabs'
 
 export default function ContentStudioLayout({ children }) {
   return (
-    <div className='fixed top-0 mt-[90px] w-full'>
-      <div className='flex w-full flex-col gap-9'>
+    <div>
+      <div className='fixed top-[70px] z-40 w-full md:top-[90px]'>
         <Tabs />
+      </div>
+      <div className='mt-[158px] flex w-full flex-col gap-4 overflow-x-auto md:mt-[206px]'>
         <StudioShell>{children}</StudioShell>
       </div>
     </div>

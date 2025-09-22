@@ -57,7 +57,7 @@ function TabItem({ className, item, size, disabled }) {
   )
 }
 
-function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
+function Tabs({ className, data, size = SizeTypes.Small, itemClassName, itemsActiveClass }) {
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   const handleMouseEnter = index => {
@@ -78,6 +78,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
               className={cn(
                 'flex items-center rounded-xs px-1 hover:bg-neutral-800 hover:text-neutral-100',
                 item.active && 'bg-neutral-800',
+                item.active && itemsActiveClass,
               )}
             >
               <TabItem item={item} size={size} className={itemClassName} disabled={item.disabled || false} />

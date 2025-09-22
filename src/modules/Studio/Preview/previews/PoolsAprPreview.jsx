@@ -4,7 +4,7 @@ import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 
-import EmptyPair from './EmptyPair'
+import EmptyShow from './EmptyShow'
 import { normalizeAssetUrl } from '../../lib/utils'
 import BorderGradient from '../../StudioLayout/BorderGradient'
 
@@ -93,11 +93,13 @@ function PairInfo({ pair, size = 'lg', type = 'normal' }) {
 }
 
 export default function PoolsAprPreview({ state }) {
-  if (state.pairs.length === 0) {
-    return <EmptyPair />
+  const { pairs: _pairs } = state
+  const pairs = (_pairs || []).filter(Boolean)
+
+  if ((pairs || []).length === 0) {
+    return <EmptyShow />
   }
 
-  const { pairs } = state
   return (
     <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-16')}>
       <div

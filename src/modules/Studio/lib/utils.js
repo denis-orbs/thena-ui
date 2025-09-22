@@ -6,7 +6,7 @@ export const PATH_NAME = {
   METRICS: '/content-studio/metrics',
 }
 
-export function normalizeAssetUrl(url) {
+export const normalizeAssetUrl = url => {
   if (!url) return url
   try {
     const u = new URL(url)
@@ -17,4 +17,12 @@ export function normalizeAssetUrl(url) {
   } catch {
     return url
   }
+}
+
+export const calculateProfitPerDay = (apr, amount) => {
+  if (!apr || !amount) {
+    return 0
+  }
+  const profit = Number(amount) * (Number(apr) / (100 * 365))
+  return profit
 }

@@ -5,12 +5,15 @@ import { useTranslations } from 'use-intl'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
-import { isInvalidAmount } from '@/lib/utils'
+import { cn, isInvalidAmount } from '@/lib/utils'
 import DownloadButton from '@/modules/Profile/DownloadImage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
+import CheckboxListField from './fields/CheckboxListField'
 import DisplayCountPickerField from './fields/DisplayCountPickerField'
+import InputField from './fields/InputField'
 import PairPickerField from './fields/PairPickerField'
+import SegmentedField from './fields/SegmentedField'
 import { PATH_NAME } from '../../lib/utils'
 
 export default function TemplateSidebar({ title, subTitle = '', fields, state, setField }) {
@@ -51,11 +54,24 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
   const map = {
     select: {
       component: DisplayCountPickerField,
-      options: pathname === PATH_NAME.POOL_APR ? [1, 2, 3, 4, 5, 6] : [1, 2, 3],
     },
     pair: {
       component: PairPickerField,
-      options: pathname === PATH_NAME.POOL_APR ? poolApr : PATH_NAME.INCENTIVES === pathname ? incentivesPool : [],
+      options:
+        pathname === PATH_NAME.POOL_APR || pathname === PATH_NAME.PORTFOLIO
+          ? poolApr
+          : PATH_NAME.INCENTIVES === pathname
+            ? incentivesPool
+            : [],
+    },
+    input: {
+      component: InputField,
+    },
+    segmented: {
+      component: SegmentedField,
+    },
+    checkboxList: {
+      component: CheckboxListField,
     },
   }
 
@@ -77,6 +93,14 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     return [f]
   })
 
+  const hydratedFields = expandedFields.map(f => {
+    if (f.dependsOn && f.optionMap) {
+      const key = state?.[f.dependsOn]
+      return { ...f, options: f.optionMap[key] ?? [] }
+    }
+    return f
+  })
+
   const getValue = f => {
     if (typeof f.__index === 'number' && f.__baseName) {
       return (state?.[f.__baseName] ?? [])[f.__index]
@@ -86,22 +110,50 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
 
   const handleChange = (f, v) => {
     if (typeof f.__index === 'number' && f.__baseName) {
-      const arr = Array.isArray(state?.[f.__baseName]) ? [...state[f.__baseName]] : []
+      const base = f.__baseName
+      const arr = Array.isArray(state?.[base]) ? [...state[base]] : []
       arr[f.__index] = v
-      setField(f.__baseName, arr)
-    } else if (f.name && fields.some(x => x.repeatBy === f.name)) {
-      // when displayCount change ⇒ sync pairs again
-      const count = Number(v)
+      setField(base, arr)
+      return
+    }
+
+    if (f.name && fields.some(x => x.repeatBy === f.name)) {
+      const count = Math.max(0, Number(v) || 0)
       setField(f.name, count)
+
       fields.forEach(x => {
         if (x.repeatBy === f.name) {
-          const current = Array.isArray(state?.[x.name]) ? [...state[x.name]] : []
-          setField(x.name, current.slice(0, count))
+          const curr = Array.isArray(state?.[x.name]) ? [...state[x.name]] : []
+          const next = curr.slice(0, count)
+          while (next.length < count) next.push(null)
+          setField(x.name, next)
         }
       })
-    } else {
-      setField(f.name, v)
+      return
     }
+
+    if (f.name && fields.some(x => x.dependsOn === f.name)) {
+      setField(f.name, v)
+
+      fields.forEach(dep => {
+        if (dep.dependsOn === f.name) {
+          const allowed = dep.optionMap?.[v] ?? []
+
+          if (dep.type === 'checkboxList') {
+            const current = Array.isArray(state?.[dep.name]) ? state[dep.name] : []
+            const filtered = current.filter(x => allowed.includes(x))
+            setField(dep.name, filtered)
+          } else {
+            const curr = state?.[dep.name]
+            setField(dep.name, allowed.includes(curr) ? curr : allowed[0] ?? null)
+          }
+        }
+      })
+      return
+    }
+
+    // normal field
+    setField(f.name, v)
   }
 
   return (
@@ -110,15 +162,15 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         <TextHeading className='font-archia text-2xl font-semibold text-white'>{t(title)}</TextHeading>
         <Paragraph>{t(subTitle)}</Paragraph>
       </div>
-      <div className='max-h-[360px] space-y-6 overflow-y-auto'>
-        {expandedFields.map(f => {
-          const Field = map[f.type].component ?? null
-          if (!Field) return null
+      <div className={cn('max-h-[360px] space-y-6 overflow-y-auto', pathname === PATH_NAME.METRICS && 'space-y-3')}>
+        {hydratedFields.map(f => {
+          const Field = map[f.type]?.component ?? null
+          if (!Field) return <></>
           return (
             <Field
               key={f.name}
               {...f}
-              options={map[f.type].options || []}
+              options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
               value={getValue(f)}
               onChange={v => handleChange(f, v)}
             />

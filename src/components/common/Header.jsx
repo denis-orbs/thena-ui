@@ -971,7 +971,7 @@ function Header() {
   }, [router])
 
   return (
-    <div>
+    <div id='headerMaster'>
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(

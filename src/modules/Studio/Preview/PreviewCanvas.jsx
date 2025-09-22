@@ -3,17 +3,25 @@ import { useRef } from 'react'
 import { useFixViewport } from '@/hooks/useFixViewPort'
 import { cn } from '@/lib/utils'
 
-export default function PreviewCanvas({ children }) {
+export default function PreviewCanvas({ children, background }) {
   const parentRef = useRef(null)
   const childRef = useRef(null)
 
   useFixViewport(parentRef, childRef)
   return (
-    <div className='h-full'>
+    <>
       <div ref={parentRef}>
         <section
           ref={childRef}
-          className='relative h-[576px]! w-[1024px]! bg-black/40 bg-[url("/images/content-studio/bg_1.png")] bg-contain bg-center bg-no-repeat'
+          className='relative h-[576px]! w-[1024px]! origin-top-left bg-contain bg-center bg-no-repeat'
+          style={{
+            aspectRatio: '1024/576',
+            minWidth: '1024px',
+            minHeight: '576px',
+            maxWidth: '1024px',
+            maxHeight: '576px',
+            backgroundImage: `url(${background.image})`,
+          }}
         >
           {/* Background selector result */}
           <div className='flex items-center justify-center'>{children}</div>
@@ -28,6 +36,6 @@ export default function PreviewCanvas({ children }) {
       >
         <div className='flex items-center justify-center'>{children}</div>
       </div>
-    </div>
+    </>
   )
 }

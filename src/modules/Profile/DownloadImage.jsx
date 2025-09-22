@@ -71,7 +71,7 @@ export default function DownloadButton({ fileName }) {
   }
 
   return (
-    <PrimaryButton onClick={handleRender} className='mt-5 mb-3 w-full'>
+    <PrimaryButton onClick={handleRender} className='w-full'>
       <DownloadIcon className='mr-2 h-4 w-4' />
       {t('Download image')}
     </PrimaryButton>
