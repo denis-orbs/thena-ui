@@ -13,6 +13,7 @@ import { useGammaRemove } from '@/hooks/fusion/useGamma'
 import { useIchiRemove } from '@/hooks/fusion/useIchi'
 import { useV1Remove } from '@/hooks/useV1Liquidity'
 import { warnToast } from '@/lib/notify'
+import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
@@ -55,10 +56,18 @@ export default function RemovePosition({ setPopup, strategy, isStaked, isManage 
     return null
   }, [amount, balance])
 
-  const callback = useCallback(() => {
-    setAmount('')
-    setPopup(false)
-  }, [setPopup])
+  const callback = useCallback(
+    (isRemoveAll = false) => {
+      if (isRemoveAll) {
+        addOrReplaceURLParams('title')
+        addOrReplaceURLParams('staked')
+        addOrReplaceURLParams('version')
+      }
+      setAmount('')
+      setPopup(false)
+    },
+    [setPopup],
+  )
 
   const onRemoveLiquidity = useCallback(() => {
     if (errorMsg) {

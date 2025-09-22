@@ -46,12 +46,14 @@ export const getTCStatus = eventTimeStamp => {
   return status
 }
 
-export const addOrReplaceURLParams = (type, value) => {
+export const addOrReplaceURLParams = (type, value = null) => {
   const url = new URL(window.location.href)
 
   const params = new URLSearchParams(url.search.slice(1))
 
-  if (value === null) {
+  // value is null or undefined, remove this param from URL
+  // otherwise, add or replace it
+  if (value === null || value === undefined) {
     params.delete(type)
   } else {
     params.set(type, value)

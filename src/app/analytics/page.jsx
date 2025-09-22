@@ -65,6 +65,7 @@ export default function AnalyticsPage() {
           veTheUSD: prevVal.veTheUSD + curr.veTheUSD,
           theNftUSD: prevVal.theNftUSD + curr.theNftUSD,
           tvlUSD: prevVal.tvlUSD + curr.tvlUSD,
+          vaultSingleSideFeesUSD: prevVal.vaultSingleSideFeesUSD + curr.vaultSingleSideFeesUSD,
           volumeUSD: prevVal.volumeUSD + curr.volumeUSD,
           date: !prevVal.date ? curr.date : Math.min(curr.date, prevVal.date),
         }),
@@ -75,6 +76,7 @@ export default function AnalyticsPage() {
           veTheUSD: 0,
           theNftUSD: 0,
           tvlUSD: 0,
+          vaultSingleSideFeesUSD: 0,
           volumeUSD: 0,
           date: 0,
           bribeUSD: items[0]?.bribeUSD ?? 0,
@@ -94,7 +96,7 @@ export default function AnalyticsPage() {
   }, [networkId, stats])
 
   const filteredTokens = useMemo(
-    () => (tokens ? tokens.filter(token => token.symbol.toLowerCase().includes(searchTextTokens.toLowerCase())) : []),
+    () => (tokens ? tokens.filter(token => token?.symbol?.toLowerCase().includes(searchTextTokens.toLowerCase())) : []),
     [tokens, searchTextTokens],
   )
 
@@ -132,6 +134,55 @@ export default function AnalyticsPage() {
     window.addEventListener('local-storage-changed', updateBanner)
     return () => window.removeEventListener('local-storage-changed', updateBanner)
   }, [])
+  const chartItemConfig = {
+    vaultSingleSideFeesUSD: {
+      label: t('THE Single Sided Vaults'),
+    },
+    bribeUSD: {
+      label: t('Incentives'),
+      onlyShowByEpoch: true,
+    },
+    veTheUSD: {
+      label: t('veTHE'),
+    },
+    customPoolFeesUSD: {
+      label: t('LP'),
+    },
+    theNftUSD: {
+      label: t('theNFT'),
+    },
+  }
+
+  const feeChartItemConfigs = [
+    {
+      dataKey: 'bribeUSD',
+      fill: '#b000aa',
+      opacity: 0.85,
+      radius: [4, 4, 0, 0],
+      onlyShowByEpoch: true,
+    },
+    {
+      dataKey: 'vaultSingleSideFeesUSD',
+      fill: '#dc00d4',
+      radius: [4, 4, 0, 0],
+    },
+    {
+      dataKey: 'customPoolFeesUSD',
+      fill: '#e333dd',
+      radius: [4, 4, 0, 0],
+    },
+    {
+      dataKey: 'theNftUSD',
+      fill: '#ea66e5',
+      radius: [4, 4, 0, 0],
+    },
+    {
+      dataKey: 'veTheUSD',
+      fill: '#f199ee',
+      opacity: 0.85,
+      radius: [4, 4, 0, 0],
+    },
+  ]
 
   return (
     <LayoutWithBackButton
@@ -253,46 +304,8 @@ export default function AnalyticsPage() {
                   rawData={rawData}
                   title='Fees'
                   chartId='Fee Distribution'
-                  chartConfig={{
-                    bribeUSD: {
-                      label: t('Incentives'),
-                      onlyShowByEpoch: true,
-                    },
-                    veTheUSD: {
-                      label: t('veTHE'),
-                    },
-                    customPoolFeesUSD: {
-                      label: t('LP'),
-                    },
-                    theNftUSD: {
-                      label: t('theNFT'),
-                    },
-                  }}
-                  chartItemConfigs={[
-                    {
-                      dataKey: 'bribeUSD',
-                      fill: '#E333DD',
-                      opacity: 0.85,
-                      radius: [4, 4, 0, 0],
-                      onlyShowByEpoch: true,
-                    },
-                    {
-                      dataKey: 'customPoolFeesUSD',
-                      fill: '#BD60BA',
-                      radius: [4, 4, 0, 0],
-                    },
-                    {
-                      dataKey: 'theNftUSD',
-                      fill: '#EA66E5',
-                      radius: [4, 4, 0, 0],
-                    },
-                    {
-                      dataKey: 'veTheUSD',
-                      fill: '#F199EE',
-                      opacity: 0.85,
-                      radius: [4, 4, 0, 0],
-                    },
-                  ]}
+                  chartConfig={chartItemConfig}
+                  chartItemConfigs={feeChartItemConfigs}
                   onHoverChange={value => setFeesSubTitle(value)}
                   defaultValue={dataRevenue?.revenueData}
                   isMinimum
@@ -310,46 +323,8 @@ export default function AnalyticsPage() {
                     rawData={rawData}
                     title='Fees'
                     chartId='Fee Distribution'
-                    chartConfig={{
-                      bribeUSD: {
-                        label: t('Incentives'),
-                        onlyShowByEpoch: true,
-                      },
-                      veTheUSD: {
-                        label: t('veTHE'),
-                      },
-                      customPoolFeesUSD: {
-                        label: t('LP'),
-                      },
-                      theNftUSD: {
-                        label: t('theNFT'),
-                      },
-                    }}
-                    chartItemConfigs={[
-                      {
-                        dataKey: 'bribeUSD',
-                        fill: '#E333DD',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                        onlyShowByEpoch: true,
-                      },
-                      {
-                        dataKey: 'customPoolFeesUSD',
-                        fill: '#BD60BA',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'theNftUSD',
-                        fill: '#EA66E5',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'veTheUSD',
-                        fill: '#F199EE',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                      },
-                    ]}
+                    chartConfig={chartItemConfig}
+                    chartItemConfigs={feeChartItemConfigs}
                     isExpanded
                     defaultValue={dataRevenue?.revenueData}
                     isLoading={isLoadingChartData}
@@ -418,46 +393,8 @@ export default function AnalyticsPage() {
                     defaultDateHover='Total Revenue'
                     defaultValue={dataRevenue?.revenueData}
                     chartId='Fee Distribution'
-                    chartConfig={{
-                      bribeUSD: {
-                        label: t('Incentives'),
-                        onlyShowByEpoch: true,
-                      },
-                      veTheUSD: {
-                        label: t('veTHE'),
-                      },
-                      customPoolFeesUSD: {
-                        label: t('LP'),
-                      },
-                      theNftUSD: {
-                        label: t('theNFT'),
-                      },
-                    }}
-                    chartItemConfigs={[
-                      {
-                        dataKey: 'bribeUSD',
-                        fill: '#E333DD',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                        onlyShowByEpoch: true,
-                      },
-                      {
-                        dataKey: 'customPoolFeesUSD',
-                        fill: '#BD60BA',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'theNftUSD',
-                        fill: '#EA66E5',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'veTheUSD',
-                        fill: '#F199EE',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                      },
-                    ]}
+                    chartConfig={chartItemConfig}
+                    chartItemConfigs={feeChartItemConfigs}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}
                     isLoading={isLoadingChartData}
@@ -496,46 +433,8 @@ export default function AnalyticsPage() {
                     title='Fees'
                     defaultDateHover='Total Revenue'
                     chartId='Fee Distribution'
-                    chartConfig={{
-                      bribeUSD: {
-                        label: t('Incentives'),
-                        onlyShowByEpoch: true,
-                      },
-                      veTheUSD: {
-                        label: t('veTHE'),
-                      },
-                      customPoolFeesUSD: {
-                        label: t('LP'),
-                      },
-                      theNftUSD: {
-                        label: t('theNFT'),
-                      },
-                    }}
-                    chartItemConfigs={[
-                      {
-                        dataKey: 'bribeUSD',
-                        fill: '#E333DD',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                        onlyShowByEpoch: true,
-                      },
-                      {
-                        dataKey: 'customPoolFeesUSD',
-                        fill: '#BD60BA',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'theNftUSD',
-                        fill: '#EA66E5',
-                        radius: [4, 4, 0, 0],
-                      },
-                      {
-                        dataKey: 'veTheUSD',
-                        fill: '#F199EE',
-                        opacity: 0.85,
-                        radius: [4, 4, 0, 0],
-                      },
-                    ]}
+                    chartConfig={chartItemConfig}
+                    chartItemConfigs={feeChartItemConfigs}
                     epochData={groupEpochData}
                     isExpanded={false}
                     onExpand={() => setIsExpanded('feeDistribution')}

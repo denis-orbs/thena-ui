@@ -1632,5 +1632,6 @@
   "idleAssets": "<line1>Você tem <amount>${value}</amount> em ativos ociosos.</line1><line2> Coloque-os para trabalhar agora</line2>",
   "Provide Liquidity": "Adicione Liquidez",
   "Not Voted": "Não votado",
-  "Automatic Strategy": "Automatic Strategy"
+  "Automatic Strategy": "Automatic Strategy",
+  "THE Single Sided Vaults": "THE Single Sided Vaults"
 }

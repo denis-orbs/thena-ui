@@ -14,6 +14,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraRemove } from '@/hooks/fusion/useAlgebra'
 import useDebounce from '@/hooks/useDebounce'
 import { warnToast } from '@/lib/notify'
+import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
@@ -61,6 +62,10 @@ export default function RemoveManualModal({
         slippage,
         deadline,
         callback: () => {
+          if (debouncedPercent === 100) {
+            addOrReplaceURLParams('pid')
+            addOrReplaceURLParams('type')
+          }
           setPercent(0)
           setPopup(false)
           mutateManual()

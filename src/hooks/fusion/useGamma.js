@@ -175,6 +175,10 @@ export const useGammaRemove = () => {
       const unstakeuuid = uuidv4()
       const claimuuid = uuidv4()
 
+      const isRemoveAll = pool?.staked
+        ? pool?.account?.gaugeBalance?.eq(amount)
+        : pool?.account?.walletBalance?.eq(amount)
+
       startTxn({
         key,
         title: 'Remove Liquidity',
@@ -234,7 +238,7 @@ export const useGammaRemove = () => {
         setPending(false)
         return
       }
-      callback()
+      callback(isRemoveAll)
       onFieldAInput('')
       onFieldBInput('')
       endTxn({
