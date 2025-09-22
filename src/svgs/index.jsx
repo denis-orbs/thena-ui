@@ -141,6 +141,7 @@ import TaskCheckedIcon from '~/svgs/task-checked.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import THETokenIcon from '~/svgs/THE-token.svg'
 import RoundedTHETokenIcon from '~/svgs/THE-token-rounded.svg'
+import ThenaFiLinkIcon from '~/svgs/thena-fi-link.svg'
 import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 import TrashIcon from '~/svgs/trash.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
@@ -302,6 +303,7 @@ export {
   TargetIcon,
   TaskCheckedIcon,
   TelegramIcon,
+  ThenaFiLinkIcon,
   THETokenIcon,
   ThirdPrizeIcon,
   TransferIcon,

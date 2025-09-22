@@ -35,18 +35,44 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     return { ...ele, subpools }
   })
 
-  const poolApr = pairFilteredSubpools.filter(ele => {
-    if (ele.type === PAIR_TYPES.WEIGHTED) {
-      return !isInvalidAmount(ele.aprNumber)
-    }
-    return ele.highApr > 0
-  })
+  // not allow select same pool
+  const excluded = useMemo(
+    () =>
+      new Set(
+        (state.pairs || [])
+          .map(x => (typeof x === 'string' ? x : x?.address))
+          .filter(Boolean)
+          .map(s => String(s).toLowerCase()),
+      ),
+    [state.pairs],
+  )
+
+  const poolApr = useMemo(
+    () =>
+      pairFilteredSubpools
+        .filter(ele => !excluded.has(String(ele.address || ele.pool?.address || '').toLowerCase()))
+        .filter(ele => {
+          if (ele.type === PAIR_TYPES.WEIGHTED) {
+            return !isInvalidAmount(ele.aprNumber)
+          }
+          return ele.highApr > 0
+        })
+        .sort(
+          (a, b) =>
+            (b.type === PAIR_TYPES.WEIGHTED ? b.aprNumber : b.highApr) -
+            (a.type === PAIR_TYPES.WEIGHTED ? a.aprNumber : a.highApr),
+        ),
+    [excluded, pairFilteredSubpools],
+  )
 
   // For incentives
   const v3PoolsWithGauge = useV3PoolsWithGauge()
   const incentivesPool = useMemo(
-    () => v3PoolsWithGauge.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()),
-    [v3PoolsWithGauge],
+    () =>
+      v3PoolsWithGauge
+        .filter(ele => !excluded.has(String(ele.address || ele.pool?.address || '').toLowerCase()))
+        .sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()),
+    [excluded, v3PoolsWithGauge],
   )
 
   const pathname = usePathname()
@@ -159,7 +185,11 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
   return (
     <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 p-6'>
       <div className='flex flex-col gap-1'>
-        {title && <TextHeading className='font-archia text-2xl font-semibold text-white'>{t(title)}</TextHeading>}
+        {title && (
+          <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
+            {t(title)}
+          </TextHeading>
+        )}
         {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
       </div>
       <div className={cn('max-h-[360px] space-y-6 overflow-y-auto', pathname === PATH_NAME.METRICS && 'space-y-3')}>
@@ -178,7 +208,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         })}
       </div>
       <div className='mt-auto w-full'>
-        <DownloadButton fileName={title.replace(/ /g, '_')} />
+        <DownloadButton scale={1920 / 1024} fileName={title.replace(/ /g, '_')} />
       </div>
     </aside>
   )

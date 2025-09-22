@@ -15,7 +15,7 @@ export default function TemplatePage({ params, searchParams }) {
   const { Preview } = tpl
 
   return (
-    <div className='grid w-full grid-cols-1 gap-5 lg:grid-cols-[396px_1fr]'>
+    <div className='grid w-full grid-cols-1 gap-4 lg:grid-cols-[396px_1fr] lg:gap-5'>
       <div className='order-2 lg:order-1'>
         <TemplateSidebar
           title={tpl.title}

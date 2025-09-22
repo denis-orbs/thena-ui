@@ -50,8 +50,13 @@ export default function PairPickerField({ label, value, onChange, options = [] }
               />
             )}
             <div className='flex items-center gap-2'>
-              <TextHeading>{value.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{t(value.type)}</Paragraph>
+              {/* <TextHeading>{value.symbol}</TextHeading> */}
+              <div className='flex min-w-0 items-center gap-2' title={value.symbol}>
+                <TextHeading className='block max-w-[120px] truncate text-base! leading-5! uppercase'>
+                  {value.symbol}
+                </TextHeading>
+              </div>
+              <Paragraph className='text-sm! leading-5!'>{t(value.type)}</Paragraph>
             </div>
           </div>
         ) : (

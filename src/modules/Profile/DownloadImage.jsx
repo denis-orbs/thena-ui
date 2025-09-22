@@ -11,7 +11,7 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { rewriteS3Host } from '@/lib/utils'
 import { DownloadIcon } from '@/svgs'
 
-export default function DownloadButton({ fileName }) {
+export default function DownloadButton({ fileName, scale = 1 }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
@@ -45,7 +45,7 @@ export default function DownloadButton({ fileName }) {
       const canvas = await html2canvas(originShare, {
         width: 1024,
         height: 576,
-        scale: 1,
+        scale,
         allowTaint: true,
         useCORS: true,
         removeContainer: true,

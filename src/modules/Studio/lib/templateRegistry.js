@@ -35,6 +35,7 @@ const TEMPLATES = {
   },
   incentives: {
     title: 'Voting Incentives Template',
+    subTitle: 'Select up to 3 pairs to showcase their voting incentives',
     fields: [
       {
         type: 'select',
@@ -59,6 +60,7 @@ const TEMPLATES = {
   },
   portfolio: {
     title: 'Portfolio Growth Template',
+    subTitle: 'Select pair and enter your investment amount',
     fields: [
       { type: 'pair', name: 'pair', label: 'Pair' },
       { type: 'input', name: 'amount', label: 'Investment Amount (USD)', min: 0, typeInput: 'number' },

@@ -29,21 +29,33 @@ export default function Tabs() {
     {
       id: 1,
       name: '3D Grid',
-      image: '/images/content-studio/bg_1.png',
-      value: '/images/content-studio/bg_1.png',
+      image: '/images/content-studio/3d_grid.png',
+      value: '/images/content-studio/3d_grid_option.png',
     },
     {
       id: 2,
-      name: 'Purple Night Sky',
-      image: '/images/content-studio/bg_2.png',
-      value: '/images/content-studio/bg_2.png',
+      name: 'Violet Glow',
+      image: '/images/content-studio/violet_glow.png',
+      value: '/images/content-studio/violet_glow_option.png',
+    },
+    {
+      id: 3,
+      name: 'Starry Night',
+      image: '/images/content-studio/starry_night.png',
+      value: '/images/content-studio/starry_night_option.png',
+    },
+    {
+      id: 4,
+      name: 'Tech Horizon',
+      image: '/images/content-studio/tech_horizon.png',
+      value: '/images/content-studio/tech_horizon_option.png',
     },
   ]
 
   return (
     <div className='w-full bg-neutral-900 px-4 py-4 md:py-4.5'>
-      <div className='mx-auto flex w-full max-w-[1420px] items-center justify-between'>
-        <div className='flex items-center gap-2 px-4'>
+      <div className='mx-auto flex w-full max-w-[1440px] items-center justify-between'>
+        <div className='flex items-center gap-2'>
           {items.map(it => {
             const active = pathname.includes(`/content-studio/${it.slug}`)
             return (
@@ -51,7 +63,7 @@ export default function Tabs() {
                 key={it.slug}
                 href={`/content-studio/${it.slug}`}
                 className={cn(
-                  'rounded-lg px-1.5 py-2 text-[11px] leading-4 font-medium text-neutral-200 md:px-4 md:py-3 md:text-base md:leading-5',
+                  'rounded-lg px-1.5 py-2 text-[11px] leading-4 font-medium text-nowrap text-neutral-200 md:px-4 md:py-3 md:text-base md:leading-5',
                   active ? 'bg-neutral-800' : 'hover:bg-neutral-700',
                 )}
               >

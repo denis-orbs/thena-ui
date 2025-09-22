@@ -82,8 +82,10 @@ export default function ShareProfileStats({
             onSelected={setSelectedAchievement}
           />
         </div>
-        <DownloadButton fileName='profile' />
-        <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
+        <div className='flex w-full flex-col gap-2'>
+          <DownloadButton fileName='profile' />
+          <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
+        </div>
       </div>
     </div>
   )

@@ -1,8 +1,11 @@
+import React from 'react'
+// A gradient border component used in the Studio layout used to convert html to image keep the border
+// without using CSS border-image or similar properties that may not render correctly in the image conversion.
 export default function BorderGradient() {
   return (
     <svg
       className='pointer-events-none absolute inset-0 h-full w-full'
-      style={{ borderRadius: '12px' }} // Đảm bảo SVG cũng có border radius
+      style={{ borderRadius: '12px' }}
       preserveAspectRatio='none'
       aria-hidden
     >

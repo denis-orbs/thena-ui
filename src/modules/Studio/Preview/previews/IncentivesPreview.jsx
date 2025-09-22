@@ -19,26 +19,33 @@ function IncentiveInfo({ pair, size = 'lg' }) {
       {size !== 'lg' && <BorderGradient />}
       <div
         className={cn(
-          'font-archia w-fit items-center rounded-full',
-          'border border-[#FFFFFF] px-2 py-[5px] leading-4 font-normal text-neutral-200',
+          'w-fit items-center rounded-full',
+          'border border-[#FFFFFF]/8 px-2 py-[5px] leading-4 font-normal text-neutral-200',
           size === 'lg' ? 'mb-13 text-base' : 'mb-[22px] px-2 py-0.5 text-xs leading-4',
         )}
+        style={{
+          borderColor: 'color-mix(in oklab, #FFFFFF 8%, transparent)',
+        }}
       >
         {pair?.type === 'Conc Liquidity' ? 'C. Liquidity' : pair?.type}
       </div>
       <IconGroup
         classNames={{
-          image: cn('outline-4', size === 'lg' ? '!size-[166px]' : size === 'md' ? '!size-[60px]' : '!size-[52px'),
+          image: cn('outline-none', size === 'lg' ? '!size-[166px]' : size === 'md' ? '!size-[60px]' : '!size-[52px]'),
         }}
+        className={cn('*:not-first:-ml-4', size === 'lg' && '*:not-first:-ml-[58px]')}
         logo1={normalizeAssetUrl(pair?.token0?.logoURI ?? UNKNOWN_LOGO)}
         logo2={normalizeAssetUrl(pair?.token1?.logoURI ?? UNKNOWN_LOGO)}
         width={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         height={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
+        style={{
+          border: `${size === 'lg' ? '10px' : '4px'} solid ${size === 'lg' ? 'rgba(26, 13, 31, 0.2)' : '#1A121E'}`,
+        }}
       />
       <TextHeading
         className={cn(
-          'font-archia text-[68px] leading-[77px] font-semibold uppercase',
-          size !== 'lg' && 'mt-3 text-[28px] leading-7',
+          'font-archia text-[68px]! leading-[77px]! font-semibold uppercase',
+          size !== 'lg' && 'mt-3 text-[28px]! leading-7!',
         )}
       >
         {pair?.symbol}
@@ -46,18 +53,23 @@ function IncentiveInfo({ pair, size = 'lg' }) {
       {size !== 'lg' && <Divider className='my-5 h-px w-full' />}
       <TextHeading
         className={cn(
-          'flex items-center gap-1.5 text-[28px] leading-[35px] font-semibold',
-          size === 'lg' && 'font-archia gap-2.5 text-8xl leading-[101px]',
+          'flex items-center gap-1.5 text-[36px]! leading-[43px]! font-semibold',
+          size === 'lg' && 'font-archia gap-2.5 text-8xl! leading-[101px]!',
+          size === 'sm' && 'text-[32px]! leading-10!',
         )}
         style={{ color: '#D642DB' }}
       >
         ${formatAmount(pair?.gauge?.bribeUsd)}
       </TextHeading>
       <TextHeading
-        className={cn('text-2xl leading-[31px] font-medium', size === 'lg' && 'text-4xl leading-[43px]')}
+        className={cn(
+          'text-2xl! leading-[31px]! font-medium',
+          size === 'lg' && 'text-4xl! leading-[43px]!',
+          size === 'sm' && 'text-[22px]! leading-[31px]!',
+        )}
         style={{ color: '#D642DB' }}
       >
-        {t('Vote Incentives')}
+        {t('Voting Incentives')}
       </TextHeading>
     </div>
   )
@@ -72,7 +84,7 @@ function IncentivesPreview({ state }) {
   const pairs = _pairs.filter(Boolean)
 
   return (
-    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-16')}>
+    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-25')}>
       <div
         className={cn(
           'grid',
@@ -81,11 +93,11 @@ function IncentivesPreview({ state }) {
           pairs.length === 3 && 'grid-cols-3 gap-5.5',
         )}
       >
-        {pairs.map(pair => (
+        {pairs.map((pair, index) => (
           <IncentiveInfo
-            key={pair?.id}
+            key={`${pair?.address}_${index}`}
             pair={pair}
-            size={pairs.length === 1 ? 'lg' : pairs.length === 2 ? 'sm' : 'md'}
+            size={pairs.length === 1 ? 'lg' : pairs.length === 2 ? 'md' : 'sm'}
           />
         ))}
       </div>

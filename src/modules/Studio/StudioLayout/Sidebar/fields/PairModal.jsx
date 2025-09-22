@@ -58,7 +58,7 @@ function PairModal({ popup, setPopup, setSelected, pools, field = 'apr' }) {
         <div className='flex items-center justify-between px-6'>
           <Paragraph className='px-3'>{t('Pairs')}</Paragraph>
           {field === 'apr' && <Paragraph className='px-3'>{t('APR')}</Paragraph>}
-          {field === 'incentives' && <Paragraph className='px-3'>{t('Vote Incentive')}</Paragraph>}
+          {field === 'incentives' && <Paragraph className='px-3'>{t('Voting Incentives')}</Paragraph>}
         </div>
         <div className='max-h-[340px] overflow-auto'>
           {filteredPools.map(pool => (

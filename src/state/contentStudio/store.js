@@ -2,8 +2,10 @@
 
 import { create } from 'zustand'
 
+const makeTplKey = tpl => (tpl && tpl.title) || {}
+
 const buildInitial = tpl => ({
-  ...(tpl?.defaults || {}),
+  ...((tpl && tpl.defaults) || {}),
 })
 
 export const useTemplateStore = create((set, get) => ({
@@ -11,22 +13,34 @@ export const useTemplateStore = create((set, get) => ({
   background: {
     id: 1,
     name: '3D Grid',
-    image: '/images/content-studio/bg_1.png',
-    value: '/images/content-studio/bg_1.png',
+    image: '/images/content-studio/3d_grid.png',
+    value: '/images/content-studio/3d_grid_option.png',
   },
   setBackground: bg => set({ background: bg }),
 
   // --- PER-SLUG ---
-  templates: {}, // { [slug]: { state, defaults } }
+  templates: {},
 
   initTemplate: (slug, tpl) => {
     const defaults = buildInitial(tpl)
+    const tplKey = makeTplKey(tpl)
+
     set(s => {
       const existed = s.templates[slug]
+
+      if (!existed || existed.tplKey !== tplKey) {
+        return {
+          templates: {
+            ...s.templates,
+            [slug]: { state: defaults, defaults, tplKey },
+          },
+        }
+      }
+
       return {
         templates: {
           ...s.templates,
-          [slug]: existed ? { ...existed, defaults } : { state: defaults, defaults },
+          [slug]: { ...existed, defaults },
         },
       }
     })
@@ -72,7 +86,7 @@ export const useTemplateStore = create((set, get) => ({
         },
       }
 
-      if (bgFromPatch !== undefined) {
+      if (typeof bgFromPatch !== 'undefined') {
         updates.background = bgFromPatch
       }
 

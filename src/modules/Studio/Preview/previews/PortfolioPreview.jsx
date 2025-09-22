@@ -24,13 +24,13 @@ function PortfolioPreview({ state }) {
     <div className='mt-20 flex flex-col gap-[45px]'>
       <div className='flex flex-col items-center justify-center gap-3 text-center'>
         <TextHeading className='text-[32px]! leading-10! font-semibold'>
-          {t('Your [amount] Can Earn', { amount: `$${amount}` })}
+          {t('Your [amount] Can Earn', { amount: `$${formatAmount(amount, true)}` })}
         </TextHeading>
         <TextHeading
           className='font-archia text-[164px]! leading-[170px]! font-semibold tracking-[0.02em]'
           style={{ color: '#D642DB' }}
         >
-          ${formatAmount(calculateProfitPerDay(maxApr, amount))}
+          ${formatAmount(calculateProfitPerDay(maxApr, amount), true)}
         </TextHeading>
         <div className='flex w-fit items-center gap-3.5'>
           <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day on')}</TextHeading>
@@ -47,12 +47,13 @@ function PortfolioPreview({ state }) {
               />
             ) : (
               <IconGroup
-                className='*:not-first:-ml-1'
                 classNames={{
-                  image: 'outline-2 w-9 h-9',
+                  image: 'outline-none w-9 h-9',
                 }}
+                className='*:not-first:-ml-[10px]'
                 logo1={normalizeAssetUrl(pair?.token0?.logoURI ?? UNKNOWN_LOGO)}
                 logo2={normalizeAssetUrl(pair?.token1?.logoURI ?? UNKNOWN_LOGO)}
+                style={{ border: '3px solid rgba(26, 13, 31, 0.2)' }}
               />
             )}
             <div className='flex items-center gap-1.5'>
@@ -62,12 +63,12 @@ function PortfolioPreview({ state }) {
           </div>
         </div>
       </div>
-      <div className='relative mx-auto flex w-fit flex-col gap-1 px-[54px] pt-4 pb-4.5 text-center'>
+      <div className='relative mx-auto flex w-fit flex-col gap-1 px-[54px] pt-4 pb-4.5 text-center tracking-[.0625em]'>
         <BorderGradient />
-        <TextHeading className='text-lg! leading-4.5! font-normal text-neutral-300 uppercase'>
+        <TextHeading className='text-lg! leading-4.5! font-normal tracking-[.0625em] text-neutral-300 uppercase'>
           {t('Estimated APR')}
         </TextHeading>
-        <TextHeading className='text-2xl! leading-6! font-medium'>{pair.apr} APR</TextHeading>
+        <TextHeading className='text-2xl! leading-6! font-medium tracking-[.0625em]'>{pair.apr} APR</TextHeading>
       </div>
     </div>
   ) : (

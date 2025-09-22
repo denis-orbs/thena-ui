@@ -31,7 +31,14 @@ function NumberInfo({ title, value, size = 'sm', colorClass = '#D642DB', prefix 
   const t = useTranslations()
 
   return (
-    <div className={cn('flex flex-col justify-center gap-1 text-center', className)}>
+    <div
+      className={cn(
+        'flex min-w-[314px] flex-col justify-center gap-1 text-center',
+        (size === 'sm' || size === 'md') && 'max-w-[314px]',
+        size === 'md' && 'max-w-[472px]',
+        className,
+      )}
+    >
       <TextHeading className={cn('font-semibold', TITLE_SIZES[size])}>{t(title, keyTranslate)}</TextHeading>
 
       <TextHeading className={cn('font-archia font-semibold', VALUE_SIZES[size])} style={{ color: colorClass }}>
@@ -57,6 +64,7 @@ function MetricsPreview({ state }) {
       case 3:
         return 'lg'
       case 4:
+        return 'md'
       case 5:
       case 6:
         return 'sm'
@@ -145,17 +153,30 @@ function MetricsPreview({ state }) {
   }
 
   return (
-    <div className={cn('flex w-full flex-col gap-[110px] px-10 py-9', metricsShow.length > 3 && 'gap-[88px]')}>
-      <TextHeading className='font-archia mx-auto text-[64px] leading-[70px] font-semibold'>
+    <div
+      className={cn(
+        'flex w-full flex-col gap-[110px] px-10 py-9',
+        metricsShow.length > 3 && 'gap-[88px]',
+        metricsShow.length === 4 && 'gap-[46px]',
+      )}
+    >
+      <TextHeading className='font-archia mx-auto text-[64px] leading-[70px] font-semibold tracking-[-1px]'>
         {t(metricsType === METRICS_TYPE.KEY_METRICS ? 'THENA in Numbers' : 'THENA Recent Activity')}
       </TextHeading>
-      <div className='flex w-full flex-wrap justify-center gap-x-px gap-y-[68px]'>
+      <div
+        className={cn(
+          'flex w-full flex-wrap justify-center gap-x-px gap-y-[68px]',
+          metricsShow.length === 4 && 'gap-y-9',
+        )}
+      >
         <div className='flex w-full justify-center gap-x-px'>
-          {metricsShow.slice(0, 3).map((metric, index) => renderMetrics(index, metric))}
+          {metricsShow.slice(0, metricsShow.length !== 4 ? 3 : 2).map((metric, index) => renderMetrics(index, metric))}
         </div>
-        <div className='flex justify-center gap-x-px'>
-          {metricsShow.slice(3).map((metric, index) => renderMetrics(index, metric))}
-        </div>
+        {metricsShow.length > 3 && (
+          <div className='flex w-full justify-center gap-x-px'>
+            {metricsShow.slice(metricsShow.length !== 4 ? 3 : 2).map((metric, index) => renderMetrics(index, metric))}
+          </div>
+        )}
       </div>
     </div>
   )
