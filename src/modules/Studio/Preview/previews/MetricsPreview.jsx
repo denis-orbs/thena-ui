@@ -3,11 +3,13 @@ import React, { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { TextHeading } from '@/components/typography'
+import { useEpochTimer } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import { fetchStats } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 
 import EmptyShow from './EmptyShow'
+import { METRICS_TYPE } from '../../lib/utils'
 
 const TITLE_SIZES = {
   sm: 'text-xl leading-[31px]',
@@ -25,12 +27,12 @@ const VALUE_SIZES = {
   '2xl': 'text-[164px] leading-[170px]',
 }
 
-function NumberInfo({ title, value, size = 'sm', colorClass = '#D642DB', prefix = '$', className }) {
+function NumberInfo({ title, value, size = 'sm', colorClass = '#D642DB', prefix = '$', keyTranslate, className }) {
   const t = useTranslations()
 
   return (
     <div className={cn('flex flex-col justify-center gap-1 text-center', className)}>
-      <TextHeading className={cn('font-semibold', TITLE_SIZES[size])}>{t(title)}</TextHeading>
+      <TextHeading className={cn('font-semibold', TITLE_SIZES[size])}>{t(title, keyTranslate)}</TextHeading>
 
       <TextHeading className={cn('font-archia font-semibold', VALUE_SIZES[size])} style={{ color: colorClass }}>
         {prefix}
@@ -42,7 +44,7 @@ function NumberInfo({ title, value, size = 'sm', colorClass = '#D642DB', prefix 
 
 function MetricsPreview({ state }) {
   const t = useTranslations()
-  const { metricsShow } = state
+  const { metricsShow, metricsType } = state
   const { data: statsData } = useSWR('thena total stats', () => fetchStats())
   const prices = usePrices()
 
@@ -62,6 +64,8 @@ function MetricsPreview({ state }) {
         return 'sm'
     }
   }, [metricsShow])
+
+  const { epoch } = useEpochTimer()
 
   const renderMetrics = useCallback(
     (key, metric) => {
@@ -106,7 +110,8 @@ function MetricsPreview({ state }) {
               size={size}
               className='flex-1'
               key={key}
-              title='Last Epoch Revenue'
+              title='Epoch [number] Revenue'
+              keyTranslate={{ number: epoch - 1 }}
               value={statsData?.lastEpochRevenueUSD}
             />
           )
@@ -119,6 +124,7 @@ function MetricsPreview({ state }) {
       }
     },
     [
+      epoch,
       prices.THE,
       size,
       statsData?.feesUSD,
@@ -141,7 +147,7 @@ function MetricsPreview({ state }) {
   return (
     <div className={cn('flex w-full flex-col gap-[110px] px-10 py-9', metricsShow.length > 3 && 'gap-[88px]')}>
       <TextHeading className='font-archia mx-auto text-[64px] leading-[70px] font-semibold'>
-        {t('THENA in Numbers')}
+        {t(metricsType === METRICS_TYPE.KEY_METRICS ? 'THENA in Numbers' : 'THENA Recent Activity')}
       </TextHeading>
       <div className='flex w-full flex-wrap justify-center gap-x-px gap-y-[68px]'>
         <div className='flex w-full justify-center gap-x-px'>

@@ -33,7 +33,7 @@ export default function PairPickerField({ label, value, onChange, options = [] }
               <ThreeIconGroup
                 className='*:not-first:-ml-1'
                 classNames={{
-                  image: 'w-4 h-4 text-xl font-medium leading-5 text-[#1C2027]',
+                  image: 'w-4 h-4 text-xl font-medium leading-5 text-[#1C2027] z-0',
                 }}
                 logo1={value?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
                 logo2={value?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
@@ -43,7 +43,7 @@ export default function PairPickerField({ label, value, onChange, options = [] }
               <IconGroup
                 className='*:not-first:-ml-1'
                 classNames={{
-                  image: 'outline-2 w-4 h-4',
+                  image: 'outline-2 w-4 h-4 z-0',
                 }}
                 logo1={value?.token0?.logoURI ?? UNKNOWN_LOGO}
                 logo2={value?.token1?.logoURI ?? UNKNOWN_LOGO}

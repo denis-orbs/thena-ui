@@ -6,6 +6,11 @@ export const PATH_NAME = {
   METRICS: '/content-studio/metrics',
 }
 
+export const METRICS_TYPE = {
+  KEY_METRICS: 'Key Metrics',
+  RECENT_ACTIVITY: 'Recent Activity',
+}
+
 export const normalizeAssetUrl = url => {
   if (!url) return url
   try {

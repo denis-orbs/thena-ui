@@ -103,7 +103,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
 
   const getValue = f => {
     if (typeof f.__index === 'number' && f.__baseName) {
-      return (state?.[f.__baseName] ?? [])[f.__index]
+      return (state?.[f.__baseName] ?? [])[f.__index] ?? 0
     }
     return state?.[f.name]
   }
@@ -159,8 +159,8 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
   return (
     <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 p-6'>
       <div className='flex flex-col gap-1'>
-        <TextHeading className='font-archia text-2xl font-semibold text-white'>{t(title)}</TextHeading>
-        <Paragraph>{t(subTitle)}</Paragraph>
+        {title && <TextHeading className='font-archia text-2xl font-semibold text-white'>{t(title)}</TextHeading>}
+        {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
       </div>
       <div className={cn('max-h-[360px] space-y-6 overflow-y-auto', pathname === PATH_NAME.METRICS && 'space-y-3')}>
         {hydratedFields.map(f => {

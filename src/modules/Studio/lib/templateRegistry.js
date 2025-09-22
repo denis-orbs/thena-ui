@@ -1,3 +1,4 @@
+import { METRICS_TYPE } from './utils'
 import IncentivesPreview from '../Preview/previews/IncentivesPreview'
 import MetricsPreview from '../Preview/previews/MetricsPreview'
 import PoolsAprPreview from '../Preview/previews/PoolsAprPreview'
@@ -69,7 +70,12 @@ const TEMPLATES = {
     title: 'On-Chain Metrics',
     subTitle: 'on-chain metrics subtitle',
     fields: [
-      { type: 'segmented', name: 'metricsType', label: 'Metrics Type', options: ['Key Metrics', 'Recent Activity'] },
+      {
+        type: 'segmented',
+        name: 'metricsType',
+        label: 'Metrics Type',
+        options: [METRICS_TYPE.KEY_METRICS, METRICS_TYPE.RECENT_ACTIVITY],
+      },
       {
         type: 'checkboxList',
         name: 'metricsShow',

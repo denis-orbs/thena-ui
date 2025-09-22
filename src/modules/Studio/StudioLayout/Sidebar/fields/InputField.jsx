@@ -12,7 +12,7 @@ function InputField({ label, value, onChange, typeInput }) {
       <Input
         classNames={{ input: 'h-11 py-3 px-4' }}
         type={typeInput}
-        val={value}
+        val={value ?? ''}
         onChange={e => onChange(e.target.value)}
       />
     </div>

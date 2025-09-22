@@ -18,12 +18,15 @@ export default function DownloadButton({ fileName }) {
 
   const windowSize = useWindowSize()
 
-  const handleDownloadS3Image = useCallback(async imageUrl => {
-    const tempLink = document.createElement('a')
-    tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn-s3.thena.fi/')}`
-    tempLink.download = 'profile.png'
-    tempLink.click()
-  }, [])
+  const handleDownloadS3Image = useCallback(
+    async imageUrl => {
+      const tempLink = document.createElement('a')
+      tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn-s3.thena.fi/')}`
+      tempLink.download = `${fileName}.png`
+      tempLink.click()
+    },
+    [fileName],
+  )
 
   const uploadToS3AndDownload = useCallback(
     async blob => {

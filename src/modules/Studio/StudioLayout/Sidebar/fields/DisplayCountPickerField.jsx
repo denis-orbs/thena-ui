@@ -18,6 +18,7 @@ function DisplayCountPickerField({ label, value, onChange, options = [] }) {
         data={options}
         className='h-11 w-full'
         classNames={{ input: 'px-4' }}
+        isLocale={false}
       />
     </div>
   )
