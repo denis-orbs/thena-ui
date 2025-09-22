@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
  *
  * @description Must set width using `w-` className
  */
-export default function CircleImage({ src, alt, className, ...rest }) {
+export default function CircleImage({ src, alt, width = 100, height = 100, className, ...rest }) {
   const [status, setStatus] = useState('loading')
 
   return (
@@ -16,8 +16,8 @@ export default function CircleImage({ src, alt, className, ...rest }) {
       className={cn('rounded-full', status === 'loading' && 'animate-pulse bg-neutral-600', className)}
       src={src ?? UNKNOWN_LOGO}
       alt={alt}
-      width={100}
-      height={100}
+      width={width}
+      height={height}
       sizes='100vw'
       onLoad={() => setStatus('complete')}
       {...rest}

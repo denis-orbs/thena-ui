@@ -1,6 +1,6 @@
 'use client'
 
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas-pro'
 import { useTranslations } from 'next-intl'
 import { useCallback } from 'react'
 
@@ -71,7 +71,7 @@ export default function DownloadButton() {
   }
 
   return (
-    <PrimaryButton onClick={handleRender} className='mt-5 mb-3'>
+    <PrimaryButton onClick={handleRender} className='mt-5 mb-3 w-full'>
       <DownloadIcon className='mr-2 h-4 w-4' />
       {t('Download image')}
     </PrimaryButton>

@@ -124,6 +124,10 @@ const nextConfig = {
         source: '/element-market/:path*',
         destination: 'https://api.element.market/:path*',
       },
+      {
+        source: '/assets/:path*',
+        destination: 'https://cdn.thena.fi/assets/:path*',
+      },
     ]
   },
 }
