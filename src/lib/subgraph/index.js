@@ -241,6 +241,12 @@ export const fetchStats = async () => {
   return {
     tvl: Number(stats.tvlUSD),
     totalVolume: Number(stats.totalVolumeUSD),
+    marketCap: Number(stats.marketCap),
+    totalFeesUSD: Number(stats.totalFeesUSD),
+    lastEpochRevenueUSD: Number(stats.lastEpochRevenueUSD),
+    volumeUSD: Number(stats.tvlUSD), // 24h
+    feesUSD: Number(stats.feesUSD), // 24h
+
     // txCount:
     //   Number(fusionData.factories[0].txCount) +
     //   Number(v1Data.factories[0].txCount) +

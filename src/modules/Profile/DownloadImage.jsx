@@ -1,6 +1,6 @@
 'use client'
 
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas-pro'
 import { useTranslations } from 'next-intl'
 import { useCallback } from 'react'
 
@@ -11,19 +11,22 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { rewriteS3Host } from '@/lib/utils'
 import { DownloadIcon } from '@/svgs'
 
-export default function DownloadButton() {
+export default function DownloadButton({ fileName, scale = 1 }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
 
   const windowSize = useWindowSize()
 
-  const handleDownloadS3Image = useCallback(async imageUrl => {
-    const tempLink = document.createElement('a')
-    tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn-s3.thena.fi/')}`
-    tempLink.download = 'profile.png'
-    tempLink.click()
-  }, [])
+  const handleDownloadS3Image = useCallback(
+    async imageUrl => {
+      const tempLink = document.createElement('a')
+      tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn-s3.thena.fi/')}`
+      tempLink.download = `${fileName}.png`
+      tempLink.click()
+    },
+    [fileName],
+  )
 
   const uploadToS3AndDownload = useCallback(
     async blob => {
@@ -42,7 +45,7 @@ export default function DownloadButton() {
       const canvas = await html2canvas(originShare, {
         width: 1024,
         height: 576,
-        scale: 1,
+        scale,
         allowTaint: true,
         useCORS: true,
         removeContainer: true,
@@ -59,11 +62,11 @@ export default function DownloadButton() {
           // If PC: Direct download
           const tempLink = document.createElement('a')
           tempLink.href = URL.createObjectURL(blob)
-          tempLink.download = 'profile.png'
+          tempLink.download = `${fileName}.png`
           tempLink.target = '_blank'
           tempLink.click()
         } else {
-          const file = new File([blob], 'fileName.jpg', { type: 'image/jpeg' })
+          const file = new File([blob], `${fileName}.png`, { type: 'image/jpeg' })
           uploadToS3AndDownload(file)
         }
       })
@@ -71,7 +74,7 @@ export default function DownloadButton() {
   }
 
   return (
-    <PrimaryButton onClick={handleRender} className='mt-5 mb-3'>
+    <PrimaryButton onClick={handleRender} className='w-full'>
       <DownloadIcon className='mr-2 h-4 w-4' />
       {t('Download image')}
     </PrimaryButton>

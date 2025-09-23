@@ -648,6 +648,11 @@ function Header() {
         onClickHandler: () => push('/analytics'),
       },
       {
+        label: t('Content Studio'),
+        active: pathname.includes('/content-studio'),
+        onClickHandler: () => push('/content-studio'),
+      },
+      {
         label: t('More'),
         subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
@@ -966,7 +971,7 @@ function Header() {
   }, [router])
 
   return (
-    <div>
+    <div id='headerMaster'>
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
