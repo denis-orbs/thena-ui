@@ -1,26 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-import { NotShowBannerV3 } from '@/constant'
 import { cn } from '@/lib/utils'
 import StudioShell from '@/modules/Studio/StudioLayout/StudioShell'
 import Tabs from '@/modules/Studio/StudioLayout/Tabs'
+import { useMigratePositionWarning } from '@/state/positions/hooks'
 
 export default function ContentStudioLayout({ children }) {
-  const [showBannerMigrate, setShowBannerMigrate] = useState(false)
-
-  useEffect(() => {
-    const updateBanner = () => {
-      const shouldShow = !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22')
-      setShowBannerMigrate(shouldShow)
-    }
-
-    updateBanner()
-
-    window.addEventListener('local-storage-changed', updateBanner)
-    return () => window.removeEventListener('local-storage-changed', updateBanner)
-  }, [])
+  const { showBannerMigrate } = useMigratePositionWarning()
 
   return (
     <div>

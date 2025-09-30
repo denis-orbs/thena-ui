@@ -16,7 +16,7 @@ import { useConnect, useDisconnect } from 'wagmi'
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -28,6 +28,7 @@ import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
+import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import {
   ArrowRightIcon,
@@ -405,7 +406,7 @@ function V3Banner({ onClose }) {
         type='button'
         data-drawer-hide='v3-banner'
         aria-controls='v3-banner'
-        className='inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
+        className='inline-flex cursor-pointer items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
       >
         <svg
           aria-hidden='true'
@@ -449,9 +450,7 @@ function Header() {
   const { disconnect } = useDisconnect()
   const { spaceIdName } = useSpaceIdBNB(account)
 
-  const [showBannerMigrate, setShowBannerMigrate] = useState(
-    !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22'),
-  )
+  const { showBannerMigrate, onHideWarningBanner: handleCloseV3Banner } = useMigratePositionWarning()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -499,12 +498,6 @@ function Header() {
       behavior: 'smooth',
     })
   }
-  const handleCloseV3Banner = () => {
-    localStorage.setItem(NotShowBannerV3, 'true')
-    window.dispatchEvent(new Event('local-storage-changed'))
-    setShowBannerMigrate(false)
-  }
-
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
       connect({
