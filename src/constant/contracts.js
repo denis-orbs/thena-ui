@@ -61,6 +61,9 @@ const Contracts = {
   rewardsAPI: {
     [CHAIN_ID.BSC]: '0xDb65C1C922632B8B62134d49785316818ade413c',
   },
+  mfdFactoryAddress: {
+    [CHAIN_ID.BSC]: '0xe7cb9d7e77f973e5341de62255be4bc06e2e9e6d',
+  },
   staking: {
     [CHAIN_ID.BSC]: '0xe58E64fb76e3C3246C34Ee596fB8Da300b5Adfbb',
   },

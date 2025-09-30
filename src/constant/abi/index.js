@@ -9,13 +9,19 @@ import dibsLotteryAbi from './dibsLottery.json'
 import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
+import factoryAbi from './factory.json'
 import farmCenterAbi from './farmCenter.json'
 import algebraPoolV3Abi from './fusion/AlgebraPoolV3.json'
+import ichiVaultV3 from './fusion/ichiVaultV3.json'
 import gammaZapAbi from './gammaZap.json'
 import gaugeAbi from './gauge.json'
+import gaugeV3Abi from './gaugeV3.json'
 import globalFactoryAbi from './globalFactory.json'
+import hypervisorMFDAbi from './hypervisorMFD.json'
+import ichiMFDAbi from './ichiMFD.json'
 import incentiveMakerAbi from './incentiveMaker.json'
 import linkTokenAbi from './linkToken.json'
+import MFDFactoryAbi from './MFDFactory.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
 import emojiClubAbi from './mint/emojiClub.json'
@@ -69,13 +75,19 @@ export {
   emojiNumeralAbi,
   ERC20Abi,
   extraRewarderAbi,
+  factoryAbi,
   farmCenterAbi,
   gammaZapAbi,
   gaugeAbi,
+  gaugeV3Abi,
   globalFactoryAbi,
   hindiNumeralAbi,
+  hypervisorMFDAbi,
+  ichiMFDAbi,
+  ichiVaultV3,
   incentiveMakerAbi,
   linkTokenAbi,
+  MFDFactoryAbi,
   minterAbi,
   multiCallAbi,
   multiFeeDistributionAbi,
