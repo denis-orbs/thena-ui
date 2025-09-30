@@ -2,7 +2,7 @@
 
 import { groupBy } from 'lodash'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
@@ -13,7 +13,6 @@ import Highlight from '@/components/highlight'
 import { SearchInput2 } from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { NotShowBannerV3 } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useTokens } from '@/context/tokensContext'
 import { useAnalyticsChartData } from '@/hooks/useGraph'
@@ -22,6 +21,7 @@ import { fetchStats } from '@/lib/api'
 import { fetchStats as fetchStatsRevenue } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 import SummaryAnalyticsInfo from '@/modules/Analytics/SummaryAnalyticsInfo'
+import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
 
@@ -121,19 +121,8 @@ export default function AnalyticsPage() {
     })
   }, [pairs, searchTextPairs])
 
-  const [showBannerMigrate, setShowBannerMigrate] = useState(false)
+  const { showBannerMigrate } = useMigratePositionWarning()
 
-  useEffect(() => {
-    const updateBanner = () => {
-      const shouldShow = !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22')
-      setShowBannerMigrate(shouldShow)
-    }
-
-    updateBanner()
-
-    window.addEventListener('local-storage-changed', updateBanner)
-    return () => window.removeEventListener('local-storage-changed', updateBanner)
-  }, [])
   const chartItemConfig = {
     vaultSingleSideFeesUSD: {
       label: t('THE Single Sided Vaults'),
