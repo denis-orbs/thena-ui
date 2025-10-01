@@ -44,18 +44,16 @@ export default function PairDetailPage({ params }) {
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
   )
-
-  const pairAddress = useMemo(() => {
-    if (
-      pair &&
-      pair.type === PAIR_TYPES.LSD &&
-      pair.subpools.length === 1 &&
-      pair.subpools[0].title === MANUAL_TYPES[1]
-    ) {
-      return pair.subpools[0].address
+  const currentStrategy = useMemo(() => {
+    if (pair && pair.type === PAIR_TYPES.LSD) {
+      const strategyTitle = strategy ? strategy.title : MANUAL_TYPES[1]
+      return pair.subpools.find(item => item.title === strategyTitle)
     }
-    return pair?.address
-  }, [pair])
+    return undefined
+  }, [pair, strategy])
+
+  const pairFee = useMemo(() => currentStrategy?.fee ?? pair?.fee ?? 0, [currentStrategy, pair])
+  const pairAddress = useMemo(() => currentStrategy?.address ?? pair?.address, [currentStrategy, pair])
 
   const setStrategy = useCallback(
     strategyInfo => {
@@ -182,7 +180,7 @@ export default function PairDetailPage({ params }) {
                   />
                 </div>
                 <div className='hidden text-xs text-nowrap text-neutral-300 max-lg:block'>
-                  {`${t('Fee')}: ${pair.fee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                  {`${t('Fee')}: ${pairFee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
                 </div>
               </div>
             </div>
@@ -195,7 +193,7 @@ export default function PairDetailPage({ params }) {
                 )}
               >
                 <span className='hidden text-base leading-5 font-normal text-nowrap text-neutral-300 lg:block'>
-                  {`${t('Fee')}: ${pair.fee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                  {`${t('Fee')}: ${pairFee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
                 </span>
                 {pair.type === PAIR_TYPES.WEIGHTED && (
                   <EmphasisButton
