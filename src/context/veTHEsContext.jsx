@@ -28,7 +28,6 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
   const claimableCalls = []
   const votingAmountCalls = []
   const votedCalls = []
-  const lockedEndCalls = []
 
   vethes.forEach(ve => {
     tokenIdVotesCalls.push({
@@ -54,20 +53,13 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
       name: 'voted',
       params: [ve.tokenId],
     })
-
-    lockedEndCalls.push({
-      address: Contracts.veTHE[chainId],
-      name: 'locked__end',
-      params: [ve.tokenId],
-    })
   })
 
-  const [tokenIdVotesRes, rebaseAmountRes, votingAmountRes, votedRes, lockedEndRes] = await Promise.all([
+  const [tokenIdVotesRes, rebaseAmountRes, votingAmountRes, votedRes] = await Promise.all([
     createCallMulti(tokenIdVotesCalls, voterAbi),
     createCallMulti(claimableCalls, veDistAbi),
     createCallMulti(votingAmountCalls, veTHEAbi),
     createCallMulti(votedCalls, veTHEAbi),
-    createCallMulti(lockedEndCalls, veTHEAbi),
   ])
 
   const results = []
@@ -78,7 +70,6 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
     const rebaseAmount = rebaseAmountRes[i]
     const votingAmount = votingAmountRes[i]
     const voted = votedRes[i]
-    const lockedEnd = lockedEndRes[i]
 
     const poolVotes = tokenIdVotes.pools || []
     const poolWeights = tokenIdVotes.weights || []
@@ -105,7 +96,6 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
       rebaseAmount: fromWei(Number(rebaseAmount ?? 0)).toNumber(),
       votingAmount: fromWei(Number(votingAmount ?? 0)).toNumber(),
       voted,
-      lockedEnd: lockedEnd.toString(),
       votedCurrentEpoch: !!votes.length,
     })
   }
