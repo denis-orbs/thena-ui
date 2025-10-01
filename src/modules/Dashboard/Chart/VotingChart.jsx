@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
+import { useTranslations } from 'use-intl'
 
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { PAIR_TYPES } from '@/constant'
@@ -57,6 +58,7 @@ function getSecondsRelativeToThursdayUTC() {
 
 function VotingChart({ data = [], className }) {
   const { isMdDown } = useMediaQuery()
+  const t = useTranslations()
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const chartRef = useRef(null)
@@ -191,7 +193,7 @@ function VotingChart({ data = [], className }) {
             ? isHoveringValid
               ? `$${formatAmount(pool?.rewards, true)}`
               : `$${formatAmount(expectedRewards, true)}`
-            : 'NOT VOTED'}
+            : t('Not Voted')}
         </div>
 
         <div className='flex min-h-[40px] flex-col text-sm text-neutral-500'>

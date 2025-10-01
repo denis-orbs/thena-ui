@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -29,13 +29,11 @@ import {
   ZERO_VALUE,
 } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
-import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
-import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -46,8 +44,8 @@ function NotStakedItem({ position, isXlDown }) {
   const { push } = useRouter()
 
   const [popup, setPopup] = useState(false)
-  const [removePopup, setRemovePopup] = useState(false)
-  const [managePopup, setManagePopup] = useState(false)
+  // const [removePopup, setRemovePopup] = useState(false)
+  // const [managePopup, setManagePopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
   const { networkId } = useChainSettings()
@@ -214,8 +212,11 @@ function NotStakedItem({ position, isXlDown }) {
   const handleAdd = useCallback(() => {
     dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=2`)
-  }, [dispatch, position.basePool, position.title, push, strategy])
+    push(
+      // eslint-disable-next-line max-len
+      `/pools/add-liquidity?step=3&poolAddress=${position.basePool}&staked=false&title=${position.title}&back=2&version=${version}`,
+    )
+  }, [dispatch, position.basePool, position.title, push, strategy, version])
 
   const pairCell = useMemo(
     () => (
@@ -239,7 +240,7 @@ function NotStakedItem({ position, isXlDown }) {
             </Link>
           )}
           <Paragraph className='text-lg font-medium text-neutral-500 md:text-lg xl:text-xs xl:text-neutral-300'>
-            {getDisplayedStrategy(position.title, position.version)}
+            {getDisplayedStrategy(position.title, position.version, true)}
           </Paragraph>
         </div>
       </div>
@@ -251,7 +252,81 @@ function NotStakedItem({ position, isXlDown }) {
     () => (
       <div className='w-full text-center'>
         {position.type === PAIR_TYPES.LSD ? (
-          <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
+          isSingleSided ? (
+            <>
+              {position.staked ? (
+                <div className='flex h-15 w-full items-center'>
+                  <div
+                    className={cn(
+                      'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                      'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+                    )}
+                  >
+                    {t('$THE Single Sided Vault')}
+                  </div>
+                </div>
+              ) : (
+                <div className='flex h-12! w-full'>
+                  <div
+                    className={cn(
+                      'relative flex h-12 w-full items-center justify-between overflow-hidden',
+                      'bg-error-950 border-error-800 rounded-md border px-2 text-xs leading-4 text-neutral-500',
+                    )}
+                  >
+                    <div className='flex items-center gap-2 text-xs'>
+                      <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                      <span className='text-error-100'>{t('This is Idle')}</span>
+                    </div>
+                    <ErrorButton
+                      className={cn('h-8 w-[77px]! rounded-md text-xs leading-4 text-nowrap', {
+                        // hidden: hideButton.earn,
+                      })}
+                      onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
+                    >
+                      {t('Earn $THE')}
+                    </ErrorButton>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : position.title.includes('ICHI') || GAMMA_TYPES.includes(position.title) ? (
+            position.staked || (version === 2 && !isSingleSided) ? (
+              <div className='flex h-15 w-full items-center'>
+                <div
+                  className={cn(
+                    'relative flex h-5 w-full items-center justify-center overflow-hidden',
+                    'bg-full-range rounded-md border border-neutral-600 px-2 text-xs leading-4 text-neutral-500',
+                  )}
+                >
+                  {t('Automated')}
+                </div>
+              </div>
+            ) : (
+              <div className='flex h-12! w-full'>
+                <div
+                  className={cn(
+                    'relative flex h-12 w-full items-center justify-between overflow-hidden',
+                    'bg-error-950 border-error-800 rounded-md border px-2 text-xs leading-4 text-neutral-500',
+                  )}
+                >
+                  <div className='flex items-center gap-2 text-xs'>
+                    <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                    <span className='text-error-100'>{t('This is Idle')}</span>
+                  </div>
+                  <ErrorButton
+                    className={cn('h-8 w-[77px]! rounded-md text-xs leading-4 text-nowrap', {
+                      // hidden: hideButton.earn,
+                    })}
+                    onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
+                  >
+                    {t('Earn $THE')}
+                  </ErrorButton>
+                </div>
+              </div>
+            )
+          ) : (
+            <Range currentPrice={currentPrice} liquidity={1} maxPrice={priceUpper} minPrice={priceLower} />
+          )
         ) : (
           <div className='flex h-15 w-full items-center'>
             <div
@@ -266,7 +341,19 @@ function NotStakedItem({ position, isXlDown }) {
         )}
       </div>
     ),
-    [position.type, priceLower, priceUpper, currentPrice, t],
+    [
+      position.type,
+      position.staked,
+      position.title,
+      position?.account?.walletBalance,
+      isSingleSided,
+      t,
+      version,
+      currentPrice,
+      priceUpper,
+      priceLower,
+      handleStake,
+    ],
   )
 
   const aprCell = useMemo(
@@ -330,10 +417,10 @@ function NotStakedItem({ position, isXlDown }) {
   const actionCell = useMemo(
     () => (
       <div
-        className={cn('flex w-full justify-center gap-2', {
-          'grid grid-cols-2': !!migrationOptions && !isSingleSided,
-          'grid grid-cols-3': !migrationOptions && isSingleSided,
-        })}
+        className={cn(
+          'flex w-full grid-cols-2 justify-center gap-2',
+          !(version === 3 && isSingleSided) && 'grid-cols-1',
+        )}
       >
         {isV1Pool ? (
           <>
@@ -344,45 +431,48 @@ function NotStakedItem({ position, isXlDown }) {
             >
               {t('Claim')}
             </EmphasisButton>
-            <EmphasisButton
-              className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
-              onClick={() => setManagePopup(true)}
-            >
+            <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
               {t('Manage')}
             </EmphasisButton>
           </>
         ) : (
           <>
-            <EmphasisButton
+            {/* <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
               onClick={() => setRemovePopup(true)}
             >
               {t('Remove')}
-            </EmphasisButton>
+            </EmphasisButton> */}
 
             {version === 3 || isSingleSided ? (
-              <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
-                {t('Add')}
-              </EmphasisButton>
+              <>
+                <EmphasisButton
+                  className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
+                  onClick={() => onClaimFees(position)}
+                  disabled={feesInUsd.isZero() || feesPending}
+                >
+                  {t('Claim')}
+                </EmphasisButton>
+                <EmphasisButton className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')} onClick={handleAdd}>
+                  {t('Manage')}
+                </EmphasisButton>
+              </>
             ) : migrationOptions?.length > 0 ? (
-              <Link href={`/pools/migration?address=${position.address}`} className={cn('h-8 px-1 md:h-11')}>
+              <Link
+                href={`/pools/migration?address=${position.address}&staked=false`}
+                className={cn('h-8 w-full px-1 md:h-11')}
+              >
                 <PrimaryButton className='h-8 w-full text-xs md:h-11 md:text-base'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
               <PrimaryButton
-                className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
+                className={cn('h-8 w-full flex-1 px-1 text-xs md:h-11 md:text-base')}
                 onClick={() => setMigrateWarningPopup(true)}
               >
                 {t('Migrate')}
               </PrimaryButton>
             )}
           </>
-        )}
-
-        {(!migrationOptions || isSingleSided) && (
-          <PrimaryButton className='h-8 flex-1 px-1 text-xs md:h-11 md:text-base' onClick={() => setPopup(true)}>
-            {t('Stake')}
-          </PrimaryButton>
         )}
       </div>
     ),
@@ -433,8 +523,8 @@ function NotStakedItem({ position, isXlDown }) {
         onGaugeManage={handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} />
-      <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} />
+      {/* <RemovePositionModal isStaked={false} popup={removePopup} setPopup={setRemovePopup} strategy={position} /> */}
+      {/* <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={position} /> */}
     </>
   )
 }

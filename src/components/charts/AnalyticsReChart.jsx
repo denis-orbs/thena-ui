@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { sum } from 'lodash'
 import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
-import { Area, AreaChart, Bar, BarChart, ReferenceLine, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, Bar, BarChart, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatAmount } from '@/lib/utils'
@@ -30,9 +30,18 @@ function CustomPriceLabel({ viewBox, value }) {
 
 function CustomXAxisTick(props) {
   const { isLgDown } = useMediaQuery()
-  const { x, y, payload, index } = props
+  const { x, y, payload, index, typeChart } = props
   let displayValue = payload.value
-  const dx = index === 0 && displayValue instanceof Date ? (isLgDown ? 20 : 15) : 0
+  const dx =
+    index === 0 && displayValue instanceof Date
+      ? isLgDown
+        ? typeChart === 'barChart'
+          ? 12
+          : 25
+        : typeChart === 'barChart'
+          ? 7
+          : 20
+      : 0
   if (displayValue instanceof Date) {
     displayValue = dayjs(displayValue).format('MMM D')
   }
@@ -60,16 +69,42 @@ function CustomCursor({ ...rest }) {
   return <rect {...rest} fill='#422d4c' opacity={0.15} rx={4} ry={4} cursor='pointer' />
 }
 
-function generateRightAlignedTicks(data, desiredTicks, xAsisKey = 'date') {
+// function generateRightAlignedTicks(data, desiredTicks, xAsisKey = 'date') {
+//   if (!data?.length) return []
+
+//   const total = data.length
+//   const step = Math.ceil(total / desiredTicks)
+//   const ticks = []
+
+//   for (let i = total - 1; i >= 0; i -= step) {
+//     ticks.unshift(data[i][xAsisKey]) // insert at start
+//     if (ticks.length >= desiredTicks) break
+//   }
+
+//   return ticks
+// }
+
+function generateLeftAlignedTicks(data, desiredTicks, xAxisKey = 'date') {
   if (!data?.length) return []
+  if (data.length <= desiredTicks) {
+    return data.map(item => item[xAxisKey])
+  }
 
   const total = data.length
-  const step = Math.ceil(total / desiredTicks)
   const ticks = []
 
-  for (let i = total - 1; i >= 0; i -= step) {
-    ticks.unshift(data[i][xAsisKey]) // insert at start
-    if (ticks.length >= desiredTicks) break
+  ticks.push(data[0][xAxisKey])
+
+  if (desiredTicks === 1) return ticks
+  const interval = (total - 1) / (desiredTicks - 1)
+
+  for (let i = 1; i < desiredTicks - 1; i++) {
+    const index = Math.round(i * interval)
+    ticks.push(data[index][xAxisKey])
+  }
+
+  if (desiredTicks > 1) {
+    ticks.push(data[total - 1][xAxisKey])
   }
 
   return ticks
@@ -129,7 +164,7 @@ function AnalyticsReChart({
   }
 
   // const xInterval = data && data.length > desiredTicks ? Math.ceil(data.length / desiredTicks) - 1 : 0
-  const xTicks = generateRightAlignedTicks(data, desiredTicks, xAsisKey)
+  const xTicks = generateLeftAlignedTicks(data, desiredTicks, xAsisKey)
 
   if (chartType === 'area') {
     return (
@@ -153,12 +188,14 @@ function AnalyticsReChart({
           <XAxis
             dataKey={xAsisKey}
             tickLine={false}
-            tickMargin={8}
+            tickMargin={0}
             axisLine={xAxisLine ? { stroke: '#F299EE', strokeWidth: 2 } : false}
             tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
-            // interval={xInterval}
+            interval={0}
             ticks={xTicks}
-            tick={<CustomXAxisTick />}
+            tick={<CustomXAxisTick typeChart='area' />}
+            domain={['dataMin', 'dataMax']}
+            type='category'
           />
           <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
           <defs>
@@ -215,12 +252,15 @@ function AnalyticsReChart({
         <XAxis
           dataKey={xAsisKey}
           tickLine={false}
-          tickMargin={8}
+          tickMargin={0}
           axisLine={xAxisLine ? { stroke: '#35243D', strokeWidth: 1 } : false}
           tickFormatter={value => (useEpoch ? value : dayjs(value).format('MMM D'))}
           // interval={xInterval}
-          tick={<CustomXAxisTick />}
+          tick={<CustomXAxisTick typeChart='barChart' />}
           ticks={xTicks}
+          domain={['dataMin', 'dataMax']}
+          type='category'
+          interval={0}
         />
         <YAxis orientation='right' axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
         <defs>
@@ -242,7 +282,7 @@ function AnalyticsReChart({
             cursor='pointer'
           />
         ))}
-        {showTooltip && (
+        {showTooltip ? (
           <ChartTooltip
             className='border-neutral-600 bg-neutral-900'
             content={<ChartTooltipContent />}
@@ -250,6 +290,9 @@ function AnalyticsReChart({
             formatter={chartTooltipFormatter}
             labelFormatter={customLabelFormatter}
           />
+        ) : (
+          // just show the cursor without tooltip
+          <Tooltip cursor={<CustomCursor />} content={null} wrapperStyle={{ display: 'none' }} />
         )}
         {showCurrentPrice && (
           <ReferenceLine

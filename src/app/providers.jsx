@@ -25,6 +25,7 @@ import enMessage from '@/lang/en.json'
 import esMessage from '@/lang/es.json'
 import jaMessage from '@/lang/ja.json'
 import koMessage from '@/lang/ko.json'
+import ptMessage from '@/lang/pt.json' // Portuguese
 import thMessage from '@/lang/th.json'
 import viMessage from '@/lang/vi.json'
 // import zhMessage from '@/lang/zh.json'
@@ -76,6 +77,8 @@ function IntlProvider({ children }) {
         return zhTWMessage
       case LOCALES.vi:
         return viMessage
+      case LOCALES.pt:
+        return ptMessage
       case LOCALES.th:
         return thMessage
       case LOCALES.ja:

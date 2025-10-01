@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewParagraph, NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ICHI_SINGLE_SIDED, PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
+import { useSimulateFarmReward } from '@/hooks/fusion/useAlgebra'
+import usePrices from '@/hooks/usePrices'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
@@ -26,10 +28,14 @@ function AssetsOverview({
   const { addReward, addFees } = useFarmRewards()
   const { onClaimAllRewardPosition } = useRewardPosition()
 
+  const prices = usePrices()
+
   const filteredPositions = useMemo(
     () => positions.filter(pos => pos.version !== 2 || (pos.version === 2 && pos?.title === ICHI_SINGLE_SIDED)),
     [positions],
   )
+
+  const manualFarmRewardAmount = useSimulateFarmReward(filteredPositions)
 
   const [v1FeesPositions, migratePositions] = useMemo(() => {
     const v1FeesPos = []
@@ -52,13 +58,18 @@ function AssetsOverview({
 
   const [totalProvided, totalRewards, totalPools] = useMemo(() => {
     const providedValue = filteredPositions.reduce((sum, item) => sum + Number(item.fiatValueOfLiquidity), 0)
-    const rewardUsd = [...filteredPositions, ...removedClaimablePositions].reduce(
+
+    // Reward from manualFarming has calculated from manualFarmRewardAmount
+    const posWithoutManualFarming = filteredPositions.filter(pos => !(pos.type === 'Manual' && pos.isFarming === true))
+    const rewardUsd = [...posWithoutManualFarming, ...removedClaimablePositions].reduce(
       (sum, item) => sum + item.rewardUsd,
       0,
     )
+
+    const manualFarmingUsd = Number(manualFarmRewardAmount.times(prices.THE))
     const v1FeesUsd = v1FeesPositions.reduce((sum, item) => sum + Number(item.rewardUsd), 0)
-    return [providedValue, rewardUsd + v1FeesUsd, filteredPositions.length]
-  }, [filteredPositions, v1FeesPositions, removedClaimablePositions])
+    return [providedValue, rewardUsd + v1FeesUsd + manualFarmingUsd, filteredPositions.length]
+  }, [filteredPositions, removedClaimablePositions, manualFarmRewardAmount, prices.THE, v1FeesPositions])
 
   const processManualPosition = useCallback(
     pos => {

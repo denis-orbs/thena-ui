@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
+import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
@@ -340,7 +341,7 @@ export const useEstimateAPR = ({
 
   return presetPositions.reduce((acc, { title, position: p }) => {
     const hasEmission = Number(rewardReserve?.[0]) > 0 || Number(rewardReserve?.[1]) > 0n
-    if (!p || !hasEmission) {
+    if (!p || (!hasEmission && isFarming)) {
       acc[title] = BigNumber(0)
     } else {
       const positionTvl = BigNumber((isRevert ? p.amount0 : p.amount1)?.toExact() ?? 0)
@@ -405,7 +406,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
   const totalLiquidityInFarm = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
   const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
-  if (!tickLower || !tickUpper || !position) return BigNumber(0)
+  if (isNil(tickLower) || isNil(tickUpper) || !position) return BigNumber(0)
 
   const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
   const farmApr =
@@ -425,7 +426,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
 export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl, chainId, getAsset = () => {} }) => {
   const { liquidity, tickLower, tickUpper } = position || {}
 
-  if (!tickLower || !tickUpper || !position) return BigNumber(0)
+  if (isNil(tickLower) || isNil(tickUpper) || !position) return BigNumber(0)
 
   let annualPoolFees
   if (poolAddress) {

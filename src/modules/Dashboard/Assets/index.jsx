@@ -2,11 +2,11 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { usePositions } from '@/hooks/usePositions'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
@@ -14,10 +14,16 @@ import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
 import SectionDivider from '../SectionDivider'
 
+const richRenderers = {
+  line1: chunks => <NewTextHeading>{chunks}</NewTextHeading>,
+  line2: chunks => <NewTextHeading>{chunks}</NewTextHeading>,
+  amount: chunks => <span className='text-primary-600'>{chunks}</span>,
+}
+
 function UserAssets({ setPositionRewards }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const { positions, removedClaimablePositions } = usePositions()
+  const { positions, removedClaimablePositions } = useSelector(state => state.positions)
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)
@@ -91,14 +97,14 @@ function UserAssets({ setPositionRewards }) {
             </div>
           ) : (
             <div className='flex h-[278px] flex-col justify-between gap-0 p-8 md:justify-end md:gap-[42px]'>
-              <div className='flex flex-col'>
-                <NewTextHeading>
-                  YOU HAVE <span className='text-primary-600'>${formatAmount(idleAssets)}</span> IN IDLE ASSETS.
-                </NewTextHeading>
-                <NewTextHeading>PUT THEM TO WORK NOW!</NewTextHeading>
+              <div className='flex flex-col uppercase'>
+                {t.rich('idleAssets', {
+                  ...richRenderers,
+                  value: formatAmount(idleAssets),
+                })}
               </div>
               <PrimaryButton className='w-fit' onClick={() => push('/pools/add-liquidity')}>
-                Provide Liquidity
+                {t('Provide Liquidity')}
               </PrimaryButton>
             </div>
           )}

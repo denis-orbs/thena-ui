@@ -19,7 +19,7 @@ import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePos
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
-import { collectAndClaimRewards } from './fusion/useAlgebra'
+import { collectAndClaimRewards, useSimulateFarmReward } from './fusion/useAlgebra'
 import useWallet from './useWallet'
 
 export const useRewardPosition = () => {
@@ -29,6 +29,7 @@ export const useRewardPosition = () => {
   const { chainId, account: userAddress } = useWallet()
   const { rewards, fees } = useFarmRewards()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const manualFarmRewardAmount = useSimulateFarmReward()
 
   const onClaimAllRewardPosition = useCallback(async () => {
     const key = uuidv4()
@@ -49,7 +50,7 @@ export const useRewardPosition = () => {
       }
     }
 
-    if (manual.size > 0) {
+    if (manualFarmRewardAmount.gt(0) || manual.size > 0) {
       transactions[claimFarmId] = {
         desc: `${t('Harvest Rewards')} Manual Pools`,
         status: TXN_STATUS.START,
@@ -139,7 +140,7 @@ export const useRewardPosition = () => {
     }
 
     // manual = Map<[key, {amount: number, args: [account, poolKey, tokenId]}]>
-    if (manual.size > 0) {
+    if (manualFarmRewardAmount.gt(0) || manual.size > 0) {
       const farmingCenter = getFarmingCenterContract(chainId)
       const calldata = collectAndClaimRewards({
         positions: Array.from(manual).map(pair => ({
@@ -316,7 +317,7 @@ export const useRewardPosition = () => {
 
     endTxn({ key, final: 'Claim Successful' })
     setPending(false)
-  }, [rewards, fees, startTxn, endTxn, t, chainId, writeTxn, userAddress, sendTxn])
+  }, [rewards, fees, manualFarmRewardAmount, startTxn, endTxn, t, chainId, writeTxn, userAddress, sendTxn])
 
   return { onClaimAllRewardPosition, pending }
 }

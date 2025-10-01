@@ -1,47 +1,170 @@
-import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { WBNB } from 'thena-sdk-core'
 
-import Box from '@/components/box'
-import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
-import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
-import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, STABLE_PAIRS, UNKNOWN_LOGO } from '@/constant'
-import { useCurrency, useGetAsset, useStableTokens } from '@/hooks/fusion/Tokens'
+import DepositCLPanel from '@/components/common/AddLiquidity/DepositCLPanel'
+import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
+import AutomaticStrategy from '@/components/common/AddLiquidity/FusionAdd/AutomaticStrategy'
+import HeaderCLSection from '@/components/common/AddLiquidity/HeaderCLSection'
+import { RangeAndPricePanel } from '@/components/common/AddLiquidity/RangeAndPricePanel'
+import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
+import Skeleton from '@/components/skeleton'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { useVaults } from '@/context/vaultsContext'
+import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
+import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
-import { cn, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
-import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
-import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
-import { Bound } from '@/state/fusion/actions'
+import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { usePairInfo } from '@/state/pools/hooks'
+import { usePairInfo, usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
 
-import AddLiquidityCLPane from './AddLiquidityCLPane'
+function DepositIcon({ sub, title }) {
+  if (ICHI_TYPES.includes(title)) {
+    return (
+      <div className='flex flex-col items-center gap-1.5'>
+        <CircleImage alt={title} className='size-4' src={sub.allowed.logoURI} />
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
+      </div>
+    )
+  }
+
+  if (GAMMA_TYPES.includes(title)) {
+    return (
+      <div className='flex flex-col items-center gap-1'>
+        <IconGroup
+          className='*:not-first:-ml-2'
+          classNames={{ image: 'outline-2 size-4' }}
+          logo1={sub.token0.logoURI}
+          logo2={sub.token1.logoURI}
+        />
+        <Paragraph className='text-xs text-neutral-400 xl:text-xs'>Deposit</Paragraph>
+      </div>
+    )
+  }
+
+  return null
+}
+
+const transformStrategy = sub => ({
+  title: sub.title,
+  tvl: sub.tvl?.toNumber() ?? sub.gauge?.tvl?.toNumber() ?? 0,
+  apr: sub.gauge?.apr?.toNumber() ?? 0,
+  account: {
+    totalLp: sub.account?.totalLp?.toNumber(),
+    gaugeBalance: sub.account?.gaugeBalance?.toNumber(),
+  },
+  allowed: { ...sub.allowed, balance: sub.allowed?.balance?.toNumber() },
+  token0: {
+    ...sub.token0,
+    reserve: sub.token0?.reserve?.toNumber(),
+    balance: sub.token0?.balance?.toNumber(),
+    totalValue: sub.token0?.totalValue,
+  },
+  token1: {
+    ...sub.token1,
+    reserve: sub.token1?.reserve?.toNumber(),
+    balance: sub.token1?.balance?.toNumber(),
+    totalValue: sub.token1?.totalValue,
+  },
+  address: sub.address,
+  isFarming: sub.title.includes('Farming'),
+  isAutomatic: !MANUAL_TYPES.includes(sub.title),
+  isDefault: sub.isDefault ?? true,
+  fee: sub.fee,
+  version: sub.version,
+  gauge: {
+    ...sub.gauge,
+    apr: sub.gauge?.apr?.toNumber(),
+    bribeUsd: sub.gauge?.bribeUsd?.toNumber(),
+    pooled0: sub.gauge?.pooled0?.toNumber(),
+    pooled1: sub.gauge?.pooled1?.toNumber(),
+    projectedApr: sub.gauge?.projectedApr?.toNumber(),
+    voteApr: sub.gauge?.voteApr?.toNumber(),
+    tvl: sub.gauge?.tvl?.toNumber(),
+    weight: sub.gauge?.weight?.toNumber(),
+    weightPercent: sub.gauge?.weightPercent?.toNumber(),
+    apr_list: undefined,
+  },
+})
+
+function StrategyItem({ sub, t }) {
+  return (
+    <div className='flex flex-1 items-center justify-between'>
+      <div>
+        <TextHeading className='text-sm text-[10px]! leading-4! font-medium'>
+          {getDisplayedStrategy(sub.title, sub.version)}
+        </TextHeading>
+        <div className='mt-0.5 flex flex-wrap gap-2'>
+          <div className='flex items-center gap-1'>
+            <TextHeading className='text-[10px]! leading-4! text-neutral-400'>{t('TVL')}:</TextHeading>
+            <Paragraph className='text-xs text-[10px]! leading-4! font-medium text-neutral-300 xl:text-xs'>
+              ${formatAmount(sub.tvl ?? sub.gauge.tvl)}
+            </Paragraph>
+          </div>
+        </div>
+      </div>
+
+      <TextHeading className='text-primary-600 text-sm! leading-5! font-semibold'>
+        {formatAmount(sub.gauge.apr, true)}%
+      </TextHeading>
+
+      <div className='flex flex-wrap justify-end gap-2'>
+        <DepositIcon sub={sub} title={sub.title} />
+      </div>
+    </div>
+  )
+}
 
 function AddLiquidityClPool({ pool, handleBack }) {
-  const t = useTranslations()
-  const { isMdDown, isXlDown, is2XlDown } = useMediaQuery()
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
-  const { strategy, startPriceTypedValue } = useV3MintState()
-  const stableAssets = useStableTokens()
+  const { strategy } = useV3MintState()
+  const prevStrategyRef = useRef()
+  const dispatch = useDispatch()
+  const t = useTranslations()
+  const { isXlDown } = useMediaQuery()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
+
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
   const pid = searchParams.get('pid')
 
-  const position = usePositionInfo({ tokenId: pid, poolAddress, type })
+  // Logic for automated pool ex: ichi, gama
+  const title = searchParams.get('title')
+  const staked = searchParams.get('staked')
+  const isStaked = useMemo(() => staked === 'true', [staked])
+
+  const pools = usePools()
+  const vaults = useVaults()
+  const userPool = useMemo(
+    () =>
+      [...pools, ...vaults].find(
+        item =>
+          item.account.totalLp.gt(0) &&
+          item?.basePool?.toLowerCase() === poolAddress?.toLowerCase() &&
+          item.title === title,
+      ),
+    [poolAddress, pools, title, vaults],
+  )
+
+  const positionStaked = useStakedPosition(isStaked && userPool ? [userPool] : [])
+  const positionNotStaked = useNotStakedPositions(!isStaked && userPool ? [userPool] : [])
+
+  const manualPosition = usePositionInfo({ tokenId: pid, poolAddress, type })
+
+  const position = title ? (isStaked ? positionStaked[0] : positionNotStaked[0]) : manualPosition
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 
@@ -60,8 +183,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
-  const [isAutomatic, setIsAutomatic] = useState(false)
-  const [show, setShow] = useState(false)
+  const [isAutomatic, setIsAutomatic] = useState(!!(strategy?.isAutomatic ?? title))
   const [lastPrice, setLastPrice] = useState(null)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -88,15 +210,26 @@ function AddLiquidityClPool({ pool, handleBack }) {
     poolAddress,
   })
 
-  const isStablecoinPair = useMemo(() => {
-    if (STABLE_PAIRS.includes(poolAddress?.toLowerCase())) return true
-    const stableCoins = stableAssets.map(token => token.address)
-    return stableCoins.includes(baseCurrency?.wrapped?.address) && stableCoins.includes(quoteCurrency?.wrapped?.address)
-  }, [baseCurrency, poolAddress, quoteCurrency, stableAssets])
+  const existingPosition = useMemo(() => {
+    if (position && position?._position) {
+      return position?._position
+    }
+    return undefined
+  }, [position])
 
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, existingPosition)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
-  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } = useV3MintActionHandlers(
+    mintInfo.noLiquidity,
+  )
+
+  useEffect(() => {
+    onLeftRangeInput('')
+    onRightRangeInput('')
+    dispatch(updateSelectedPreset({ preset: null }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
       setBaseCurrency(firstCurrency)
@@ -116,195 +249,192 @@ function AddLiquidityClPool({ pool, handleBack }) {
     if (price) return parseFloat(price)
   }, [baseCurrency, mintInfo.invertPrice, mintInfo.price, position, quoteCurrency])
 
-  const [chartWidth, chartHeight] = useMemo(() => {
-    if (isMdDown) return [343, 168]
-    if (isXlDown) return [576, 221]
-    if (is2XlDown) return [640, 221]
-    return [704, 221]
-  }, [isMdDown, isXlDown, is2XlDown])
+  const setStrategy = useCallback(
+    strategyInfo => {
+      // Prevent unnecessary updates
+      if (prevStrategyRef.current?.address === strategyInfo?.address) return
+
+      onLeftRangeInput('')
+      onRightRangeInput('')
+      dispatch(updateStrategy({ strategy: strategyInfo }))
+      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
+
+      prevStrategyRef.current = strategyInfo
+    },
+    [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
+  )
 
   useEffect(() => {
     setIsAutomatic(strategy?.isAutomatic ?? false)
-  }, [strategy?.isAutomatic])
+  }, [strategy])
 
-  useEffect(() => {
-    if (!pair) setShow(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(pair)])
-
-  useEffect(() => {
-    if (!startPriceTypedValue && lastPrice) {
-      onStartPriceInput(`${lastPrice}`)
+  const sortedSubPools = useMemo(() => {
+    const priority = {
+      CL_Farming: 1,
+      CL_SwapFee: 2,
+      ICHI_Farming: 3,
+      Narrow_Farming: 4,
+      Wide_Farming: 5,
     }
-  }, [lastPrice, onStartPriceInput, startPriceTypedValue])
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+  }, [pair?.subpools])
+
+  // Stable callback for choosing strategy
+  const handleChooseStrategy = useCallback(
+    sub => {
+      if (!sub) return setStrategy(null)
+
+      const transformedStrategy = transformStrategy(sub)
+      const _isAutomatic = transformedStrategy.isAutomatic
+
+      setIsAutomatic(_isAutomatic)
+      setStrategy(transformedStrategy)
+    },
+    [setIsAutomatic, setStrategy],
+  )
+
+  const strategyAutoData = useMemo(
+    () =>
+      sortedSubPools
+        .filter(item => !MANUAL_TYPES.includes(item.title))
+        .map(sub => ({
+          content: <StrategyItem sub={sub} t={t} />,
+          active: strategy?.address === sub.address,
+          onClickHandler: () => strategy?.address !== sub.address && handleChooseStrategy(sub),
+        })),
+    [sortedSubPools, strategy?.address, handleChooseStrategy, t],
+  )
+
+  const isLoading = useMemo(() => {
+    if (pair && mintInfo.noLiquidity && (type === 'CL_Farming' || type === 'CL_SwapFee' || !isAutomatic)) {
+      return true
+    }
+    return false
+  }, [isAutomatic, mintInfo.noLiquidity, pair, type])
+
+  useEffect(() => {
+    if (position && (!strategy || strategy?.title !== position.title)) {
+      setStrategy({
+        title: position?.title,
+        tvl: position?.tvl?.toNumber() ?? 0,
+        apr: position?.gauge?.apr?.toNumber() ?? 0,
+        account: {
+          totalLp: position?.account?.totalLp?.toNumber(),
+          gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+        },
+        allowed: position?.allowed,
+        token0: {
+          ...position?.token0,
+          reserve: position?.token0?.reserve?.toNumber(),
+          balance: position?.token0?.balance?.toNumber(),
+          totalValue: position?.token0?.totalValue,
+        },
+        token1: {
+          ...position?.token1,
+          reserve: position?.token1?.reserve?.toNumber(),
+          balance: position?.token1?.balance?.toNumber(),
+          totalValue: position?.token1?.totalValue,
+        },
+        address: position?.address,
+        isFarming: position?.title?.includes('Farming'),
+        isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+        isDefault: true,
+        version: position.version,
+        fee: position?.fee,
+      })
+    }
+  }, [strategy, position, setStrategy])
 
   return (
     <>
-      <div className='flex flex-col'>
-        <div className='flex flex-row items-center gap-4 md:gap-8'>
-          <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
-          <NewTextHeading className='md:text-[36px] md:leading-[40px]'> {t('Add Liquidity')}</NewTextHeading>
-        </div>
-      </div>
-      <section className='grid w-full grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-8'>
-        <div id='LEFT-BLOCK' className='col-span-1 w-full'>
-          <div className='flex h-11 items-end max-xl:hidden xl:mb-4'>
-            <NewTextSubHeading className='block text-2xl'>
-              {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
-            </NewTextSubHeading>
-          </div>
-
-          <ChooseStrategy
-            firstAsset={currencyA}
-            secondAsset={currencyB}
-            mintInfo={mintInfo}
-            pair={pair}
-            position={position}
-            isAutomatic={isAutomatic}
-            setIsAutomatic={setIsAutomatic}
-            setFullRangeWarningShown={setFullRangeWarningShown}
-            fullRangeWarningShown={fullRangeWarningShown}
-            setLastPrice={setLastPrice}
-          />
-
-          {strategy?.isAutomatic && isXlDown && (
-            <div className='mt-4'>
-              <AutomaticLiquidityChart
-                label='Liquidity Range'
-                currencyA={currencyA ?? undefined}
-                currencyB={currencyB ?? undefined}
+      <div className='flex flex-col gap-4'>
+        <HeaderCLSection
+          firstAsset={currencyA}
+          secondAsset={currencyB}
+          mintInfo={mintInfo}
+          pair={pair}
+          position={position}
+          isAutomatic={isAutomatic}
+          setIsAutomatic={setIsAutomatic}
+          setFullRangeWarningShown={setFullRangeWarningShown}
+          fullRangeWarningShown={fullRangeWarningShown}
+          lastPrice={lastPrice}
+          type={type}
+          isLoading={isLoading}
+        />
+        {isLoading ? (
+          <Skeleton className='h-[400px]' />
+        ) : (
+          <>
+            {!strategy?.isAutomatic ? (
+              <RangeAndPricePanel
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
+                position={position}
+                priceLower={priceLower}
+                priceUpper={priceUpper}
                 onLeftRangeInput={onLeftRangeInput}
                 onRightRangeInput={onRightRangeInput}
-                strategy={strategy}
-                position={position}
-                pair={pair}
-                handleShow={!!strategy}
+                setLastPrice={setLastPrice}
+                viewMode={Boolean(position)}
               />
-            </div>
-          )}
-
-          <AddLiquidityCLPane
-            pool={pair}
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
-            setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
-            mintInfo={mintInfo}
-            currentPrice={currentPrice}
-            position={position}
-            handleBack={handleBack}
-          />
-        </div>
-
-        <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block h-full')}>
-          <div className='mt-0 mb-4 flex w-full flex-col items-end max-xl:hidden'>
-            <div className='flex w-fit items-center gap-2'>
-              <Box className={cn('flex rounded-lg bg-neutral-900 py-1.5! pl-4!')}>
-                <TextHeading className='text-xl! font-medium! xl:text-neutral-500'>{t('Pool Attributes')}</TextHeading>
-              </Box>
-
-              <div className='flex items-center'>
-                <i
-                  onClick={() => setShow(!show)}
-                  className={cn(
-                    'flex cursor-pointer items-center justify-center rounded-lg',
-                    'size-8 min-w-8 md:size-11 md:min-w-11',
-                    show ? 'bg-neutral-600' : 'bg-neutral-900',
-                  )}
-                >
-                  <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
-                </i>
-              </div>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, y: 0, height: 0 }}
-              animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className='w-full overflow-hidden'
-            >
-              <div className='mt-2 w-full xl:mt-4'>
-                {pair ? (
-                  <>
-                    {pair?.type === PAIR_TYPES.LSD ? (
-                      <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-                    ) : (
-                      <>{pair && <NormalPoolAttributes pool={pair} />}</>
-                    )}
-                  </>
-                ) : (
-                  <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
-                    <NewTextHeading className='text-xl!'>{t('New Deposit')}</NewTextHeading>
-                    <Paragraph className='leading-5 font-medium'>{t('New Deposit CL description')}</Paragraph>
+            ) : (
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-8 rounded-xl bg-neutral-900 p-4 outline-1 outline-neutral-600 xl:grid-cols-[1fr_368px]',
+                  !position && 'pb-2.5',
+                )}
+              >
+                <AutomaticLiquidityChart
+                  label='Liquidity Range'
+                  currencyA={currencyA ?? undefined}
+                  currencyB={currencyB ?? undefined}
+                  strategy={strategy}
+                  position={null}
+                  pair={pair}
+                  handleShow={!!strategy}
+                />
+                {strategyAutoData.length > 0 && !position && (
+                  <AutomaticStrategy
+                    classNames={{ item: 'bg-neutral-950 max-h-[73px]' }}
+                    strategyAutoData={strategyAutoData}
+                    isGrid={false}
+                  />
+                )}
+                {position && (
+                  <div className='flex flex-col justify-end gap-4'>
+                    <FusionAdd
+                      label={`${getDisplayedStrategy(position.title)} Strategy`}
+                      strategy={strategy}
+                      onShowModalSuccess={() => {}}
+                      handleBack={handleBack}
+                      isSmall={!isXlDown}
+                      classNames={{ wrapperInput: 'grid grid-cols-1! xl:grid-cols-1 gap-2', input: 'bg-neutral-950' }}
+                    />
                   </div>
                 )}
               </div>
-            </motion.div>
-          </div>
-
-          <div className='hidden flex-4 flex-col gap-2 md:gap-4 xl:flex'>
-            {/* <PoolDescriptionSection pairType={strategy?.title} /> */}
-            {!isAutomatic && (
-              <ChartPriceRangeInput
-                maskColor='#0D090F'
-                currencyA={baseCurrency ?? undefined}
-                currencyB={quoteCurrency ?? undefined}
-                feeAmount={mintInfo.dynamicFee}
-                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={currentPrice ? parseFloat(currentPrice) : undefined}
-                priceLower={position?.priceLower ?? priceLower}
-                priceUpper={position?.priceUpper ?? priceUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                interactive={!position}
-                showPeriod
-                handleShow
-                outOfRange={mintInfo.outOfRange}
-                invalidRange={mintInfo.invalidRange}
-                fullRangeWarningShown={fullRangeWarningShown}
-                isCreate={mintInfo.noLiquidity}
-                setLastPrice={setLastPrice}
-                height={203}
-                label='Your Range against the Price'
-                classNames={{ title: 'xl:text-5 xl:leading-6' }}
-              />
             )}
-
-            {strategy?.isAutomatic && (
-              <AutomaticLiquidityChart
-                label='Liquidity Range'
-                currencyA={currencyA ?? undefined}
-                currencyB={currencyB ?? undefined}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
+            {!position && (
+              <DepositCLPanel
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
+                setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
                 strategy={strategy}
+                // onShowModalSuccess={onShowModalSuccess}
                 position={position}
+                handleBack={handleBack}
                 pair={pair}
-                handleShow={!!strategy}
               />
             )}
-
-            {!strategy?.isAutomatic && (
-              <LiquidityChartRangeInput
-                label='Liquidity Distribution'
-                currencyA={baseCurrency ?? undefined}
-                currencyB={quoteCurrency ?? undefined}
-                feeAmount={mintInfo.dynamicFee}
-                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={currentPrice ? parseFloat(currentPrice) : undefined}
-                priceLower={position?.priceLower ?? priceLower}
-                priceUpper={position?.priceUpper ?? priceUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                interactive={false}
-                width={chartWidth}
-                height={chartHeight}
-                isFixed={!!position}
-                isStablecoinPair={isStablecoinPair}
-              />
-            )}
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+      </div>
     </>
   )
 }

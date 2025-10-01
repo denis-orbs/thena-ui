@@ -3,9 +3,11 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading } from '@/components/typography'
 import { Bound } from '@/state/fusion/actions'
 import { Presets } from '@/state/fusion/reducer'
+import { ResetIcon } from '@/svgs'
 
 import { Area } from './Area'
 import { AxisBottom } from './AxisBottom'
@@ -34,6 +36,8 @@ export function Chart({
   isFixed = false,
   chartHeight = 221,
   isStablecoinPair = false,
+  priceLower,
+  priceUpper,
 }) {
   const t = useTranslations()
   const zoomRef = useRef(null)
@@ -57,7 +61,9 @@ export function Chart({
   )
 
   const [leftDomain, rightDomain] = useMemo(() => {
-    if (isFixed) return [brushDomain[0], brushDomain[1]]
+    if (isFixed && priceLower && priceUpper) {
+      return [priceLower.toSignificant() * 0.5, priceUpper.toSignificant() * 1.5]
+    }
 
     let midPrice = current
     const filteredSeries = series.filter(item => item.price0 < 1e10).sort((a, b) => a.price0 - b.price0)
@@ -76,7 +82,7 @@ export function Chart({
 
     return [midPrice * initZoomLevels.min, midPrice * initZoomLevels.max]
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, JSON.stringify(series), initZoomLevels.min, initZoomLevels.max])
+  }, [current, JSON.stringify(series), initZoomLevels.min, initZoomLevels.max, priceLower, priceUpper])
 
   const { xScale, yScale } = useMemo(() => {
     const scales = {
@@ -119,30 +125,41 @@ export function Chart({
   }, [brushDomain, brushXScale, onBrushDomainChange, xScale])
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex h-full flex-col gap-4'>
       <div className='flex items-center justify-between gap-4 md:gap-8'>
-        {label && <NewTextHeading className='text-base md:text-xl'>{t(label)}</NewTextHeading>}
+        {label && <NewTextHeading className='text-xl!'>{t(label)}</NewTextHeading>}
 
-        {showZoom && (
-          <Zoom
-            svg={zoomRef.current}
-            xScale={xScale}
-            setZoom={setZoom}
-            width={innerWidth}
-            height={
-              // allow zooming inside the x-axis
-              height
-            }
-            resetBrush={() => {
-              onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+        <div className='flex gap-4'>
+          {showZoom && (
+            <Zoom
+              svg={zoomRef.current}
+              xScale={xScale}
+              setZoom={setZoom}
+              width={innerWidth}
+              height={
+                // allow zooming inside the x-axis
+                height
+              }
+              resetBrush={() => {
+                onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+              }}
+              showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
+              zoomLevels={zoomLevels}
+            />
+          )}
+          <EmphasisButton
+            className='flex h-8 gap-1 bg-transparent p-2! text-xs! text-neutral-400!'
+            onClick={() => {
+              setZoom(null)
             }}
-            showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
-            zoomLevels={zoomLevels}
-          />
-        )}
+          >
+            <ResetIcon className='h-4 w-4' />
+            {t('Reset')}
+          </EmphasisButton>
+        </div>
       </div>
 
-      <div className='content-center justify-center' style={{ height: `${chartHeight}px` }}>
+      <div className='mt-auto content-center justify-center' style={{ height: `${chartHeight}px` }}>
         <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
           <defs>
             <clipPath id={`${id}-chart-clip`}>
@@ -191,6 +208,8 @@ export function Chart({
                 fill='#F8CCF6'
               />
 
+              <line x1={0} x2={innerWidth} y1={innerHeight + 3} y2={innerHeight + 3} stroke='#685770' strokeWidth={2} />
+
               <AxisBottom xScale={xScale} innerHeight={innerHeight} />
             </g>
 
@@ -207,6 +226,7 @@ export function Chart({
                 westHandleColor={interactive ? styles.brush.handle.west : '#35243D'}
                 eastHandleColor={interactive ? styles.brush.handle.east : '#35243D'}
                 isFullRange={isFullRange}
+                setZoom={setZoom}
               />
             )}
 

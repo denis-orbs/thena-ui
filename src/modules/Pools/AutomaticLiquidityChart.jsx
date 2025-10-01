@@ -34,9 +34,9 @@ export default function AutomaticLiquidityChart({ currencyA, currencyB, position
   const [chartWidth, chartHeight] = useMemo(() => {
     if (isMdDown) return [343, 168]
     if (isXlDown) return [802, 221]
-    if (is2XlDown) return [576, 221]
-    if (is3XlDown) return [640, 221]
-    return [704, 221]
+    if (is2XlDown) return [704, 253]
+    if (is3XlDown) return [704, 253]
+    return [704, 253]
   }, [isMdDown, isXlDown, is2XlDown, is3XlDown])
 
   return (
@@ -53,9 +53,9 @@ export default function AutomaticLiquidityChart({ currencyA, currencyB, position
       onRightRangeInput={onRightRangeInput}
       interactive={false}
       handleShow={handleShow}
-      position={position}
       width={chartWidth}
       height={chartHeight}
+      isFixed
     />
   )
 }

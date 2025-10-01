@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { useTranslations } from 'use-intl'
 
@@ -367,39 +367,36 @@ function TitleEpoch({ epoch, open }) {
   )
 }
 
+const fetchVotingHistoryData = async ({ tokenVeTHEId, limit = 10, skip = 0, account, chainId }) => {
+  try {
+    const res = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
+    if (res?.data) {
+      const result = res.data.map(item => ({
+        ...item,
+        totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
+        totalVotesEpoch: item.epochTotalVotes,
+      }))
+
+      return { ...res, data: result }
+    }
+    return null
+  } catch (error) {
+    console.trace(error)
+    return null
+  }
+}
+
 function VotingHistory({ veTHEId }) {
   const { account, chainId } = useWallet()
   const [currentPage, setCurrentPage] = useState(1)
 
   const t = useTranslations()
 
-  const fetchVotingHistoryData = useCallback(
-    async (tokenVeTHEId, limit = 10, skip = 0) => {
-      try {
-        const res = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
-        if (res?.data) {
-          const result = res.data.map(item => ({
-            ...item,
-            totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
-            totalVotesEpoch: item.epochTotalVotes,
-          }))
-
-          return { ...res, data: result }
-        }
-        return null
-      } catch (error) {
-        console.trace(error)
-        return null
-      }
-    },
-    [account, chainId],
-  )
-
   const { data: epochVotingHistory, isLoading } = useSWR(
     account && ['epochVotingHistory', account, currentPage, veTHEId],
-    () => fetchVotingHistoryData(veTHEId, 10, (currentPage - 1) * 10),
+    () => fetchVotingHistoryData({ tokenVeTHEId: veTHEId, limit: 10, skip: (currentPage - 1) * 10, account, chainId }),
     {
-      refreshInterval: 60000,
+      refreshInterval: 0,
     },
   )
   const [isOpenArray, setIsOpenArray] = useState([])
@@ -409,10 +406,6 @@ function VotingHistory({ veTHEId }) {
       setIsOpenArray(Array(epochVotingHistory.data.length).fill(false))
     }
   }, [epochVotingHistory?.data])
-
-  const toggleCollapse = useCallback(index => {
-    setIsOpenArray(prevState => prevState.map((isOpen, i) => (i === index ? !isOpen : false)))
-  }, [])
 
   if (isLoading) {
     return (
@@ -456,7 +449,7 @@ function VotingHistory({ veTHEId }) {
       {(epochVotingHistory?.data || []).map((epoch, index) => (
         <Collapse
           key={index}
-          onToggle={() => toggleCollapse(index)}
+          onToggle={() => setIsOpenArray(prevState => prevState.map((isOpen, i) => (i === index ? !isOpen : false)))}
           className='bg-transparent'
           defaultShow={false}
           title={<TitleEpoch epoch={epoch} open={isOpenArray[index]} />}

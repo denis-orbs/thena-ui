@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { batch } from 'react-redux'
 
 import { Chart } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/Chart'
@@ -136,8 +136,20 @@ export default function LiquidityChartRangeInput({
 
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
+  // To get real width of the chart container
+  const containerRef = useRef(null)
+
+  const containerWidth = useMemo(() => {
+    if (containerRef.current) {
+      return containerRef.current.getBoundingClientRect().width
+    }
+    return width
+  }, [width])
   return (
-    <div className={cn('flex w-full items-center justify-center overflow-hidden', `min-h-[${height}px]`)}>
+    <div
+      ref={containerRef}
+      className={cn('flex w-full items-center justify-center overflow-hidden', `min-h-[${height}px]`)}
+    >
       {isUninitialized ? (
         <ChartEmptyContent t={t} label={label} height={height}>
           <TextHeading className='text-sm lg:text-base'>{t('Your position will appear here')}</TextHeading>
@@ -155,16 +167,18 @@ export default function LiquidityChartRangeInput({
           <TextHeading className='text-sm lg:text-base'>{t('There is no liquidity data')}</TextHeading>
         </ChartEmptyContent>
       ) : (
-        <div className='relative w-full'>
+        <div className='relative h-full w-full'>
           <Chart
             label={label}
             data={{ series: formattedData, current: price }}
-            dimensions={{ width, height }}
+            dimensions={{ width: containerWidth, height }}
             margins={{ top: showZoom ? 10 : 0, right: 2, bottom: showZoom ? 20 : 30, left: 0 }}
             styles={{
               area: { selection: '#C672D8' },
               brush: { handle: { west: '#84007F', east: '#E333DD' } },
             }}
+            priceLower={priceLower}
+            priceUpper={priceUpper}
             interactive={interactive}
             brushLabels={brushLabelValue}
             brushDomain={brushDomain}

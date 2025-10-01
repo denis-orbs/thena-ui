@@ -12,8 +12,8 @@ function GaugeWeightedManageModal({ popup, setPopup, pool, title, onGaugeManage,
   const [amount, setAmount] = useState('')
   const t = useTranslations()
 
-  const { balance: weightedBalance, mutatePoolBalance } = useWeightPoolData(pool.address)
-  const { gaugeBalance, mutateGaugeBalance } = useGaugeBalance(pool.gauge.address)
+  const { balance: weightedBalance, mutatePoolBalance } = useWeightPoolData(pool?.address)
+  const { gaugeBalance, mutateGaugeBalance } = useGaugeBalance(pool?.gauge.address)
   const balance = useMemo(() => (!isStake ? weightedBalance : gaugeBalance), [gaugeBalance, isStake, weightedBalance])
 
   const errorMsg = useMemo(() => {

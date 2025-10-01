@@ -136,8 +136,12 @@ export const formatPrice = (price, decimals = 5) => {
 
   const [intPart, decPart = ''] = price.toString().split('.')
 
+  if (decPart.length === 0) {
+    return `${formatAmount(price)}`
+  }
+
   if (intPart.length > 3) {
-    return `${intPart}.${decPart.slice(0, 2)}`
+    return `${formatAmount(intPart)}.${decPart.slice(0, 2)}`
   }
 
   if (decPart.length > decimals) {
@@ -323,7 +327,7 @@ export const getLiquidityRangeType = strategyTitle => {
   return FusionRangeType.ICHI_RANGE
 }
 
-export const getDisplayedStrategy = (strategy, version = 3) => {
+export const getDisplayedStrategy = (strategy, version = 3, short = false) => {
   const str = strategy.replace(/_(Farming|SwapFee)$/, '').replace('_', ' ')
 
   if (GAMMA_TYPES.includes(strategy)) {
@@ -334,7 +338,7 @@ export const getDisplayedStrategy = (strategy, version = 3) => {
   }
 
   if (ICHI_TYPES.includes(strategy)) {
-    return version === 2 && strategy === ICHI_SINGLE_SIDED ? 'ICHI Single Sided' : 'ICHI'
+    return version === 2 && strategy === ICHI_SINGLE_SIDED && !short ? 'ICHI Single Sided' : 'ICHI'
   }
 
   if (MANUAL_TYPES.includes(strategy)) {

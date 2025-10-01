@@ -15,12 +15,12 @@ export default function AddLiquidityPage() {
   const params = useSearchParams()
   const backUrl = useBackURL()
   const step = Number(params.get('step') ?? 1)
-  const { is2XlDown } = useMediaQuery()
+  const { isXlDown } = useMediaQuery()
 
   return (
     <LayoutWithBackButton
-      hiddenBackButton={is2XlDown}
-      className='3xl:mt-16! 3xl:w-[1440px]! mx-4 lg:mx-10 xl:mx-auto xl:mt-6! xl:w-[1184px]! 2xl:mt-8! 2xl:w-[1312px]!'
+      hiddenBackButton={isXlDown}
+      className='3xl:mt-16! 3xl:w-[1440px]! mx-4 lg:mx-10 xl:mx-auto xl:w-[1184px]! 2xl:mt-8! 2xl:w-[1312px]!'
       backUrl={backUrl}
     >
       <div className='container mx-auto flex flex-col'>

@@ -16,7 +16,7 @@ import { useConnect, useDisconnect } from 'wagmi'
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowBannerV3, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -28,6 +28,7 @@ import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
+import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import {
   ArrowRightIcon,
@@ -65,6 +66,7 @@ const langs = [
   { iso: 'es', lang: LOCALES.es, label: 'Español' },
   { iso: 'ja', lang: LOCALES.ja, label: '日本語' },
   { iso: 'ko', lang: LOCALES.ko, label: '한국어' },
+  { iso: 'pt', lang: LOCALES.pt, label: 'Português' },
   { iso: 'th', lang: LOCALES.th, label: 'ภาษาไทย' },
   { iso: 'vi', lang: LOCALES.vi, label: 'Tiếng Việt' },
   { iso: 'zh', lang: LOCALES.zh_CN, label: '简体中文' },
@@ -397,7 +399,7 @@ function V3Banner({ onClose }) {
         type='button'
         data-drawer-hide='v3-banner'
         aria-controls='v3-banner'
-        className='inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
+        className='inline-flex cursor-pointer items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
       >
         <svg
           aria-hidden='true'
@@ -441,9 +443,7 @@ function Header() {
   const { disconnect } = useDisconnect()
   const { spaceIdName } = useSpaceIdBNB(account)
 
-  const [showBannerMigrate, setShowBannerMigrate] = useState(
-    !localStorage.getItem(NotShowBannerV3) && new Date() >= new Date('2025-05-22'),
-  )
+  const { showBannerMigrate, onHideWarningBanner: handleCloseV3Banner } = useMigratePositionWarning()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -491,12 +491,6 @@ function Header() {
       behavior: 'smooth',
     })
   }
-  const handleCloseV3Banner = () => {
-    localStorage.setItem(NotShowBannerV3, 'true')
-    window.dispatchEvent(new Event('local-storage-changed'))
-    setShowBannerMigrate(false)
-  }
-
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
       connect({
@@ -563,7 +557,7 @@ function Header() {
           },
           {
             heading: t('Perps Trade'),
-            subheading: t('Easy & user-friendly trading interface'),
+            subheading: t('Easy and user-friendly trading interface'),
             onClickHandler: () => window.open('https://perps.thena.fi', '_blank'),
           },
           {
@@ -638,6 +632,11 @@ function Header() {
         subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/analytics'),
         onClickHandler: () => push('/analytics'),
+      },
+      {
+        label: t('Content Studio'),
+        active: pathname.includes('/content-studio'),
+        onClickHandler: () => push('/content-studio'),
       },
       {
         label: t('More'),
@@ -958,7 +957,7 @@ function Header() {
   }, [router])
 
   return (
-    <div>
+    <div id='headerMaster'>
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(

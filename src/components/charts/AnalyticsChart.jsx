@@ -12,6 +12,7 @@ import Box from '../box'
 import { TextIconButton } from '../buttons/IconButton'
 import Divider from '../divider'
 import Selection from '../selection'
+import Skeleton from '../skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 /** Base on HoverableChart and can support stacked bar chart and group data by epoch */
@@ -34,6 +35,7 @@ function AnalyticsChart({
   defaultValue,
   xAxisLine = false,
   defaultProperty = 'all',
+  isLoading = false,
 }) {
   const [groupPerEpoch, setGroupPerEpoch] = useState(false)
   const [property, setProperty] = useState(defaultProperty)
@@ -203,6 +205,9 @@ function AnalyticsChart({
         case 'bribeUSD':
           label = t('Incentives')
           break
+        case 'vaultSingleSideFeesUSD':
+          label = t('THE Single Sided Vaults')
+          break
         default:
           break
       }
@@ -227,7 +232,7 @@ function AnalyticsChart({
             <>
               {properties && (
                 <Selection
-                  className={cn('w-full bg-transparent')}
+                  className={cn('mt-1 w-full bg-transparent')}
                   classNames={{
                     items: cn('md:text-sm! text-x! flex-1'),
                   }}
@@ -276,16 +281,18 @@ function AnalyticsChart({
                 {!isExpanded && (
                   <div className='flex h-6 flex-row gap-2'>
                     {Number(hover) > -1 && typeof hover !== 'undefined' ? ( // sometimes data is 0
-                      <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(hover)}</TextHeading>
+                      <TextHeading className={cn('font-archia text-xl! leading-6! font-semibold')}>
+                        ${formatAmount(hover)}
+                      </TextHeading>
                     ) : (
                       <>
-                        <TextHeading className={cn('text-xl! leading-6!')}>${formatAmount(defaultValue)}</TextHeading>
+                        <TextHeading className={cn('font-archia text-xl! leading-6! font-semibold')}>
+                          ${formatAmount(defaultValue)}
+                        </TextHeading>
                       </>
                     )}
                     {dateHover ? (
-                      <TextSubHeading className='leading-6!'>{dateHover}</TextSubHeading>
-                    ) : defaultDateHover && isExpanded ? (
-                      <TextSubHeading className='leading-6!'>{defaultDateHover}</TextSubHeading>
+                      <TextSubHeading className='text-xs! leading-4! font-medium'>{dateHover}</TextSubHeading>
                     ) : (
                       <div className='h-5' />
                     )}
@@ -334,11 +341,7 @@ function AnalyticsChart({
                       <TextHeading className={cn('text-3xl! leading-9!')}>${formatAmount(defaultValue)}</TextHeading>
                     )}
                   </>
-                  {dateHover || defaultDateHover ? (
-                    <TextSubHeading>{dateHover || defaultDateHover}</TextSubHeading>
-                  ) : (
-                    <div className='h-5' />
-                  )}
+                  {dateHover ? <TextSubHeading>{dateHover}</TextSubHeading> : <div className='h-5' />}
                 </div>
               )}
             </div>
@@ -367,25 +370,29 @@ function AnalyticsChart({
         )}
       </div>
       <div className='mt-6 h-[250px]'>
-        <AnalyticsReChart
-          data={formattedData}
-          setHoverValue={setHover}
-          setHoverDate={setDateHover}
-          xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
-          chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
-          chartItemConfigs={filteredChartItemConfigs}
-          useEpoch={groupPerEpoch}
-          chartType={chartType}
-          currentPrice={currentPrice}
-          showCurrentPrice
-          chartTooltipFormatter={chartTooltipFormatter}
-          desiredTicks={isMinimum || !isExpanded ? 4 : 12}
-          xAxisLine={xAxisLine}
-          showTooltip={Boolean(properties)}
-        />
+        {isLoading ? (
+          <Skeleton className='h-full w-full' />
+        ) : (
+          <AnalyticsReChart
+            data={formattedData}
+            setHoverValue={setHover}
+            setHoverDate={setDateHover}
+            xAsisKey={groupPerEpoch ? 'epoch' : 'time'}
+            chartConfig={property === 'all' ? chartConfig : pick(chartConfig, [property])}
+            chartItemConfigs={filteredChartItemConfigs}
+            useEpoch={groupPerEpoch}
+            chartType={chartType}
+            currentPrice={currentPrice}
+            showCurrentPrice
+            chartTooltipFormatter={chartTooltipFormatter}
+            desiredTicks={isMinimum || !isExpanded ? 4 : 12}
+            xAxisLine={xAxisLine}
+            showTooltip={Boolean(properties)}
+          />
+        )}
       </div>
       {!!epochData?.length && isMinimum && (
-        <div className='w-full'>
+        <div className='mt-4 w-full'>
           <Toggle
             className='mx-auto w-fit'
             checked={groupPerEpoch}

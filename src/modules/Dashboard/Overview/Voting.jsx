@@ -15,6 +15,7 @@ import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer } from '@/hooks/useGeneral'
+import { useCurrentEpochFees } from '@/hooks/useGraph'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
@@ -37,6 +38,7 @@ function Voting() {
   const v3PoolsWithGauge = useV3PoolsWithGauge()
   const { veTHEs } = useVeTHEsContext()
   const { data: chartData } = useSWR('thena total stats', () => fetchStats())
+  const totalEpochFees = useCurrentEpochFees()
 
   const debouncedId = useDebounce(approvedId)
 
@@ -108,11 +110,6 @@ function Voting() {
     [v3PoolsWithGauge, veTHE],
   )
 
-  const totalRewards = useMemo(
-    () => (v3PoolsWithGauge || []).reduce((sum, pool) => sum.plus(pool.gauge.bribeUsd), new BigNumber(0)),
-    [v3PoolsWithGauge],
-  )
-
   const timeDisplay = useMemo(() => {
     const twoDays = 2 * 24 * 60 * 60
     const twoHours = 2 * 60 * 60
@@ -137,7 +134,7 @@ function Voting() {
             <div className='flex justify-between gap-2'>
               <div className='flex flex-col'>
                 <TextHeading className='font-archia text-xl leading-6 font-semibold'>
-                  {t('Voting for [value]', { value: formatAmount(totalRewards) })}
+                  {t('Voting for [value]', { value: formatAmount(totalEpochFees) })}
                 </TextHeading>
                 <Paragraph className='text-neutral-500 lg:text-sm'>{`${epochStart}-${epochEnd}`}</Paragraph>
               </div>

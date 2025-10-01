@@ -12,7 +12,31 @@ import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME 
 import { fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { findNearestPrice, getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
+import { getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
+
+const dayUTC = ts => Math.floor(ts / ONE_DAY_UNIX) * ONE_DAY_UNIX
+
+function findNearestPrice(priceDataArr, targetDay, priceByDay) {
+  const target = dayUTC(targetDay)
+  if (priceByDay.has(target)) return priceByDay.get(target).priceUSD
+
+  let before = null
+  let after = null
+  for (const p of priceDataArr) {
+    const day = dayUTC(Number(p.date))
+    if (day <= target) {
+      if (!before || day > before.date) before = { date: day, priceUSD: p.priceUSD }
+    } else if (!after || day < after.date) after = { date: day, priceUSD: p.priceUSD }
+  }
+  if (before && after) {
+    const _before = Math.abs(target - before.date)
+    const _after = Math.abs(after.date - target)
+    return _before <= _after ? before.priceUSD : after.priceUSD
+  }
+  if (before) return before.priceUSD
+  if (after) return after.priceUSD
+  return 0
+}
 
 const V1_DAY_DATAS = gql`
   query v1TokenCharts($address: String!, $startTime: Int!, $skip: Int!) {
@@ -51,19 +75,36 @@ const getV1ChartData = async (chainId, address, skip = 0) => {
         tokenAddresses: [address],
         startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       })
-      const data = tokenDayDatas.map(ele => {
-        const datePrice = findNearestPrice(priceData, ele.date, address)
 
-        const priceUSD = parseFloat(datePrice ?? ele.priceUSD ?? 0)
+      const tokenByDay = new Map(tokenDayDatas.map(d => [d.date, d]))
+      const priceByDay = new Map(priceData.map(p => [p.date, p]))
 
-        const tvlUSD = parseFloat(ele.totalLiquidityToken) * priceUSD
-        const dailyVolumeUSD = parseFloat(ele.dailyVolumeToken) * priceUSD
+      const minDay = Math.min(...[...tokenByDay.keys(), ...priceByDay.keys()].map(Number))
+      const maxDay = Math.max(...[...tokenByDay.keys(), ...priceByDay.keys()].map(Number))
+      const days = []
+      for (let d = minDay; d <= maxDay; d += ONE_DAY_UNIX) days.push(d)
+
+      let lastLiquidityToken = null
+
+      const data = days.map(day => {
+        const t = tokenByDay.get(day)
+        const priceUSD = parseFloat(findNearestPrice(priceData, day, priceByDay) ?? t?.priceUSD ?? 0)
+
+        if (t && t.totalLiquidityToken != null) {
+          lastLiquidityToken = parseFloat(t.totalLiquidityToken)
+        }
+
+        const dailyVolumeToken = t ? parseFloat(t.dailyVolumeToken || 0) : 0
+        const tvlToken = lastLiquidityToken ?? 0
+
+        const tvlUSDcalc = tvlToken * priceUSD
+        const dailyVolumeUSDcalc = dailyVolumeToken * priceUSD
 
         return {
-          date: Number(ele.date),
-          tvlUSD: tvlUSD || parseFloat(ele.totalLiquidityUSD),
-          dailyVolumeUSD: dailyVolumeUSD || parseFloat(ele.dailyVolumeUSD),
-          priceUSD,
+          date: day,
+          tvlUSD: Number.isFinite(tvlUSDcalc) ? tvlUSDcalc : parseFloat(t?.totalLiquidityUSD || 0),
+          dailyVolumeUSD: Number.isFinite(dailyVolumeUSDcalc) ? dailyVolumeUSDcalc : parseFloat(t?.dailyVolumeUSD || 0),
+          priceUSD: priceUSD || 0,
         }
       })
       return { data, error: false }

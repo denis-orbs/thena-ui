@@ -31,30 +31,41 @@ function LiquidityAPRChart({
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [hoveredDataSetIndex, setHoveredDataSetIndex] = useState(null)
-
+  const _realData = data.map(d => {
+    if (d.type === 'Manual') {
+      return {
+        ...d,
+        apr: calculateManualAPR(d),
+      }
+    }
+    return {
+      ...d,
+      apr: Number(d.apr),
+    }
+  })
   const avgApr = useMemo(() => {
-    const { totalAprWeighted, countPosition } = data.reduce(
+    // avgApr = (... + myvalue[i] * apr[i] +  myvalue[i+1] * apr[i+1] + .... ) / (... + myvalue[i] + myvalue[i+1] + ...)
+    // myvalue is amount to usd user deposit
+    const { totalApr, totalValue } = _realData.reduce(
       (acc, d) => {
-        let realApr = Number(d.apr) || 0
-        if (d.type === 'Manual') {
-          realApr = calculateManualAPR(d)
+        const realApr = Number(d.apr) || 0
+        // if (d.type === 'Manual') {
+        //   realApr = calculateManualAPR(d) || 0
+        // }
+        const value = Number(d.fiatValueOfLiquidity) || 0
+        return {
+          totalApr: acc.totalApr + realApr * value,
+          totalValue: acc.totalValue + value,
         }
-        if (realApr > 0) {
-          return {
-            totalAprWeighted: acc.totalAprWeighted + realApr,
-            countPosition: acc.countPosition + 1,
-          }
-        }
-        return acc
       },
       {
-        totalAprWeighted: 0,
-        countPosition: 0,
+        totalApr: 0,
+        totalValue: 0,
       },
     )
-    const avg = totalAprWeighted ? (totalAprWeighted / countPosition).toFixed(2) : '0'
+    const avg = totalValue !== 0 ? (totalApr / totalValue).toFixed(2) : '0'
     return avg
-  }, [data])
+  }, [_realData])
 
   const formatData = (key, dataSource) => {
     const items = dataSource.map(d => {
@@ -70,18 +81,18 @@ function LiquidityAPRChart({
 
     const totalValue = items.reduce((acc, item) => acc + item.value, 0)
 
-    const sorted = [...items].sort((a, b) => b.value - a.value)
+    const sorted = [...items].sort((a, b) => Number(b.value) - Number(a.value))
 
     const formatted = []
     let othersValue = 0
     let othersFiatValueOfLiquidity = 0
     if (key === 'apr') {
       sorted.forEach(item => {
-        const percent = (item.value / totalValue) * 100
+        const percent = (Number(item.value) / totalValue) * 100
 
         if (sorted.length > 5 && percent < 5) {
-          othersValue += item.value
-          othersFiatValueOfLiquidity += item.fiatValueOfLiquidity
+          othersValue += Number(item.value) * Number(item.fiatValueOfLiquidity)
+          othersFiatValueOfLiquidity += Number(item.fiatValueOfLiquidity)
         } else {
           formatted.push(item)
         }
@@ -94,14 +105,14 @@ function LiquidityAPRChart({
     if (othersValue > 0) {
       formatted.push({
         label: 'Others',
-        value: othersValue,
+        value: key === 'apr' ? othersValue / othersFiatValueOfLiquidity : othersValue,
         ...(key === 'apr' ? { fiatValueOfLiquidity: othersFiatValueOfLiquidity, symbol: 'Others' } : {}),
       })
     }
     const isAllValueZero = formatted.every(item => item.value === 0)
-    if (!formatted || formatted.length === 0 || data.length === 0 || isAllValueZero) {
+    if (!formatted || formatted.length === 0 || _realData.length === 0 || isAllValueZero) {
       if (key === 'apr') {
-        return data.length === 0
+        return _realData.length === 0
           ? [
               {
                 label: 'None',
@@ -110,7 +121,7 @@ function LiquidityAPRChart({
                 symbol: 'None',
               },
             ]
-          : data.map(item => ({
+          : _realData.map(item => ({
               label: 'None',
               symbol: item.symbol,
               value: 100,
@@ -128,7 +139,7 @@ function LiquidityAPRChart({
     return formatted
   }
 
-  const aprData = formatData('apr', data)
+  const aprData = formatData('apr', _realData)
   const liquidityData = formatData('depositLiquidity', aprData)
 
   const colorData = aprData.map((d, i) =>
@@ -263,7 +274,7 @@ function LiquidityAPRChart({
   }, [aprData, currentHoverTableRow, liquidityData, isHoverFromChart])
 
   const renderCenterContent = useMemo(() => {
-    if (hoveredIndex !== null && data.length > 0) {
+    if (hoveredIndex !== null && _realData.length > 0) {
       const aprValue = aprData[hoveredIndex]
       const liquidityValue = liquidityData[hoveredIndex]
       const poolLabel = hoveredDataSetIndex === 0 ? liquidityValue?.label : aprValue?.label
@@ -286,7 +297,7 @@ function LiquidityAPRChart({
       )
     }
 
-    return data.length > 0 ? (
+    return _realData.length > 0 ? (
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center md:top-[106px] md:justify-start'>
         <NewTextHeading className='text-primary-600 text-xl font-semibold md:text-[40px] md:leading-[40px]'>
           {formatAmount(avgApr, true)}%
@@ -300,7 +311,7 @@ function LiquidityAPRChart({
         <NewTextHeading className='text-primary-300 text-sm md:text-xl'>$0</NewTextHeading>
       </div>
     )
-  }, [hoveredIndex, aprData, avgApr, t, data.length, hoveredDataSetIndex, liquidityData])
+  }, [hoveredIndex, aprData, avgApr, t, _realData.length, hoveredDataSetIndex, liquidityData])
 
   return (
     <div className={cn('relative h-[200px] w-[200px]', className)}>

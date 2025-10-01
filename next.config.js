@@ -53,6 +53,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'w3s.link',
       },
+      {
+        protocol: 'https',
+        hostname: 'thena-resource.s3.amazonaws.com',
+      },
     ],
   },
 
@@ -107,7 +111,7 @@ const nextConfig = {
       },
       {
         source: '/s3/download/:path*',
-        destination: isProd ? 'https://cdn-s3.thena.fi/:path*' : 'https://cdn-s3.thena.fi/:path*',
+        destination: 'http://thena-resource.s3.eu-west-2.amazonaws.com/:path*',
         // : 'https://thena-image-resource-dev.s3.amazonaws.com/:path*',
       },
       {
@@ -123,6 +127,10 @@ const nextConfig = {
       {
         source: '/element-market/:path*',
         destination: 'https://api.element.market/:path*',
+      },
+      {
+        source: '/assets/:path*',
+        destination: 'https://cdn.thena.fi/assets/:path*',
       },
     ]
   },

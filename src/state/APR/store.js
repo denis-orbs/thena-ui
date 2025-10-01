@@ -9,6 +9,7 @@ export const useAprStore = create(set => ({
     [Presets.SAFE]: 0,
     [Presets.NORMAL]: 0,
     [Presets.RISK]: 0,
+    [Presets.STABLE]: 0,
   },
 
   setAPRs: data =>

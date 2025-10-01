@@ -41,7 +41,7 @@ export default function GaugeManageModal({ popup, setPopup, pair, balance, title
           title='Amount'
           pair={pair}
           balance={balance}
-          symbol={pair.symbol}
+          symbol={pair?.symbol}
           amount={amount}
           onAmountChange={setAmount}
           autoFocus

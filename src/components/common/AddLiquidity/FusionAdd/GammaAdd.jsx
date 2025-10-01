@@ -6,9 +6,11 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 
+import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import Selection from '@/components/selection'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
 import { useCurrency } from '@/hooks/fusion/Tokens'
@@ -19,10 +21,10 @@ import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import { SettingsIcon } from '@/svgs'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 
@@ -63,47 +65,80 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack, isSmall = false }) {
-  const t = useTranslations()
+export default function GammaAdd({
+  strategy,
+  isModal,
+  isAdd,
+  onShowModalSuccess,
+  handleBack,
+  isSmall = false,
+  classNames,
+  label,
+}) {
+  // const t = useTranslations()
 
-  const [isZapper, setIsZapper] = useState(false)
+  // const [isZapper, setIsZapper] = useState(false)
 
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
+  const [slippage, setSlippage] = useState(0.5)
+  const [slippageDropdown, setSlippageDropdown] = useState(false)
 
   // const asset0 = useGetAsset(strategy?.token0?.address)
   // const asset1 = useGetAsset(strategy?.token1?.address)
 
-  const addSelections = useMemo(
-    () => [
-      {
-        label: t('Pool Token Deposit'),
-        active: !isZapper,
-        onClickHandler: () => {
-          setIsZapper(false)
-        },
-      },
-      // {
-      //   label: (
-      //     <div className='flex items-center justify-center gap-1'>
-      //       <ZapperIcon className='size-5' />
-      //       <span>{t('Zapper Deposit')}</span>
-      //     </div>
-      //   ),
-      //   active: isZapper,
-      //   onClickHandler: () => {
-      //     setIsZapper(true)
-      //   },
-      // },
-    ],
-    [isZapper, t],
-  )
+  // const addSelections = useMemo(
+  //   () => [
+  //     {
+  //       label: t('Pool Token Deposit'),
+  //       active: !isZapper,
+  //       onClickHandler: () => {
+  //         setIsZapper(false)
+  //       },
+  //     },
+  // {
+  //   label: (
+  //     <div className='flex items-center justify-center gap-1'>
+  //       <ZapperIcon className='size-5' />
+  //       <span>{t('Zapper Deposit')}</span>
+  //     </div>
+  //   ),
+  //   active: isZapper,
+  //   onClickHandler: () => {
+  //     setIsZapper(true)
+  //   },
+  // },
+  //   ],
+  //   [isZapper, t],
+  // )
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-      <div className='flex flex-col gap-5'>
+      <div className='flex flex-col gap-2'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
-        <Selection data={addSelections} isFull isTranslation={false} />
+        <div className='flex w-full items-center justify-between gap-2'>
+          {/* <Selection data={addSelections} isFull isTranslation={false} className='flex-1' /> */}
+          {/* <EmphasisIconButton
+            className='size-8 lg:size-11'
+            classNames='size-4 stroke-neutral-400'
+            Icon={SettingsIcon}
+            onClick={() => setSlippageDropdown(prev => !prev)}
+            disabled={false}
+          /> */}
+          <div className='flex w-full items-center justify-between'>
+            <TextHeading className='font-archia font-semibold'>{label}</TextHeading>
+            <EmphasisIconButton
+              className='size-8 lg:size-11'
+              classNames='size-4 stroke-neutral-400'
+              Icon={SettingsIcon}
+              onClick={() => setSlippageDropdown(prev => !prev)}
+              disabled={false}
+            />
+          </div>
+        </div>
+        <SlippageContent setSlippage={setSlippage} slippage={slippage} show={slippageDropdown} />
+        {/* <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' /> */}
+
         {/* Temporary remove zapper */}
         {/* (
           <CommonZapperPane
@@ -115,24 +150,34 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess,
             isSmall={isSmall}
           />
         )  */}
-        {!isZapper && (
-          <ManualPane
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            strategy={strategy}
-            onShowModalSuccess={onShowModalSuccess}
-            handleBack={handleBack}
-            isSmall={isSmall}
-          />
-        )}
+        {/* {!isZapper && ( */}
+        <ManualPanel
+          baseCurrency={baseCurrency}
+          quoteCurrency={quoteCurrency}
+          strategy={strategy}
+          onShowModalSuccess={onShowModalSuccess}
+          handleBack={handleBack}
+          isSmall={isSmall}
+          classNames={classNames}
+          slippage={slippage}
+        />
+        {/* )} */}
       </div>
     </div>
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack, isSmall = false }) {
+function ManualPanel({
+  baseCurrency,
+  quoteCurrency,
+  strategy,
+  onShowModalSuccess,
+  handleBack,
+  isSmall = false,
+  classNames,
+  slippage,
+}) {
   const t = useTranslations()
-  const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
@@ -201,9 +246,15 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
 
   return (
     <div>
-      <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
       <div className='flex flex-col'>
-        <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} isSmall={isSmall} />
+        <EnterAmounts
+          currencyA={baseCurrency}
+          currencyB={quoteCurrency}
+          mintInfo={mintInfo}
+          isSmall={isSmall}
+          className={classNames?.wrapperInput}
+          classNames={{ input: classNames?.input }}
+        />
 
         {/* <div className='mt-5 flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>

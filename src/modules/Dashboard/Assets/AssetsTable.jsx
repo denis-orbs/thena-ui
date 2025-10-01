@@ -207,7 +207,7 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
 
     const desc = sort.isDesc ? -1 : 1
 
-    const sorted = filtered.sort((a, b) => {
+    const sorted = [...filtered].sort((a, b) => {
       let res
       switch (sort.value) {
         case 'pair':

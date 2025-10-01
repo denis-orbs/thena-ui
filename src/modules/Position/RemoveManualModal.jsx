@@ -14,6 +14,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraRemove } from '@/hooks/fusion/useAlgebra'
 import useDebounce from '@/hooks/useDebounce'
 import { warnToast } from '@/lib/notify'
+import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
@@ -44,8 +45,8 @@ export default function RemoveManualModal({
   const onRemove = useCallback(() => {
     const farmReward = pool?.isFarming
       ? {
-          reward0: reward0.amount,
-          reward1: reward1.amount,
+          reward0: reward0?.amount,
+          reward1: reward1?.amount,
           poolkey: pool.key,
         }
       : {}
@@ -61,6 +62,10 @@ export default function RemoveManualModal({
         slippage,
         deadline,
         callback: () => {
+          if (debouncedPercent === 100) {
+            addOrReplaceURLParams('pid')
+            addOrReplaceURLParams('type')
+          }
           setPercent(0)
           setPopup(false)
           mutateManual()
@@ -79,8 +84,8 @@ export default function RemoveManualModal({
     onAlgebraRemove,
     pool,
     position,
-    reward0.amount,
-    reward1.amount,
+    reward0?.amount,
+    reward1?.amount,
     setPopup,
     slippage,
   ])

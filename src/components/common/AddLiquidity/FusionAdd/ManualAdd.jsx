@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -12,7 +12,6 @@ import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
@@ -30,6 +29,9 @@ export default function ManualAdd({
   onShowModalSuccess,
   position,
   handleBack,
+  slippage = 0.5,
+  className,
+  classNames,
 }) {
   const t = useTranslations()
   const stableAssets = useStableTokens()
@@ -39,8 +41,6 @@ export default function ManualAdd({
   const { startPriceTypedValue } = useV3MintState()
   const { onAlgebraAdd, pending } = useAlgebraAdd()
   const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
-
-  const [slippage, setSlippage] = useState(0.5)
 
   const errorMessage = useMemo(
     () => (position ? position.errorMessage : mintInfo.errorMessage),
@@ -124,9 +124,8 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='flex flex-col gap-8 md:gap-4 xl:gap-6'>
+    <section className='flex flex-col gap-4 xl:gap-6'>
       <div className={cn('flex flex-col gap-4 xl:gap-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
@@ -135,10 +134,12 @@ export default function ManualAdd({
           mintInfo={mintInfo}
           position={position}
           isSmall
+          className={className}
+          classNames={classNames}
         />
       </div>
 
-      <div className={cn('flex w-full flex-col items-center gap-2 lg:flex-row')}>
+      <div className={cn('flex w-full flex-col items-center gap-2 xl:flex-row')}>
         <EmphasisButton className='block w-full xl:hidden' onClick={handleBack}>
           {t('Cancel')}
         </EmphasisButton>

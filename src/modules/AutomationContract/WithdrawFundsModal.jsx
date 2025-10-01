@@ -14,7 +14,7 @@ import { ChevronDownIcon } from '@/svgs'
 
 import SelectTokenFromList from '../SelectTokenModal/SelectTokenFromList'
 
-function WithdrawFundsModal({ contract, popup, setPopup }) {
+function WithdrawFundsModal({ contract, popup, setPopup, onWithdrawSuccess }) {
   const { onWithdrawFunds, pending } = useWithdrawFunds()
 
   const t = useTranslations()
@@ -76,7 +76,7 @@ function WithdrawFundsModal({ contract, popup, setPopup }) {
           className='w-full'
           disabled={pending}
           onClick={() => {
-            onWithdrawFunds(contract.address, chainLINK.address)
+            onWithdrawFunds(contract.address, chainLINK.address, onWithdrawSuccess)
             setPopup(false)
           }}
         >

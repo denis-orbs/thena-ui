@@ -7,6 +7,7 @@ import BN from 'bignumber.js'
 import { useChainId, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Configs, Widget } from '@orbs-network/twap-ui'
+import { zeroAddress } from 'viem'
 import useWallet from '@/hooks/useWallet'
 import TokenInput from '@/components/input/TokenInput'
 import { InfoIcon, SwitchVerticalIcon, SwitchHorizontalV2Icon } from '@/svgs'
@@ -85,7 +86,9 @@ function TokenPanel({ isSrcToken }) {
       setOtherAsset={asset => (isSrcToken ? setToAddress(asset.address) : setFromAddress(asset.address))}
       otherAsset={isSrcToken ? toAsset : fromAsset}
       amount={input.value}
-      setAmount={input.onChange}
+      setAmount={it => {
+        input.onChange(typeof it === 'string' ? it : it.toString())
+      }}
       autoFocus
       disabled={!isSrcToken}
       hiddenAssets={hiddenAssets}
@@ -151,7 +154,7 @@ function parseAsset(asset) {
   if (!asset) return null
 
   return {
-    address: asset.address,
+    address: asset.address === 'BNB' ? zeroAddress : asset.address,
     decimals: asset.decimals,
     symbol: asset.symbol,
     logoUrl: asset.logoURI,
@@ -165,7 +168,8 @@ function getWeiBalanceFromAsset(asset) {
 function useToken(address) {
   const baseAssets = useAssets()
   return useMemo(() => {
-    const asset = baseAssets.find(it => it.address === address)
+    const _address = address === zeroAddress ? 'BNB' : address
+    const asset = baseAssets.find(it => it.address === _address)
     return parseAsset(asset)
   }, [baseAssets, address])
 }

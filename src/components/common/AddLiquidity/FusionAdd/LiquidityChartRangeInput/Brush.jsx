@@ -97,7 +97,6 @@ export const Brush = ({
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
-      // .attr('fill-opacity', '0.1')
       .attr('fill', `url(#${id}-gradient-selection)`)
       .attr('cursor', interactive ? 'move' : 'default')
 
@@ -105,7 +104,21 @@ export const Brush = ({
       .selectAll('.handle')
       .attr('cursor', interactive ? 'ew-resize' : 'default')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, JSON.stringify(xScale)])
+  }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, xScale])
+
+  useEffect(() => {
+    if (!brushRef.current || !brushBehavior.current || !brushExtent) return
+
+    // Temporarily remove event listeners
+    brushBehavior.current.on('brush end', null)
+
+    // Move without triggering events
+    brushBehavior.current.move(select(brushRef.current), brushExtent.map(xScale))
+
+    // Re-attach event listeners
+    brushBehavior.current.on('brush end', brushed)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xScale])
 
   // respond to xScale changes only
   useEffect(() => {
@@ -113,7 +126,7 @@ export const Brush = ({
 
     brushBehavior.current.move(select(brushRef.current), brushExtent.map(xScale))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brushExtent, JSON.stringify(xScale)])
+  }, [brushExtent])
 
   // show labels when local brush changes
   useEffect(() => {
@@ -138,11 +151,11 @@ export const Brush = ({
 
   return useMemo(
     () => (
-      <>
+      <g>
         <defs>
           <linearGradient id={`${id}-gradient-selection`} x1='0%' y1='100%' x2='100%' y2='100%'>
-            <stop offset='0.71%' stopColor='#DC00AA' stopOpacity={0} />
-            <stop offset='100%' stopColor='##DC00D4' stopOpacity={0.1} />
+            <stop offset='0%' stopColor='#DC00AA' stopOpacity={0.5} />
+            <stop offset='100%' stopColor='#DC00D4' stopOpacity={0.5} />
           </linearGradient>
 
           {/* clips at exactly the svg area */}
@@ -248,7 +261,7 @@ export const Brush = ({
             )}
           </>
         )}
-      </>
+      </g>
     ),
     [
       brushLabelValue,

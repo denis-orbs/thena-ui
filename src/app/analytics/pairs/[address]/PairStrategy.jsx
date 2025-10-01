@@ -14,7 +14,7 @@ import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/Liq
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, STABLE_PAIRS } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -121,7 +121,7 @@ function PairStrategy({ pair }) {
                   <Paragraph className='text-sm! text-neutral-400'>{t('Deposit')}</Paragraph>
                 </div>
               )}
-              {NARROW_TYPES.includes(sub.title) && (
+              {GAMMA_TYPES.includes(sub.title) && (
                 <div className='flex flex-col items-center gap-1'>
                   <IconGroup
                     className='*:not-first:-ml-2'
@@ -275,7 +275,7 @@ function PairStrategy({ pair }) {
       <div className='rounded-xl bg-neutral-900 p-4 max-lg:hidden lg:w-[35%] xl:w-[30%]'>
         <div className={cn('mb-4 flex items-center justify-between')}>
           <TextHeading className='text-primary-100 text-xl font-medium lg:text-2xl'>
-            {t('Automatic Strategy')}
+            {t('Automated Strategy')}
           </TextHeading>
 
           <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('automatic')}>
@@ -363,11 +363,11 @@ function PairStrategy({ pair }) {
                 : `${formatAmount(getAprRange(sortedSubPools).min)}%`}
             </TextSubHeading>
             <TextHeading className='font-archia text-xl! leading-6! font-semibold text-neutral-50'>
-              {t('Automatic Strategy')}
+              {t('Automated Strategy')}
             </TextHeading>
           </div>
         }
-        subtitle={t('ICHI / GAMA / Single Sided')}
+        subtitle={t('ICHI / GAMMA / $THE Single Sided')}
       >
         <AutomaticStrategy
           className='divide-y-1 divide-neutral-700'
@@ -414,11 +414,11 @@ function PairStrategy({ pair }) {
             showPeriod
             classNames={{
               periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
-              chart: 'lg:h-[265px]',
             }}
             handleShow
             isCreate={false}
             label='Your Range against the Price'
+            height={265}
           />
 
           <div className='z-40 mt-4'>

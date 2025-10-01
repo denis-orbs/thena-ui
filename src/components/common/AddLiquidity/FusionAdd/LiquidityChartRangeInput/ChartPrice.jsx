@@ -4,7 +4,7 @@ import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
-import Skeleton from '@/components/skeleton'
+// import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
@@ -22,7 +22,7 @@ function ChartPrice({
   const transformedData = useMemo(() => {
     if (data) {
       const baseData = data.map(({ time, value }) => ({
-        time: time.getTime(),
+        time: Math.floor(time.getTime() / 1000),
         value,
       }))
 
@@ -52,12 +52,16 @@ function ChartPrice({
         priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
-        visible: true,
+        visible: false,
         borderVisible: false,
         secondsVisible: false,
-        rightOffset: 0,
+        rightBarStaysOnScroll: true,
+        // fixRightEdge: true,
+        rightOffset: 3,
         tickMarkFormatter: unixTime =>
-          timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
+          timeWindow === PairDataTimeWindow.DAY
+            ? dayjs.unix(unixTime).format('HH:mm')
+            : dayjs.unix(unixTime).format('MMM D'),
       },
       grid: {
         horzLines: { visible: false },
@@ -124,7 +128,7 @@ function ChartPrice({
 
       chart.priceScale('right').applyOptions({
         scaleMargins: {
-          top: 0.1,
+          top: 0,
           bottom: 0.1,
         },
         autoScale: false,
@@ -150,7 +154,7 @@ function ChartPrice({
 
   return (
     <div className='flex h-full w-full flex-1'>
-      {(!chartCreated.current || !transformedData.length) && <Skeleton />}
+      {/* {(!chartCreated.current || !transformedData.length) && <Skeleton />} */}
       <div className='price-chart-container w-full flex-1' ref={chartRef} />
     </div>
   )

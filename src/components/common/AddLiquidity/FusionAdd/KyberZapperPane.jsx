@@ -13,10 +13,9 @@ import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
+import { useGetZapInRoute, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
 
@@ -31,12 +30,14 @@ function KyberZapperPane({
   strategy,
   onShowModalSuccess,
   handleBack,
+  slippage = 0.5,
+  classNames,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
   const stableAssets = useStableTokens()
-  const { handleAddLiquidity } = useZapperAddLiquidity()
+  const { handleAddLiquidity } = useKyberZapperAddLiquidity()
 
   const [token0, token1] = useMemo(() => {
     const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]
@@ -51,7 +52,6 @@ function KyberZapperPane({
 
   const [amount, setAmount] = useState(0)
   const [tokenDeposit, setTokenDeposit] = useState(asset0)
-  const [slippage, setSlippage] = useState(0.5)
 
   const amountIn = useDebounce(amount, 500)
   const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
@@ -171,7 +171,6 @@ function KyberZapperPane({
     <div className='mt-4! flex flex-col md:gap-4'>
       <div className='flex flex-col gap-2 md:gap-4'>
         <WarningZapper />
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='relative flex w-full flex-col gap-2'>
           <TokenAmountInput
             type='number'
@@ -182,6 +181,8 @@ function KyberZapperPane({
             onAmountChange={setAmount}
             showPercent={false}
             assetsSelect={isToken0Wbnb || isToken1Wbnb ? [asset0, asset1, BNB] : [asset0, asset1]}
+            classNames={{ input: 'xl:text-4 xl:leading-5', maxBtn: 'xl:font-medium', inputWrapper: classNames?.input }}
+            isSmall
           />
 
           <div

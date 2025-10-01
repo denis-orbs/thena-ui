@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, maxUint256 } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { AUTOMATION_STATUS, CHAINLINK_TOKEN, PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
@@ -482,7 +482,10 @@ export const useCancelAutomation = () => {
     async (automationAddress, onSuccess) => {
       const key = uuidv4()
       const canceluuid = uuidv4()
+      const withdrawuuid = uuidv4()
       const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+      const erc20Address = CHAINLINK_TOKEN[chainId][0].address
 
       startTxn({
         key,
@@ -493,14 +496,25 @@ export const useCancelAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          [withdrawuuid]: {
+            desc: t('Withdraw'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
         },
       })
 
       try {
         setPending(true)
+
         if (!(await writeTxn(key, canceluuid, veTheAutomationContract, 'cancel', []))) {
           setPending(false)
           return false
+        }
+
+        if (!(await writeTxn(key, withdrawuuid, veTheAutomationContract, 'withdrawFunds', [erc20Address]))) {
+          setPending(false)
+          return
         }
 
         endTxn({

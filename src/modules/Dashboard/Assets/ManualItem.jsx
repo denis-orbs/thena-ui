@@ -288,18 +288,11 @@ function ManualItem({ position, isXlDown }) {
     () => (
       <div
         className={cn('grid w-full gap-2', {
-          'grid-cols-3': version === 3,
-          'grid-cols-2': (version === 2 && Number(liquidity) > 0) || (version === 3 && feesInUsd.isZero()),
+          'grid-cols-2': version === 3,
+          'grid-cols-1': version === 2 && Number(liquidity) > 0,
         })}
       >
-        {Number(liquidity) > 0 ? (
-          <EmphasisButton
-            className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
-            onClick={() => setRemovePopup(true)}
-          >
-            {t('Remove')}
-          </EmphasisButton>
-        ) : (
+        {Number(liquidity) > 0 ? null : ( // </EmphasisButton> //   {t('Remove')} // > //   onClick={() => setRemovePopup(true)} //   className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' // <EmphasisButton
           <EmphasisButton
             className='h-8 w-full flex-1 text-xs md:h-11 md:text-base'
             onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
@@ -312,14 +305,14 @@ function ManualItem({ position, isXlDown }) {
         {version === 3 && (
           <>
             <EmphasisButton
-              className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base', { hidden: feesInUsd.isZero() })}
+              className={cn('h-8 w-full flex-1 text-xs md:h-11 md:text-base')}
               disabled={feesInUsd.isZero()}
               onClick={() => setClaimPopup(true)}
             >
               {t('Claim')}
             </EmphasisButton>
             <EmphasisButton className='h-8 w-full flex-1 text-xs md:h-11 md:text-base' onClick={handleAdd}>
-              {t('Add')}
+              {t('Manage')}
             </EmphasisButton>
           </>
         )}

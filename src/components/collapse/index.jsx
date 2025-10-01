@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { ChevronDownIcon } from '@/svgs'
@@ -47,17 +47,22 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
       </div>
 
       {/* Content Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 0, height: 0 }}
-        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className='overflow-hidden'
-      >
-        <div className={cn(classNames?.content)}>
-          <Divider className={cn('mx-4 mt-4', classNames?.divider ? classNames.divider : 'hidden')} />
-          {children}
-        </div>
-      </motion.div>
+      <AnimatePresence initial={false}>
+        {show && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='overflow-hidden'
+          >
+            <div className={cn(classNames?.content)}>
+              <Divider className={cn('mx-4 mt-4', classNames?.divider ? classNames.divider : 'hidden')} />
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

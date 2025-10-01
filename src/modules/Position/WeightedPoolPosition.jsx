@@ -22,7 +22,7 @@ import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store
 import { InfoIcon } from '@/svgs'
 
 import GaugeWeightedManageModal from './GaugeWeightedManageModal'
-import ManageWeightedPositionModal from './ManageWeightedPositionModal'
+import RemoveWeightedPositionModal from './ManageWeightedPositionModal'
 
 export function WeightedPoolPosition({ pool, isStake }) {
   const t = useTranslations()
@@ -223,18 +223,20 @@ export function WeightedPoolPosition({ pool, isStake }) {
         </div>
       )}
 
-      <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
-      <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={pool} />
-      <GaugeWeightedManageModal
-        title={!isStake ? 'Stake LP' : 'Unstake LP'}
-        onGaugeManage={!isStake ? onGaugeStake : onGaugeUnstake}
-        pending={false}
-        pool={pool}
-        popup={popupStake}
-        setPopup={setPopupStake}
-        label={!isStake ? 'Stake' : 'Unstake'}
-        isStake={isStake}
-      />
+      {pool && <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />}
+      {pool && <RemoveWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={pool} />}
+      {pool && (
+        <GaugeWeightedManageModal
+          title={!isStake ? 'Stake LP' : 'Unstake LP'}
+          onGaugeManage={!isStake ? onGaugeStake : onGaugeUnstake}
+          pending={false}
+          pool={pool}
+          popup={popupStake}
+          setPopup={setPopupStake}
+          label={!isStake ? 'Stake' : 'Unstake'}
+          isStake={isStake}
+        />
+      )}
     </div>
   )
 }

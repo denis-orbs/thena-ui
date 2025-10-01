@@ -14,16 +14,21 @@ function SummaryAnalyticsInfo({ totalStats }) {
     <>
       <div
         className={cn(
-          'px-8 py-4 lg:flex lg:justify-between lg:rounded-xl lg:border lg:border-[#422D4C]',
+          'px-8 py-4 outline-[#422D4C] lg:flex lg:justify-between lg:rounded-xl lg:outline',
           'lg:bg-chart-gradient item-center hidden gap-8',
         )}
       >
-        <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+        <div className='bg-chart-gradient flex flex-col gap-3 rounded-xl py-4 outline-1 outline-[#422D4C] lg:bg-none lg:outline-0'>
           <div className='flex items-start justify-between gap-4'>
             {totalStats ? (
               <>
-                <TextHeading className='text-gradient-pink text-3xl'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
-                <PercentBadge value={totalStats.tvlChange} />
+                <TextHeading className='text-gradient-pink font-archia text-3xl font-semibold'>
+                  ${formatAmount(totalStats.tvlUSD)}
+                </TextHeading>
+                <PercentBadge
+                  classNames={{ text: 'text-lg font-medium', icon: 'size-6' }}
+                  value={totalStats.tvlChange}
+                />
               </>
             ) : (
               <>
@@ -32,14 +37,16 @@ function SummaryAnalyticsInfo({ totalStats }) {
               </>
             )}
           </div>
-          <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
-        <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+        <div className='bg-chart-gradient flex flex-col gap-3 rounded-xl py-4 outline-1 outline-[#422D4C] lg:bg-none lg:outline-0'>
           <div className='flex items-start justify-between gap-4'>
             {totalStats ? (
               <>
-                <TextHeading className='text-gradient-pink text-3xl'>${formatAmount(totalStats.volumeUSD)}</TextHeading>
-                <PercentBadge value={totalStats.volumeChange} />
+                <TextHeading className='text-gradient-pink font-archia text-3xl font-semibold'>
+                  ${formatAmount(totalStats.volumeUSD)}
+                </TextHeading>
+                <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.volumeChange} />
               </>
             ) : (
               <>
@@ -48,14 +55,16 @@ function SummaryAnalyticsInfo({ totalStats }) {
               </>
             )}
           </div>
-          <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
         </div>
-        <div className='bg-chart-gradient flex flex-col gap-2 rounded-xl border border-[#422D4C] py-4 lg:border-0 lg:bg-none'>
+        <div className='bg-chart-gradient flex flex-col gap-3 rounded-xl py-4 outline-1 outline-[#422D4C] lg:bg-none lg:outline-0'>
           <div className='flex items-start justify-between gap-4'>
             {totalStats ? (
               <>
-                <TextHeading className='text-gradient-pink text-3xl'>${formatAmount(totalStats.feesUSD)}</TextHeading>
-                <PercentBadge value={totalStats.feesChange} />
+                <TextHeading className='text-gradient-pink font-archia text-3xl font-semibold'>
+                  ${formatAmount(totalStats.feesUSD)}
+                </TextHeading>
+                <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.feesChange} />
               </>
             ) : (
               <>
@@ -64,7 +73,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
               </>
             )}
           </div>
-          <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
         </div>
       </div>
       <div className='w-full lg:hidden'>
@@ -75,7 +84,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                 {totalStats ? (
                   <>
                     <TextHeading className='text-gradient-pink text-lg'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
-                    <PercentBadge value={totalStats.tvlChange} />
+                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.tvlChange} />
                   </>
                 ) : (
                   <>
@@ -84,19 +93,19 @@ function SummaryAnalyticsInfo({ totalStats }) {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+              <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('TVL')}</Paragraph>
             </Box>
           </SwiperSlide>
 
           <SwiperSlide>
-            <Box className={cn('bg-chart-gradient! flex h-[84px] w-full flex-col border border-neutral-600 p-4!')}>
+            <Box className={cn('bg-chart-gradient! flex h-[84px] w-full flex-col border border-[#422D4C] p-4!')}>
               <div className='flex items-start justify-between gap-3'>
                 {totalStats ? (
                   <>
                     <TextHeading className='text-gradient-pink text-lg'>
                       ${formatAmount(totalStats.volumeUSD)}
                     </TextHeading>
-                    <PercentBadge value={totalStats.volumeChange} />
+                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.volumeChange} />
                   </>
                 ) : (
                   <>
@@ -105,18 +114,18 @@ function SummaryAnalyticsInfo({ totalStats }) {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+              <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('Volume (24h)')}</Paragraph>
             </Box>
           </SwiperSlide>
           <SwiperSlide>
-            <Box className={cn('bg-chart-gradient! flex h-[84px] w-full flex-col border border-neutral-600 p-4!')}>
+            <Box className={cn('bg-chart-gradient! flex h-[84px] w-full flex-col border border-[#422D4C] p-4!')}>
               <div className='flex items-start justify-between gap-3'>
                 {totalStats ? (
                   <>
                     <TextHeading className='text-gradient-pink text-lg'>
                       ${formatAmount(totalStats.feesUSD)}
                     </TextHeading>
-                    <PercentBadge value={totalStats.feesChange} />
+                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.feesChange} />
                   </>
                 ) : (
                   <>
@@ -125,7 +134,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                   </>
                 )}
               </div>
-              <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+              <Paragraph className='text-sm! leading-5! text-neutral-500'>{t('Fees (24h)')}</Paragraph>
             </Box>
           </SwiperSlide>
         </Swiper>
