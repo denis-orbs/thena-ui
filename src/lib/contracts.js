@@ -12,6 +12,7 @@ import {
   farmCenterAbi,
   gaugeAbi,
   globalFactoryAbi,
+  ichiMFDAbi,
   incentiveMakerAbi,
   linkTokenAbi,
   minterAbi,
@@ -196,6 +197,7 @@ export const getVaultDepositContract = (chainId, version = 2, isFarming = false)
   return getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
 }
 export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
+export const getIchiMFDAbi = (address, chainId) => getContract(ichiMFDAbi, address, chainId)
 
 export const getIchiVaultContract = (address, chainId, version = 2) => {
   if (version === 3) return getContract(ichiVaultAbiV3, address, chainId)

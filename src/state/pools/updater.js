@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { chunk } from 'lodash'
 import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -6,19 +7,277 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
-import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { pairAPIAbi } from '@/constant/abi'
-import { ichiVaultAbi } from '@/constant/abi/fusion'
+import {
+  GAMMA_TYPES,
+  ICHI_SwapFee,
+  ICHI_TYPES,
+  MANUAL_TYPES,
+  PAIR_TYPES,
+  UNKNOWN_LOGO,
+  V1_POOL_TYPES,
+  ZERO_ADDRESS,
+} from '@/constant'
+import {
+  factoryAbi,
+  gaugeV3Abi,
+  hypervisorMFDAbi,
+  ichiMFDAbi,
+  ichiVaultV3,
+  MFDFactoryAbi,
+  pairAbi,
+  pairAPIAbi,
+  voterAbi,
+} from '@/constant/abi'
+import { gammaHypervisorAbiV3, ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { fetchFusionPools, fetchFusionPoolsInfos } from '@/lib/api'
-import { callMulti } from '@/lib/contractActions'
+import { fetchFusionPools } from '@/lib/api'
+import { callMulti, simulateCall } from '@/lib/contractActions'
+import { getIchiMFDAbi } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 
 import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
+
+const pairABI = {
+  classic: pairAbi,
+  hypervisor: gammaHypervisorAbiV3,
+  ichi: ichiVaultV3,
+}
+
+const mfdABI = {
+  hypervisor: hypervisorMFDAbi,
+  ichi: ichiMFDAbi,
+}
+
+const simulateICHIEarnedRewards = async (receiver, chainId) => {
+  try {
+    const contract = getIchiMFDAbi(receiver, chainId)
+    return await simulateCall(contract, 'getAllRewards', [], chainId)
+  } catch (error) {
+    return [0n]
+  }
+}
+
+const createCallMulti = (calls, abi) =>
+  callMulti(
+    calls.map(call => ({
+      abi,
+      address: call.address,
+      functionName: call.name,
+      args: call.params,
+    })),
+  )
+
+const pairAddressForAccount = async (chainId, pairs, account, type) => {
+  if (!pairs?.length) return []
+
+  const isClassicPair = type === 'classic'
+  const isHypervisorPair = type === 'hypervisor'
+  const isICHIPair = type === 'ichi'
+  const results = []
+
+  try {
+    const chunks = chunk(pairs, 10)
+    for (let index = 0; index < chunks.length; index++) {
+      const pairsList = chunks[index]
+
+      const gaugeForPoolCalls = pairsList.map(pair => ({
+        address: Contracts.voter[chainId],
+        name: 'gaugeForPool',
+        params: [pair.address],
+      }))
+
+      const isPairCalls = pairsList.map(pair => ({
+        address: Contracts.factory[chainId],
+        name: 'isPair',
+        params: [pair.address],
+      }))
+
+      const accountLpBalanceCalls = pairsList.map(pair => ({
+        address: pair.address,
+        name: 'balanceOf',
+        params: [account],
+      }))
+
+      const receiverCalls = pairsList.map(pair => ({
+        address: isHypervisorPair ? pair.address : Contracts.mfdFactoryAddress[chainId],
+        name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
+        params: isHypervisorPair ? [] : [pair.address],
+      }))
+
+      const [gaugeForPools, isPairs, accountLpBalances, receivers] = await Promise.all([
+        createCallMulti(gaugeForPoolCalls, voterAbi),
+        createCallMulti(isPairCalls, factoryAbi),
+        createCallMulti(accountLpBalanceCalls, pairABI[type]),
+        !isClassicPair && receiverCalls.length
+          ? createCallMulti(receiverCalls, isHypervisorPair ? gammaHypervisorAbiV3 : MFDFactoryAbi)
+          : [],
+      ])
+
+      const accountGaugeLPAmountCalls = []
+      const earnedCalls = []
+      const claimable0Calls = []
+      const claimable1Calls = []
+      const ichisEarned = []
+
+      for (let i = 0; i < pairsList.length; i++) {
+        const gauge = gaugeForPools[i]
+        const isPair = isPairs[i]
+        const pair = pairsList[i]
+
+        if (isClassicPair) {
+          if (gauge !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
+            accountGaugeLPAmountCalls.push({
+              address: gauge,
+              name: 'balanceOf',
+              params: [account],
+            })
+
+            earnedCalls.push({
+              address: gauge,
+              name: 'earnedAll',
+              params: [account],
+            })
+          }
+
+          if (isPair) {
+            claimable0Calls.push({
+              address: pair.address,
+              name: 'claimable0',
+              params: [account],
+            })
+
+            claimable1Calls.push({
+              address: pair.address,
+              name: 'claimable1',
+              params: [account],
+            })
+          }
+        } else if (receivers[i] !== ZERO_ADDRESS) {
+          claimable0Calls.push({
+            address: receivers[i],
+            name: 'claimable',
+            params: [account, pair.token0?.address],
+          })
+
+          claimable1Calls.push({
+            address: receivers[i],
+            name: 'claimable',
+            params: [account, pair.token1?.address],
+          })
+
+          earnedCalls.push({
+            address: receivers[i],
+            name: 'claimableRewards',
+            params: [account],
+          })
+
+          if (isICHIPair) {
+            const ichiEarned = await simulateICHIEarnedRewards(receivers[i], chainId)
+            ichisEarned.push([[Contracts.THE[chainId].toLowerCase()], [Number(ichiEarned[0])]])
+          }
+
+          accountGaugeLPAmountCalls.push({
+            address: receivers[i],
+            name: 'totalBalance',
+            params: [account],
+          })
+        }
+      }
+
+      const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
+        createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? gaugeV3Abi : mfdABI[type]),
+        isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? gaugeV3Abi : mfdABI[type]),
+        createCallMulti(claimable0Calls, isClassicPair ? pairAbi : mfdABI[type]),
+        createCallMulti(claimable1Calls, isClassicPair ? pairAbi : mfdABI[type]),
+      ])
+
+      let gaugeIndex = 0
+      let pairClaimIndex = 0
+
+      for (let i = 0; i < pairsList.length; i++) {
+        const pair = pairsList[i]
+        const gauge = gaugeForPools[i]
+        const isPair = isPairs[i]
+        const accountLpBalance = accountLpBalances[i] ?? 0
+        let accountGaugeLPAmount = 0
+        let earned = 0
+        let claimable0 = 0
+        let claimable1 = 0
+
+        if (isClassicPair) {
+          if (gauge !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
+            accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
+            earned = earneds[gaugeIndex]
+            gaugeIndex++
+          }
+
+          if (isPair) {
+            claimable0 = claimable0s[pairClaimIndex]
+            claimable1 = claimable1s[pairClaimIndex]
+
+            pairClaimIndex++
+          }
+        } else {
+          const [receiver] = receivers[i]
+          if (receiver !== ZERO_ADDRESS) {
+            claimable0 = claimable0s[pairClaimIndex]
+            claimable1 = claimable1s[pairClaimIndex]
+            const earnedTokens = earneds[gaugeIndex]?.[0] || []
+            const earnedRewards = earneds[gaugeIndex]?.[1] || []
+
+            const theAddressId = earnedTokens.findIndex(t => t.toLowerCase() === Contracts.THE[chainId].toLowerCase())
+            earned = earnedRewards[theAddressId] ?? 0
+            accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
+
+            pairClaimIndex++
+            gaugeIndex++
+          }
+        }
+
+        results.push({
+          pair_address: pair.address,
+          claimable0: new BigNumber(String(claimable0)),
+          claimable1: new BigNumber(String(claimable1)),
+          account_lp_balance: new BigNumber(accountLpBalance),
+          account_gauge_balance: new BigNumber(String(accountGaugeLPAmount)),
+          account_gauge_earned: new BigNumber(String(earned)),
+        })
+      }
+    }
+  } catch (error) {
+    console.error('get pairs for account error', error)
+  }
+
+  return results
+}
+
+const fetchFusionPoolsInfos = async ({ account, chainId, pools }) => {
+  const classicPairs = []
+  const gammaPairs = []
+  const ichiPairs = []
+
+  pools.forEach(fusion => {
+    if (GAMMA_TYPES.includes(fusion.type)) {
+      gammaPairs.push(fusion)
+    } else if (ICHI_TYPES.includes(fusion.type)) {
+      ichiPairs.push(fusion)
+    } else if ([V1_POOL_TYPES.CLASSIC, V1_POOL_TYPES.VOLATILE, V1_POOL_TYPES.STABLE].includes(fusion.type)) {
+      classicPairs.push(fusion)
+    }
+  })
+
+  const [classicData, gammaData, ichiData] = await Promise.all([
+    pairAddressForAccount(chainId, classicPairs, account, 'classic'),
+    pairAddressForAccount(chainId, gammaPairs, account, 'hypervisor'),
+    pairAddressForAccount(chainId, ichiPairs, account, 'ichi'),
+  ])
+
+  return [...classicData, ...gammaData, ...ichiData]
+}
 
 const fetchUserFusionsV2 = async (account, pools, chainId) => {
   if (chainId === CHAIN_ID.TEST_BSC) return []
@@ -55,8 +314,9 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
   }
 }
 
-const fetchUserFusionsV3 = async (account, chainId) => {
-  const fusionPoolsInfos = await fetchFusionPoolsInfos({ account, chainId })
+const fetchUserFusionsV3 = async (account, pools, chainId) => {
+  const fusionPoolsInfos = await fetchFusionPoolsInfos({ account: account?.toLowerCase(), chainId, pools })
+
   return fusionPoolsInfos.map(pool => {
     const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned, account_lp_balance } =
       pool
@@ -128,11 +388,13 @@ function Updater() {
   )
 
   const { data: userInfos } = useSWRImmutable(
-    account && fusionPoolsV2.length > 0 ? ['pools user api', account, fusionPoolsV2.length, networkId] : null,
+    account && (fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0)
+      ? ['pools user api', account, fusionPoolsV2.length, fusionPoolsV3.length, networkId]
+      : null,
     async () => {
       const [userFusionsV2, userFusionsV3] = await Promise.all([
         fetchUserFusionsV2(account, fusionPoolsV2, networkId),
-        fetchUserFusionsV3(account, networkId),
+        fetchUserFusionsV3(account, fusionPoolsV3, networkId),
       ])
       return [...userFusionsV2, ...userFusionsV3]
     },

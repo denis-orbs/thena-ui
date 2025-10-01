@@ -749,3 +749,25 @@ export const HASH = {
 }
 
 export const THENACOLORS = ['#F199EE', '#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F', '#580055', '#32002F']
+
+export const VE_AUTOMATION_HISTORY_TYPES = Object.freeze({
+  DEPOSIT_FUNDS: 'Deposit Funds',
+  CANCEL_UPKEEP: 'Cancel Upkeep',
+  SET_GAS_LIMIT: 'Set Gas Limit',
+  SET_EXECUTION_TIME: 'Set Execution Time',
+  RELOCK: 'Relock',
+  CLAIM: 'Claim Rebase',
+  VOTE: 'Vote',
+  RELOCK_CLAIM: 'Relock & Claim Rebase',
+  VOTE_RELOCK: 'Vote & Relock',
+  VOTE_CLAIM: 'Vote & Claim Rebase',
+  VOTE_CLAIM_RELOCK: 'Vote & Claim Rebase & Relock',
+  PERFORM_UPKEEP: 'Perform Upkeep',
+  SET_OPERATION: 'Set Operation',
+})
+
+export const V1_POOL_TYPES = Object.freeze({
+  STABLE: 'Stable',
+  VOLATILE: 'Volatile',
+  CLASSIC: 'Classic',
+})

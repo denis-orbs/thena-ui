@@ -129,23 +129,11 @@ export const fetchTopTokens = async ({ networkId, version = 3 }) => {
     .then(r => r.data)
 }
 
-export const fetchVeTHETokens = (chainId, account) =>
-  fetch(`${backendApi}/v3/vethes/${chainId}/${account?.toLowerCase()}`)
-    .then(r => r.json())
-    .then(r => r.data)
-
 export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
 // export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').then(r => r.json())
-export const fetchFusionPoolsInfos = ({ account, chainId }) => {
-  const res = fetch(`${backendApi}/v3/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
-    .then(r => r.json())
-    .then(r => r.data)
-  return res
-}
-
 export const fetchVotingHistory = async (account, veTHEId, chainId, skip = 0, limit = 10) => {
   let url = `${backendApi}/v3/vote/history/${chainId}?address=${account?.toLowerCase()}&skip=${skip}&limit=${limit}`
   if (veTHEId !== 'All') url += `&tokenId=${veTHEId}`
@@ -154,11 +142,6 @@ export const fetchVotingHistory = async (account, veTHEId, chainId, skip = 0, li
     .then(r => r.json())
     .then(r => r)
 }
-
-export const fetchAutomationHistory = (chainId, tokenId) =>
-  fetch(`${backendApi}/v3/vethes/automation/${chainId}/${tokenId}`)
-    .then(r => r.json())
-    .then(r => r.data)
 
 export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
   let url = `${backendApi}/v3/historical-token-price/${chainId}?page=${page}&limit=${limit}&date_gte=${startDate}`
