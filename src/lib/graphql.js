@@ -44,6 +44,12 @@ export const v1Client = {
   [ChainId.OPBNB]: new GraphQLClient(v1GraphUrl[ChainId.OPBNB]),
 }
 
+export const vetheClient = {
+  [ChainId.BSC]: new GraphQLClient(
+    `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/FG5W3USPsJhkyivLku9D5PU1cEbNFQQVUngUNSoXQSRd`,
+  ),
+}
+
 export const fusionClient = {
   3: {
     [CHAIN_ID.BSC]: new GraphQLClient(
