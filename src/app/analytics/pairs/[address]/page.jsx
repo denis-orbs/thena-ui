@@ -52,8 +52,8 @@ export default function PairDetailPage({ params }) {
     return undefined
   }, [pair, strategy])
 
-  const pairFee = useMemo(() => currentStrategy?.fee ?? pair.fee ?? 0, [currentStrategy, pair])
-  const pairAddress = useMemo(() => currentStrategy?.address ?? pair.address, [currentStrategy, pair])
+  const pairFee = useMemo(() => currentStrategy?.fee ?? pair?.fee ?? 0, [currentStrategy, pair])
+  const pairAddress = useMemo(() => currentStrategy?.address ?? pair?.address, [currentStrategy, pair])
 
   const setStrategy = useCallback(
     strategyInfo => {
