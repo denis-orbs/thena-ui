@@ -1,5 +1,6 @@
 import _ from 'lodash'
 
+import { BNB_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
 
@@ -45,7 +46,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
       name: 'Binance Coin',
       symbol: 'BNB',
       decimals: 18,
-      logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
+      logoURI: BNB_LOGO,
       price: wbnbPrice,
     }
     assets.unshift(nativeBNB)

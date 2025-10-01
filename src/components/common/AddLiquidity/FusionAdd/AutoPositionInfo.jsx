@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiClaim, useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -31,7 +31,7 @@ const calculateRewardData = (position, isSwapFee) => {
       rewards.push({
         amount: position?.account.gaugeEarned,
         symbol: 'THE',
-        logoURI: 'https://cdn.thena.fi/assets/THE.png',
+        logoURI: { THE_LOGO },
         type: 'gauge',
       })
     }

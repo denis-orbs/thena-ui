@@ -7,7 +7,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
-import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
+import { FusionRangeType, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
@@ -178,11 +178,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
                     logo2={secondAsset?.logoURI}
                   />
                 ) : (
-                  <CircleImage
-                    className='size-4 md:size-8'
-                    src='https://cdn.thena.fi/assets/THE.png'
-                    alt='THENA First Logo'
-                  />
+                  <CircleImage className='size-4 md:size-8' src={THE_LOGO} alt='THENA First Logo' />
                 )}
 
                 {/* <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>

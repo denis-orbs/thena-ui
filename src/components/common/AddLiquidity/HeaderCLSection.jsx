@@ -9,7 +9,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, THE_LOGO } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
@@ -179,7 +179,7 @@ function ManualStrategyDisplay({ firstAsset, secondAsset, isEarnFees, APRs, acti
           ) : (
             <CircleImage
               className='size-5 border-[2.5px] border-[#1C2027] md:size-8'
-              src='https://cdn.thena.fi/assets/THE.png'
+              src={THE_LOGO}
               alt='THENA First Logo'
             />
           )}

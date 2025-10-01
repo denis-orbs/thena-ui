@@ -7,7 +7,7 @@ import { zeroAddress } from 'viem'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
@@ -181,7 +181,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                   <>
                     {Number(reward0?.amount.toSignificant()) > 0 && (
                       <div className='flex flex-nowrap items-center gap-2'>
-                        <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='reward THE' />
+                        <CircleImage className='size-5' src={THE_LOGO} alt='reward THE' />
                         <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
                           {formatAmount(reward0?.amount?.toSignificant())}
                         </Paragraph>
@@ -189,7 +189,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
                     )}
                     {Number(reward1?.amount.toSignificant()) > 0 && (
                       <div className='flex flex-nowrap items-center gap-2'>
-                        <CircleImage className='size-5' src='https://cdn.thena.fi/assets/WBNB.png' alt='reward BNB' />
+                        <CircleImage className='size-5' src={BNB_LOGO} alt='reward BNB' />
                         <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
                           {formatAmount(reward1?.amount?.toSignificant())}
                         </Paragraph>

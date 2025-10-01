@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { useBalance, useReadContract } from 'wagmi'
 
+import { BNB_LOGO, BSC_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
@@ -122,8 +123,8 @@ function BalanceInput({
                   classNames={{
                     image: 'outline-2 w-6 h-6',
                   }}
-                  logo1='https://cdn.thena.fi/assets/BSC.png'
-                  logo2='https://cdn.thena.fi/assets/BNB.png'
+                  logo1={BSC_LOGO}
+                  logo2={BNB_LOGO}
                 />
               ) : (
                 <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI ?? ''} />

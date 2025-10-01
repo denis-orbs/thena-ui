@@ -69,62 +69,69 @@ export const LOTTERY_STATUS = {
 
 export const SupportedChainIds = [CHAIN_ID.BSC, CHAIN_ID.OPBNB]
 
+export const LOGO_PATH = 'https://cdn.thena.fi/logos'
+export const THE_LOGO = `${LOGO_PATH}/THE.png`
+export const BNB_LOGO = `${LOGO_PATH}/WBNB.png`
+export const BSC_LOGO = `${LOGO_PATH}/BSC.png`
+export const LINK_LOGO = `${LOGO_PATH}/LINK.png`
+export const UNKNOWN_LOGO = `${LOGO_PATH}/UNKNOWN.png`
+
 export const V1_ROUTE_ASSETS = {
   [CHAIN_ID.BSC]: [
     {
       symbol: 'WBNB',
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-      logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
+      logoURI: BNB_LOGO,
     },
     {
       symbol: 'BUSD',
       address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      logoURI: 'https://cdn.thena.fi/assets/BUSD.png',
+      logoURI: `${LOGO_PATH}/BUSD.png`,
     },
     {
       symbol: 'USDC',
       address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-      logoURI: 'https://cdn.thena.fi/assets/USDC.png',
+      logoURI: `${LOGO_PATH}/USDC.png`,
     },
     {
       symbol: 'USDT',
       address: '0x55d398326f99059fF775485246999027B3197955',
-      logoURI: 'https://cdn.thena.fi/assets/USDT.png',
+      logoURI: `${LOGO_PATH}/USDT.png`,
     },
     {
       symbol: 'FRAX',
       address: '0x90c97f71e18723b0cf0dfa30ee176ab653e89f40',
-      logoURI: 'https://cdn.thena.fi/assets/FRAX.png',
+      logoURI: `${LOGO_PATH}/FRAX.png`,
     },
     {
       symbol: 'BNBx',
       address: '0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275',
-      logoURI: 'https://cdn.thena.fi/assets/BNBx.png',
+      logoURI: `${LOGO_PATH}/BNBx.png`,
     },
     {
       symbol: 'CUSD',
       address: '0xFa4BA88Cf97e282c505BEa095297786c16070129',
-      logoURI: 'https://cdn.thena.fi/assets/CUSD.png',
+      logoURI: `${LOGO_PATH}/CUSD.png`,
     },
     {
       symbol: 'HAY',
       address: '0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5',
-      logoURI: 'https://cdn.thena.fi/assets/HAY.png',
+      logoURI: `${LOGO_PATH}/HAY.png`,
     },
     {
       symbol: 'USD+',
       address: '0xe80772eaf6e2e18b651f160bc9158b2a5cafca65',
-      logoURI: 'https://cdn.thena.fi/assets/USD+.png',
+      logoURI: `${LOGO_PATH}/USD+.png`,
     },
     {
       symbol: 'stkBNB',
       address: '0xc2e9d07f66a89c44062459a47a0d2dc038e4fb16',
-      logoURI: 'https://cdn.thena.fi/assets/stkBNB.png',
+      logoURI: `${LOGO_PATH}/stkBNB.png`,
     },
     {
       symbol: 'ankrBNB',
       address: '0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827',
-      logoURI: 'https://cdn.thena.fi/assets/ankrBNB.png',
+      logoURI: `${LOGO_PATH}/ankrBNB.png`,
     },
     {
       symbol: 'THE',
@@ -136,27 +143,25 @@ export const V1_ROUTE_ASSETS = {
     {
       symbol: 'WBNB',
       address: WBNB[CHAIN_ID.OPBNB].address,
-      logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
+      logoURI: BNB_LOGO,
     },
     {
       symbol: 'USDT',
       address: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
-      logoURI: 'https://cdn.thena.fi/assets/USDT.png',
+      logoURI: `${LOGO_PATH}/USDT.png`,
     },
     {
       symbol: 'ETH',
       address: '0xe7798f023fc62146e8aa1b36da45fb70855a77ea',
-      logoURI: 'https://cdn.thena.fi/assets/ETH.png',
+      logoURI: `${LOGO_PATH}/ETH.png`,
     },
     {
       symbol: 'BTCB',
       address: '0x7c6b91d9be155a6db01f749217d76ff02a7227f2',
-      logoURI: 'https://cdn.thena.fi/assets/BTCB.png',
+      logoURI: `${LOGO_PATH}/BTCB.png`,
     },
   ],
 }
-
-export const UNKNOWN_LOGO = 'https://cdn.thena.fi/assets/UNKNOWN_TOKEN.png'
 
 export const NEXT_EPOCH_TIMESTAMP = 1696464000
 
@@ -310,8 +315,6 @@ export const CHAINLINK_TOKEN = {
     },
   ],
 }
-
-export const chainLINKLogo = 'https://cdn.thena.fi/assets/LINK.png'
 
 export const EDIT_AUTOMATION_TYPE = {
   OPERATIONS: 'operations',

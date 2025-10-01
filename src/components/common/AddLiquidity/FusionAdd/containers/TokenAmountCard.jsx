@@ -8,7 +8,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { FusionRangeType } from '@/constant'
+import { BNB_LOGO, BSC_LOGO, FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useCurrencyLogo, useCurrencyPrice } from '@/hooks/fusion/useCurrencyLogo'
@@ -184,8 +184,8 @@ export function TokenAmountCard({
                       classNames={{
                         image: 'outline-2 w-6 h-6',
                       }}
-                      logo1='https://cdn.thena.fi/assets/BSC.png'
-                      logo2='https://cdn.thena.fi/assets/BNB.png'
+                      logo1={BSC_LOGO}
+                      logo2={BNB_LOGO}
                     />
                   ) : (
                     <CircleImage alt='' className='h-6 w-6' src={logoURI} />

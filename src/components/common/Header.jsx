@@ -16,7 +16,7 @@ import { useConnect, useDisconnect } from 'wagmi'
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { BSC_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -55,7 +55,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 
 const chains = [
-  { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
+  { img: BSC_LOGO, chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
   // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
@@ -1071,7 +1071,7 @@ function Header() {
           </div>
           <div className='inline-flex items-center gap-2'>
             <div className='2sm:hidden flex items-center gap-2 rounded-lg p-3 xl:flex'>
-              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+              <CircleImage src={THE_LOGO} alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
               {prices.THE > 0 ? (
                 <Paragraph className='text-xs !leading-4 font-medium lg:text-base lg:!leading-5'>
                   ${formatAmount(prices.THE)}

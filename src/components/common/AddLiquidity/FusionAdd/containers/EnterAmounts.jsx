@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { BNB, Token, WBNB } from 'thena-sdk-core'
 
-import { UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { maxAmountSpend } from '@/lib/fusion'
 import { cn } from '@/lib/utils'
@@ -81,7 +81,7 @@ export function EnterAmounts({
         .map(item => {
           if (item.address === 'BNB') {
             const currency = BNB.onChain(networkId)
-            currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+            currency.logoURI = BNB_LOGO
             currency.address = 'BNB'
             return currency
           }

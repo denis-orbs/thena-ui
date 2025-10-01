@@ -12,7 +12,7 @@ import TruncateContent from '@/components/common/TruncateContent'
 import SuccessModal from '@/components/modal/SuccessModal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
+import { LOGO_PATH, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useConfetti } from '@/hooks/useConfetti'
@@ -311,7 +311,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                         {ticker !== 'MUSD' && (
                           <Image
                             alt={ticker}
-                            src={`https://cdn.thena.fi/assets/${ticker}.png`}
+                            src={`${LOGO_PATH}/${ticker}.png`}
                             className='h-5 w-5 shrink-0'
                             width={20}
                             height={20}

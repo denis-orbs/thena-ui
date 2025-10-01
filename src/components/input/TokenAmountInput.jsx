@@ -7,7 +7,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, BSC_LOGO, SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
@@ -227,8 +227,8 @@ export function TokenAmountInput({
                   classNames={{
                     image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
                   }}
-                  logo1='https://cdn.thena.fi/assets/BSC.png'
-                  logo2='https://cdn.thena.fi/assets/BNB.png'
+                  logo1={BSC_LOGO}
+                  logo2={BNB_LOGO}
                 />
               ) : (
                 <CircleImage alt='thena' className='h-4 w-4 md:h-6 md:w-6' src={asset?.logoURI ?? UNKNOWN_LOGO} />
