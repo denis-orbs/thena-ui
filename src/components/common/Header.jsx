@@ -16,7 +16,7 @@ import { useConnect, useDisconnect } from 'wagmi'
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { BSC_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
+import { BNB_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -55,7 +55,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 
 const chains = [
-  { img: BSC_LOGO, chainId: ChainId.BSC, label: 'BNB Chain' },
+  { img: BNB_LOGO, chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
   // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
