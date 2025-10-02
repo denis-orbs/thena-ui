@@ -554,7 +554,6 @@ function Header() {
     () => [
       {
         label: t('Trade'),
-        subheading: t('Easy and user-friendly trading interface'),
         active: pathname.includes('/swap'),
         sub: [
           {
@@ -595,7 +594,6 @@ function Header() {
       {
         label: t('Pools'),
         active: pathname.includes('/pools'),
-        subheading: t('Trade with advantages like graph etc'),
         onClickHandler: () => {
           push('/pools')
         },
@@ -603,7 +601,6 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
-        subheading: t('Trade across different blockchains'),
         sub: [
           {
             heading: t('veTHE'),
@@ -636,7 +633,6 @@ function Header() {
       },
       {
         label: t('Analytics'),
-        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/analytics'),
         onClickHandler: () => push('/analytics'),
       },
@@ -647,7 +643,6 @@ function Header() {
       },
       {
         label: t('More'),
-        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
