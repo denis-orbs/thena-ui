@@ -1070,10 +1070,10 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-3 xl:flex'>
-              <CircleImage src={THE_LOGO} alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-0 xl:flex xl:p-3'>
+              <CircleImage src={THE_LOGO} alt='' className='h-5 w-5' />
               {prices.THE > 0 ? (
-                <Paragraph className='text-xs !leading-4 font-medium lg:text-base lg:!leading-5'>
+                <Paragraph className='text-sm !leading-4 font-medium lg:text-base lg:!leading-5'>
                   ${formatAmount(prices.THE)}
                 </Paragraph>
               ) : (
@@ -1095,10 +1095,10 @@ function Header() {
               isMini={!account && is2SmDown}
             />
             <div
-              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700'
+              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-1 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700 lg:p-2'
               onClick={() => setIsOpen(true)}
             >
-              <HamburgerIcon className='size-4 stroke-neutral-400' />
+              <HamburgerIcon className='size-5 stroke-neutral-400' />
             </div>
           </div>
         </div>

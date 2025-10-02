@@ -83,14 +83,14 @@ function Ecosystem() {
       <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pt-[217px] lg:pb-[150px] xl:px-0'>
         <div className='mx-auto w-full max-w-[700px]'>
           <Heading heading={t('THE Ecosystem')} title={t('Backed by the best')} wrapperStyles='items-center' />
-          <div className='mt-6 flex items-center justify-center gap-3.5 lg:mt-8'>
+          <div className='mt-6 flex items-center justify-center gap-2.5 lg:mt-8 lg:gap-3.5'>
             {data.map((item, idx) => (
               <div
                 onClick={() => {
                   setEcoSystem(item)
                 }}
                 className={cn(
-                  'font-figtree cursor-pointer rounded-full border px-5 py-2',
+                  'font-figtree cursor-pointer rounded-full border px-3 py-2 text-sm lg:px-5 lg:text-base',
                   ecosystem === item ? 'border-primary-600 bg-transparent' : 'border-transparent bg-[#1B1624]',
                 )}
                 key={idx}
