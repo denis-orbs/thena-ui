@@ -555,6 +555,9 @@ function Header() {
       {
         label: t('Trade'),
         active: pathname.includes('/swap'),
+        onClickHandler: () => {
+          push('/swap')
+        },
         sub: [
           {
             heading: t('Spot Trade'),
@@ -601,6 +604,9 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
+        onClickHandler: () => {
+          push('/dashboard')
+        },
         sub: [
           {
             heading: t('veTHE'),
@@ -627,9 +633,6 @@ function Header() {
             },
           },
         ],
-        onClickHandler: () => {
-          push('/dashboard')
-        },
       },
       {
         label: t('Analytics'),
@@ -644,6 +647,9 @@ function Header() {
       {
         label: t('More'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
+        onClickHandler: () => {
+          push('/protocols')
+        },
         sub:
           networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
             ? [
