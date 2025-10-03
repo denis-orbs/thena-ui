@@ -97,7 +97,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     style={{
                       backgroundColor: backgroundColors[item?.address] || 'transparent',
                     }}
-                    src={`/logo-token/${item?.logoURI.replace('https://cdn.thena.fi/', '')}`}
+                    src={`/logos/${item?.logoURI.replace('https://cdn.thena.fi/logos/', '')}`}
                     width={tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3 ? 240 : 192}
                     height={tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3 ? 240 : 192}
                     onLoadingComplete={() => handleImageLoad(item)}
@@ -165,7 +165,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                       key={item?.address}
                       alt={item?.name}
                       className={cn('relative! aspect-square! h-auto! rounded-[50%] bg-transparent')}
-                      src={`/logo-token/${item?.logoURI.replace('https://cdn.thena.fi/', '')}`}
+                      src={`/logos/400x400/${item?.logoURI.replace('https://cdn.thena.fi/logos/', '')}`}
                       style={{
                         backgroundColor: backgroundColors[item?.address] || 'transparent',
                       }}
