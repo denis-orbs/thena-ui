@@ -11,12 +11,12 @@ export const METRICS_TYPE = {
   RECENT_ACTIVITY: 'Recent Activity',
 }
 
-export const normalizeAssetUrl = url => {
+export const normalizeAssetUrl = (url, size = '400x400') => {
   if (!url) return url
   try {
     const u = new URL(url)
     if (u.hostname === 'cdn.thena.fi') {
-      return u.pathname
+      return `/logos/${size}/${u.pathname.replace('/logos/', '')}`
     }
     return url
   } catch {

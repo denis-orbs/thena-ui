@@ -232,7 +232,9 @@ function AnalyticsChart({
             <>
               {properties && (
                 <Selection
-                  className={cn('mt-1 w-full bg-transparent')}
+                  className={cn(
+                    'mt-1 w-full items-start justify-start overflow-x-auto bg-transparent max-[356px]:max-w-[356px] max-sm:px-0',
+                  )}
                   classNames={{
                     items: cn('md:text-sm! text-x! flex-1'),
                   }}
@@ -301,7 +303,7 @@ function AnalyticsChart({
                 {properties && (
                   <Selection
                     className={cn(
-                      'items-stretch bg-transparent md:h-11',
+                      'items-stretch overflow-x-auto bg-transparent max-sm:px-0 md:h-11',
                       !isExpanded && 'h-8!',
                       !!epochData?.length && isExpanded && 'mt-9',
                     )}
