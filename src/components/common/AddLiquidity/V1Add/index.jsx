@@ -6,16 +6,13 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import Highlight from '@/components/highlight'
-import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
-import { Paragraph } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { InfoNeutralIcon, ZapperIcon } from '@/svgs'
+import { ZapperIcon } from '@/svgs'
 
 import { ManualPaneV1 } from './ManualPaneV1'
 import { CommonZapperPane } from '../components/CommonZapperPane'
@@ -36,7 +33,6 @@ export default function V1Add({
   const t = useTranslations()
   const [show, setShow] = useState(false)
   const { isLgDown } = useMediaQuery()
-  const [showWarningZapper, setShowWarningZapper] = useState(false)
 
   const [slippage, setSlippage] = useState(0.5)
 
@@ -58,8 +54,7 @@ export default function V1Add({
         ),
         active: isZapper,
         onClickHandler: () => {
-          // setIsZapper(true)
-          setShowWarningZapper(true)
+          setIsZapper(true)
         },
       },
     ],
@@ -68,30 +63,6 @@ export default function V1Add({
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-2', className)}>
-      <Modal
-        isOpen={showWarningZapper}
-        closeModal={() => {
-          setShowWarningZapper(false)
-        }}
-        width={400}
-        title=''
-      >
-        <ModalBody>
-          <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
-            <Highlight className='bg-primary-600'>
-              <InfoNeutralIcon className='size-5 [&>path]:stroke-neutral-100' />
-            </Highlight>
-            <Paragraph className='text-center text-neutral-50'>
-              Zapper is not available for the moment. Please try again later.
-            </Paragraph>
-          </div>
-        </ModalBody>
-        <ModalFooter className='mt-2 flex items-center justify-center gap-2 py-4'>
-          <PrimaryButton className='w-32 text-neutral-100' onClick={() => setShowWarningZapper(false)}>
-            OK
-          </PrimaryButton>
-        </ModalFooter>
-      </Modal>
       {Boolean(pool) && (
         <>
           <div className={cn('flex flex-row justify-between gap-2')}>
