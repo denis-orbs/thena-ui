@@ -2,11 +2,15 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
+import { PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import Highlight from '@/components/highlight'
+import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
+import { Paragraph } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { SettingsIcon, ZapperIcon } from '@/svgs'
+import { InfoNeutralIcon, SettingsIcon, ZapperIcon } from '@/svgs'
 
 import KyberZapperIncreasePane from './FusionAdd/KyberZapperIncreasePane'
 import KyberZapperPane from './FusionAdd/KyberZapperPane'
@@ -29,6 +33,7 @@ export default function ManualAddPanel({
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
   const { isLgDown } = useMediaQuery()
+  const [showWarningZapper, setShowWarningZapper] = useState(false)
 
   useEffect(() => {
     if (!strategy?.isFarming) {
@@ -54,7 +59,8 @@ export default function ManualAddPanel({
         ),
         active: isZapper,
         onClickHandler: () => {
-          setIsZapper(true)
+          setShowWarningZapper(true)
+          // setIsZapper(true)
         },
       },
     ],
@@ -63,6 +69,30 @@ export default function ManualAddPanel({
 
   return (
     <div className='flex flex-col'>
+      <Modal
+        isOpen={showWarningZapper}
+        closeModal={() => {
+          setShowWarningZapper(false)
+        }}
+        width={400}
+        title=''
+      >
+        <ModalBody>
+          <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
+            <Highlight className='bg-primary-600'>
+              <InfoNeutralIcon className='size-5 [&>path]:stroke-neutral-100' />
+            </Highlight>
+            <Paragraph className='text-center text-neutral-50'>
+              Zapper is not available for the moment. Please try again later.
+            </Paragraph>
+          </div>
+        </ModalBody>
+        <ModalFooter className='mt-2 flex items-center justify-center gap-2 py-4'>
+          <PrimaryButton className='w-32 text-neutral-100' onClick={() => setShowWarningZapper(false)}>
+            OK
+          </PrimaryButton>
+        </ModalFooter>
+      </Modal>
       <>
         <div className={cn('flex flex-row justify-between gap-2')}>
           <Selection
