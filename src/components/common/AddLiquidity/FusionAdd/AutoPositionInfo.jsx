@@ -31,7 +31,7 @@ const calculateRewardData = (position, isSwapFee) => {
       rewards.push({
         amount: position?.account.gaugeEarned,
         symbol: 'THE',
-        logoURI: { THE_LOGO },
+        logoURI: THE_LOGO,
         type: 'gauge',
       })
     }
