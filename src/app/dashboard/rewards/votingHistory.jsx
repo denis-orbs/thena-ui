@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import useSWR from 'swr'
 import { useTranslations } from 'use-intl'
 
 import { TertiaryButton } from '@/components/buttons/Button'
@@ -12,8 +11,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import useWallet from '@/hooks/useWallet'
-import { fetchVotingHistory } from '@/lib/api'
+import { useVotingHistory } from '@/hooks/vote/useVotingHistory'
 import { cn, formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 import { ArrowLeftIcon, ChevronDownIcon, InfoCircleWhite, InfoIcon, XIcon } from '@/svgs'
@@ -367,38 +365,10 @@ function TitleEpoch({ epoch, open }) {
   )
 }
 
-const fetchVotingHistoryData = async ({ tokenVeTHEId, limit = 10, skip = 0, account, chainId }) => {
-  try {
-    const res = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
-    if (res?.data) {
-      const result = res.data.map(item => ({
-        ...item,
-        totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
-        totalVotesEpoch: item.epochTotalVotes,
-      }))
-
-      return { ...res, data: result }
-    }
-    return null
-  } catch (error) {
-    console.trace(error)
-    return null
-  }
-}
-
 function VotingHistory({ veTHEId }) {
-  const { account, chainId } = useWallet()
-  const [currentPage, setCurrentPage] = useState(1)
-
   const t = useTranslations()
 
-  const { data: epochVotingHistory, isLoading } = useSWR(
-    account && ['epochVotingHistory', account, currentPage, veTHEId],
-    () => fetchVotingHistoryData({ tokenVeTHEId: veTHEId, limit: 10, skip: (currentPage - 1) * 10, account, chainId }),
-    {
-      refreshInterval: 0,
-    },
-  )
+  const { epochVotingHistory, isLoading, setCurrentPage, currentPage } = useVotingHistory(veTHEId)
   const [isOpenArray, setIsOpenArray] = useState([])
 
   useEffect(() => {

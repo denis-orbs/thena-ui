@@ -33,6 +33,7 @@ import {
   veTheAutomationFactoryAbi,
   voterAbi,
   voterV2Abi,
+  votingIncentivesAbi,
   wbnbAbi,
   weightedGaugeAbi,
   weightedPoolAbi,
@@ -112,6 +113,8 @@ export const getVoterContract = (chainId, version = 3) => {
   }
   return getContract(voterAbi, Contracts.voter, chainId)
 }
+
+export const getVotingIncentivesContract = (address, chainId) => getContract(votingIncentivesAbi, address, chainId)
 
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 
