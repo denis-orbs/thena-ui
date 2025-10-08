@@ -16,18 +16,39 @@ import { useTxn } from '@/state/transactions/hooks'
 export const useBridge = () => {
   const [pending, setPending] = useState(false)
   const { account } = useWallet()
-  const { startTxn, endTxn, updateTxn, askUserToRetry } = useTxn()
+  const { startTxn, endTxn, updateTxn } = useTxn()
   const t = useTranslations()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
   const { routerAddress } = CCIP_SUPPORTS.OPBNB
   const tokenAddress = Contracts.THE[CHAIN_ID.OPBNB]
   const destinationChainSelector = CCIP_SUPPORTS.BNB.chainSelector
+  const ccipClient = createClient()
 
   const networkId = CHAIN_ID.OPBNB
 
+  const getFee = useCallback(
+    async ({ amount, targetAddress }) => {
+      try {
+        return await ccipClient.getFee({
+          client: publicClient,
+          routerAddress,
+          destinationChainSelector,
+          destinationAccount: targetAddress,
+          amount,
+          tokenAddress,
+        })
+      } catch (error) {
+        console.error('[CCIP Tx Error]', error)
+
+        return null
+      }
+    },
+    [ccipClient, publicClient, routerAddress, destinationChainSelector, tokenAddress],
+  )
+
   const approveRouter = useCallback(
-    async ({ key, uuid, amount, ccipClient }) => {
+    async ({ key, uuid, amount }) => {
       let hash
 
       updateTxn({ key, uuid, status: TXN_STATUS.WAITING })
@@ -35,11 +56,10 @@ export const useBridge = () => {
       try {
         hash = (
           await ccipClient.approveRouter({
-            walletClient,
+            client: walletClient,
             tokenAddress,
             routerAddress,
             amount,
-            waitForReceipt: false,
           })
         )?.txHash
 
@@ -51,30 +71,16 @@ export const useBridge = () => {
         return txnReceipt
       } catch (error) {
         console.error('[CCIP Tx Error]', error)
-
-        if (error?.name === 'TransactionReceiptNotFoundError' && hash) {
-          updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
-          successToast('Transaction confirmed')
-          return true
-        }
-
         updateTxn({ key, uuid, status: TXN_STATUS.FAILED, hash })
         errorToast(error?.shortMessage || error?.message || 'Transaction failed')
-
-        const retry = await askUserToRetry({
-          key,
-          uuid,
-          retryFn: () => approveRouter({ key, uuid, amount, ccipClient }),
-        })
-
-        return retry || false
+        return false
       }
     },
-    [updateTxn, walletClient, tokenAddress, routerAddress, networkId, askUserToRetry],
+    [updateTxn, walletClient, tokenAddress, routerAddress, networkId, ccipClient],
   )
 
   const transferTokens = useCallback(
-    async ({ key, uuid, amount, ccipClient, targetAddress }) => {
+    async ({ key, uuid, amount, targetAddress }) => {
       let hash
 
       updateTxn({ key, uuid, status: TXN_STATUS.WAITING })
@@ -83,10 +89,10 @@ export const useBridge = () => {
         updateTxn({ key, uuid, status: TXN_STATUS.PENDING })
         hash = (
           await ccipClient.transferTokens({
-            walletClient,
+            client: walletClient,
             routerAddress,
             destinationChainSelector,
-            destinationAddress: targetAddress,
+            destinationAccount: targetAddress,
             amount,
             tokenAddress,
           })
@@ -97,26 +103,12 @@ export const useBridge = () => {
         return hash
       } catch (error) {
         console.error('[CCIP Tx Error]', error)
-
-        if (error?.name === 'TransactionReceiptNotFoundError' && hash) {
-          updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
-          successToast('Transaction confirmed')
-          return true
-        }
-
         updateTxn({ key, uuid, status: TXN_STATUS.FAILED, hash })
         errorToast(error?.shortMessage || error?.message || 'Transaction failed')
-
-        const retry = await askUserToRetry({
-          key,
-          uuid,
-          retryFn: () => transferTokens({ key, uuid, amount, ccipClient, targetAddress }),
-        })
-
-        return retry || false
+        return false
       }
     },
-    [updateTxn, walletClient, routerAddress, destinationChainSelector, tokenAddress, askUserToRetry],
+    [updateTxn, ccipClient, walletClient, routerAddress, destinationChainSelector, tokenAddress],
   )
 
   const onBridge = useCallback(
@@ -131,8 +123,6 @@ export const useBridge = () => {
       setPending(true)
 
       try {
-        const ccipClient = createClient()
-
         const tokenSupported = await ccipClient.isTokenSupported({
           client: publicClient,
           routerAddress,
@@ -176,7 +166,6 @@ export const useBridge = () => {
           const approved = await approveRouter({
             key,
             uuid: approveId,
-            ccipClient,
             amount: amountInWei,
           })
           if (!approved) {
@@ -188,7 +177,6 @@ export const useBridge = () => {
         const bridged = await transferTokens({
           key,
           uuid: bridgeId,
-          ccipClient,
           amount: amountInWei,
           targetAddress,
         })
@@ -210,6 +198,7 @@ export const useBridge = () => {
     },
     [
       account,
+      ccipClient,
       publicClient,
       routerAddress,
       tokenAddress,
@@ -222,5 +211,5 @@ export const useBridge = () => {
     ],
   )
 
-  return { onBridge, pending }
+  return { onBridge, pending, getFee }
 }

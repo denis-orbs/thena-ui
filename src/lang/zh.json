@@ -1607,5 +1607,6 @@
   "opBNB to BNB": "opBNB to BNB",
   "Bridge [amount1] THE for [amount2] THE via [bridge]": "Bridge {amount1} THE for {amount2} THE via {bridge}",
   "Expected Time": "Expected Time",
-  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper"
+  "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper",
+  "Bridge [amount] THE to BNB": "Bridge {amount} THE to BNB"
 }

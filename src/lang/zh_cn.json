@@ -1689,5 +1689,6 @@
   "Bridge Route": "Bridge Route",
   "opBNB to BNB": "opBNB to BNB",
   "Bridge [amount1] THE for [amount2] THE via [bridge]": "Bridge {amount1} THE for {amount2} THE via {bridge}",
-  "Expected Time": "Expected Time"
+  "Expected Time": "Expected Time",
+  "Bridge [amount] THE to BNB": "Bridge {amount} THE to BNB"
 }
