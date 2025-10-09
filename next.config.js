@@ -133,6 +133,15 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/(.*)', // Apply to all routes
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self' https://stakeridoo.github.io;",
+          },
+        ],
+      },
+      {
         // Apply these headers to all routes in your application.
         source: '/:path*',
         headers: [
