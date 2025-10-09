@@ -130,29 +130,6 @@ const nextConfig = {
       },
     ]
   },
-  async headers() {
-    return [
-      {
-        source: '/(.*)', // Apply to all routes
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://stakeridoo.github.io/ve33",
-          },
-        ],
-      },
-      {
-        // Apply these headers to all routes in your application.
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'ALLOW-FROM https://stakeridoo.github.io/ve33',
-          },
-        ],
-      },
-    ]
-  },
 }
 
 module.exports = nextConfig
