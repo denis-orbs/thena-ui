@@ -49,6 +49,7 @@ import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
 import voterAbi from './voter.json'
 import voterV2Abi from './voterV2.json'
+import votingIncentivesAbi from './votingIncentives.json'
 import wbnbAbi from './wbnb.json'
 import emergencyRouterAbi from './weighted-pool/emergencyRouter.json'
 import weightedGaugeAbi from './weighted-pool/gauge.json'
@@ -112,6 +113,7 @@ export {
   veTheAutomationFactoryAbi,
   voterAbi,
   voterV2Abi,
+  votingIncentivesAbi,
   wbnbAbi,
   weightedGaugeAbi,
   weightedPoolAbi,

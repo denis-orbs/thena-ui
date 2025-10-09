@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { Info } from '@/components/alert'
@@ -46,7 +46,7 @@ export default function RewardsPage() {
   const [veTHEId, setVeTHEId] = useState('All')
   const debouncedId = useDebounce(approvedId)
 
-  const { currentRewardsV2, refetchVetheRewardV2 } = useGetVeRewardV2()
+  const { currentRewardsV2, refetchVetheRewardV2, isLoading: isLoadingV2 } = useGetVeRewardV2()
   const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
 
   const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = current
@@ -84,6 +84,16 @@ export default function RewardsPage() {
     [currentRewardsV2],
   )
 
+  const [hasV2Rewards, setHasV2Rewards] = useState(false)
+
+  useEffect(() => {
+    if (totalUsdV2.gt(ZERO_VALUE)) {
+      setHasV2Rewards(true)
+    } else if (!isLoadingV2) {
+      setHasV2Rewards(false)
+    }
+  }, [totalUsdV2, isLoadingV2])
+
   const typeSelections = useMemo(() => {
     const selections = [
       {
@@ -102,7 +112,7 @@ export default function RewardsPage() {
       },
     ]
 
-    if (totalUsdV2.gt(ZERO_VALUE)) {
+    if (hasV2Rewards) {
       selections.push({
         label: 'V2 Rewards',
         active: activeTab === RewardsTab.V2_REWARDS,
@@ -113,7 +123,7 @@ export default function RewardsPage() {
     }
 
     return selections
-  }, [activeTab, totalUsdV2])
+  }, [activeTab, hasV2Rewards])
 
   return (
     <LayoutWithBackButton backUrl='/dashboard'>

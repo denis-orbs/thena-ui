@@ -56,7 +56,8 @@ export function makeStore() {
       getDefaultMiddleware({
         thunk: true,
         serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'positions/updatePositions'],
+          ignoredPaths: ['positions.removedClaimablePositions', 'positions.positions'],
         },
       }),
     devTools: process.env.NODE_ENV === 'development',

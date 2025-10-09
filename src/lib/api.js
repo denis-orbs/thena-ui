@@ -135,14 +135,6 @@ export const fetchNfts = nftId =>
 
 // export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').then(r => r.json())
-export const fetchVotingHistory = async (account, veTHEId, chainId, skip = 0, limit = 10) => {
-  let url = `${backendApi}/v3/vote/history/${chainId}?address=${account?.toLowerCase()}&skip=${skip}&limit=${limit}`
-  if (veTHEId !== 'All') url += `&tokenId=${veTHEId}`
-
-  return fetch(url)
-    .then(r => r.json())
-    .then(r => r)
-}
 
 export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
   let url = `${backendApi}/v3/historical-token-price/${chainId}?page=${page}&limit=${limit}&date_gte=${startDate}`
@@ -159,14 +151,6 @@ export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page
 export const getAnalyticsData = async ({ networkId, first, page, epoch }) => {
   let url = `${backendApi}/v3/analytics/${networkId}?page=${page}&limit=${first}`
   if (epoch) url += `&epoch=${epoch}`
-
-  return fetch(url)
-    .then(r => r.json())
-    .then(r => r.data)
-}
-
-export const getUserVotingRewards = async ({ networkId, address }) => {
-  const url = `${backendApi}/v3/vote/rewards/${networkId}?address=${address.toLowerCase()}`
 
   return fetch(url)
     .then(r => r.json())
