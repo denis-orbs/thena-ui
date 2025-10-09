@@ -1,16 +1,6 @@
 /** @type {import('next').NextConfig} */
 const cspHeader = `
-          default-src 'self';
-          script-src 'self' 'unsafe-eval'; // Adjust as needed
-          style-src 'self' 'unsafe-inline'; // Adjust as needed
-          img-src 'self' blob: data:;
-          font-src 'self';
-          object-src 'none';
-          base-uri 'self';
-          form-action 'self';
-          frame-ancestors 'none'; // Prevents your app from being framed
           frame-src 'self' https://stakeridoo.github.io; // Allow iframes from this source
-          upgrade-insecure-requests;
         `
 const nextConfig = {
   eslint: {
