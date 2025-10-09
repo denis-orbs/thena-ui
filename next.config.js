@@ -130,6 +130,19 @@ const nextConfig = {
       },
     ]
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOW-FROM https://stakeridoo.github.io',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
