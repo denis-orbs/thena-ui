@@ -137,7 +137,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://stakeridoo.github.io;",
+            value: "frame-ancestors 'self' https://stakeridoo.github.io/ve33",
           },
         ],
       },
@@ -147,7 +147,7 @@ const nextConfig = {
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'ALLOW-FROM https://stakeridoo.github.io',
+            value: 'ALLOW-FROM https://stakeridoo.github.io/ve33',
           },
         ],
       },
