@@ -12,6 +12,8 @@ export function middleware(request) {
       expires: new Date().getTime() + 7 * 1000 * 60 * 60 * 24,
     })
   })
+
+  response.headers.set('X-Frame-Options', 'ALLOW-FROM https://stakeridoo.github.io/')
   return response
 }
 
