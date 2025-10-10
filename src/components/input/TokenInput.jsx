@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 
-import { UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, BSC_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount } from '@/lib/utils'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
@@ -88,8 +88,8 @@ function TokenInput({
                   classNames={{
                     image: 'outline-2 w-6 h-6',
                   }}
-                  logo1='https://cdn.thena.fi/assets/BSC.png'
-                  logo2='https://cdn.thena.fi/assets/BNB.png'
+                  logo1={BSC_LOGO}
+                  logo2={BNB_LOGO}
                 />
               ) : (
                 <CircleImage alt='' className='h-6 w-6' src={asset.logoURI || UNKNOWN_LOGO} />

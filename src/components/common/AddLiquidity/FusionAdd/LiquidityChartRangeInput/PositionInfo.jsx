@@ -7,7 +7,7 @@ import { useSimulateContract } from 'wagmi'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, PAIR_TYPES, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
@@ -192,7 +192,7 @@ function PositionInfo({ position }) {
       <>
         {position?.account?.gaugeEarned && (
           <div className='flex flex-row items-center gap-2'>
-            <CircleImage className='size-5' src='https://cdn.thena.fi/assets/THE.png' alt='base token' />
+            <CircleImage className='size-5' src={THE_LOGO} alt='base token' />
             <Paragraph className='text-primary-50 font-archia text-xl! leading-6! font-semibold text-nowrap'>
               {formatAmount(position?.account?.gaugeEarned)}
             </Paragraph>

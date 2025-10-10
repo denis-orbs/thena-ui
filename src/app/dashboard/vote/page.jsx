@@ -20,7 +20,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
+import { PAIR_TYPES, THE_LOGO } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -429,7 +429,7 @@ export default function VotePage() {
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
                 <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
               </div>
               <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>

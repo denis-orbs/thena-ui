@@ -16,7 +16,7 @@ import { useConnect, useDisconnect } from 'wagmi'
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { BNB_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
@@ -55,7 +55,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 
 const chains = [
-  { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
+  { img: BNB_LOGO, chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
   // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: '/bridge' },
@@ -547,8 +547,10 @@ function Header() {
     () => [
       {
         label: t('Trade'),
-        subheading: t('Easy and user-friendly trading interface'),
         active: pathname.includes('/swap'),
+        onClickHandler: () => {
+          push('/swap')
+        },
         sub: [
           {
             heading: t('Spot Trade'),
@@ -588,7 +590,6 @@ function Header() {
       {
         label: t('Pools'),
         active: pathname.includes('/pools'),
-        subheading: t('Trade with advantages like graph etc'),
         onClickHandler: () => {
           push('/pools')
         },
@@ -596,7 +597,9 @@ function Header() {
       {
         label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
-        subheading: t('Trade across different blockchains'),
+        onClickHandler: () => {
+          push('/dashboard')
+        },
         sub: [
           {
             heading: t('veTHE'),
@@ -623,13 +626,9 @@ function Header() {
             },
           },
         ],
-        onClickHandler: () => {
-          push('/dashboard')
-        },
       },
       {
         label: t('Analytics'),
-        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/analytics'),
         onClickHandler: () => push('/analytics'),
       },
@@ -640,8 +639,10 @@ function Header() {
       },
       {
         label: t('More'),
-        subheading: t('On-ramp from fiat to crypto'),
         active: pathname.includes('/story') || pathname.includes('/arena') || pathname.includes('/protocols'),
+        onClickHandler: () => {
+          push('/protocols')
+        },
         sub:
           networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
             ? [
@@ -1063,10 +1064,10 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-3 xl:flex'>
-              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+            <div className='2sm:hidden flex items-center gap-2 rounded-lg p-0 xl:flex xl:p-3'>
+              <CircleImage src={THE_LOGO} alt='' className='h-5 w-5' />
               {prices.THE > 0 ? (
-                <Paragraph className='text-xs !leading-4 font-medium lg:text-base lg:!leading-5'>
+                <Paragraph className='text-sm !leading-4 font-medium lg:text-base lg:!leading-5'>
                   ${formatAmount(prices.THE)}
                 </Paragraph>
               ) : (
@@ -1088,10 +1089,10 @@ function Header() {
               isMini={!account && is2SmDown}
             />
             <div
-              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-2 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700'
+              className='2sm:hidden flex size-8 cursor-pointer items-center justify-center rounded-md p-1 group-hover:stroke-neutral-200 group-active:stroke-neutral-200 hover:bg-neutral-700 lg:p-2'
               onClick={() => setIsOpen(true)}
             >
-              <HamburgerIcon className='size-4 stroke-neutral-400' />
+              <HamburgerIcon className='size-5 stroke-neutral-400' />
             </div>
           </div>
         </div>

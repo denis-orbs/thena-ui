@@ -17,7 +17,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Toggle from '@/components/toggle'
 // import NextImage from '@/components/common/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, THE_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
@@ -188,14 +188,14 @@ export default function HoldingsPage() {
           <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(theAsset?.balance || 0)}</TextHeading>
               </div>
               <Paragraph className='text-sm'>{t('THE Holdings')}</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(veTHEholdings)}</TextHeading>
               </div>
               <Paragraph className='text-sm'>{t('veTHE Holdings')}</Paragraph>
@@ -204,7 +204,7 @@ export default function HoldingsPage() {
             <Box className='flex w-full items-center justify-between'>
               <div className='flex-col gap-2'>
                 <div className='flex items-center gap-1'>
-                  <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                  <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
                   <TextHeading className='text-2xl'>{formatAmount(totalFarmed)}</TextHeading>
                 </div>
                 <Paragraph className='text-sm'>{t('THE Farmed')}</Paragraph>

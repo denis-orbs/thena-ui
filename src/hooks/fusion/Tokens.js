@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useCallback, useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
-import { UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, UNKNOWN_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -74,7 +74,7 @@ export const useCurrency = tokenAddress => {
   const token = useToken(isBNB ? undefined : tokenAddress)
   if (isBNB) {
     const currency = BNB.onChain(networkId)
-    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.logoURI = BNB_LOGO
     currency.address = 'BNB'
     return currency
   }
@@ -86,7 +86,7 @@ export const getCurrency = (tokenAddress, chainId, getAsset = () => {}) => {
   const asset = getAsset(isBNB ? undefined : tokenAddress)
   if (isBNB) {
     const currency = BNB.onChain(chainId)
-    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.logoURI = BNB_LOGO
     currency.address = 'BNB'
     return currency
   }

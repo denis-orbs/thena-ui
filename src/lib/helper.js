@@ -17,9 +17,12 @@ export const getTokenInfo = ({ tokenAddress, assets, customAssets }) => {
 
   let token = assets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
   if (!token) {
-    token = customAssets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
-    if (token) {
-      token.isWarning = true
+    const found = customAssets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
+    if (found) {
+      token = {
+        ...found,
+        isWarning: true,
+      }
     }
   }
   return token

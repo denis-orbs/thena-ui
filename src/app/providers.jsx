@@ -8,7 +8,7 @@ import { Provider } from 'react-redux'
 import { ToastContainer, Zoom } from 'react-toastify'
 import { SWRConfig } from 'swr'
 
-import { LOCALES } from '@/constant'
+import { LOCALES, THE_LOGO } from '@/constant'
 import { AssetsContextProvider } from '@/context/assetsContext'
 import { CustomAssetsContextProvider } from '@/context/customAssetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
@@ -109,7 +109,7 @@ export function Providers({ children }) {
         fiatCoin: 'USD',
         language: 'en',
         customStyle: {
-          logo: 'https://cdn.thena.fi/assets/THE.png',
+          logo: THE_LOGO,
           projectName: 'THENA',
           primaryBtnBorderRadius: '8px',
           modalBorderRadius: '12px',

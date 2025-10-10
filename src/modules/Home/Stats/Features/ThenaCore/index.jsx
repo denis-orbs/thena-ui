@@ -166,7 +166,7 @@ export function ThenaCore() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
-    <div ref={scope} className='relative mx-auto w-fit'>
+    <div ref={scope} className='relative w-fit lg:mx-auto'>
       <motion.span
         initial={{
           x: 40,

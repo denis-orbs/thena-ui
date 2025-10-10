@@ -8,7 +8,7 @@ import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { chainLINKLogo } from '@/constant'
+import { LINK_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
@@ -132,7 +132,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
             <>
               <Paragraph className='max-lg:hidden'>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
               <TextHeading>{`${formatAmount(minFunds)}`}</TextHeading>
-              <CircleImage alt='CHAIN LINK logo' className='size-4' src={chainLINKLogo} />
+              <CircleImage alt='CHAIN LINK logo' className='size-4' src={LINK_LOGO} />
             </>
           )}
         </div>

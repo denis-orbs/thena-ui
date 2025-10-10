@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { UNKNOWN_LOGO } from '@/constant'
+import { BNB_LOGO, BSC_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { CompTypes } from '@/constant/type'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
@@ -51,8 +51,8 @@ export default function TokenBadge({
               classNames={{
                 image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
               }}
-              logo1='https://cdn.thena.fi/assets/BSC.png'
-              logo2='https://cdn.thena.fi/assets/BNB.png'
+              logo1={BSC_LOGO}
+              logo2={BNB_LOGO}
             />
           ) : (
             <CircleImage

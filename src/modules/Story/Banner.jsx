@@ -12,7 +12,7 @@ export default function Banner({ videoRef, isMuted, settingSound, handleScroll }
     <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-2 pt-2 md:px-[15px] md:pt-[15px]'>
       <div className='relative mb-10 lg:mb-15'>
         <VideoBanner
-          src='/videos/TheSpaceFinal.mp4'
+          src='https://cdn.thena.fi/videos/TheSpaceFinal.mp4'
           width={1410}
           height={793}
           className='w-full rounded-[10px]'

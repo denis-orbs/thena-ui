@@ -9,7 +9,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
+import { PAIR_TYPES, THE_LOGO } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import usePrices from '@/hooks/usePrices'
 import { useClaimBribes, useClaimBribesV2, useClaimRebase } from '@/hooks/useVeThe'
@@ -76,7 +76,7 @@ export default function CurrentRewards({ rewards, currentMutate, version = 3 }) 
           return {
             id: (
               <div className='flex items-center gap-3'>
-                <CircleImage className='h-7 w-7' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+                <CircleImage className='h-7 w-7' src={THE_LOGO} alt='thena logo' />
                 <TextHeading>veTHE #{pool.id}</TextHeading>
               </div>
             ),

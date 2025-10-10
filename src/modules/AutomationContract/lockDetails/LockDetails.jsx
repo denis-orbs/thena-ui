@@ -6,6 +6,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { THE_LOGO } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
@@ -44,7 +45,7 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+            <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
             <div className='flex items-center gap-1'>
               <TextHeading className='text-2xl'>{formatAmount(veTHE?.voting_amount)}</TextHeading>
               <TextSubHeading>${formatAmount((prices?.THE || 0) * (veTHE?.voting_amount || 0))}</TextSubHeading>
@@ -54,7 +55,7 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+            <CircleImage className='h-5 w-5' src={THE_LOGO} alt='thena logo' />
             <div className='flex items-center gap-1'>
               <TextHeading className='text-2xl'>{formatAmount(veTHE?.amount || 0)}</TextHeading>
               <TextSubHeading>${formatAmount((prices?.THE || 0) * (veTHE?.amount || 0) || 0)}</TextSubHeading>

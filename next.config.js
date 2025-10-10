@@ -121,16 +121,12 @@ const nextConfig = {
           : 'https://thena-icon-checkmark-dev.s3.amazonaws.com/:path*',
       },
       {
-        source: '/logo-token/:path*',
-        destination: 'https://cdn.thena.fi/:path*',
+        source: '/logos/:path*',
+        destination: 'https://cdn.thena.fi/logos/:path*',
       },
       {
         source: '/element-market/:path*',
         destination: 'https://api.element.market/:path*',
-      },
-      {
-        source: '/assets/:path*',
-        destination: 'https://cdn.thena.fi/assets/:path*',
       },
     ]
   },
