@@ -14,7 +14,7 @@ export const metadata = {
     title: 'THE Story of THENA - Join the Epic 8-Week Voyage Through DeFi',
     description:
       'Get ready to embark on an epic 8-week journey with THENA! Complete tasks, collect NFT fragments, rise on the leaderboard, and unlock over $30,000 in rewards. Start your adventure today.',
-    images: [`${siteConfig.url}/images/meta-story-image.png`],
+    images: [`${siteConfig.url}/images/story/meta-story-image.png`],
     url: `${siteConfig.url}/story`,
     alternates: {
       canonical: `${siteConfig.url}/story`,

@@ -17,14 +17,14 @@ export function RewardFragments() {
   return (
     <div className='border-gradient-secondary w-full rounded-xl p-px lg:col-span-4'>
       <div className='rounded-xl bg-neutral-900'>
-        <div className='p-4 lg:bg-[url("/images/test-2.png")] lg:bg-cover lg:bg-center lg:p-8'>
+        <div className='p-4 lg:bg-[url("/images/story/test-2.png")] lg:bg-cover lg:bg-center lg:p-8'>
           <TextHeading>{t('Mint Your NFT')}</TextHeading>
           <div className='flex flex-col items-center justify-center'>
             <div className=''>
               <Image
                 alt='reward-nft'
                 className='my-8 h-auto w-full lg:w-[320px]'
-                src='/images/NFT.png'
+                src='/images/story/NFT.png'
                 width={961}
                 height={961}
               />
