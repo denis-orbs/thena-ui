@@ -19,10 +19,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cdn-s3.thena.fi',
-      },
-      {
-        protocol: 'https',
         hostname: 'ipfs.io',
       },
       {
@@ -55,7 +51,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'thena-resource.s3.amazonaws.com',
+        hostname: 'thena-s3.s3.amazonaws.com',
       },
     ],
   },
@@ -111,8 +107,7 @@ const nextConfig = {
       },
       {
         source: '/s3/download/:path*',
-        destination: 'http://thena-resource.s3.eu-west-2.amazonaws.com/:path*',
-        // : 'https://thena-image-resource-dev.s3.amazonaws.com/:path*',
+        destination: 'http://thena-s3.s3.eu-west-2.amazonaws.com/:path*',
       },
       {
         source: '/s3/icon-checkmark/:path*',
