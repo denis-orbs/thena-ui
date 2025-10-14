@@ -1,6 +1,6 @@
 import { createClient } from '@chainlink/ccip-js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { parseUnits } from 'viem'
 import { usePublicClient, useWalletClient } from 'wagmi'
@@ -13,19 +13,30 @@ import { waitCall } from '@/lib/contractActions'
 import { errorToast, successToast } from '@/lib/notify'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useBridge = () => {
+export const useBridge = (sourceChain = CHAIN_ID.OPBNB, destinationChain = CHAIN_ID.BSC) => {
   const [pending, setPending] = useState(false)
   const { account } = useWallet()
   const { startTxn, endTxn, updateTxn } = useTxn()
   const t = useTranslations()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
-  const { routerAddress } = CCIP_SUPPORTS.OPBNB
-  const tokenAddress = Contracts.THE[CHAIN_ID.OPBNB]
-  const destinationChainSelector = CCIP_SUPPORTS.BNB.chainSelector
-  const ccipClient = createClient()
 
-  const networkId = CHAIN_ID.OPBNB
+  // Get chain names for CCIP_SUPPORTS - memoized to prevent recreation
+  const sourceChainName = useMemo(() => (sourceChain === CHAIN_ID.OPBNB ? 'OPBNB' : 'BNB'), [sourceChain])
+  const destinationChainName = useMemo(
+    () => (destinationChain === CHAIN_ID.OPBNB ? 'OPBNB' : 'BNB'),
+    [destinationChain],
+  )
+
+  const routerAddress = useMemo(() => CCIP_SUPPORTS[sourceChainName].routerAddress, [sourceChainName])
+  const tokenAddress = useMemo(() => Contracts.THE[sourceChain], [sourceChain])
+  const destinationChainSelector = useMemo(
+    () => CCIP_SUPPORTS[destinationChainName].chainSelector,
+    [destinationChainName],
+  )
+  const ccipClient = useMemo(() => createClient(), [])
+
+  const networkId = sourceChain
 
   const getFee = useCallback(
     async ({ amount, targetAddress }) => {
@@ -155,7 +166,7 @@ export const useBridge = () => {
               },
             }),
             [bridgeId]: {
-              desc: t('Bridge [amount] THE to BNB', { amount }),
+              desc: t('Bridge [amount] THE to [destinationChainName]', { amount, destinationChainName }),
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -192,6 +203,8 @@ export const useBridge = () => {
         })
       } catch (err) {
         console.error('[Bridge Error]', err)
+        errorToast(err?.message || 'Bridge transaction failed')
+        setPending(false)
       } finally {
         setPending(false)
       }
@@ -203,6 +216,7 @@ export const useBridge = () => {
       routerAddress,
       tokenAddress,
       destinationChainSelector,
+      destinationChainName,
       startTxn,
       t,
       transferTokens,

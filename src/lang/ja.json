@@ -1663,14 +1663,17 @@
   "Migrate desc 1": "You still have positions in pools that are no longer supported.",
   "Migrate desc 2": "Please migrate your positions to V3 to unlock the full potential of THENA.",
   "Bridge History": "Bridge History",
+  "Transfer from [sourceChainName] to [destinationChainName]": "Transfer from {sourceChainName} to {destinationChainName}",
   "Briding from opBNB to BNB": "Briding from opBNB to BNB",
   "opBNB - Chain": "opBNB - Chain",
   "BNB - Chain": "BNB - Chain",
   "from": "from",
   "to": "to",
   "Destination address": "Destination Address",
-  "Bridge THE Tokens": "Bridge THE Tokens",
-  "Bridge THE Tokens desc": "Bridging moves your THE tokens from the BNB Smart Chain (origin) to opBNB. The tokens are locked in a “vault“ (smart contract) on the BNB Chain, and you receive the same amount on opBNB, where transactions are faster and cheaper.",
+  "Bridge THE Token": "Bridge THE Token",
+  "Bridge THE Tokens desc1": "Bridging a token means transferring a token from a source chain to a destination chain.",
+  "Bridge THE Tokens desc2": "Depending on the source and destination chain, the tokens are locked/released in a pool contract and then minted/burned at the selected destination address.",
+  "Bridge THE Tokens desc3": "THE token uses the <ccipLink>CCIP protocol</ccipLink> and all the information can be found <ccipInfo>here</ccipInfo>.",
   "How it works": "How it works:",
   "Bridge History desc 4": "Track your bridge history here.",
   "Bridge History desc 5": "Track your bridge history here.",
@@ -1689,5 +1692,5 @@
   "opBNB to BNB": "opBNB to BNB",
   "Bridge [amount1] THE for [amount2] THE via [bridge]": "Bridge {amount1} THE for {amount2} THE via {bridge}",
   "Expected Time": "Expected Time",
-  "Bridge [amount] THE to BNB": "Bridge {amount} THE to BNB"
+  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}"
 }

@@ -1631,8 +1631,10 @@
   "from": "from",
   "to": "to",
   "Destination address": "Destination Address",
-  "Bridge THE Tokens": "Bridge THE Tokens",
-  "Bridge THE Tokens desc": "Bridging moves your THE tokens from the BNB Smart Chain (origin) to opBNB. The tokens are locked in a “vault“ (smart contract) on the BNB Chain, and you receive the same amount on opBNB, where transactions are faster and cheaper.",
+  "Bridge THE Token": "Bridge THE Token",
+  "Bridge THE Tokens desc1": "Bridging a token means transferring a token from a source chain to a destination chain.",
+  "Bridge THE Tokens desc2": "Depending on the source and destination chain, the tokens are locked/released in a pool contract and then minted/burned at the selected destination address.",
+  "Bridge THE Tokens desc3": "THE token uses the <ccipLink>CCIP protocol</ccipLink> and all the information can be found <ccipInfo>here</ccipInfo>.",
   "How it works": "How it works:",
   "Bridge History desc 4": "Track your bridge history here.",
   "Bridge History desc 5": "Track your bridge history here.",
@@ -1646,6 +1648,7 @@
   "For all other tokens": "For all other tokens",
   "Use the": "Use the",
   "Binance Bridge": "Binance Bridge",
+  "Transfer from [sourceChainName] to [destinationChainName]": "Transfer from {sourceChainName} to {destinationChainName}",
   "Available Amount on [chain]": "Available Amount on {chain}",
   "Bridge Route": "Bridge Route",
   "opBNB to BNB": "opBNB to BNB",
@@ -1690,5 +1693,5 @@
   "Voting Incentives Template": "Voting Incentives Template",
   "Select up to 3 pairs to showcase their voting incentives": "Select up to 3 pairs to showcase their voting incentives.",
   "Select pair and enter your investment amount": "Select pair and enter your investment amount.",
-  "Bridge [amount] THE to BNB": "Bridge {amount} THE to BNB"
+  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}"
 }
