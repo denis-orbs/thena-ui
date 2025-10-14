@@ -244,7 +244,7 @@ export const fetchStats = async () => {
     marketCap: Number(stats.marketCap),
     totalFeesUSD: Number(stats.totalFeesUSD),
     lastEpochRevenueUSD: Number(stats.lastEpochRevenueUSD),
-    volumeUSD: Number(stats.tvlUSD), // 24h
+    volumeUSD: Number(stats.volumeUSD), // 24h
     feesUSD: Number(stats.feesUSD), // 24h
 
     // txCount:

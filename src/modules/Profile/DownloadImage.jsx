@@ -21,7 +21,7 @@ export default function DownloadButton({ fileName, scale = 1 }) {
   const handleDownloadS3Image = useCallback(
     async imageUrl => {
       const tempLink = document.createElement('a')
-      tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn-s3.thena.fi/')}`
+      tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn.thena.fi/')}`
       tempLink.download = `${fileName}.png`
       tempLink.click()
     },
