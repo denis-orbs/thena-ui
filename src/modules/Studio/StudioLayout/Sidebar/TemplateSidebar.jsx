@@ -1,5 +1,5 @@
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -182,8 +182,9 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     setField(f.name, v)
   }
 
+  const ref = useRef(null)
   return (
-    <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 p-6'>
+    <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 px-4 py-6 lg:px-6'>
       <div className='flex flex-col gap-1'>
         {title && (
           <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
@@ -192,7 +193,14 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         )}
         {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
       </div>
-      <div className={cn('max-h-[360px] space-y-6 overflow-y-auto', pathname === PATH_NAME.METRICS && 'space-y-3')}>
+      <div
+        ref={ref}
+        className={cn(
+          'scrollbar-gutter-stable max-h-[360px] space-y-6 overflow-y-auto',
+          pathname === PATH_NAME.METRICS && 'space-y-3',
+          hydratedFields.length > 4 && 'pr-2',
+        )}
+      >
         {hydratedFields.map(f => {
           const Field = map[f.type]?.component ?? null
           if (!Field) return <></>
@@ -208,7 +216,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         })}
       </div>
       <div className='mt-auto w-full'>
-        <DownloadButton scale={1920 / 1024} fileName={title.replace(/ /g, '_')} />
+        <DownloadButton scale={1920 / 1024} fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
       </div>
     </aside>
   )

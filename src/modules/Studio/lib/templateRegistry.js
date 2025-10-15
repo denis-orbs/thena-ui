@@ -5,7 +5,7 @@ import PoolsAprPreview from '../Preview/previews/PoolsAprPreview'
 import PortfolioPreview from '../Preview/previews/PortfolioPreview'
 
 const TEMPLATES = {
-  'pools-apr': {
+  'pool-apr': {
     title: 'Pools APR Template',
     subTitle: 'pools apr template subtitle',
     fields: [

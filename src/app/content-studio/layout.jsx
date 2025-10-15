@@ -15,12 +15,7 @@ export default function ContentStudioLayout({ children }) {
       >
         <Tabs />
       </div>
-      <div
-        className={cn(
-          'mt-[158px] flex w-full overflow-x-auto md:mt-[206px]',
-          showBannerMigrate && 'mt-[274px] md:mt-[260px]',
-        )}
-      >
+      <div className={cn('mt-[158px] md:mt-[206px] lg:mx-8', showBannerMigrate && 'mt-[274px] md:mt-[260px]')}>
         <StudioShell>{children}</StudioShell>
       </div>
     </div>

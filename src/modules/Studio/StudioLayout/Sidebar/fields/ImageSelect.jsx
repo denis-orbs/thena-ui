@@ -69,13 +69,17 @@ function ImageSelect({ options, selectedOption, setSelectedOption }) {
                 option.id === selectedOption?.id && 'bg-primary-950/50 border-primary-800',
               )}
             >
-              <Image
-                alt={option.name}
-                className='h-[77px] w-[116px] rounded-lg'
-                width={116}
-                height={77}
-                src={option.image}
-              />
+              {option.value ? (
+                <Image
+                  alt={option.name}
+                  className='h-[77px] w-[116px] rounded-lg'
+                  width={116}
+                  height={77}
+                  src={option.value}
+                />
+              ) : (
+                <div className='flex h-[77px] w-[116px] items-center justify-center rounded-lg border-1 border-neutral-700' />
+              )}
               <div className='flex-1'>
                 <span className='text-sm font-medium text-white'>{option.name}</span>
               </div>

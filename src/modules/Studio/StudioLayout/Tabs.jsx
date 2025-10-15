@@ -9,7 +9,7 @@ import ImageSelect from './Sidebar/fields/ImageSelect'
 import useTemplateState from '../hooks/useTemplateState'
 
 const items = [
-  { slug: 'pools-apr', label: 'Pools APR' },
+  { slug: 'pool-apr', label: 'Pools APR' },
   { slug: 'incentives', label: 'Incentives' },
   { slug: 'portfolio', label: 'Portfolio' },
   { slug: 'metrics', label: 'Metrics' },
@@ -49,6 +49,12 @@ export default function Tabs() {
       name: 'Tech Horizon',
       image: '/images/content-studio/tech_horizon.png',
       value: '/images/content-studio/tech_horizon_option.png',
+    },
+    {
+      id: 5,
+      name: 'Transparent background',
+      image: null,
+      value: null,
     },
   ]
 

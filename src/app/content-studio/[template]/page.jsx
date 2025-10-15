@@ -15,8 +15,8 @@ export default function TemplatePage({ params, searchParams }) {
   const { Preview } = tpl
 
   return (
-    <div className='grid w-full grid-cols-1 gap-4 lg:grid-cols-[396px_1fr] lg:gap-5'>
-      <div className='order-2 lg:order-1'>
+    <div className='flex w-full flex-col gap-4 overflow-hidden lg:flex-row lg:gap-5'>
+      <div className='order-2 w-full shrink-0 lg:order-1 lg:w-[396px]'>
         <TemplateSidebar
           title={tpl.title}
           subTitle={tpl.subTitle}
@@ -26,11 +26,9 @@ export default function TemplatePage({ params, searchParams }) {
           reset={reset}
         />
       </div>
-      <div className='order-1 items-center lg:order-2'>
-        <PreviewCanvas background={state.background} watermark='THENA'>
-          <Preview state={state} setField={setField} />
-        </PreviewCanvas>
-      </div>
+      <PreviewCanvas background={state.background} className='order-1 flex overflow-hidden lg:order-2 lg:flex-1'>
+        <Preview state={state} setField={setField} />
+      </PreviewCanvas>
     </div>
   )
 }

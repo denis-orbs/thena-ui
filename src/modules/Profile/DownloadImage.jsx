@@ -11,7 +11,7 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { rewriteS3Host } from '@/lib/utils'
 import { DownloadIcon } from '@/svgs'
 
-export default function DownloadButton({ fileName, scale = 1 }) {
+export default function DownloadButton({ fileName, scale = 1, backgroundColor = '#0B040D' }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
@@ -49,7 +49,7 @@ export default function DownloadButton({ fileName, scale = 1 }) {
         allowTaint: true,
         useCORS: true,
         removeContainer: true,
-        backgroundColor: '#0B040D',
+        backgroundColor,
         onclone(clonedDoc) {
           clonedDoc.getElementById('share-origin').style.display = 'block'
           clonedDoc.getElementById('share-origin').style.width = '1024px'
