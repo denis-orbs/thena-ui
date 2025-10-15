@@ -14,7 +14,8 @@ export const useTemplateStore = create((set, get) => ({
     id: 1,
     name: '3D Grid',
     image: '/images/content-studio/3d_grid.png',
-    value: '/images/content-studio/3d_grid_option.png',
+    value: '/images/content-studio/3d_grid1.png',
+    mini: '/images/content-studio/3d_grid_option.png',
   },
   setBackground: bg => set({ background: bg }),
 

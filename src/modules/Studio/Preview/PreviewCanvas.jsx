@@ -63,7 +63,7 @@ export default function PreviewCanvas({ children, background, className }) {
       <div
         id='share-origin'
         className={cn(
-          'fixed top-[100vh] left-[100vh] hidden h-[1152px]! w-[2048px]!',
+          'fixed top-[100vh] left-[100vh] hidden',
           'order-3 origin-top-left bg-contain bg-center bg-no-repeat',
         )}
         style={{

@@ -144,14 +144,7 @@ export default function PoolsAprPreview({ state }) {
         (pairs.length === 3 || pairs.length === 2) && 'pt-25',
       )}
     >
-      <div
-        // className={cn(
-        //   'grid gap-x-5.5 gap-y-8',
-        //   pairs.length === 2 || pairs.length === 4 ? 'grid-cols-2' : 'grid-cols-3',
-        //   pairs.length === 1 && 'grid-cols-1',
-        // )}
-        className='grid grid-cols-1 gap-8'
-      >
+      <div className='grid grid-cols-1 gap-8'>
         <div className='flex w-full justify-center gap-x-5.5'>
           {pairs.slice(0, pairs.length !== 4 ? 3 : 2).map((pair, index) => (
             <PairInfo

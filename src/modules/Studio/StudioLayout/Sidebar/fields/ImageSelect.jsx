@@ -75,7 +75,7 @@ function ImageSelect({ options, selectedOption, setSelectedOption }) {
                   className='h-[77px] w-[116px] rounded-lg'
                   width={116}
                   height={77}
-                  src={option.value}
+                  src={option.mini}
                 />
               ) : (
                 <div className='flex h-[77px] w-[116px] items-center justify-center rounded-lg border-1 border-neutral-700' />
