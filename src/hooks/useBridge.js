@@ -166,7 +166,10 @@ export const useBridge = (sourceChain = CHAIN_ID.OPBNB, destinationChain = CHAIN
               },
             }),
             [bridgeId]: {
-              desc: t('Bridge [amount] THE to [destinationChainName]', { amount, destinationChainName }),
+              desc: t('Bridge [amount] THE to [destinationChainName]', {
+                amount,
+                destinationChainName: destinationChain === CHAIN_ID.OPBNB ? 'opBNB' : 'BNB',
+              }),
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -216,9 +219,9 @@ export const useBridge = (sourceChain = CHAIN_ID.OPBNB, destinationChain = CHAIN
       routerAddress,
       tokenAddress,
       destinationChainSelector,
-      destinationChainName,
       startTxn,
       t,
+      destinationChain,
       transferTokens,
       endTxn,
       approveRouter,

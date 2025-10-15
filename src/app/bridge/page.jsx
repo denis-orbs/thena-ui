@@ -24,7 +24,7 @@ import { formatAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { SwitchHorizontalV2Icon, Wallet3Icon } from '@/svgs'
 
-const richRenderers = {
+const desc1Rich = {
   ccipLink: chunks => (
     <Link href='https://docs.chain.link/ccip' className='text-primary-600' target='_blank' rel='noopener noreferrer'>
       {chunks}
@@ -33,6 +33,18 @@ const richRenderers = {
   ccipInfo: chunks => (
     <Link
       href='https://docs.chain.link/ccip/directory/mainnet/token/THE'
+      className='text-primary-600'
+      target='_blank'
+      rel='noopener noreferrer'
+    >
+      {chunks}
+    </Link>
+  ),
+}
+const desc2Rich = {
+  link: chunks => (
+    <Link
+      href='https://opbnb-bridge.bnbchain.org'
       className='text-primary-600'
       target='_blank'
       rel='noopener noreferrer'
@@ -232,19 +244,21 @@ export default function BridgePage() {
         </div>
         <div className='flex w-full flex-col gap-2 rounded-xl bg-neutral-900 p-4'>
           <TextHeading className='font-archia text-xl font-semibold'>{t('Bridge THE Token')}</TextHeading>
-          <div>
+          <div className='flex flex-col gap-2'>
+            <Paragraph className='text-neutral-400'>{t('Bridge THE Tokens desc1')}</Paragraph>
+            <Paragraph className='text-neutral-400'>{t('Bridge THE Tokens desc2')}</Paragraph>
             <Paragraph className='text-neutral-400'>
-              {t('Bridge THE Tokens desc1')}
-              <br />
-              <br />
-              {t('Bridge THE Tokens desc2')}
-              <br />
-              <br />
               {t.rich('Bridge THE Tokens desc3', {
-                ...richRenderers,
+                ...desc1Rich,
               })}
             </Paragraph>
           </div>
+          <TextHeading className='font-archia mt-2 text-xl font-semibold'>{t('Bridge Other Tokens')}</TextHeading>
+          <Paragraph className='flex gap-1 text-neutral-400'>
+            {t.rich('Use the Binance Bridge', {
+              ...desc2Rich,
+            })}
+          </Paragraph>
         </div>
       </div>
     </div>
