@@ -13,7 +13,7 @@ import { OutlinedButton, PrimaryButton, SecondaryButton } from '@/components/but
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { SOCIAL_LINKS, TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
@@ -562,7 +562,7 @@ function Sidebar({ competition, eventType }) {
                   style: {
                     cursor: 'pointer',
                   },
-                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                  onClick: () => (window.location.href = SOCIAL_LINKS.Discord.url),
                 },
               )
               return
