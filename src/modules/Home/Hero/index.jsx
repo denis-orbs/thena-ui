@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -74,6 +75,21 @@ function Hero() {
         </div>
         <MainHero />
       </div>
+      <Script
+        id='widget-dom-id'
+        crossOrigin='anonymous'
+        src='https://widget.metacrm.inc/static/js/widget.js'
+        onLoad={() => {
+          window.MetaCRMWidget.init({
+            apiKey: 'mqrsxk7605j',
+            autoOpenNewNotification: true,
+            manualConnect: true,
+          })
+        }}
+        onError={error => {
+          console.error('Failed to load widget.js', error)
+        }}
+      />
     </>
   )
 }
