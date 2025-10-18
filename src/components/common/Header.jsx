@@ -34,6 +34,7 @@ import {
   ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
+  ExternalIcon,
   HamburgerIcon,
   InfoNeutralIcon,
   LanguageIcon,
@@ -566,6 +567,7 @@ function Header() {
             heading: t('Perps Trade'),
             subheading: t('Easy and user-friendly trading interface'),
             onClickHandler: () => window.open('https://perps.thena.fi', '_blank'),
+            isExternal: true,
           },
           {
             heading: t('Cross-Chain'),
@@ -662,16 +664,19 @@ function Header() {
                   onClickHandler: () => {
                     goToDoc()
                   },
+                  isExternal: true,
                 },
                 {
                   heading: t('Forum'),
                   subheading: t('Discussion for governance proposals'),
                   onClickHandler: () => window.open('https://forum.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Arena'),
@@ -702,16 +707,19 @@ function Header() {
                   onClickHandler: () => {
                     goToDoc()
                   },
+                  isExternal: true,
                 },
                 {
                   heading: t('Forum'),
                   subheading: t('Discussion for governance proposals'),
                   onClickHandler: () => window.open('https://forum.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Arena'),
@@ -1057,7 +1065,18 @@ function Header() {
                               }
                             }}
                           >
-                            <TextHeading>{subitem.heading}</TextHeading>
+                            <div className='flex w-full items-center justify-between'>
+                              <TextHeading>{subitem.heading}</TextHeading>
+                              {subitem.isExternal && (
+                                <ExternalIcon
+                                  className='h-4 w-4 stroke-neutral-50'
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                  }}
+                                />
+                              )}
+                            </div>
                             <TextSubHeading>{subitem.subheading}</TextSubHeading>
                           </div>
                         ))}
@@ -1204,7 +1223,18 @@ function Header() {
                           }
                         }}
                       >
-                        <p className='font-medium text-neutral-200'>{subitem.heading}</p>
+                        <div className='flex w-full items-center justify-between'>
+                          <p className='font-medium text-neutral-50'>{subitem.heading}</p>
+                          {subitem.isExternal && (
+                            <ExternalIcon
+                              className='h-4 w-4 stroke-neutral-50'
+                              onClick={e => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                              }}
+                            />
+                          )}
+                        </div>
                         <TextSubHeading>{subitem.subheading}</TextSubHeading>
                       </div>
                     ))}
