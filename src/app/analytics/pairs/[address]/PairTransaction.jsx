@@ -158,7 +158,7 @@ const FUSION_TRANSACTIONS = gql`
           symbol
         }
       }
-      owner
+      origin
       amount0
       amount1
       amountUSD
@@ -327,7 +327,7 @@ const getFusionTransactions = async (chainId, version, pairs) => {
       newTxn.type = TXN_TYPE.REMOVE
       newTxn.token0Amount = burn.amount0
       newTxn.token1Amount = burn.amount1
-      newTxn.account = burn.owner
+      newTxn.account = burn.origin
       newTxn.token0Symbol = formatTokenSymbol(burn.pool.token0.symbol)
       newTxn.token1Symbol = formatTokenSymbol(burn.pool.token1.symbol)
       newTxn.amountUSD = burn.amountUSD
