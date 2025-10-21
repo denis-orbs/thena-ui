@@ -223,7 +223,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
                   autoFocus
                   assetData={tokensData}
                   assetNull
-                  readOnly
+                  disabled
                 />
               )}
               {removeType === REMOVE_TYPE.ALL && (

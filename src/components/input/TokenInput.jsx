@@ -26,7 +26,6 @@ function TokenInput({
   disabled = false,
   assetData,
   assetNull,
-  readOnly = false,
   title,
   alowDouble = false,
   disabledSelect = false,
@@ -72,7 +71,6 @@ function TokenInput({
             min={0}
             autoFocus={autoFocus}
             disabled={disabled}
-            readOnly={readOnly}
           />
           {disabledSelect ? (
             <div
@@ -125,7 +123,7 @@ function TokenInput({
               {t('Balance')}: {formatAmount(isDouble ? balance : asset?.balance)}
             </span>
 
-            {!readOnly && (
+            {!disabled && (
               <span onClick={() => setAmount(asset.balance)} className={cn('text-primary-600 cursor-pointer')}>
                 {t('Max')}
               </span>
