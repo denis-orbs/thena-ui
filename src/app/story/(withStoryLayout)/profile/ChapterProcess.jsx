@@ -24,7 +24,7 @@ import {
   TaskType,
 } from '../../constant'
 
-const TweetContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
+const TweetContent = `I’ve just joined THE Story with @ThenaFi 💜🏛️
 
 First tasks completed, NFT fragment collected, and I’m on the path to over $30K in rewards!
 

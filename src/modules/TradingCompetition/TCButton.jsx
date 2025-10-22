@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { TC_MARKET_TYPES } from '@/constant'
+import { SOCIAL_LINKS, TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawTCPerps } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
@@ -258,7 +258,7 @@ export function TCButton({ eventType, competition, timestamp }) {
                   style: {
                     cursor: 'pointer',
                   },
-                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                  onClick: () => (window.location.href = SOCIAL_LINKS.Discord.url),
                 },
               )
               return

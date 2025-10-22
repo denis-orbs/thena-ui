@@ -50,23 +50,18 @@ export const metadata = {
 
 export const revalidate = 30
 
-const metaCrmConfig = {
-  'data-entity-id': '64df0a122effea1f2889adcc',
-  'data-api-key': 'n4crf9vaq9',
-  'data-eco-systems': '{"evm":true}',
-  integrity: 'sha384-LkepA/fAsOX6JggmmktPy4V6KRGi3EikCz4BG7xdtZ57IlczJNRzUz6L/j4+97wD',
-}
-
 export default function RootLayout({ children }) {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
     <html lang='en'>
       <head>
         <script
-          src='https://attribution.metacrm.inc/tracking-1-3-0.js'
+          src='https://attribution.metacrm.inc/tracking.js'
+          data-entity-id='64df0a122effea1f2889adcc'
           id='metacrm-tracking'
           crossOrigin='anonymous'
-          {...metaCrmConfig}
+          data-api-key='n4crf9vaq9'
+          data-eco-systems='{"evm":true}'
           async
         />
       </head>

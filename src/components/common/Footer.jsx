@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
+import { SOCIAL_LINKS } from '@/constant'
 import { cn } from '@/lib/utils'
 
 import Logo from '~/logo.svg'
@@ -41,29 +42,6 @@ function AnimatedIcon({ externalLink, hoverData, icon, iconColored }) {
     </a>
   )
 }
-
-const footerSocialLinks = [
-  {
-    svg: '/images/footer/x.svg',
-    url: 'https://twitter.com/ThenaFi_',
-  },
-  {
-    svg: '/images/footer/vector.svg',
-    url: 'https://medium.com/@ThenaFi',
-  },
-  {
-    svg: '/images/footer/discord.svg',
-    url: 'https://discord.gg/thena',
-  },
-  {
-    svg: '/images/footer/telegram.svg',
-    url: 'https://t.me/Thena_Fi',
-  },
-  {
-    svg: '/images/footer/dinasour.svg',
-    url: 'https://www.coingecko.com/en/coins/thena',
-  },
-]
 const footerLinks = [[], []]
 // const footerLinks = [
 //   [
@@ -121,14 +99,14 @@ function Footer({ isHomePage = false }) {
                 </p>
               </div>
               <div className='mt-4 flex items-center gap-3 lg:mt-0'>
-                {footerSocialLinks.map((item, idx) => (
+                {Object.values(SOCIAL_LINKS).map((item, idx) => (
                   <a
                     className='relative flex h-6 w-6 transform flex-col items-center justify-center transition-all duration-150 ease-in-out hover:scale-125'
                     key={idx}
                     href={item.url}
                     target='__blank'
                   >
-                    <NextImage alt='svg' className='absolute w-fit' src={item.svg} />
+                    <NextImage alt='svg' className='absolute w-fit' src={item.icon} />
                   </a>
                 ))}
               </div>
@@ -153,7 +131,7 @@ function Footer({ isHomePage = false }) {
               <div className='h-fit rounded-2xl bg-linear-to-b from-white/10 to-white/0 p-px'>
                 <div
                   className='flex cursor-pointer items-center gap-3 rounded-2xl bg-[rgba(14,8,16,0.45)] p-6'
-                  onClick={() => window.open('https://twitter.com/ThenaFi_', '_blank')}
+                  onClick={() => window.open(SOCIAL_LINKS.X.url, '_blank')}
                 >
                   <NextImage className='w-fit' alt='linear gradient line' src='/images/footer/xbig.svg' />
                   <span className='text-sm leading-5'>{t('Follow us for More')}</span>
@@ -174,38 +152,15 @@ function Footer({ isHomePage = false }) {
         />
       </div>
       <div className='fixed bottom-[37px] left-[50%] z-100 flex translate-x-[-50%] transform items-center gap-5 rounded-full border border-white/[0.04] bg-[rgba(41,25,47,0.20)] px-4 py-[11px] backdrop-blur-[20px] lg:hidden'>
-        <AnimatedIcon
-          externalLink='https://www.coingecko.com/en/coins/thena'
-          /* eslint-disable */
-          hoverData={`Coingecko`}
-          /* eslint-enable */
-          icon='/images/footer/dinasourmb.svg'
-          iconColored='/images/footer/dinasourcolored.svg'
-        />
-        <AnimatedIcon
-          externalLink='https://twitter.com/ThenaFi_'
-          hoverData='X'
-          icon='/images/footer/xmb.svg'
-          iconColored='/images/footer/xcolored.svg'
-        />
-        <AnimatedIcon
-          externalLink='https://discord.gg/thena'
-          hoverData='Discord'
-          icon='/images/footer/discordmb.svg'
-          iconColored='/images/footer/discordcolored.svg'
-        />
-        <AnimatedIcon
-          externalLink='https://medium.com/@ThenaFi'
-          hoverData='Medium'
-          icon='/images/footer/vectormb.svg'
-          iconColored='/images/footer/vectorcolored.svg'
-        />
-        <AnimatedIcon
-          externalLink='https://t.me/Thena_Fi'
-          hoverData='Telegram'
-          icon='/images/footer/telegrammb.svg'
-          iconColored='/images/footer/telegramcolored.svg'
-        />
+        {Object.keys(SOCIAL_LINKS).map(item => (
+          <AnimatedIcon
+            externalLink={SOCIAL_LINKS[item].url}
+            hoverData={item}
+            icon={SOCIAL_LINKS[item].icon}
+            iconColored={SOCIAL_LINKS[item].iconColored}
+            key={item}
+          />
+        ))}
       </div>
     </>
   )
