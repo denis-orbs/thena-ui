@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@basementuniverse/stats": "^1.3.0",
+    "@chainlink/ccip-js": "^0.2.5",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^7.11.0",

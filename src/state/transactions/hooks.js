@@ -222,5 +222,5 @@ export const useTxn = () => {
     dispatch(closeTransactionPopup())
   }, [dispatch])
 
-  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, writeTxn2, sendTxn, closeTxnModal }
+  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, writeTxn2, sendTxn, closeTxnModal, askUserToRetry }
 }
