@@ -127,7 +127,7 @@ export default function BridgePage() {
 
   useEffect(() => {
     if (account) {
-      setDestination(prev => prev ?? account)
+      setDestination(account)
     }
   }, [account])
 
