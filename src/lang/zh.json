@@ -1601,5 +1601,9 @@
   "Bridge [amount1] THE for [amount2] THE via [bridge]": "Bridge {amount1} THE for {amount2} THE via {bridge}",
   "Expected Time": "Expected Time",
   "High Slippage Warning": "High Slippage Warning: You are advised not to use the zapper",
-  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}"
+  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}",
+  "Share Image": "Share Image",
+  "Download": "Download",
+  "Background Image": "Background Image",
+  "Search by name, symbol or address": "Search by name, symbol or address"
 }

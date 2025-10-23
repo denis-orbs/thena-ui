@@ -39,7 +39,7 @@ export default function PreviewCanvas({ children, background, className }) {
       <div
         className={cn('overflow-hidden', className)}
         style={{
-          ...(isLgDown ? { height: `${576 * scale}px` } : { height: '576px' }),
+          ...(isLgDown ? { height: `${576 * scale}px` } : { height: '481px' }),
         }}
         ref={parentRef}
       >

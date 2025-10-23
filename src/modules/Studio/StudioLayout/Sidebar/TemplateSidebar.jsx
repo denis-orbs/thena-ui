@@ -6,17 +6,18 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { cn, isInvalidAmount } from '@/lib/utils'
-import DownloadButton from '@/modules/Profile/DownloadImage'
+import ActionButtons from '@/modules/Profile/ActionButtons'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
 import CheckboxListField from './fields/CheckboxListField'
 import DisplayCountPickerField from './fields/DisplayCountPickerField'
 import InputField from './fields/InputField'
 import PairPickerField from './fields/PairPickerField'
-import SegmentedField from './fields/SegmentedField'
+import RadioGroupField from './fields/RadioGroupField'
+import Tabs from './Tabs'
 import { PATH_NAME } from '../../lib/utils'
 
-export default function TemplateSidebar({ title, subTitle = '', fields, state, setField }) {
+export default function TemplateSidebar({ title, subTitle = '', fields, state, setField, split = false }) {
   const t = useTranslations()
 
   // For Pool apr
@@ -93,8 +94,8 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     input: {
       component: InputField,
     },
-    segmented: {
-      component: SegmentedField,
+    radioGroup: {
+      component: RadioGroupField,
     },
     checkboxList: {
       component: CheckboxListField,
@@ -112,7 +113,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         ...f,
         __baseName: f.name,
         __index: i,
-        label: `${f.label} ${i + 1}`,
+        label: f.label ? `${f.label} ${i + 1}` : undefined,
         name: `${f.name}[${i}]`,
       }))
     }
@@ -184,39 +185,38 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
 
   const ref = useRef(null)
   return (
-    <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 px-4 py-6 lg:px-6'>
-      <div className='flex flex-col gap-1'>
-        {title && (
-          <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
-            {t(title)}
-          </TextHeading>
-        )}
-        {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
+    <aside className='flex h-full min-h-[576px] flex-col gap-6 rounded-xl'>
+      <div className='flex flex-1 flex-col gap-6'>
+        <Tabs />
+        <div className='flex flex-col gap-1'>
+          {title && (
+            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
+              {t(title)}
+            </TextHeading>
+          )}
+          {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
+        </div>
+        <div ref={ref} className={cn('scrollbar-gutter-stable space-y-4')}>
+          {hydratedFields.map((f, index) => {
+            const Field = map[f.type]?.component ?? null
+            if (!Field) return <></>
+            return (
+              <div key={f.name} className='flex flex-col gap-6'>
+                {split && index > 0 && <div className='h-px w-full bg-neutral-700' />}
+                <Field
+                  key={f.name}
+                  {...f}
+                  options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
+                  value={getValue(f)}
+                  onChange={v => handleChange(f, v)}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
-      <div
-        ref={ref}
-        className={cn(
-          'scrollbar-gutter-stable max-h-[360px] space-y-6 overflow-y-auto',
-          pathname === PATH_NAME.METRICS && 'space-y-3',
-          hydratedFields.length > 4 && 'pr-2',
-        )}
-      >
-        {hydratedFields.map(f => {
-          const Field = map[f.type]?.component ?? null
-          if (!Field) return <></>
-          return (
-            <Field
-              key={f.name}
-              {...f}
-              options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
-              value={getValue(f)}
-              onChange={v => handleChange(f, v)}
-            />
-          )
-        })}
-      </div>
-      <div className='mt-auto w-full'>
-        <DownloadButton scale={1920 / 1024} fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
+      <div className='mt-auto flex w-full gap-3'>
+        <ActionButtons scale={1920 / 1024} fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
       </div>
     </aside>
   )

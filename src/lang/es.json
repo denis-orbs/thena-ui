@@ -1681,5 +1681,9 @@
   "Voting Incentives Template": "Voting Incentives Template",
   "Select up to 3 pairs to showcase their voting incentives": "Select up to 3 pairs to showcase their voting incentives.",
   "Select pair and enter your investment amount": "Select pair and enter your investment amount.",
-  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}"
+  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}",
+  "Share Image": "Share Image",
+  "Download": "Download",
+  "Background Image": "Background Image",
+  "Search by name, symbol or address": "Search by name, symbol or address"
 }

@@ -68,6 +68,7 @@ import GiftIcon from '~/svgs/gift.svg'
 import GiftArenaIcon from '~/svgs/gift-arena.svg'
 import HalfPolygonIcon from '~/svgs/half-polygon.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
+import ImageUpIcon from '~/svgs/image-up.svg'
 import InfinityIcon from '~/svgs/infinity.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import Info2Icon from '~/svgs/info-circle-2.svg'
@@ -232,6 +233,7 @@ export {
   GiftIcon,
   HalfPolygonIcon,
   HamburgerIcon,
+  ImageUpIcon,
   InfinityIcon,
   Info2Icon,
   InfoCirCleDisableIcon,

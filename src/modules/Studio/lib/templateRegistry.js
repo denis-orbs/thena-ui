@@ -10,59 +10,34 @@ const TEMPLATES = {
     subTitle: 'pools apr template subtitle',
     fields: [
       {
-        type: 'select',
-        name: 'displayCount',
-        label: 'Pools to Display',
-        options: [
-          { value: 1, label: 1 },
-          { value: 2, label: 2 },
-          { value: 3, label: 3 },
-          { value: 4, label: 4 },
-          { value: 5, label: 5 },
-          { value: 6, label: 6 },
-        ],
-      },
-      {
         type: 'pair',
         name: 'pairs',
-        label: 'Pair',
         repeatBy: 'displayCount',
         max: 6,
       },
     ],
     Preview: PoolsAprPreview,
-    defaults: { displayCount: 1, pairs: [] },
+    defaults: { displayCount: 6, pairs: [] },
   },
   incentives: {
     title: 'Voting Incentives Template',
     subTitle: 'Select up to 3 pairs to showcase their voting incentives',
     fields: [
       {
-        type: 'select',
-        name: 'displayCount',
-        label: 'Pools to Display',
-        options: [
-          { value: 1, label: 1 },
-          { value: 2, label: 2 },
-          { value: 3, label: 3 },
-        ],
-      },
-      {
         type: 'pair',
         name: 'pairs',
-        label: 'Pair',
         repeatBy: 'displayCount',
         max: 3,
       },
     ],
     Preview: IncentivesPreview,
-    defaults: { displayCount: 1, pairs: [] },
+    defaults: { displayCount: 3, pairs: [] },
   },
   portfolio: {
     title: 'Portfolio Growth Template',
     subTitle: 'Select pair and enter your investment amount',
     fields: [
-      { type: 'pair', name: 'pair', label: 'Pair' },
+      { type: 'pair', name: 'pair' },
       { type: 'input', name: 'amount', label: 'Investment Amount (USD)', min: 0, typeInput: 'number' },
     ],
     Preview: PortfolioPreview,
@@ -71,11 +46,11 @@ const TEMPLATES = {
   metrics: {
     title: 'On-Chain Metrics',
     subTitle: 'on-chain metrics subtitle',
+    split: true,
     fields: [
       {
-        type: 'segmented',
+        type: 'radioGroup',
         name: 'metricsType',
-        label: 'Metrics Type',
         options: [METRICS_TYPE.KEY_METRICS, METRICS_TYPE.RECENT_ACTIVITY],
       },
       {

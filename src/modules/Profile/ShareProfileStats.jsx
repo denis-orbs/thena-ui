@@ -6,7 +6,7 @@ import CheckBox from '@/components/checkbox'
 import Toggle from '@/components/toggle'
 import { cn } from '@/lib/utils'
 
-import DownloadButton from './DownloadImage'
+import ActionButtons from './ActionButtons'
 import SelectAchievement from './SelectAchievement'
 
 export default function ShareProfileStats({
@@ -83,7 +83,7 @@ export default function ShareProfileStats({
           />
         </div>
         <div className='flex w-full flex-col gap-2'>
-          <DownloadButton fileName='profile' />
+          <ActionButtons fileName='profile' />
           <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
         </div>
       </div>

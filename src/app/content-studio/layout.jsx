@@ -1,23 +1,16 @@
 'use client'
 
-import { cn } from '@/lib/utils'
-import StudioShell from '@/modules/Studio/StudioLayout/StudioShell'
-import Tabs from '@/modules/Studio/StudioLayout/Tabs'
-import { useMigratePositionWarning } from '@/state/positions/hooks'
+import { useTranslations } from 'next-intl'
+
+import { TextHeading } from '@/components/typography'
 
 export default function ContentStudioLayout({ children }) {
-  const { showBannerMigrate } = useMigratePositionWarning()
+  const t = useTranslations()
 
   return (
-    <div>
-      <div
-        className={cn('fixed top-[70px] z-40 w-full md:top-[90px]', showBannerMigrate && 'top-[186px] md:top-[144px]')}
-      >
-        <Tabs />
-      </div>
-      <div className={cn('mt-[158px] md:mt-[206px] lg:mx-8', showBannerMigrate && 'mt-[274px] md:mt-[260px]')}>
-        <StudioShell>{children}</StudioShell>
-      </div>
+    <div className='layout mx-auto flex w-full max-w-[1440px] flex-col gap-3 lg:px-12 lg:pt-8'>
+      <TextHeading className='font-archia text-5xl font-semibold text-neutral-50'>{t('Content Studio')}</TextHeading>
+      <div className='relative gap-8 overflow-y-auto rounded-xl bg-neutral-900 p-4'>{children}</div>
     </div>
   )
 }

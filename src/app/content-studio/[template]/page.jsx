@@ -3,6 +3,7 @@
 import useTemplateState from '@/modules/Studio/hooks/useTemplateState'
 import { getTemplateBySlug } from '@/modules/Studio/lib/templateRegistry'
 import PreviewCanvas from '@/modules/Studio/Preview/PreviewCanvas'
+import BackgroundSelection from '@/modules/Studio/StudioLayout/BackgroundSelection'
 import TemplateSidebar from '@/modules/Studio/StudioLayout/Sidebar/TemplateSidebar'
 
 export default function TemplatePage({ params, searchParams }) {
@@ -15,20 +16,24 @@ export default function TemplatePage({ params, searchParams }) {
   const { Preview } = tpl
 
   return (
-    <div className='flex w-full flex-col gap-4 overflow-hidden lg:flex-row lg:gap-5'>
-      <div className='order-2 w-full shrink-0 lg:order-1 lg:w-[396px]'>
+    <div className='flex w-full flex-col gap-4 overflow-hidden lg:flex-row lg:gap-6'>
+      <div className='order-2 w-full shrink-0 lg:order-1 lg:w-[522px]'>
         <TemplateSidebar
           title={tpl.title}
           subTitle={tpl.subTitle}
           fields={tpl.fields}
+          split={tpl.split}
           state={state}
           setField={setField}
           reset={reset}
         />
       </div>
-      <PreviewCanvas background={state.background} className='order-1 flex overflow-hidden lg:order-2 lg:flex-1'>
-        <Preview state={state} setField={setField} />
-      </PreviewCanvas>
+      <div className='order-1 flex flex-col gap-6 overflow-hidden lg:order-2 lg:flex-1'>
+        <PreviewCanvas background={state.background} className='flex'>
+          <Preview state={state} setField={setField} />
+        </PreviewCanvas>
+        <BackgroundSelection />
+      </div>
     </div>
   )
 }
