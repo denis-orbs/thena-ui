@@ -53,6 +53,34 @@ export const SCAN_URLS = {
   97: 'https://testnet.bscscan.com',
 }
 
+export const SOCIAL_LINKS = {
+  X: {
+    icon: '/images/footer/x.svg',
+    iconColored: '/images/footer/xcolored.svg',
+    url: 'https://x.com/ThenaFi',
+  },
+  Medium: {
+    icon: '/images/footer/vector.svg',
+    iconColored: '/images/footer/vectorcolored.svg',
+    url: 'https://medium.com/@ThenaFi',
+  },
+  Discord: {
+    icon: '/images/footer/discord.svg',
+    iconColored: '/images/footer/discordcolored.svg',
+    url: 'https://discord.gg/thena',
+  },
+  Telegram: {
+    icon: '/images/footer/telegram.svg',
+    iconColored: '/images/footer/telegramcolored.svg',
+    url: 'https://t.me/Thena_Fi',
+  },
+  Coingecko: {
+    icon: '/images/footer/dinasour.svg',
+    iconColored: '/images/footer/dinasourcolored.svg',
+    url: 'https://www.coingecko.com/en/coins/thena',
+  },
+}
+
 export const TXN_STATUS = {
   START: 'start',
   WAITING: 'waiting',

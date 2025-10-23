@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 
 import { TrailingButton } from '@/components/buttons/Button'
+import { SOCIAL_LINKS } from '@/constant'
 
 import { CommunityStars } from './CommunityStars'
 import { MainCommunityIllustration } from './MainCommunityIllustration'
@@ -21,7 +22,7 @@ function Community() {
         <TrailingButton
           className='mt-4'
           onClick={() => {
-            window.open('https://discord.gg/thena', '_blank')
+            window.open(SOCIAL_LINKS.Discord.url, '_blank')
           }}
         >
           {t('Join Discord')}

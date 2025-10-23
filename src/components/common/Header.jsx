@@ -35,6 +35,7 @@ import {
   ChevronDownColorIcon,
   ChevronDownIcon,
   ChevronDownWhiteIcon,
+  ExternalIcon,
   HamburgerIcon,
   InfoNeutralIcon,
   LanguageIcon,
@@ -57,7 +58,8 @@ import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 const chains = [
   { img: BNB_LOGO, chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
-  { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
+  // { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
+  { img: '/images/bridge.png', label: 'Bridge', url: '/bridge' },
 ]
 
 const langs = [
@@ -196,16 +198,9 @@ function ChainSelect({ className, t }) {
       >
         {chains.map((item, idx) => {
           const element = getElement(item, idx)
-          if (item.label === 'Bridge') {
-            return (
-              <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
-                {element}
-              </div>
-            )
-          }
           if (item.url) {
             return (
-              <Link href={item.url} target='_blank' key={`chain-${idx}`}>
+              <Link href={item.url} key={`chain-${idx}`}>
                 {element}
               </Link>
             )
@@ -567,6 +562,7 @@ function Header() {
             heading: t('Perps Trade'),
             subheading: t('Easy and user-friendly trading interface'),
             onClickHandler: () => window.open('https://perps.thena.fi', '_blank'),
+            isExternal: true,
           },
           {
             heading: t('Cross-Chain'),
@@ -663,16 +659,19 @@ function Header() {
                   onClickHandler: () => {
                     goToDoc()
                   },
+                  isExternal: true,
                 },
                 {
                   heading: t('Forum'),
                   subheading: t('Discussion for governance proposals'),
                   onClickHandler: () => window.open('https://forum.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Arena'),
@@ -703,16 +702,19 @@ function Header() {
                   onClickHandler: () => {
                     goToDoc()
                   },
+                  isExternal: true,
                 },
                 {
                   heading: t('Forum'),
                   subheading: t('Discussion for governance proposals'),
                   onClickHandler: () => window.open('https://forum.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  isExternal: true,
                 },
                 {
                   heading: t('Arena'),
@@ -1058,7 +1060,18 @@ function Header() {
                               }
                             }}
                           >
-                            <TextHeading>{subitem.heading}</TextHeading>
+                            <div className='flex w-full items-center justify-between'>
+                              <TextHeading>{subitem.heading}</TextHeading>
+                              {subitem.isExternal && (
+                                <ExternalIcon
+                                  className='h-4 w-4 stroke-neutral-50'
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                  }}
+                                />
+                              )}
+                            </div>
                             <TextSubHeading>{subitem.subheading}</TextSubHeading>
                           </div>
                         ))}
@@ -1205,7 +1218,18 @@ function Header() {
                           }
                         }}
                       >
-                        <p className='font-medium text-neutral-200'>{subitem.heading}</p>
+                        <div className='flex w-full items-center justify-between'>
+                          <p className='font-medium text-neutral-50'>{subitem.heading}</p>
+                          {subitem.isExternal && (
+                            <ExternalIcon
+                              className='h-4 w-4 stroke-neutral-50'
+                              onClick={e => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                              }}
+                            />
+                          )}
+                        </div>
                         <TextSubHeading>{subitem.subheading}</TextSubHeading>
                       </div>
                     ))}
@@ -1318,8 +1342,7 @@ function Header() {
       <Script
         id='widget-dom-id'
         crossOrigin='anonymous'
-        integrity='sha384-3zFe+8VKgjcBTM8asFjY4ey9NzeDLCHJKUMrtyvDD8Og7iVekE2ciXhKpqJGJ5H1'
-        src='https://widget.metacrm.inc/static/js/widget-3-8-1.js'
+        src='https://widget.metacrm.inc/static/js/widget.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@basementuniverse/stats": "^1.3.0",
+    "@chainlink/ccip-js": "^0.2.5",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^7.11.0",
@@ -24,7 +25,7 @@
     "@orbs-network/twap-ui": "3.1.5",
     "@particle-network/auth-core-modal": "^1.5.1",
     "@particle-network/chains": "^1.3.24",
-    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@rainbow-me/rainbowkit": "^2.2.9",
     "@reduxjs/toolkit": "^2.0.1",
     "@tanstack/react-query": "^5.17.19",
     "@vercel/analytics": "^1.1.4",
@@ -79,7 +80,7 @@
     "tiny-invariant": "^1.3.1",
     "uuid": "^9.0.1",
     "viem": "^2.21.26",
-    "wagmi": "^2.12.17",
+    "wagmi": "^2.18.1",
     "yarn-deduplicate": "^6.0.2"
   },
   "devDependencies": {
@@ -105,6 +106,9 @@
     "tailwind-scrollbar": "4.0.2",
     "tailwindcss": "^4.1.8",
     "tw-animate-css": "^1.3.5"
+  },
+  "resolutions": {
+    "@metamask/sdk": "0.32.1"
   },
   "engines": {
     "node": "20.x"

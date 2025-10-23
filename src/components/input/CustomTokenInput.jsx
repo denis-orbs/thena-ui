@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import CustomTokenModal from '@/modules/TokenModal/CustomTokenModal'
 
 import TokenBadge from '../badges/TokenBadge'
@@ -19,6 +19,9 @@ function CustomTokenInput({
   hasTabs = true,
   title = '',
   assets = [],
+  helperText = '',
+  disabledSelect = false,
+  enableSetMax = false,
 }) {
   const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
@@ -67,15 +70,36 @@ function CustomTokenInput({
             disabled={disabled}
           />
           {asset ? (
-            <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} />
+            <TokenBadge
+              asset={asset}
+              showChevronDownIcon={!disabledSelect}
+              onClick={() => {
+                if (!disabledSelect) {
+                  setTokenPopup(true)
+                }
+              }}
+            />
           ) : (
             <Skeleton className='h-[36px] w-[100px]' />
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading>
-            {t('Balance')}: {formatAmount(asset?.balance, false, 10)}
+          <TextSubHeading>{helperText || `$${formatAmount(amount * (asset?.price || 0))}`}</TextSubHeading>
+          <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
+            <span>
+              {t('Balance')}: {formatAmount(asset?.balance, false, 10)}
+            </span>
+            {enableSetMax && (
+              <span
+                onClick={() => setAmount(asset?.balance?.dp(asset.decimals).toString(10))}
+                className={cn(
+                  'text-primary-600 hover:text-primary-400 cursor-pointer',
+                  !asset?.balance || (asset?.balance?.eq(0) && 'hidden'),
+                )}
+              >
+                {t('Max')}
+              </span>
+            )}
           </TextSubHeading>
         </div>
         <CustomTokenModal popup={tokenPopup} setPopup={setTokenPopup} setSelectedAsset={setAsset} assets={assets} />

@@ -190,12 +190,20 @@ export default function SwapBest({
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
+    let fromInUsd = 0
+    let toInUsd = 0
+    if (fromAsset && toAsset && fromAmount && toAmount) {
+      fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
+      toInUsd = new BigNumber(toAmount).times(toAsset.price)
+    }
     if (!isFallbackLH && bestTrade) {
-      return Math.abs(bestTrade.percentDiff)
+      const inDiff = Math.abs((fromInUsd - bestTrade.inValues) / bestTrade.inValues) * 100
+      const outDiff = Math.abs((toInUsd - bestTrade.outValues) / bestTrade.outValues) * 100
+      if (inDiff < 5 && outDiff < 5) {
+        return Math.abs(bestTrade.percentDiff)
+      }
     }
     if (fromAsset && toAsset && fromAmount && toAmount) {
-      const fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
-      const toInUsd = new BigNumber(toAmount).times(toAsset.price)
       return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
     }
     return 0
