@@ -15,9 +15,15 @@ const TEMPLATES = {
         repeatBy: 'displayCount',
         max: 6,
       },
+      {
+        type: 'addPairButton',
+        name: 'displayCount',
+        label: 'Add Pair',
+        max: 6,
+      },
     ],
     Preview: PoolsAprPreview,
-    defaults: { displayCount: 6, pairs: [] },
+    defaults: { displayCount: 1, pairs: [] },
   },
   incentives: {
     title: 'Voting Incentives Template',
@@ -29,9 +35,15 @@ const TEMPLATES = {
         repeatBy: 'displayCount',
         max: 3,
       },
+      {
+        type: 'addPairButton',
+        name: 'displayCount',
+        label: 'Add Pair',
+        max: 3,
+      },
     ],
     Preview: IncentivesPreview,
-    defaults: { displayCount: 3, pairs: [] },
+    defaults: { displayCount: 1, pairs: [] },
   },
   portfolio: {
     title: 'Portfolio Growth Template',

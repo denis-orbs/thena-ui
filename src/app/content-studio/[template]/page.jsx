@@ -16,8 +16,8 @@ export default function TemplatePage({ params, searchParams }) {
   const { Preview } = tpl
 
   return (
-    <div className='flex w-full flex-col gap-4 overflow-hidden lg:flex-row lg:gap-6'>
-      <div className='order-2 w-full shrink-0 lg:order-1 lg:w-[522px]'>
+    <div className='flex w-full flex-col gap-4 overflow-hidden xl:flex-row xl:gap-6'>
+      <div className='w-full shrink-0 xl:w-[522px]'>
         <TemplateSidebar
           title={tpl.title}
           subTitle={tpl.subTitle}
@@ -28,7 +28,7 @@ export default function TemplatePage({ params, searchParams }) {
           reset={reset}
         />
       </div>
-      <div className='order-1 flex flex-col gap-6 overflow-hidden lg:order-2 lg:flex-1'>
+      <div className='flex flex-col gap-6 overflow-hidden xl:flex-1'>
         <PreviewCanvas background={state.background} className='flex'>
           <Preview state={state} setField={setField} />
         </PreviewCanvas>

@@ -224,18 +224,18 @@ export default function ActionButtons({ fileName, scale = 1, backgroundColor = '
   ) : (
     <>
       <PrimaryButton onClick={() => setOpenShareModal(true)} className='h-full w-1/2' disabled={isDownloading}>
-        <ShareProfileIcon className='[&>path]:stroke-primary-100 mr-2 h-4 w-4' />
+        <ShareProfileIcon className='[&>path]:stroke-primary-100 h-4 w-4' />
         {t('Share')}
       </PrimaryButton>
       <EmphasisButton onClick={handleRender} className='h-full w-1/2' disabled={isDownloading}>
         {isDownloading ? (
           <>
-            <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+            <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
             {`${t('Downloading')}...`}
           </>
         ) : (
           <>
-            <DownloadIcon className='mr-2 h-4 w-4' />
+            <DownloadIcon className='h-4 w-4' />
             {t('Download')}
           </>
         )}

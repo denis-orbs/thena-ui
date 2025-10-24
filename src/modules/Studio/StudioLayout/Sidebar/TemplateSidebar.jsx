@@ -9,6 +9,7 @@ import { cn, isInvalidAmount } from '@/lib/utils'
 import ActionButtons from '@/modules/Profile/ActionButtons'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
+import AddPairButtonField from './fields/AddPairButtonField'
 import CheckboxListField from './fields/CheckboxListField'
 import DisplayCountPickerField from './fields/DisplayCountPickerField'
 import InputField from './fields/InputField'
@@ -82,6 +83,9 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     select: {
       component: DisplayCountPickerField,
     },
+    addPairButton: {
+      component: AddPairButtonField,
+    },
     pair: {
       component: PairPickerField,
       options:
@@ -102,31 +106,32 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     },
   }
 
-  // ---- expand fields have repeatBy ----
-  const expandedFields = fields.flatMap(f => {
-    if (f.repeatBy) {
-      const count = Number(state[f.repeatBy] ?? 0)
-      const max = f.max ?? count
-      const safeCount = Math.min(count, max)
+  const hydratedFields = useMemo(() => {
+    // ---- expand fields have repeatBy ----
+    const expandedFields = fields.flatMap(f => {
+      if (f.repeatBy) {
+        const count = Number(state[f.repeatBy] ?? 0)
+        const max = f.max ?? count
+        const safeCount = Math.min(count, max)
 
-      return Array.from({ length: safeCount }, (_, i) => ({
-        ...f,
-        __baseName: f.name,
-        __index: i,
-        label: f.label ? `${f.label} ${i + 1}` : undefined,
-        name: `${f.name}[${i}]`,
-      }))
-    }
-    return [f]
-  })
-
-  const hydratedFields = expandedFields.map(f => {
-    if (f.dependsOn && f.optionMap) {
-      const key = state?.[f.dependsOn]
-      return { ...f, options: f.optionMap[key] ?? [] }
-    }
-    return f
-  })
+        return Array.from({ length: safeCount }, (_, i) => ({
+          ...f,
+          __baseName: f.name,
+          __index: i,
+          label: f.label ? `${f.label} ${i + 1}` : undefined,
+          name: `${f.name}[${i}]`,
+        }))
+      }
+      return [f]
+    })
+    return expandedFields.map(f => {
+      if (f.dependsOn && f.optionMap) {
+        const key = state?.[f.dependsOn]
+        return { ...f, options: f.optionMap[key] ?? [] }
+      }
+      return f
+    })
+  }, [fields, state])
 
   const getValue = f => {
     if (typeof f.__index === 'number' && f.__baseName) {
@@ -190,7 +195,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         <Tabs />
         <div className='flex flex-col gap-1'>
           {title && (
-            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
+            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white max-lg:hidden'>
               {t(title)}
             </TextHeading>
           )}
@@ -201,7 +206,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
             const Field = map[f.type]?.component ?? null
             if (!Field) return <></>
             return (
-              <div key={f.name} className='flex flex-col gap-6'>
+              <div key={f.name} className={cn('flex flex-col gap-6', f.className)}>
                 {split && index > 0 && <div className='h-px w-full bg-neutral-700' />}
                 <Field
                   key={f.name}
