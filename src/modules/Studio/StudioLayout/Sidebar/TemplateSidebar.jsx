@@ -140,6 +140,14 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     return state?.[f.name]
   }
 
+  const onRemove = f => {
+    setField(
+      f.__baseName,
+      (state?.[f.__baseName] ?? []).filter((_, i) => i !== f.__index),
+    )
+    setField(f.repeatBy, (state?.[f.repeatBy] ?? 0) - 1)
+  }
+
   const handleChange = (f, v) => {
     if (typeof f.__index === 'number' && f.__baseName) {
       const base = f.__baseName
@@ -214,6 +222,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
                   options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
                   value={getValue(f)}
                   onChange={v => handleChange(f, v)}
+                  onRemove={() => f.type === 'pair' && onRemove(f)}
                 />
               </div>
             )

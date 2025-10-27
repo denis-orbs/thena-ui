@@ -45,7 +45,7 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', shoul
       }
 
       return new Promise((resolve, reject) => {
-        createPresignedUrl(blob, account.toLowerCase(), 'PROFILE', data => {
+        createPresignedUrl(blob, account.toLowerCase(), 'CONTENT_STUDIO', data => {
           handleDownloadS3Image(data)
             .then(() => resolve())
             .catch(error => reject(error))

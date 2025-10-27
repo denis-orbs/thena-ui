@@ -3,7 +3,7 @@
 import html2canvas from 'html2canvas-pro'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Textarea from '@/components/input/Textarea'
@@ -12,7 +12,7 @@ import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import { cn } from '@/lib/utils'
+import { cn, rewriteS3Host } from '@/lib/utils'
 import { DiscordIcon, EmailIcon, FacebookIcon, RedditIcon, ShareProfileIcon, TelegramIcon, TwitterIcon } from '@/svgs'
 
 export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
@@ -64,14 +64,14 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
           }
         })
       })
-      const file = new File([blob], `${fileName}.png`, { type: 'image/png' })
+      const file = new File([blob], `${fileName}-${Date.now()}.png`, { type: 'image/png' })
 
       await createPresignedUrl(
         file,
         account.toLowerCase(),
-        'PROFILE',
+        'CONTENT_STUDIO',
         async data => {
-          setImageUrl(data)
+          setImageUrl(`https://thena.fi/s3/download/${rewriteS3Host(data, 'cdn.thena.fi/')}`)
           setUploading(false)
           setOpenShareModal(true)
         },
@@ -95,6 +95,9 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
 
     window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
   }, [])
+
+  const contentWithUrl = useMemo(() => `${postContent} ${imageUrl ? `\n\n${imageUrl}` : ''}`, [postContent, imageUrl])
+
   return (
     <>
       <PrimaryButton
@@ -129,8 +132,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Twitter,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -143,8 +145,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Telegram,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -156,8 +157,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Facebook,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -169,8 +169,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Instagram,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -182,8 +181,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Discord,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -195,8 +193,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Reddit,
-                    content: postContent,
-                    url: imageUrl,
+                    content: contentWithUrl,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -206,8 +203,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
             <Link
               href={getShareSocialNetworkUrl({
                 network: SocialNetwork.Email,
-                content: postContent,
-                url: imageUrl,
+                content: contentWithUrl,
               })}
               target='_blank'
               rel='noopener noreferrer'
