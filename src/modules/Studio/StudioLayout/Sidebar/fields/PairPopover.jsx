@@ -82,22 +82,20 @@ export default function PairPopover({ popup, setPopup, pools, setSelected, field
       const itemHeight = 68
       const actualContentHeight = searchHeight + dividerHeight + filteredPools.length * itemHeight
 
-      // Use a minimum height but cap at reasonable maximum
-      const estimatedDropdownHeight = Math.max(200, Math.min(400, actualContentHeight))
-
       // Determine direction based on available space
       let direction = 'down'
-      let { top } = rect
-      const { height } = rect
-
-      if (spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow) {
+      let { top, left } = rect
+      if (spaceAbove > spaceBelow) {
         direction = 'up'
-        top = rect.bottom + height + 16 + window.scrollY - estimatedDropdownHeight
       }
 
       const availableHeight = direction === 'down' ? spaceBelow - 20 : spaceAbove - 20
       const maxHeight = Math.min(340, Math.max(200, availableHeight))
-      let left = rect.left + window.scrollX
+
+      if (spaceAbove > spaceBelow) {
+        top = rect.bottom - Math.min(maxHeight, actualContentHeight)
+      }
+
       const dropdownWidth = rect.width
       if (left + dropdownWidth > viewportWidth) {
         left = viewportWidth - dropdownWidth - 10

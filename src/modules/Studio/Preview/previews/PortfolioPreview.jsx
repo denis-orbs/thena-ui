@@ -33,7 +33,7 @@ function PortfolioPreview({ state }) {
           ${formatAmount(calculateProfitPerDay(maxApr, amount), true)}
         </TextHeading>
         <div className='flex w-fit items-center gap-3.5'>
-          <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day on')}</TextHeading>
+          <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day in')}</TextHeading>
           <div className='flex items-center justify-center gap-[5px]'>
             {pair.type === PAIR_TYPES.WEIGHTED ? (
               <ThreeIconGroup
@@ -68,7 +68,9 @@ function PortfolioPreview({ state }) {
         <TextHeading className='text-lg! leading-4.5! font-normal tracking-[.0625em] text-neutral-300 uppercase'>
           {t('Estimated APR')}
         </TextHeading>
-        <TextHeading className='text-2xl! leading-6! font-medium tracking-[.0625em]'>{pair.apr} APR</TextHeading>
+        <TextHeading className='text-2xl! leading-6! font-medium tracking-[.0625em]'>
+          {formatAmount(maxApr, true)}%
+        </TextHeading>
       </div>
     </div>
   ) : (

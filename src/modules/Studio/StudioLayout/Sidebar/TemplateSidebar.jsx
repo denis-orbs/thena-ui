@@ -6,7 +6,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { cn, isInvalidAmount } from '@/lib/utils'
-import ActionButtons from '@/modules/Profile/ActionButtons'
+import ActionButtons from '@/modules/Studio/StudioLayout/ActionButtons'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
 import AddPairButtonField from './fields/AddPairButtonField'
@@ -190,12 +190,12 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
 
   const ref = useRef(null)
   return (
-    <aside className='flex h-full min-h-[576px] flex-col gap-6 rounded-xl'>
+    <aside className='flex h-full flex-col gap-6 rounded-xl xl:min-h-[576px]'>
       <div className='flex flex-1 flex-col gap-6'>
         <Tabs />
         <div className='flex flex-col gap-1'>
           {title && (
-            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white max-lg:hidden'>
+            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white max-xl:hidden'>
               {t(title)}
             </TextHeading>
           )}
@@ -220,7 +220,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
           })}
         </div>
       </div>
-      <div className='mt-auto flex w-full gap-3'>
+      <div className='mt-auto hidden w-full gap-3 xl:flex'>
         <ActionButtons scale={1920 / 1024} fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
       </div>
     </aside>

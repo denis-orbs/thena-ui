@@ -20,7 +20,7 @@ import PairPopover from './PairPopover'
 export default function PairPickerField({ value, onChange, options = [], onRemove = () => {} }) {
   const [open, setOpen] = useState(false)
   const t = useTranslations()
-  const { isLgDown } = useMediaQuery()
+  const { isXlDown } = useMediaQuery()
   const wrapperRef = useRef(null)
 
   const pathname = usePathname()
@@ -69,10 +69,10 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
         />
       </div>
-      <EmphasisIconButton className='mt-2 size-11 lg:hidden' onClick={onRemove} Icon={TrashIcon} />
+      <EmphasisIconButton className='mt-2 size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
 
       {/* Use popover for large screens, modal for small screens */}
-      {isLgDown ? (
+      {isXlDown ? (
         <PairModal
           popup={open}
           setPopup={setOpen}

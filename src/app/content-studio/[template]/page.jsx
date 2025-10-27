@@ -29,10 +29,10 @@ export default function TemplatePage({ params, searchParams }) {
         />
       </div>
       <div className='flex flex-col gap-6 overflow-hidden xl:flex-1'>
-        <PreviewCanvas background={state.background} className='flex'>
+        <PreviewCanvas background={state.background} className='hidden xl:flex'>
           <Preview state={state} setField={setField} />
         </PreviewCanvas>
-        <BackgroundSelection />
+        <BackgroundSelection state={state} setField={setField} tpl={tpl} />
       </div>
     </div>
   )

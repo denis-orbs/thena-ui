@@ -1,24 +1,24 @@
 import { useTranslations } from 'next-intl'
 import React, { useEffect } from 'react'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { OutlinedButton } from '@/components/buttons/Button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 function AddPairButtonField({ label, value, onChange, max }) {
   const t = useTranslations()
 
-  const { isLgDown } = useMediaQuery()
+  const { isXlDown } = useMediaQuery()
 
   useEffect(() => {
-    if (!isLgDown && value !== max) onChange(max)
-  }, [max, isLgDown, onChange, value])
+    if (!isXlDown && value !== max) onChange(max)
+  }, [max, isXlDown, onChange, value])
 
-  if (value >= max || !isLgDown) return null
+  if (value >= max || !isXlDown) return null
 
   return (
-    <div>
-      <EmphasisButton onClick={() => onChange(value + 1)}>{t(label)}</EmphasisButton>
-    </div>
+    <OutlinedButton className='w-full' onClick={() => onChange(value + 1)}>
+      {t(label)}
+    </OutlinedButton>
   )
 }
 

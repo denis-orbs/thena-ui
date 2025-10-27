@@ -125,7 +125,6 @@
   "Chart": "Chart",
   "Order Routing": "Order Routing",
   "Select Asset": "Select Asset",
-  "Search by Name, Symbol or Address": "Search by Name, Symbol or Address",
   "Trending Assets": "Trending Assets",
   "Assets": "Assets",
   "Insufficient Balance": "Insufficient Balance",
@@ -1658,7 +1657,7 @@
   "Content Studio": "Content Studio",
   "Select pairs from the dropdown to see the results": "Select pairs from the dropdown to see the results.",
   "Your [amount] Can Earn": "Your {amount} Can Earn",
-  "Per Day on": "Per Day on",
+  "Per Day in": "Per Day in",
   "on-chain metrics subtitle": "Select up to 6 on-chain metrics to showcase their data.",
   "Pools to Display": "Pools to Display",
   "pools apr template subtitle": "Select up to 6 pairs to showcase their APR and TVL data",
@@ -1687,5 +1686,11 @@
   "Share Image": "Share Image",
   "Download": "Download",
   "Background Image": "Background Image",
-  "Search by name, symbol or address": "Search by name, symbol or address"
+  "Search by name, symbol or address": "Search by name, symbol or address",
+  "Your text": "Your text",
+  "Type here": "Type here",
+  "Edit": "Edit",
+  "Dowloading": "Dowloading",
+  "Add Custom Image": "Add Custom Image",
+  "Select Background Image": "Select Background Image"
 }
