@@ -1,8 +1,8 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 

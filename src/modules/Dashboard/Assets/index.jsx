@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 

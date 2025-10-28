@@ -5,9 +5,10 @@ import { useConnect as useParticleConnect } from '@particle-network/auth-core-mo
 import { motion } from 'framer-motion'
 import { compact } from 'lodash'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -953,17 +954,6 @@ function Header() {
     push('/')
     setIsOpen(false)
   }
-
-  useEffect(() => {
-    // Prefetch the dashboard page
-    router.prefetch('/')
-    router.prefetch('/swap')
-    router.prefetch('/pools')
-    router.prefetch('/dashboard')
-    router.prefetch('/analytics')
-    router.prefetch('/protocols')
-    router.prefetch('/arena')
-  }, [router])
 
   return (
     <div id='headerMaster'>

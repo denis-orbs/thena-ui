@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 

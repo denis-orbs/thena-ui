@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { useUserInfo } from '@/context/userInfoContext'

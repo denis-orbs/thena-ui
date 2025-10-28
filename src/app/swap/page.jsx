@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { useBalance } from 'wagmi'

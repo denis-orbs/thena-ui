@@ -1,5 +1,6 @@
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 
 import Box from '@/components/box'

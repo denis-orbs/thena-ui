@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'

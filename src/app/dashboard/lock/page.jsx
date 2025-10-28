@@ -1,8 +1,8 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Info } from '@/components/alert'

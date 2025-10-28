@@ -1,8 +1,8 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { Position } from 'thenafi-fusion-sdk'

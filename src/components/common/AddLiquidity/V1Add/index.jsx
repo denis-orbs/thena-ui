@@ -1,8 +1,8 @@
 'use client'
 
 import { SettingsIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'

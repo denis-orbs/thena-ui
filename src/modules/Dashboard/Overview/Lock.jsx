@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 

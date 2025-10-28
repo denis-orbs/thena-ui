@@ -1,5 +1,5 @@
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'

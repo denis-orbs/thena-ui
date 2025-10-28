@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'

@@ -2,6 +2,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import dynamic from 'next/dynamic'
+import NextTopLoader from 'nextjs-toploader'
 import React, { Suspense } from 'react'
 
 import 'react-datepicker/dist/react-datepicker.css'
@@ -73,6 +74,7 @@ export default function RootLayout({ children }) {
           <SpeedInsights />
         </Providers>
         <Analytics />
+        <NextTopLoader color='#dc00d4' showSpinner={false} />
         <div id='widget-dom-id' />
         <div id='metacrm-tracking' />
       </body>

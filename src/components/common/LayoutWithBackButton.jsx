@@ -1,5 +1,5 @@
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 
 import { cn } from '@/lib/utils'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
