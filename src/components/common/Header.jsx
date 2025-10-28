@@ -1332,7 +1332,8 @@ function Header() {
       <Script
         id='widget-dom-id'
         crossOrigin='anonymous'
-        src='https://widget.metacrm.inc/static/js/widget.js'
+        src='https://widget.metacrm.inc/static/js/widget-2-8-2.js'
+        integrity='sha384-I7RBRzDDERL72YpT/iLLj1Wpcc6Myj5s9EiV3Wx5Fo32SXUOJu5y8RYdOaDM85/o'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
