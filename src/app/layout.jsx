@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
           <SpeedInsights />
         </Providers>
         <Analytics />
-        <NextTopLoader color='#dc00d4' showSpinner={false} />
+        <NextTopLoader color='#dc00d4' initialPosition={0.2} easing='ease-out' showSpinner={false} />
         <div id='widget-dom-id' />
         <div id='metacrm-tracking' />
       </body>
