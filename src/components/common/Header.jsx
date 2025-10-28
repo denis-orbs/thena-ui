@@ -955,6 +955,16 @@ function Header() {
     setIsOpen(false)
   }
 
+  useEffect(() => {
+    router.prefetch('/swap')
+    router.prefetch('/pools')
+    router.prefetch('/dashboard')
+    router.prefetch('/dashboard/vote')
+    router.prefetch('/dashboard/rewards')
+    router.prefetch('/dashboard/lock')
+    router.prefetch('/analytics')
+  }, [router])
+
   return (
     <div id='headerMaster'>
       {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
