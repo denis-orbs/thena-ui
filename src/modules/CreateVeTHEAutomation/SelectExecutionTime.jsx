@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
-import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
+import { DateTimePickerModal } from '@/components/input/DateTimePickerModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
@@ -42,7 +42,7 @@ function SelectExecutionTime({ executionTime, updateData }) {
           </Paragraph>
         </div>
         <div className='mt-2 w-full lg:mt-3'>
-          <DateTimePickerCustom
+          <DateTimePickerModal
             title='Automation Execution Time'
             selectedDate={executionTime}
             onChange={date => {

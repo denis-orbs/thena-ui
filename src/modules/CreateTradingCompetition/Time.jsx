@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
-import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
+import { DateTimePickerModal } from '@/components/input/DateTimePickerModal'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 import { errorToast } from '@/lib/notify'
 import { MinusIcon, PlusIcon } from '@/svgs'
@@ -183,7 +183,7 @@ function Time({ data, setData }) {
       <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
-          <DateTimePickerCustom
+          <DateTimePickerModal
             title='Registration Start Time'
             selectedDate={regStartTime}
             onChange={date => {
@@ -205,7 +205,7 @@ function Time({ data, setData }) {
         </div>
         <div className='w-full'>
           <LabelTooltip label='Registration End Time' />
-          <DateTimePickerCustom
+          <DateTimePickerModal
             title='Registration End Time'
             selectedDate={regEndTime}
             onChange={date => {
@@ -231,7 +231,7 @@ function Time({ data, setData }) {
       <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
-          <DateTimePickerCustom
+          <DateTimePickerModal
             title='Competition Start Time'
             selectedDate={tsStartTime}
             onChange={date => {
@@ -256,7 +256,7 @@ function Time({ data, setData }) {
         </div>
         <div className='w-full'>
           <LabelTooltip label='Competition End Time' />
-          <DateTimePickerCustom
+          <DateTimePickerModal
             title='Competition End Time'
             selectedDate={tsEndTime}
             onChange={date => {
