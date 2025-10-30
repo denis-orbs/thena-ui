@@ -38,7 +38,6 @@
     "framer-motion": "^11.0.6",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
-    "html2canvas": "^1.4.1",
     "html2canvas-pro": "^1.5.11",
     "lightweight-charts": "^4.1.2",
     "lodash": "^4.17.21",
