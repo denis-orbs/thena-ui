@@ -1,7 +1,6 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { SettingsIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -19,6 +18,7 @@ import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import { SettingsIcon } from '@/svgs'
 
 export const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
