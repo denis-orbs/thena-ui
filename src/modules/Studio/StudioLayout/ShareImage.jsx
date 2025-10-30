@@ -8,12 +8,11 @@ import { useCallback, useState } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Textarea from '@/components/input/Textarea'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
-import { DiscordIcon, EmailIcon, FacebookIcon, RedditIcon, ShareProfileIcon, TelegramIcon, TwitterIcon } from '@/svgs'
+import { EmailIcon, RedditIcon, ShareProfileIcon, TelegramIcon, TwitterIcon } from '@/svgs'
 
 export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
   const [uploading, setUploading] = useState(false)
@@ -126,11 +125,11 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
       <Modal title={t('Share Image')} isOpen={openShareModal} closeModal={() => setOpenShareModal(false)}>
         <ModalBody>
           <div className=''>
-            <p className='text-lg font-medium'>{t('Your text')}</p>
+            <p className='text-lg font-medium'>{t('Write your description here')}</p>
             <Textarea
               className='h-[180px] md:h-[130px]'
               val={postContent}
-              placeholder='Type here'
+              placeholder={t('Write your description here...')}
               onChange={e => {
                 setPostContent(e.target.value)
               }}
@@ -164,42 +163,6 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
               }
             >
               <TelegramIcon className='hover:fill-social-telegram cursor-pointer fill-white/45' />
-            </div>
-            <div
-              onClick={
-                () =>
-                  handleOpenShareWindow({
-                    network: SocialNetwork.Facebook,
-                    content: postContent,
-                  })
-                // eslint-disable-next-line react/jsx-curly-newline
-              }
-            >
-              <FacebookIcon className='hover:fill-social-facebook cursor-pointer fill-white/45' />
-            </div>
-            <div
-              onClick={
-                () =>
-                  handleOpenShareWindow({
-                    network: SocialNetwork.Instagram,
-                    content: postContent,
-                  })
-                // eslint-disable-next-line react/jsx-curly-newline
-              }
-            >
-              <InstagramIcon />
-            </div>
-            <div
-              onClick={
-                () =>
-                  handleOpenShareWindow({
-                    network: SocialNetwork.Discord,
-                    content: postContent,
-                  })
-                // eslint-disable-next-line react/jsx-curly-newline
-              }
-            >
-              <DiscordIcon className='hover:fill-social-discord cursor-pointer fill-white/45' />
             </div>
             <div
               onClick={

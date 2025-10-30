@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 function buildImageUrl(account, filename) {
   return `http://thena-s3.s3.eu-west-2.amazonaws.com/arena/content-studio/${account}/${encodeURIComponent(filename)}`
 }
@@ -46,6 +47,9 @@ export async function generateMetadata({ params }) {
 export default function Page({ params }) {
   const { account, filename } = params || {}
   const imageUrl = buildImageUrl(account, filename)
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={imageUrl} alt={filename} style={{ width: '100%', height: 'auto', borderRadius: 12 }} />
+  return (
+    <div className='layout flex w-full lg:py-8'>
+      <img src={imageUrl} alt={filename} style={{ width: '100%', height: 'auto', borderRadius: 12 }} />
+    </div>
+  )
 }
