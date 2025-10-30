@@ -28,7 +28,6 @@ function DateInput({
         maxDate={maxDate}
         placeHolder='Choose date'
         showTimeSelect={showTimeSelect}
-        calendarClassName={showTimeSelect ? 'w-[326px]' : ''}
         timeFormat='HH:mm:ss'
         calendarStartDay={1}
         {...rest}

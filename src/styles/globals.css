@@ -533,6 +533,11 @@
     width: 100%;
     display: inline-flex !important;
     flex-direction: row !important;
+    border-color: #422d4c !important;
+  }
+
+  .react-datepicker * {
+    border-color: #422d4c !important;
   }
 
   .react-datepicker .react-datepicker__triangle {
@@ -628,7 +633,7 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    font-size: 1.125 !important;
+    font-size: 0.875rem !important;
   }
 
   .react-datepicker__week {
