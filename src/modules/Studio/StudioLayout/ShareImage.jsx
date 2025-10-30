@@ -12,7 +12,7 @@ import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import { cn, rewriteS3Host } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { DiscordIcon, EmailIcon, FacebookIcon, RedditIcon, ShareProfileIcon, TelegramIcon, TwitterIcon } from '@/svgs'
 
 export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
@@ -71,7 +71,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
         account.toLowerCase(),
         'CONTENT_STUDIO',
         async data => {
-          setImageUrl(`https://thena.fi/s3/download/${rewriteS3Host(data, 'cdn.thena.fi/')}`)
+          setImageUrl(`https://thena.fi/studio/${data.split('/content-studio/')[1]}`)
           setUploading(false)
           setOpenShareModal(true)
         },
