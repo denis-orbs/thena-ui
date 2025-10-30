@@ -56,6 +56,13 @@ function BackgroundSelection({ state, setField, tpl }) {
         value: '/images/content-studio/tech_horizon1.png',
         mini: '/images/content-studio/tech_horizon_option.png',
       },
+      {
+        id: 5,
+        name: 'No Background',
+        image: null,
+        value: null,
+        mini: '/images/content-studio/transparent_option.png',
+      },
     ],
     [],
   )
@@ -71,7 +78,7 @@ function BackgroundSelection({ state, setField, tpl }) {
         <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
           {t('Background Image')}
         </TextHeading>
-        <div className='grid w-full grid-cols-5 gap-4 max-md:grid-cols-2'>
+        <div className='grid w-full grid-cols-6 gap-4 max-md:grid-cols-2'>
           {imageOptions.map(option => (
             <div
               key={option.id}
@@ -96,7 +103,7 @@ function BackgroundSelection({ state, setField, tpl }) {
           <div
             className={cn(
               'flex cursor-pointer flex-col items-center gap-3 rounded-xl border p-3',
-              background.id === 5
+              background.id === 6
                 ? 'border-primary-800 bg-[#230924]'
                 : 'hover:border-primary-800 border-neutral-700 hover:bg-[#230924]',
             )}
@@ -109,7 +116,7 @@ function BackgroundSelection({ state, setField, tpl }) {
                 if (file) {
                   setCustomImage(URL.createObjectURL(file))
                   setField('background', {
-                    id: 5,
+                    id: 6,
                     name: 'Custom image',
                     image: URL.createObjectURL(file),
                     value: URL.createObjectURL(file),

@@ -53,7 +53,7 @@ export default function PreviewCanvas({ children, background, className }) {
             maxWidth: '1024px',
             maxHeight: '576px',
             transform: `scale(${scale})`,
-            backgroundImage: `url(${background.image})`,
+            backgroundImage: background.value ? `url(${background.value})` : 'none',
             transformOrigin: 'top left',
           }}
         >
