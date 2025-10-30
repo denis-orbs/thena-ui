@@ -15,7 +15,7 @@ export const getShareSocialNetworkUrl = ({ network, content = '', url = '' }) =>
   const encodeURL = encodeURIComponent(url)
   switch (network) {
     case SocialNetwork.Twitter: {
-      return `https://twitter.com/intent/tweet?text=${encodeContent}`
+      return `https://x.com/intent/tweet?text=${encodeURIComponent(`${content}\n${url}`)}`
     }
     case SocialNetwork.Instagram: {
       return 'https://www.instagram.com/'

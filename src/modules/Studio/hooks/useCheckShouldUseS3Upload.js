@@ -1,8 +1,13 @@
+'use client'
+
 import Bowser from 'bowser'
 
 import { useWindowSize } from '@/hooks/useWindowSize'
 
 function getBrowserName() {
+  if (typeof window === 'undefined') {
+    return 'Unknown'
+  }
   const { userAgent } = window.navigator
   const browser = Bowser.getParser(userAgent)
 

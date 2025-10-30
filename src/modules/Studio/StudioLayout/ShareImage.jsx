@@ -3,7 +3,7 @@
 import html2canvas from 'html2canvas-pro'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Textarea from '@/components/input/Textarea'
@@ -81,22 +81,26 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
       )
     } catch (error) {
       console.error('Error processing image download:', error)
-    } finally {
       setUploading(false)
     }
   }
 
-  const handleOpenShareWindow = useCallback(data => {
-    const targetUrl = getShareSocialNetworkUrl(data)
-    const width = window.screen.width / 2
-    const height = window.screen.height / 2
-    const left = window.screen.width / 2 - width / 2
-    const top = window.screen.height / 2 - height / 2
+  const handleOpenShareWindow = useCallback(
+    data => {
+      const targetUrl = getShareSocialNetworkUrl({
+        network: data.network,
+        content: data.content,
+        url: imageUrl,
+      })
+      const width = window.screen.width / 2
+      const height = window.screen.height / 2
+      const left = window.screen.width / 2 - width / 2
+      const top = window.screen.height / 2 - height / 2
 
-    window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
-  }, [])
-
-  const contentWithUrl = useMemo(() => `${postContent} ${imageUrl ? `\n\n${imageUrl}` : ''}`, [postContent, imageUrl])
+      window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+    },
+    [imageUrl],
+  )
 
   return (
     <>
@@ -107,8 +111,17 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
         className={cn('h-full w-1/2', className)}
         disabled={uploading}
       >
-        <ShareProfileIcon className='[&>path]:stroke-primary-100 h-4 w-4' />
-        {t('Share')}
+        {uploading ? (
+          <>
+            <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+            {t('Share...')}
+          </>
+        ) : (
+          <>
+            <ShareProfileIcon className='[&>path]:stroke-primary-100 h-4 w-4' />
+            {t('Share')}
+          </>
+        )}
       </PrimaryButton>
       <Modal title={t('Share Image')} isOpen={openShareModal} closeModal={() => setOpenShareModal(false)}>
         <ModalBody>
@@ -132,7 +145,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Twitter,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -145,7 +158,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Telegram,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -157,7 +170,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Facebook,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -169,7 +182,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Instagram,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -181,7 +194,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Discord,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -193,7 +206,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
                 () =>
                   handleOpenShareWindow({
                     network: SocialNetwork.Reddit,
-                    content: contentWithUrl,
+                    content: postContent,
                   })
                 // eslint-disable-next-line react/jsx-curly-newline
               }
@@ -203,7 +216,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
             <Link
               href={getShareSocialNetworkUrl({
                 network: SocialNetwork.Email,
-                content: contentWithUrl,
+                content: postContent,
               })}
               target='_blank'
               rel='noopener noreferrer'
