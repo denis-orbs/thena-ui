@@ -382,11 +382,6 @@
     background-repeat: no-repeat;
   }
 
-  .react-datepicker {
-    border-radius: 5px;
-    border: 0;
-  }
-
   .stats-blob {
     transform: rotate(-90deg);
     background: linear-gradient(180deg, #e416d0 0%, #8f1ddf 64.71%, #1027f5 111.93%);
@@ -682,9 +677,9 @@
 
   .react-datepicker__day--disabled,
   .react-datepicker__time-list-item--disabled {
-    cursor: default;
+    cursor: not-allowed;
     font-weight: 500 !important;
-    color: #c5c5c5 !important;
+    color: #685770 !important;
   }
 
   .react-datepicker__day--selected,
