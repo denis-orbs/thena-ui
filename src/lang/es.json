@@ -1692,5 +1692,9 @@
   "Edit": "Edit",
   "Dowloading": "Dowloading",
   "Add Custom Image": "Add Custom Image",
-  "Select Background Image": "Select Background Image"
+  "Recent Activity": "Recent Activity",
+  "Key Metrics": "Key Metrics",
+  "Select Background Image": "Select Background Image",
+  "Upload image title": "<link>Upload</link> or Drop an Image Here",
+  "Upload image subtitle": "JPG or PNG (max 20MB). Recommended size is 1920x1080."
 }

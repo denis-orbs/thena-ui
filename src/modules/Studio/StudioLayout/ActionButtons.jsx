@@ -15,6 +15,7 @@ export default function ActionButtons({ fileName, scale = 1, backgroundColor = '
     <ConnectButton className='w-full' />
   ) : (
     <>
+      {account && <ShareImage fileName={fileName} scale={scale} backgroundColor={backgroundColor} />}
       <DownloadImage
         fileName={fileName}
         scale={scale}
@@ -22,7 +23,6 @@ export default function ActionButtons({ fileName, scale = 1, backgroundColor = '
         shouldUseS3Upload={shouldUseS3Upload}
         className={!account ? 'w-full' : 'w-1/2'}
       />
-      {account && <ShareImage fileName={fileName} scale={scale} backgroundColor={backgroundColor} />}
     </>
   )
 }

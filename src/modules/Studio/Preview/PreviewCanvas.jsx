@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { LogoIcon, ThenaFiLinkIcon } from '@/svgs'
 
@@ -8,7 +9,16 @@ export default function PreviewCanvas({ children, background, className }) {
   const parentRef = useRef(null)
   const childRef = useRef(null)
   const [scale, setScale] = useState(1)
-  const { isLgDown } = useMediaQuery()
+  const t = useTranslations()
+  const [customImage, setCustomImage] = useState(null)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const imgInputRef = useRef(null)
+  const backgroundImage = useMemo(() => {
+    if (background.isCustom) {
+      return customImage ? `url(${URL.createObjectURL(customImage)})` : 'none'
+    }
+    return background.value ? `url(${background.value})` : 'none'
+  }, [background.isCustom, background.value, customImage])
 
   // useFixViewport(parentRef, childRef)
   useEffect(() => {
@@ -34,18 +44,74 @@ export default function PreviewCanvas({ children, background, className }) {
 
     return () => window.removeEventListener('resize', calculateScale)
   }, [])
+
+  useEffect(() => {
+    if (!background.isCustom) {
+      setCustomImage(null)
+    }
+  }, [background.isCustom])
+
+  const handleFileDrop = file => {
+    if (file && file.type.startsWith('image/')) {
+      setCustomImage(file)
+    }
+  }
+
+  const handleDragEnter = e => {
+    if (background.isCustom) {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(true)
+    }
+  }
+
+  const handleDragOver = e => {
+    if (background.isCustom) {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(true)
+    }
+  }
+
+  const handleDragLeave = e => {
+    if (background.isCustom) {
+      // Only set drag over to false if we're actually leaving the section element
+      if (!childRef.current?.contains(e.relatedTarget)) {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragOver(false)
+      }
+    }
+  }
+
+  const handleDrop = e => {
+    if (background.isCustom) {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragOver(false)
+
+      const file = e.dataTransfer.files[0]
+      if (file) {
+        handleFileDrop(file)
+      }
+    }
+  }
+
   return (
     <>
       <div
         className={cn('overflow-hidden', className)}
         style={{
-          ...(isLgDown ? { height: `${576 * scale}px` } : { height: '481px' }),
+          height: `${576 * scale}px`,
         }}
         ref={parentRef}
       >
         <section
           ref={childRef}
-          className='relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat'
+          className={cn(
+            'relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat',
+            background.isCustom && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
+          )}
           style={{
             width: '1024px',
             minWidth: '1024px',
@@ -53,11 +119,57 @@ export default function PreviewCanvas({ children, background, className }) {
             maxWidth: '1024px',
             maxHeight: '576px',
             transform: `scale(${scale})`,
-            backgroundImage: background.value ? `url(${background.value})` : 'none',
+            backgroundImage,
             transformOrigin: 'top left',
           }}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
-          <div className='flex h-full items-center justify-center'>{children}</div>
+          {background.isCustom && !customImage ? (
+            <div className='flex size-full items-center justify-center bg-[url("/images/content-studio/empty_pair.png")] bg-auto bg-center bg-no-repeat'>
+              <div className='flex flex-col gap-3'>
+                <TextHeading className='font-archia text-center text-3xl font-semibold'>
+                  {t.rich('Upload image title', {
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    link: chunks => (
+                      <span
+                        className='cursor-pointer text-[#DC00D4] underline'
+                        onClick={() => imgInputRef.current?.click()}
+                      >
+                        {chunks}
+                      </span>
+                    ),
+                  })}
+                </TextHeading>
+
+                <input
+                  type='file'
+                  onChange={e => {
+                    const file = e.target.files[0]
+                    if (file) {
+                      setCustomImage(file)
+                    }
+                    // Reset input value to allow selecting the same file again
+                    e.target.value = ''
+                  }}
+                  accept='image/*'
+                  className='hidden'
+                  ref={imgInputRef}
+                />
+                <TextSubHeading className='text-neutral-300'>{t('Upload image subtitle')}</TextSubHeading>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className='flex h-full items-center justify-center'>{children}</div>
+              <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
+                <LogoIcon className='h-8 w-auto' />
+                <ThenaFiLinkIcon className='h-4 w-auto' />
+              </div>
+            </>
+          )}
         </section>
       </div>
       <div
@@ -72,7 +184,7 @@ export default function PreviewCanvas({ children, background, className }) {
           minHeight: '576px',
           maxWidth: '1024px',
           maxHeight: '576px',
-          backgroundImage: `url(${background.value})`,
+          backgroundImage,
         }}
       >
         <div className='flex items-center justify-center'>{children}</div>

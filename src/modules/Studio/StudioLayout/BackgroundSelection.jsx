@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { isString } from 'lodash'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useRef, useState } from 'react'
@@ -21,7 +22,6 @@ function BackgroundSelection({ state, setField, tpl }) {
   const t = useTranslations()
   const [openPreview, setOpenPreview] = useState(false)
   const [open, setOpen] = useState(false)
-  const [customImage, setCustomImage] = useState(null)
   const imgInputRef = useRef(null)
   const background = useMemo(() => state.background, [state.background])
   const { Preview } = tpl
@@ -63,12 +63,24 @@ function BackgroundSelection({ state, setField, tpl }) {
         value: null,
         mini: '/images/content-studio/transparent_option.png',
       },
+      {
+        id: 6,
+        isCustom: true,
+        name: 'Custom image',
+        image: null,
+        value: null,
+        mini: (
+          <div className='flex aspect-[1.7] w-full flex-1 items-center justify-center rounded-lg bg-neutral-700'>
+            <ImageUpIcon className='size-8 text-neutral-200' />
+          </div>
+        ),
+      },
     ],
     [],
   )
 
   const selectedOption = useMemo(
-    () => imageOptions.find(option => option.id === background.id),
+    () => imageOptions.filter(option => !option.isCustom).find(option => option.id === background.id),
     [background.id, imageOptions],
   )
 
@@ -90,52 +102,20 @@ function BackgroundSelection({ state, setField, tpl }) {
               )}
               onClick={() => setField('background', option)}
             >
-              <img
-                className='h-full w-full object-cover'
-                src={option.mini}
-                alt={option.name}
-                width={100}
-                height={100}
-              />
+              {isString(option.mini) ? (
+                <Image
+                  className='h-full w-full object-cover'
+                  src={option.mini}
+                  alt={option.name}
+                  width={100}
+                  height={100}
+                />
+              ) : (
+                option.mini
+              )}
               <Paragraph className='text-md text-center text-neutral-200'>{option.name}</Paragraph>
             </div>
           ))}
-          <div
-            className={cn(
-              'flex cursor-pointer flex-col items-center gap-3 rounded-xl border p-3',
-              background.id === 6
-                ? 'border-primary-800 bg-[#230924]'
-                : 'hover:border-primary-800 border-neutral-700 hover:bg-[#230924]',
-            )}
-            onClick={() => imgInputRef.current?.click()}
-          >
-            <input
-              type='file'
-              onChange={e => {
-                const file = e.target.files[0]
-                if (file) {
-                  setCustomImage(URL.createObjectURL(file))
-                  setField('background', {
-                    id: 6,
-                    name: 'Custom image',
-                    image: URL.createObjectURL(file),
-                    value: URL.createObjectURL(file),
-                  })
-                }
-              }}
-              accept='image/*'
-              className='hidden'
-              ref={imgInputRef}
-            />
-            {customImage ? (
-              <img className='h-full w-full object-cover' src={customImage} alt='Custom' width={100} height={100} />
-            ) : (
-              <div className='flex aspect-[1.7] w-full flex-1 items-center justify-center rounded-lg bg-neutral-700'>
-                <ImageUpIcon className='size-8 text-neutral-200' />
-              </div>
-            )}
-            <Paragraph className='text-md text-center text-neutral-200'>Custom image</Paragraph>
-          </div>
         </div>
       </div>
       <div className='flex flex-col gap-4 xl:hidden'>
@@ -158,38 +138,56 @@ function BackgroundSelection({ state, setField, tpl }) {
 
           {/* Dropdown Options */}
           {open && (
-            <div className='absolute top-full right-0 z-50 mt-2 w-full space-y-4 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 p-4 shadow-2xl backdrop-blur-md'>
-              {imageOptions.map(option => (
-                <div
-                  key={option.id}
-                  onClick={() => {
-                    setField('background', option)
-                    setOpen(false)
-                  }}
-                  className={cn(
-                    'group flex cursor-pointer items-center gap-4 rounded-xl border border-neutral-700 p-4 transition-colors duration-200 hover:bg-neutral-800',
-                    option.id === selectedOption?.id && 'bg-primary-950/50 border-primary-800',
-                  )}
-                >
-                  {option.value ? (
+            <div className='absolute top-full right-0 z-50 mt-2 h-[250px] w-full space-y-4 overflow-y-auto rounded-lg border border-neutral-700 bg-neutral-900 p-4 shadow-2xl backdrop-blur-md'>
+              {imageOptions
+                .filter(option => !option.isCustom)
+                .map(option => (
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      setField('background', option)
+                      setOpen(false)
+                    }}
+                    className={cn(
+                      'group flex cursor-pointer items-center gap-4 rounded-xl border border-neutral-700 p-4 transition-colors duration-200 hover:bg-neutral-800',
+                      option.id === selectedOption?.id && 'bg-primary-950/50 border-primary-800',
+                    )}
+                  >
                     <Image
-                      alt={option.name}
                       className='h-[77px] w-[116px] rounded-lg'
+                      src={option.mini}
+                      alt={option.name}
                       width={116}
                       height={77}
-                      src={option.mini}
                     />
-                  ) : (
-                    <div className='flex h-[77px] w-[116px] items-center justify-center rounded-lg border-1 border-neutral-700' />
-                  )}
-                  <div className='flex-1'>
-                    <span className='text-sm font-medium text-white'>{option.name}</span>
+                    <div className='flex-1'>
+                      <span className='text-sm font-medium text-white'>{option.name}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
+
+        <input
+          type='file'
+          onChange={e => {
+            const file = e.target.files[0]
+            if (file) {
+              setField('background', {
+                id: 6,
+                name: 'Custom image',
+                image: URL.createObjectURL(file),
+                value: URL.createObjectURL(file),
+              })
+            }
+            // Reset input value to allow selecting the same file again
+            e.target.value = ''
+          }}
+          accept='image/*'
+          className='hidden'
+          ref={imgInputRef}
+        />
         <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
           <Preview state={state} setField={setField} />
         </PreviewCanvas>

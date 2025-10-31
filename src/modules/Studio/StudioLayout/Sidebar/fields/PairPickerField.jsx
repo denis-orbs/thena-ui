@@ -28,7 +28,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
   return (
     <div ref={wrapperRef} className='relative flex items-center gap-2'>
       <div
-        className='mt-2 flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
+        className='flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
         onClick={() => setOpen(!open)}
       >
         {value ? (
@@ -69,7 +69,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
         />
       </div>
-      <EmphasisIconButton className='mt-2 size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
+      <EmphasisIconButton className='size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
 
       {/* Use popover for large screens, modal for small screens */}
       {isXlDown ? (
