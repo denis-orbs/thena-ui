@@ -5,30 +5,7 @@ import { useAccount, useSwitchChain } from 'wagmi'
 
 import { LOCALES, ThenaLiquidityHubEnabledKey } from '@/constant'
 
-import {
-  closeWallet,
-  openWallet,
-  switchNetwork,
-  updateDeadline,
-  updateLiquidityHubEnabled,
-  updateLocale,
-  updateSlippage,
-} from './actions'
-
-export const useWalletModal = () => {
-  const { isWalletOpen } = useSelector(state => state.settings)
-  const dispatch = useDispatch()
-
-  const closeWalletModal = useCallback(() => {
-    dispatch(closeWallet())
-  }, [dispatch])
-
-  const openWalletModal = useCallback(() => {
-    dispatch(openWallet())
-  }, [dispatch])
-
-  return { isWalletOpen, openWalletModal, closeWalletModal }
-}
+import { switchNetwork, updateDeadline, updateLiquidityHubEnabled, updateLocale, updateSlippage } from './actions'
 
 const getFromLocalStorage = (key, defaultValue = true) => {
   if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return defaultValue

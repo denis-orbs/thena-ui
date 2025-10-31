@@ -2,8 +2,8 @@
 
 import BigNumber from 'bignumber.js'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'

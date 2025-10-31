@@ -1,5 +1,5 @@
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 

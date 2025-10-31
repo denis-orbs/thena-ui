@@ -4,15 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { LOCALES } from '@/constant'
 
-import {
-  closeWallet,
-  openWallet,
-  switchNetwork,
-  updateDeadline,
-  updateLiquidityHubEnabled,
-  updateLocale,
-  updateSlippage,
-} from './actions'
+import { switchNetwork, updateDeadline, updateLiquidityHubEnabled, updateLocale, updateSlippage } from './actions'
 
 export const initialState = {
   networkId: ChainId.BSC,
@@ -28,14 +20,6 @@ export default createReducer(initialState, builder =>
     .addCase(switchNetwork, (state, { payload }) => ({
       ...state,
       networkId: payload,
-    }))
-    .addCase(openWallet, state => ({
-      ...state,
-      isWalletOpen: true,
-    }))
-    .addCase(closeWallet, state => ({
-      ...state,
-      isWalletOpen: false,
     }))
     .addCase(updateSlippage, (state, { payload }) => ({
       ...state,

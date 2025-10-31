@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
@@ -62,9 +62,6 @@ function Hero() {
           {t('THE ULTIMATE')}
           <br />
           {t('Decentralized Exchange')}
-          {/* <RotatingHeading />
-          <br />
-          with THENA Finance */}
         </h1>
         <div className='z-30 mt-8 flex gap-4 lg:mt-10'>
           <TrailingButton onClick={() => push('/swap')}>{t('Spot Trade')}</TrailingButton>

@@ -1,8 +1,7 @@
 'use client'
 
-import { SettingsIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
@@ -12,7 +11,7 @@ import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { ZapperIcon } from '@/svgs'
+import { SettingsIcon, ZapperIcon } from '@/svgs'
 
 import { ManualPaneV1 } from './ManualPaneV1'
 import { CommonZapperPane } from '../components/CommonZapperPane'

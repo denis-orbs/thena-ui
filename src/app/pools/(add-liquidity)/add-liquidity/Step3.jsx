@@ -1,4 +1,5 @@
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo } from 'react'
 
 import Loading from '@/app/loading'

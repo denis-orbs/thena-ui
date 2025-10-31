@@ -3,8 +3,9 @@
 import { gql } from 'graphql-request'
 import { isArray } from 'lodash'
 import Link from 'next/link'
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 

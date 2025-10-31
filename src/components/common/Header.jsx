@@ -5,9 +5,10 @@ import { useConnect as useParticleConnect } from '@particle-network/auth-core-mo
 import { motion } from 'framer-motion'
 import { compact } from 'lodash'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -955,14 +956,13 @@ function Header() {
   }
 
   useEffect(() => {
-    // Prefetch the dashboard page
-    router.prefetch('/')
     router.prefetch('/swap')
     router.prefetch('/pools')
     router.prefetch('/dashboard')
+    router.prefetch('/dashboard/vote')
+    router.prefetch('/dashboard/rewards')
+    router.prefetch('/dashboard/lock')
     router.prefetch('/analytics')
-    router.prefetch('/protocols')
-    router.prefetch('/arena')
   }, [router])
 
   return (
@@ -1342,7 +1342,9 @@ function Header() {
       <Script
         id='widget-dom-id'
         crossOrigin='anonymous'
-        src='https://widget.metacrm.inc/static/js/widget.js'
+        src='https://widget.metacrm.inc/static/js/widget-2-8-2.js'
+        integrity='sha384-I7RBRzDDERL72YpT/iLLj1Wpcc6Myj5s9EiV3Wx5Fo32SXUOJu5y8RYdOaDM85/o'
+        strategy='afterInteractive'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',

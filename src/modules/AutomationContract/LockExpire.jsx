@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo } from 'react'
 
 import Skeleton from '@/components/skeleton'

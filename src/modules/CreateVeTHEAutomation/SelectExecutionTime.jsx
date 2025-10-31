@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
-import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
+import DateInput from '@/components/input/DateInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
@@ -42,16 +42,19 @@ function SelectExecutionTime({ executionTime, updateData }) {
           </Paragraph>
         </div>
         <div className='mt-2 w-full lg:mt-3'>
-          <DateTimePickerCustom
-            title='Automation Execution Time'
-            selectedDate={executionTime}
+          <DateInput
+            selectedDate={executionTime ? dayjs(executionTime).toDate() : undefined}
+            minDate={Date.now() + HOUR + new Date().getTimezoneOffset() * 60 * 1000}
+            disablePast={false}
+            dateFormat="MMM d, yyyy 'at' HH:mm 'UTC'"
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={5}
+            calendarStartDay={1}
             onChange={date => {
               const newDate = new Date(date).getTime()
               updateData(newDate)
             }}
-            dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
-            disablePast={false}
-            minDate={Date.now() + HOUR + new Date().getTimezoneOffset() * 60 * 1000}
           />
         </div>
       </div>

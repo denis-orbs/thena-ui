@@ -1,8 +1,9 @@
 'use client'
 
 import { isEmpty } from 'lodash'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 

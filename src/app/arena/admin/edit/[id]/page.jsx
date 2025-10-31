@@ -1,7 +1,8 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useEffect } from 'react'
 import useSWR from 'swr'
 

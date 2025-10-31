@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 

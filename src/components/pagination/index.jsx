@@ -1,4 +1,3 @@
-import { ChevronLeftCircleIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -226,7 +225,7 @@ export default function Pagination({ currentPage = 1, totalPages = 1, onPageChan
             currentPage === 1 ? 'cursor-not-allowed text-gray-500' : 'text-gray-300 hover:bg-gray-700 hover:text-white'
           }`}
         >
-          <ChevronLeftCircleIcon className='size-4' />
+          <ChevronRightIcon className='size-4 rotate-180' />
         </button>
 
         {/* Page Numbers */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import PercentBadge from '@/components/badges/PercentBadge'
