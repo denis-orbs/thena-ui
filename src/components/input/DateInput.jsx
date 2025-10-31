@@ -15,6 +15,21 @@ function DateInput({
   dateFormat = 'yyyy/MM/dd',
   ...rest
 }) {
+  const filterTime = time => {
+    if (!showTimeSelect || (!minDate && !maxDate)) return true
+    const currentDate = new Date(time)
+
+    if (minDate && currentDate.toDateString() === new Date(minDate).toDateString()) {
+      return currentDate.getTime() >= new Date(minDate).getTime()
+    }
+
+    if (maxDate && currentDate.toDateString() === new Date(maxDate).toDateString()) {
+      return currentDate.getTime() <= new Date(maxDate).getTime()
+    }
+
+    return true
+  }
+
   return (
     <div className={cn('relative flex items-center', className)}>
       <ReactDatePicker
@@ -28,6 +43,7 @@ function DateInput({
         maxDate={maxDate}
         placeHolder='Choose date'
         showTimeSelect={showTimeSelect}
+        filterTime={filterTime}
         timeFormat='HH:mm:ss'
         calendarStartDay={1}
         {...rest}
