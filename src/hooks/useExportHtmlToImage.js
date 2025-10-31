@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas-pro'
 
 export const useExportHtmlToImage = () => {
   const exportImage = async ({

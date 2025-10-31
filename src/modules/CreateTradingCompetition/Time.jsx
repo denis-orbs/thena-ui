@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import dayjs from 'dayjs'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
-import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
+import DateInput from '@/components/input/DateInput'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 import { errorToast } from '@/lib/notify'
 import { MinusIcon, PlusIcon } from '@/svgs'
@@ -183,9 +184,16 @@ function Time({ data, setData }) {
       <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
-          <DateTimePickerCustom
-            title='Registration Start Time'
-            selectedDate={regStartTime}
+
+          <DateInput
+            selectedDate={regStartTime ? dayjs(regStartTime).toDate() : undefined}
+            minDate={getIsoString()}
+            disablePast={false}
+            dateFormat='yyyy/MM/d hh:mm a'
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={5}
+            calendarStartDay={1}
             onChange={date => {
               const newDate = new Date(date).getTime()
               const curDate = new Date().getTime()
@@ -198,16 +206,20 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            minDate={getIsoString()}
-            showTimeSelect
-            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Registration End Time' />
-          <DateTimePickerCustom
-            title='Registration End Time'
-            selectedDate={regEndTime}
+          <DateInput
+            selectedDate={regEndTime ? dayjs(regEndTime).toDate() : undefined}
+            minDate={minReg}
+            maxDate={maxReg}
+            disablePast={false}
+            dateFormat='yyyy/MM/d hh:mm a'
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={5}
+            calendarStartDay={1}
             onChange={date => {
               const newDate = new Date(date).getTime()
               const minDate = new Date(minReg).getTime()
@@ -221,19 +233,20 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            minDate={minReg}
-            maxDate={maxReg}
-            showTimeSelect
-            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
       </div>
       <div className='mt-4 flex w-full flex-col items-center gap-4 md:mt-5 md:flex-row md:gap-6'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
-          <DateTimePickerCustom
-            title='Competition Start Time'
-            selectedDate={tsStartTime}
+          <DateInput
+            selectedDate={tsStartTime ? dayjs(tsStartTime).toDate() : undefined}
+            minDate={minStartTime}
+            dateFormat='yyyy/MM/d hh:mm a'
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={5}
+            calendarStartDay={1}
             onChange={date => {
               const newDate = new Date(date).getTime()
               if (newDate <= data.timestamp.registrationEnd) {
@@ -249,16 +262,19 @@ function Time({ data, setData }) {
                 },
               }))
             }}
-            minDate={minStartTime}
-            showTimeSelect
-            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Competition End Time' />
-          <DateTimePickerCustom
-            title='Competition End Time'
-            selectedDate={tsEndTime}
+          <DateInput
+            selectedDate={tsEndTime ? dayjs(tsEndTime).toDate() : undefined}
+            minDate={minTs}
+            maxDate={maxTs}
+            dateFormat='yyyy/MM/d hh:mm a'
+            showTimeSelect
+            timeFormat='HH:mm'
+            timeIntervals={5}
+            calendarStartDay={1}
             onChange={date => {
               const newDate = new Date(date).getTime()
               const minDate = new Date(minTs).getTime()
@@ -272,10 +288,6 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            minDate={minTs}
-            maxDate={maxTs}
-            dateFormat='YYYY/MM/DD hh:mm A'
-            showTimeSelect
           />
         </div>
       </div>

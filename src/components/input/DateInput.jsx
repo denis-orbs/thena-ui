@@ -20,7 +20,7 @@ function DateInput({
       <ReactDatePicker
         className='w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-[48px] text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
         popperContainer={({ children }) => createPortal(children, document.body)}
-        popperClassName='z-1000'
+        popperClassName='z-1000!'
         selected={selectedDate}
         dateFormat={dateFormat}
         onChange={onChange}
@@ -28,7 +28,6 @@ function DateInput({
         maxDate={maxDate}
         placeHolder='Choose date'
         showTimeSelect={showTimeSelect}
-        calendarClassName={showTimeSelect ? 'w-[326px]' : ''}
         timeFormat='HH:mm:ss'
         calendarStartDay={1}
         {...rest}
