@@ -4,8 +4,8 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import Input from '../input'
 
@@ -86,15 +86,7 @@ function Dropdown({
         val={selected && isLocale ? t(selected) : selected}
         onMouseDown={handleOpen}
         placeholder={placeHolder}
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn(
-              'transform cursor-pointer transition-all duration-150 ease-out',
-              open ? 'rotate-180' : 'rotate-0',
-            )}
-            onMouseDown={handleOpen}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} onMouseDown={handleOpen} />}
         isLocale={isLocale}
         prefix={
           <div className='cursor-pointer' onMouseDown={handleOpen}>

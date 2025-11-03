@@ -17,9 +17,9 @@ import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
-import { InfoIcon } from '@/svgs'
 
 import GaugeManageModal from './GaugeManageModal'
 import ManagePositionModal from './ManagePositionModal'
@@ -164,7 +164,7 @@ export default function NotStaked({ pool }) {
             <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
             <div className='flex items-center gap-1'>
               <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`not-stake-${pool.address}`} />
+              <InfoIcon data-tooltip-id={`not-stake-${pool.address}`} />
               <CustomTooltip id={`not-stake-${pool.address}`}>
                 {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${pool.token0.symbol}`}</p>}
                 {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${pool.token1.symbol}`}</p>}

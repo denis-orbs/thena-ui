@@ -20,7 +20,8 @@ import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { CoinsStackedIcon } from '@/svgs'
+
+import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 
 import CurrentRewards from './currentRewards'
 import VotingHistory from './votingHistory'

@@ -8,7 +8,8 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
 
 function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
   const [searchText, setSearchText] = useState('')

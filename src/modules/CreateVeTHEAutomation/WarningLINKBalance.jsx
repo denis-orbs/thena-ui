@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { ErrorButton } from '@/components/buttons/Button'
 import { Paragraph } from '@/components/typography'
 import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
+import InfoIcon from '@/icons/InfoIcon'
 import { convertBooleansToHex, formatAmount } from '@/lib/utils'
 import SwapModal from '@/modules/SwapModal'
-import { InfoIcon } from '@/svgs'
 
 function WarningLINKBalance({ contract, chainLINK, refetchChainLINKData }) {
   const t = useTranslations()

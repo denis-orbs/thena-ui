@@ -11,9 +11,13 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { useEventType } from '@/hooks/useEventType'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, formatNumberDecimals, fromWei, isInvalidAmount } from '@/lib/utils'
-import { FirstPrizeIcon, InfoNeutralIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+
+import FirstPrizeIcon from '~/svgs/first-prize.svg'
+import SecondPrizeIcon from '~/svgs/second-prize.svg'
+import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 
 import SearchWithDebounce from './SearchWithDebounce'
 
@@ -179,7 +183,7 @@ export function LeaderBoard({
               <div className='flex flex-col items-start'>
                 <span className='flex flex-row gap-1'>
                   ${formatAmount(getRewardUsd(leader.winAmount))}
-                  <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${leader?.participant.id}`} />
+                  <InfoIcon data-tooltip-id={`price-tool-tips-${leader?.participant.id}`} />
                 </span>
                 <CustomTooltip
                   id={`price-tool-tips-${leader?.participant.id}`}
@@ -301,7 +305,7 @@ export function LeaderBoard({
         <div className='flex items-center lg:flex-2'>
           <TextHeading className='text-xl'>{t('Leaderboard')}</TextHeading>
           <span>
-            <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='leaderboard-heading' />
+            <InfoIcon className='ml-1' data-tooltip-id='leaderboard-heading' />
             <CustomTooltip
               className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id='leaderboard-heading'

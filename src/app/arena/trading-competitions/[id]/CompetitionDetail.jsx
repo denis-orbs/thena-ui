@@ -17,8 +17,8 @@ import { LOGO_PATH, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useConfetti } from '@/hooks/useConfetti'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 function CompetitionDetail({ competition, isPreview = false }) {
   const [bodyRef, triggerConfetti] = useConfetti(2, {
@@ -289,7 +289,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
               {item.dataUSD >= 0 ? (
                 <div className='flex items-center'>
                   ${formatAmount(item.dataUSD)}
-                  <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id={`${item.key}_${index}`} />
+                  <InfoIcon className='ml-1' data-tooltip-id={`${item.key}_${index}`} />
                   <CustomTooltip id={`${item.key}_${index}`} className='max-w-[320px]'>
                     {item.dataUpdate.map(({ data, ticker }, idx) => (
                       <p key={`${idx}_${ticker}`}>{`${data} ${ticker}`}</p>

@@ -6,8 +6,12 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
+import ArrowDownIcon from '@/icons/ArrowDownIcon'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { cn } from '@/lib/utils'
-import { ArrowDownIcon, ArrowLeftIcon, PoolCoinsIcon, XIcon } from '@/svgs'
+
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
+import XIcon from '~/svgs/x-close.svg'
 
 import { TertiaryButton } from '../buttons/Button'
 import { TextIconButton } from '../buttons/IconButton'
@@ -261,7 +265,7 @@ function Table({
                       {sort.value === option.value && !option.disabled && (
                         <ArrowDownIcon
                           className={cn(
-                            'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                            'transfrom transition-all duration-150 ease-out',
                             sort.isDesc ? 'rotate-0' : 'rotate-180',
                           )}
                         />
@@ -428,7 +432,7 @@ function Table({
                   {sort.value === option.value && (
                     <ArrowDownIcon
                       className={cn(
-                        'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                        'transfrom transition-all duration-150 ease-out',
                         sort.isDesc ? 'rotate-0' : 'rotate-180',
                       )}
                     />
@@ -538,7 +542,7 @@ function Table({
                   }}
                   disabled={currentPage === 1}
                 >
-                  <ArrowLeftIcon className={`h-4 w-4 ${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
+                  <ArrowLeftIcon className={`${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
                 </PaginateCell>
                 {pageCount < 6 &&
                   new Array(pageCount).fill(0).map((item, idx) => (
@@ -641,9 +645,7 @@ function Table({
                   }}
                   disabled={currentPage === pageCount}
                 >
-                  <ArrowLeftIcon
-                    className={`h-4 w-4 rotate-180 ${currentPage === pageCount ? 'stroke-gray-700' : ''}`}
-                  />
+                  <ArrowLeftIcon className={`rotate-180 ${currentPage === pageCount ? 'stroke-gray-700' : ''}`} />
                 </PaginateCell>
                 {showPopoverPagination && (
                   <Popover

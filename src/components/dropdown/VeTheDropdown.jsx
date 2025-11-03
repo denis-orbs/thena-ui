@@ -3,8 +3,10 @@
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { CheckCircleIcon, ChevronDownIcon } from '@/svgs'
+
+import CheckCircleIcon from '~/svgs/checkCircle.svg'
 
 import Input from '../input'
 
@@ -50,11 +52,7 @@ function VeTheDropdown({
           setOpen(!open)
         }}
         placeholder={placeHolder}
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} />}
         isLocale={isLocale}
         readOnly
         disabled={disabled}

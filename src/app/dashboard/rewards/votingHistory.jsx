@@ -12,9 +12,13 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useVotingHistory } from '@/hooks/vote/useVotingHistory'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowLeftIcon, ChevronDownIcon, InfoCircleWhite, InfoIcon, XIcon } from '@/svgs'
+
+import XIcon from '~/svgs/x-close.svg'
 
 import VotingHistoryTable from './VotingHistoryTable'
 
@@ -131,7 +135,7 @@ function Paging({
           }}
           disabled={currentPage === 1}
         >
-          <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
+          <ArrowLeftIcon className={`${currentPage === 1 ? 'stroke-gray-700' : ''}`} />
         </PaginateCell>
         {pageCount < 6 &&
           new Array(pageCount).fill(0).map((item, idx) => (
@@ -225,7 +229,7 @@ function Paging({
           }}
           disabled={currentPage === pageCount}
         >
-          <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? 'stroke-gray-700' : ''}`} />
+          <ArrowLeftIcon className={`rotate-180 ${currentPage === pageCount ? 'stroke-gray-700' : ''}`} />
         </PaginateCell>
         {showPopoverPagination && (
           <Popover
@@ -309,9 +313,7 @@ function TitleEpoch({ epoch, open }) {
           <TextHeading className='text-xl font-normal'>{t('Epoch')}</TextHeading>
           <TextHeading className='text-xl'>{formatAmount(epochNumber)}</TextHeading>
         </div>
-        <div className={cn('h-4 w-5 lg:hidden', open ? 'rotate-180' : 'rotate-0')}>
-          <ChevronDownIcon />
-        </div>
+        <ChevronDownIcon isRevert={open} className='lg:hidden' />
       </div>
       <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7.5] lg:grid-cols-4'>
         <div className='flex flex-col gap-1'>
@@ -332,7 +334,7 @@ function TitleEpoch({ epoch, open }) {
           <TextHeading>{t('Total Rewards')}</TextHeading>
           <div className='flex flex-row items-center gap-1'>
             <Paragraph>${formatAmount(finalData.rewardUsd)}</Paragraph>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`vethe-${epoch?.epochStartTimestamp}`} />
+            <InfoIcon data-tooltip-id={`vethe-${epoch?.epochStartTimestamp}`} />
             <CustomTooltip className='min-w-[136px]' id={`vethe-${epoch?.epochStartTimestamp}`}>
               {finalData?.totalRewards.every(item => item?.amount === 0) ? (
                 <>
@@ -386,9 +388,7 @@ function VotingHistory({ veTHEId }) {
               <div className='flex w-full flex-row gap-1'>
                 <Skeleton className='h-6 w-[40%]' />
               </div>
-              <div className='h-4 w-5 lg:hidden'>
-                <ChevronDownIcon />
-              </div>
+              <ChevronDownIcon className='w-5 lg:hidden' />
             </div>
             <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7.5] lg:grid-cols-4'>
               <div className='flex flex-col gap-2'>
@@ -436,7 +436,7 @@ function VotingHistory({ veTHEId }) {
   ) : (
     <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
       <Highlight>
-        <InfoCircleWhite className='h-4 w-4' />
+        <InfoIcon className='stroke-neutral-50' />
       </Highlight>
       <div className='flex flex-col items-center gap-3'>
         <h2>{t('No Voting History Found')}</h2>

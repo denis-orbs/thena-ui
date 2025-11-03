@@ -7,7 +7,8 @@ import { Popover } from 'react-tiny-popover'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { CalendarIcon, Verified } from '@/svgs'
+
+import CalendarIcon from '~/svgs/calendar.svg'
 
 dayjs.extend(localizedFormat)
 export function VerifyPopover({ verifyImage, verifiedAt, disablePopover = false }) {
@@ -19,7 +20,7 @@ export function VerifyPopover({ verifyImage, verifiedAt, disablePopover = false 
       verifyImage ? (
         <Image src={verifyImage} width={20} height={20} className='ml-1 h-5 w-5 cursor-pointer' alt='demo-checkmark' />
       ) : (
-        <Verified className='ml-1 h-5 w-5 cursor-pointer' />
+        <Image src='/svgs/verified-tick.svg' className='ml-1 size-5 cursor-pointer' />
       ),
     [verifyImage],
   )

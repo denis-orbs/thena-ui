@@ -1,19 +1,15 @@
 'use client'
 
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
 import { fetchFollower } from '@/hooks/useUserFollow'
-import { ArrowLeftIcon } from '@/svgs'
 
 import { FollowedProfiles } from './FollowedProfiles'
 
 function FollowersPage({ account }) {
-  const t = useTranslations()
   const params = useParams()
 
   const { data: followers, mutate: mutateFollower } = useSWR(
@@ -37,11 +33,7 @@ function FollowersPage({ account }) {
   return (
     <div>
       <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-        <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}`}>
-          <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-            {t('Back')}
-          </TextButton>
-        </Link>
+        <BackButton href={`/arena/profile${params?.address ? `/${params?.address}` : ''}`} />
       </div>
       <FollowedProfiles followingUsers={data} isFollower />
     </div>

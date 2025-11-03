@@ -6,7 +6,8 @@ import AvailablePools from '@/app/pools/(add-liquidity)/add-liquidity/Step2/Avai
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { cn, wrappedAddress } from '@/lib/utils'
-import { PoolCoinsIcon } from '@/svgs'
+
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 
 import SelectToken from '../Pools/SelectToken'
 

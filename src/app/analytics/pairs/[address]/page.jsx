@@ -23,7 +23,8 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { LinkExternalIcon } from '@/svgs'
+
+import LinkExternalIcon from '~/svgs/link-external.svg'
 
 import PairStrategy from './PairStrategy'
 import TransactionTable from './PairTransaction'

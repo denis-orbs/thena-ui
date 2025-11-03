@@ -1,19 +1,17 @@
 import React from 'react'
 
+import ArrowDownIcon from '@/icons/ArrowDownIcon'
 import { cn } from '@/lib/utils'
-import { ArrowDownIcon } from '@/svgs'
 
-export default function PercentBadge({ value, classNames }) {
+export default function PercentBadge({ value, isLarge = false }) {
   return (
     <div className='flex items-center gap-0.5'>
       <ArrowDownIcon
-        className={cn(
-          'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
-          value > 0 ? 'stroke-success-600 rotate-180' : 'stroke-error-600 rotate-0',
-          classNames?.icon,
-        )}
+        className={cn(isLarge && 'size-6', value > 0 ? 'stroke-success-600 rotate-180' : 'stroke-error-600 rotate-0')}
       />
-      <span className={cn('text-base', value > 0 ? 'text-success-600' : 'text-error-600', classNames?.text)}>
+      <span
+        className={cn(value > 0 ? 'text-success-600' : 'text-error-600', isLarge ? 'text-lg font-medium' : 'text-base')}
+      >
         {value?.toFixed(2) || 0}%
       </span>
     </div>

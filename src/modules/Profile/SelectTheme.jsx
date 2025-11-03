@@ -4,7 +4,8 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 import Box from '@/components/box'
-import { LockIcon } from '@/svgs'
+
+import LockIcon from '~/svgs/lock.svg'
 
 const LIST_THEME = [
   {

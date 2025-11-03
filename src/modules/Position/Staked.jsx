@@ -14,11 +14,11 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
-import { InfoIcon } from '@/svgs'
 
 import GaugeManageModal from './GaugeManageModal'
 import MigrateWarningModal from './MigrateWarningModal'
@@ -187,7 +187,7 @@ export default function Staked({ pool }) {
           {isSwapFee ? (
             <div className='flex items-center gap-1'>
               <TextHeading>Auto Compound</TextHeading>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='AUTO_COMPOUND' />
+              <InfoIcon data-tooltip-id='AUTO_COMPOUND' />
               <CustomTooltip className='max-w-[320px]' id='AUTO_COMPOUND'>
                 {t('Auto Compound tooltip')}
               </CustomTooltip>
@@ -195,10 +195,7 @@ export default function Staked({ pool }) {
           ) : (
             <div className='flex items-center gap-1'>
               <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
-              <InfoIcon
-                className='h-4 w-4 stroke-neutral-400'
-                data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`}
-              />
+              <InfoIcon data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`} />
 
               <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
                 <div>

@@ -8,10 +8,10 @@ import { useSimulateFarmReward } from '@/hooks/fusion/useAlgebra'
 import usePrices from '@/hooks/usePrices'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
+import WarningIcon from '@/icons/WarningIcon'
 import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { getStrategy } from '@/state/pools/hooks'
-import { WarningTriangleYellowIcon } from '@/svgs'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
@@ -290,7 +290,7 @@ function AssetsOverview({
       {migratePositions.length > 0 && (
         <div className={cn('border-warn-900 bg-warn-950 flex items-center gap-4 rounded-lg border px-5 py-4')}>
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-            <WarningTriangleYellowIcon className='size-full' />
+            <WarningIcon className='stroke-warn-600 size-full' />
           </div>
           {migrationMessageWarning}
         </div>

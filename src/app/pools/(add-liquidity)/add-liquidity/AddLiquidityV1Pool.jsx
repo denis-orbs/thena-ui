@@ -12,9 +12,9 @@ import { useVaults } from '@/context/vaultsContext'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
-import { InfoIcon } from '@/svgs'
 
 import { PairBasicInfo } from './PairBasicInfo'
 import { PoolAttributesSection } from './PoolAttributesSection'
@@ -125,7 +125,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                       showReserve ? 'bg-neutral-600' : 'bg-neutral-900',
                     )}
                   >
-                    <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+                    <InfoIcon className='md:size-5' />
                   </i>
                 </div>
               </div>

@@ -3,7 +3,10 @@ import React from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { bsc, bscTestnet, opBNB } from 'viem/chains'
 
-import { AlertTriangleIcon, CheckGradientIcon, InfoCircleGradient, XIcon } from '@/svgs'
+import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
+import CheckGradientIcon from '~/svgs/checkGradient.svg'
+import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
+import XIcon from '~/svgs/x-close.svg'
 
 import { EmphasisButton } from '../buttons/Button'
 import { TextIconButton } from '../buttons/IconButton'

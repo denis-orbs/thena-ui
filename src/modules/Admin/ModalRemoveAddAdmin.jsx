@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback } from 'react'
@@ -11,7 +12,6 @@ import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { successToast } from '@/lib/notify'
-import { User } from '@/svgs'
 
 import { useUpdateUserIsAdmin } from '../Arena/hooks/profile'
 
@@ -37,7 +37,7 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
         <div className='flex flex-col items-center gap-3'>
           <div className='flex flex-row items-center justify-center'>
             <Highlight className='bg-primary-600'>
-              <User className='h-4 w-4' />
+              <Image src='/svgs/user.svg' className='size-4' />
             </Highlight>
           </div>
           <TextHeading className='text-3xl capitalize'>{t(isRemoveAdmin ? 'Remove Admin' : 'Add Admin')}</TextHeading>

@@ -4,8 +4,9 @@ import { useState } from 'react'
 
 import { Info } from '@/components/alert'
 import { TextHeading } from '@/components/typography'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { ChevronUpIcon, InfoIcon } from '@/svgs'
 
 function WarningStartingPrice() {
   const t = useTranslations()
@@ -35,11 +36,9 @@ function WarningStartingPrice() {
 
           <div className='flex w-full items-center justify-between'>
             <TextHeading className='text-primary-100 text-xl font-semibold'>{t('Starting Price needed')}</TextHeading>
-            <ChevronUpIcon
-              className={cn(
-                'size-4 min-w-4 cursor-pointer transition-all duration-300 ease-in-out md:size-7 md:min-w-7 md:p-1',
-                !showWarning && 'rotate-180',
-              )}
+            <ChevronDownIcon
+              isRevert={showWarning}
+              className='stroke-primary-600! min-w-4 cursor-pointer duration-300 md:h-7 md:w-7 md:min-w-7 md:p-1'
               onClick={() => setShowWarning(show => !show)}
             />
           </div>

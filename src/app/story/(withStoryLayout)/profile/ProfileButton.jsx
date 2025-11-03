@@ -18,8 +18,6 @@ export function ProfileButton() {
           {t('Edit Profile')}
         </EmphasisButton>
       </Link>
-
-      {/* <EmphasisIconButton Icon={UploadIcon} /> */}
     </div>
   )
 }

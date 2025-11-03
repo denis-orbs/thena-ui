@@ -24,7 +24,8 @@ import PoolTitle from '@/modules/PoolTitle'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 

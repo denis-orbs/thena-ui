@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
@@ -9,7 +10,6 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { cn } from '@/lib/utils'
-import { LockIcon, MergeIcon, SplitIcon, TransferIcon } from '@/svgs'
 
 import LockManage from './lockManage'
 import MergeManage from './mergeManage'
@@ -38,7 +38,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <LockIcon className='h-4 w-4' />
+              <Image src='/svgs/lock.svg' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Lock')}</TextHeading>
@@ -54,7 +54,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <MergeIcon className='h-4 w-4' />
+              <Image src='/svgs/merge.svg' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Merge')}</TextHeading>
@@ -70,7 +70,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <SplitIcon className='h-4 w-4' />
+              <Image src='/svgs/split.svg' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Split')}</TextHeading>
@@ -86,7 +86,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <TransferIcon className='h-4 w-4' />
+              <Image src='svgs/switch-horizontal.svg' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Transfer')}</TextHeading>

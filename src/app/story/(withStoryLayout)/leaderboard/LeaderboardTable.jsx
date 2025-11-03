@@ -8,15 +8,19 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
+import InfoIcon from '@/icons/InfoIcon'
 import { fetchLeaderboardByChapter, fetchStoryLeaderboard } from '@/modules/Story'
-import { FirstPrizeIcon, InfoIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+
+import FirstPrizeIcon from '~/svgs/first-prize.svg'
+import SecondPrizeIcon from '~/svgs/second-prize.svg'
+import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 
 function PointHead() {
   const t = useTranslations()
   return (
     <div className='flex flex-row items-center'>
       <span>{t('Points')}</span>
-      <InfoIcon className='ml-1 size-4 stroke-neutral-400' data-tooltip-id='point-description' />
+      <InfoIcon className='ml-1' data-tooltip-id='point-description' />
       <CustomTooltip id='point-description'>
         <span className='text-sm leading-5 font-normal'>{t('THE Story leaderboard point description')}</span>
       </CustomTooltip>

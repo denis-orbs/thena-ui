@@ -8,16 +8,15 @@ import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
 import { useTHEStory } from '@/context/THEStoryContext'
 import { errorToast, successToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import {
-  CheckPurpleIcon,
-  CopyIcon,
-  DiscordIcon,
-  EmailIcon,
-  FacebookIcon,
-  RedditIcon,
-  TelegramIcon,
-  TwitterIcon,
-} from '@/svgs'
+
+import CheckPurpleIcon from '~/svgs/check-purple.svg'
+import CopyIcon from '~/svgs/copy.svg'
+import DiscordIcon from '~/svgs/discord.svg'
+import EmailIcon from '~/svgs/email.svg'
+import FacebookIcon from '~/svgs/facebook.svg'
+import RedditIcon from '~/svgs/reddit.svg'
+import TelegramIcon from '~/svgs/telegram.svg'
+import TwitterIcon from '~/svgs/twiiter.svg'
 
 const PostContent = `I’ve just joined THE Story with @ThenaFi 💜🏛️
 

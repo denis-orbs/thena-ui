@@ -6,7 +6,8 @@ import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
 import { cn } from '@/lib/utils'
-import { SettingPrimaryIcon, SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 const defaultSlippageOptions = [0.1, 0.5, 1]
 function SettingSlippageDropDown({ slippage, updateSlippage, className, position = 'start' }) {
@@ -46,7 +47,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className, position
               {t('Slippage')}
             </Paragraph>
 
-            {!isHovered ? <SettingsIcon className='size-5' /> : <SettingPrimaryIcon className='size-5' />}
+            <SettingsIcon className={cn('size-5', isHovered && 'stroke-primary-600')} />
           </div>
         </div>
 

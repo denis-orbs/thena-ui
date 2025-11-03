@@ -36,9 +36,11 @@ import {
   useWeightedPositionList,
   useWeightPoolData,
 } from '@/hooks/weightedPool/useWeigtedPool'
+import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
-import { InfoIcon, SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 import LiquidityPoolInfo from './LiquidityPoolInfo'
 import GaugeWeightedManageModal from '../Position/GaugeWeightedManageModal'
@@ -365,7 +367,7 @@ function AddLiquidityWeighted({ pool }) {
                     showInfo ? 'bg-neutral-600' : 'bg-neutral-900',
                   )}
                 >
-                  <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+                  <InfoIcon className='md:size-5' />
                 </i>
               </div>
             </div>

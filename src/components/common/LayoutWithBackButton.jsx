@@ -1,15 +1,9 @@
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'nextjs-toploader/app'
-
 import { cn } from '@/lib/utils'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
-import { ArrowLeftIcon } from '@/svgs'
 
-import { TextButton } from '../buttons/Button'
+import BackButton from '../buttons/BackButton'
 
 function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }) {
-  const t = useTranslations()
-  const { back, push } = useRouter()
   const { showBannerMigrate } = useMigratePositionWarning()
 
   return (
@@ -22,20 +16,8 @@ function LayoutWithBackButton({ children, className, backUrl, hiddenBackButton }
       )}
     >
       {!hiddenBackButton && (
-        <div className='hidden xl:block'>
-          <TextButton
-            className='ml-4 w-fit outline-0 max-xl:pl-0 xl:ml-10'
-            LeadingIcon={ArrowLeftIcon}
-            onClick={() => {
-              if (backUrl) {
-                push(backUrl)
-              } else {
-                back()
-              }
-            }}
-          >
-            {t('Back')}
-          </TextButton>
+        <div className='ml-4 hidden max-xl:pl-0 xl:ml-10 xl:block'>
+          <BackButton href={backUrl} />
         </div>
       )}
 

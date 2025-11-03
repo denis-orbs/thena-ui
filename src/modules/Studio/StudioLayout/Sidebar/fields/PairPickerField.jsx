@@ -8,9 +8,8 @@ import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { cn } from '@/lib/utils'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { PATH_NAME } from '@/modules/Studio/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import PairModal from './PairModal'
 
@@ -62,9 +61,7 @@ export default function PairPickerField({ label, value, onChange, options = [] }
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon
-          className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-        />
+        <ChevronDownIcon className='h-5 w-5' isRevert={open} />
       </div>
       <PairModal
         popup={open}

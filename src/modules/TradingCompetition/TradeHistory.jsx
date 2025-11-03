@@ -15,7 +15,8 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { formatAmount, fromWei } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { TransferIcon } from '@/svgs'
+
+import TransferIcon from '~/svgs/switch-horizontal.svg'
 
 const sortOptions = [
   {

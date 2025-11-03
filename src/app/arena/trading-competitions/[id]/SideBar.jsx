@@ -21,6 +21,8 @@ import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawTCPerps } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
+import CheckIcon from '@/icons/CheckIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { v4Client } from '@/lib/graphql'
 import { errorToast, successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -28,7 +30,9 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
-import { CheckIcon, InfoCirCleDisableIcon, InfoNeutralIcon, PublicIcon } from '@/svgs'
+
+import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
+import PublicIcon from '~/svgs/public.svg'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
 import DepositModal from './trade/DepositModal'
@@ -662,9 +666,9 @@ function Sidebar({ competition, eventType }) {
               <TextHeading className='flex text-base'>
                 {headingAndText.subText}&nbsp;
                 {totalPrizeUsd !== null && (
-                  <span className='mr-1 flex flex-row gap-1'>
+                  <span className='mr-1 flex flex-row items-center gap-1'>
                     ${formatAmount(totalPrizeUsd)}
-                    <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${competition.id}`} />
+                    <InfoIcon data-tooltip-id={`price-tool-tips-${competition.id}`} />
                     <CustomTooltip id={`price-tool-tips-${competition.id}`} className='max-w-[320px]' place='bottom'>
                       {totalPrizeByToken.map(item => (
                         <p key={item}>{item}</p>

@@ -11,9 +11,12 @@ import { newPoolAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useCopyText } from '@/hooks/useCopyText'
+import CheckIcon from '@/icons/CheckIcon'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { CheckIcon, CopyArenaIcon, LinkExternalPrimaryIcon } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
+import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 
 export function PoolAttributesCL({ strategy, pool }) {
   const isAutomatic = !MANUAL_TYPES.includes(strategy.title)

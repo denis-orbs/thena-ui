@@ -4,8 +4,13 @@ import { useState } from 'react'
 
 import { NewTextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { ClassicPoolIcon, CLPoolIcon, InfoIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
+
+import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
+import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
+import ScalesIcon from '~/svgs/scales.svg'
+import StablePoolIcon from '~/svgs/stable-pool-icon.svg'
 
 const titleSections = {
   [PAIR_TYPES.STABLE]: {
@@ -51,7 +56,7 @@ export default function PoolTitleSection({ pairType }) {
               show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+            <InfoIcon className='md:size-5' />
           </i>
         </div>
       </h4>

@@ -3,7 +3,10 @@ import React, { Fragment } from 'react'
 
 import { PrimaryIconButton } from '@/components/buttons/IconButton'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { PiggySecondIcon, SwitchHorizontalV2Icon, WalletIcon } from '@/svgs'
+
+import PiggySecondIcon from '~/svgs/piggy-second.svg'
+import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
+import WalletIcon from '~/svgs/wallet.svg'
 
 function Work() {
   const t = useTranslations()

@@ -16,12 +16,13 @@ import { ManualsContext } from '@/context/manualsContext'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
+import InfoIcon from '@/icons/InfoIcon'
+import WarningIcon from '@/icons/WarningIcon'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
-import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -215,7 +216,7 @@ function FarmingItem({ position, isXlDown }) {
                 )}
               >
                 <div className='flex items-center gap-2 text-xs'>
-                  <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                  <WarningIcon />
                   <span className='text-error-100'>{t('This is Idle')}</span>
                 </div>
                 <ErrorButton
@@ -285,7 +286,7 @@ function FarmingItem({ position, isXlDown }) {
           <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
           {renderTokenValue && (
             <>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+              <InfoIcon data-tooltip-id={`value-${position.positionId}`} />
               <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
             </>
           )}

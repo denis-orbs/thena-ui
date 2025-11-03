@@ -16,7 +16,8 @@ import { useTokens } from '@/context/tokensContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
 
 import TokenChart from './TokenChart'
 import TokenPairs from './TokenPairs'

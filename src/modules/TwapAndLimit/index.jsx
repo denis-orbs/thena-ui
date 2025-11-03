@@ -10,7 +10,6 @@ import { Configs, Widget } from '@orbs-network/twap-ui'
 import { zeroAddress } from 'viem'
 import useWallet from '@/hooks/useWallet'
 import TokenInput from '@/components/input/TokenInput'
-import { InfoIcon, SwitchVerticalIcon, SwitchHorizontalV2Icon } from '@/svgs'
 import { EmphasisIconButton, TextIconButton } from '@/components/buttons/IconButton'
 import Toggle from '@/components/toggle'
 import './index.css'
@@ -22,6 +21,10 @@ import Dropdown from '@/components/dropdown'
 import CustomTooltip from '@/components/tooltip'
 import CircleImage from '@/components/image/CircleImage'
 import { toWei } from '@/lib/utils'
+
+import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
+import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import InfoIcon from '@/icons/InfoIcon'
 
 function OrderConfirmationModal({ isOpen, onClose, children }) {
   return (
@@ -58,7 +61,7 @@ function SelectMenu({ items, selected, onSelect }) {
 function Tooltip({ tooltipText }) {
   return (
     <>
-      <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={tooltipText} />
+      <InfoIcon data-tooltip-id={tooltipText} />
       <CustomTooltip id={tooltipText} place='top' className='z-50 max-w-[320px]'>
         {tooltipText}
       </CustomTooltip>

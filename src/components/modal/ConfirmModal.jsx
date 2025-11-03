@@ -4,8 +4,8 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { InfoCircleWhite } from '@/svgs'
 
 function ConfirmModal({
   popup,
@@ -29,7 +29,7 @@ function ConfirmModal({
       <ModalBody>
         <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
           <Highlight className={cn('bg-primary-600', bgIcon)}>
-            <InfoCircleWhite className='h-4 w-4' />
+            <InfoIcon className='stroke-neutral-50' />
           </Highlight>
 
           <div className='flex flex-col items-center gap-3'>

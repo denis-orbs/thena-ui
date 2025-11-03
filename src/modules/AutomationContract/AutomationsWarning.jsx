@@ -6,7 +6,7 @@ import { Info } from '@/components/alert'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
-import { InfoCirclePrimary } from '@/svgs'
+import InfoIcon from '@/icons/InfoIcon'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
 import ChainlinkModal from './head/ChainlinkModal'
@@ -19,7 +19,7 @@ function WarningRegisterItem({ data, mutateStatusAndBalanceMultiple = () => {} }
       <article className='my-4'>
         <Info className='flex-col sm:flex-row lg:p-8'>
           <div className='flex items-center gap-4'>
-            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <InfoIcon className='stroke-primary-600 min-w-4 lg:size-8 lg:min-w-8' />
             <p>
               {t(
                 'You need to register the automation for your [veTheId] lock and grant the necessary veTHE approvals for it to function properly',
@@ -58,7 +58,7 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
       <article className='my-4'>
         <Info className='flex-col sm:flex-row lg:p-8'>
           <div className='flex items-center gap-4'>
-            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <InfoIcon className='stroke-primary-600 min-w-4 lg:size-8 lg:min-w-8' />
             <p>
               {t('Warning underfunded Automation [veTheId]', { veTheId: data.id })}{' '}
               <Link

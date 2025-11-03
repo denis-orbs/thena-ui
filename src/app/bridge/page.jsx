@@ -22,7 +22,9 @@ import { useOpBNBTheTokenBalance } from '@/hooks/useOpBNBTheTokenBalance'
 import useWallet from '@/hooks/useWallet'
 import { formatAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { SwitchHorizontalV2Icon, Wallet3Icon } from '@/svgs'
+
+import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
+import Wallet3Icon from '~/svgs/wallet3.svg'
 
 const desc1Rich = {
   ccipLink: chunks => (

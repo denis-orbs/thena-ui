@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import Input from '../input'
 
@@ -54,15 +54,7 @@ function AvailableDropdown({ className, listClassNames, data, selected, setSelec
         readOnly
         onClick={() => setOpen(!open)}
         placeholder={placeHolder}
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn(
-              'transform cursor-pointer transition-all duration-150 ease-out',
-              open ? 'rotate-180' : 'rotate-0',
-            )}
-            onClick={() => setOpen(!open)}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} onClick={() => setOpen(!open)} />}
       />
       <div
         className={cn(

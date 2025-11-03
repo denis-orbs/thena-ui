@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { cn } from '@/lib/utils'
-import { ChevronRightIcon } from '@/svgs'
 
 export default function Pagination({ currentPage = 1, totalPages = 1, onPageChange = () => {}, className = '' }) {
   const [visiblePages, setVisiblePages] = useState([])
@@ -225,7 +225,7 @@ export default function Pagination({ currentPage = 1, totalPages = 1, onPageChan
             currentPage === 1 ? 'cursor-not-allowed text-gray-500' : 'text-gray-300 hover:bg-gray-700 hover:text-white'
           }`}
         >
-          <ChevronRightIcon className='size-4 rotate-180' />
+          <ChevronRightIcon className='rotate-180' />
         </button>
 
         {/* Page Numbers */}
@@ -279,7 +279,7 @@ export default function Pagination({ currentPage = 1, totalPages = 1, onPageChan
               : 'text-gray-300 hover:bg-gray-700 hover:text-white',
           )}
         >
-          <ChevronRightIcon className='size-4' />
+          <ChevronRightIcon />
         </button>
       </div>
     </div>

@@ -7,8 +7,8 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
+import InfoIcon from '@/icons/InfoIcon'
 import { fromWei } from '@/lib/utils'
-import { InfoCirclePrimary } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
 import ChainlinkModal from './head/ChainlinkModal'
@@ -57,7 +57,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       <article className='my-4'>
         <Info className='flex-col sm:flex-row lg:p-8'>
           <div className='flex items-center gap-4'>
-            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <InfoIcon className='stroke-primary-600 min-w-4 lg:size-8 lg:min-w-8' />
             <TextHeading className='text-neutral-100'>{data?.message}</TextHeading>
           </div>
           <PrimaryButton onClick={data.onClick} className='ml-auto max-sm:w-full sm:min-w-fit sm:justify-end'>

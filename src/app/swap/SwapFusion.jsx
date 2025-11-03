@@ -19,6 +19,7 @@ import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useBestV3TradeExactIn, useBestV3TradeExactOut } from '@/hooks/fusion/useBestV3Trade'
 import { useSwapCallback } from '@/hooks/fusion/useSwapCallback'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount } from '@/lib/utils'
@@ -26,7 +27,9 @@ import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
-import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
+
+import RefreshIcon from '~/svgs/refresh.svg'
+import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 
 import WarningModal from './WarningModal'
 
@@ -273,7 +276,7 @@ export default function SwapFusion({
             </div>
             {priceImpactInNumber > 5 && (
               <Alert>
-                <InfoIcon className='stroke-error-600 h-4 w-4' />
+                <InfoIcon className='stroke-error-600' />
                 <p>{t('Price impact too high')}</p>
               </Alert>
             )}

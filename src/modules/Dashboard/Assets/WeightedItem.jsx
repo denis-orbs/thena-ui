@@ -17,10 +17,10 @@ import {
   useGaugeUnstakeWeighted,
   useWithdrawUserBalanceWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
 import RemoveWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
-import { InfoIcon } from '@/svgs'
 
 import WeightedRange from './WeightedRange'
 
@@ -121,10 +121,7 @@ function WeightedItem({ position, isStake, isXlDown }) {
       <div className='flex flex-col max-xl:flex-1 max-xl:items-center max-xl:justify-center'>
         <div className='flex items-center gap-1 max-xl:justify-end'>
           <TextHeading>${formatAmount(depositValue.depositUsd)}</TextHeading>
-          <InfoIcon
-            className='h-4 w-4 stroke-neutral-400'
-            data-tooltip-id={`value-${position?.address}-${isStake ? 'stake' : 'unstake'}`}
-          />
+          <InfoIcon data-tooltip-id={`value-${position?.address}-${isStake ? 'stake' : 'unstake'}`} />
           <CustomTooltip id={`value-${position?.address}-${isStake ? 'stake' : 'unstake'}`}>
             {renderTokenValue}
           </CustomTooltip>
@@ -141,10 +138,7 @@ function WeightedItem({ position, isStake, isXlDown }) {
       <div className='flex flex-col max-xl:flex-1'>
         <div className='flex items-center gap-1 max-xl:justify-end'>
           <span>${formatAmount(claimableFee?.total)}</span>
-          <InfoIcon
-            className='h-4 w-4 stroke-neutral-400'
-            data-tooltip-id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`}
-          />
+          <InfoIcon data-tooltip-id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`} />
           <CustomTooltip id={`net-${position?.address}-${isStake ? 'stake' : 'unstake'}`}>
             {renderRewardTokens}
           </CustomTooltip>

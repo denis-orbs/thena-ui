@@ -28,6 +28,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                 <PercentBadge
                   classNames={{ text: 'text-lg font-medium', icon: 'size-6' }}
                   value={totalStats.tvlChange}
+                  isLarge
                 />
               </>
             ) : (
@@ -46,7 +47,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                 <TextHeading className='text-gradient-pink font-archia text-3xl font-semibold'>
                   ${formatAmount(totalStats.volumeUSD)}
                 </TextHeading>
-                <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.volumeChange} />
+                <PercentBadge value={totalStats.volumeChange} isLarge />
               </>
             ) : (
               <>
@@ -64,7 +65,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                 <TextHeading className='text-gradient-pink font-archia text-3xl font-semibold'>
                   ${formatAmount(totalStats.feesUSD)}
                 </TextHeading>
-                <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.feesChange} />
+                <PercentBadge value={totalStats.feesChange} isLarge />
               </>
             ) : (
               <>
@@ -84,7 +85,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                 {totalStats ? (
                   <>
                     <TextHeading className='text-gradient-pink text-lg'>${formatAmount(totalStats.tvlUSD)}</TextHeading>
-                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.tvlChange} />
+                    <PercentBadge value={totalStats.tvlChange} isLarge />
                   </>
                 ) : (
                   <>
@@ -105,7 +106,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                     <TextHeading className='text-gradient-pink text-lg'>
                       ${formatAmount(totalStats.volumeUSD)}
                     </TextHeading>
-                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.volumeChange} />
+                    <PercentBadge value={totalStats.volumeChange} isLarge />
                   </>
                 ) : (
                   <>
@@ -125,7 +126,7 @@ function SummaryAnalyticsInfo({ totalStats }) {
                     <TextHeading className='text-gradient-pink text-lg'>
                       ${formatAmount(totalStats.feesUSD)}
                     </TextHeading>
-                    <PercentBadge classNames={{ text: 'text-lg', icon: 'size-6' }} value={totalStats.feesChange} />
+                    <PercentBadge value={totalStats.feesChange} isLarge />
                   </>
                 ) : (
                   <>

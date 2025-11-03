@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react'
 import Box from '@/components/box'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
-import { InfoIcon } from '@/svgs'
 
 export function PoolAttributesSection({ strategy, pair, className }) {
   const t = useTranslations()
@@ -37,7 +37,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
                 show ? 'bg-neutral-600' : 'bg-neutral-900',
               )}
             >
-              <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+              <InfoIcon className='md:size-5' />
             </i>
           </div>
         </div>

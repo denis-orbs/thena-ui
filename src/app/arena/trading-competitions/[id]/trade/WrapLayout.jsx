@@ -16,7 +16,8 @@ import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
-import { XIcon } from '@/svgs'
+
+import XIcon from '~/svgs/x-close.svg'
 
 import { TCTradeSideBar } from './TCTradeSideBar'
 import TopBar from './TopBar'

@@ -15,7 +15,9 @@ import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { cn } from '@/lib/utils'
 import { EditBannerModal } from '@/modules/TradingCompetition/EditBannerModal'
-import { EditIcon, TagIcon } from '@/svgs'
+
+import EditIcon from '~/svgs/edit.svg'
+import TagIcon from '~/svgs/tag-icon.svg'
 
 import EditTCTagModal from '../EditTCTagModal'
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'

@@ -15,8 +15,8 @@ import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 import SettingSlippageDropDown from './SettingSlippageDropDown'
 
@@ -250,7 +250,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
           </div>
           {impact >= 10 && (
             <Alert>
-              <InfoIcon className='stroke-error-600 h-4 w-4' />
+              <InfoIcon className='stroke-error-600' />
               <p>{`${t('Price impact too high').replace('!', '')}: ${formatAmount(impact)}%`}</p>
             </Alert>
           )}
@@ -277,7 +277,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
       <Modal isOpen={showConfirm} closeModal={() => setShowConfirm(false)} title={<>{t('Warning')}!</>}>
         <ModalBody>
           <Warning>
-            <InfoIcon className='stroke-warn-700 h-4 w-4' /> {t('Price impact too high')}
+            <InfoIcon className='stroke-warn-700' /> {t('Price impact too high')}
           </Warning>
           <Paragraph className='mb-3 text-xl'>{t('Are you sure you want to continue')}</Paragraph>
         </ModalBody>

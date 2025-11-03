@@ -1,10 +1,13 @@
+import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { SuccessMessage } from '@/components/message'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { CheckPurpleIcon, CopyIcon, ShareIcon } from '@/svgs'
+
+import CheckPurpleIcon from '~/svgs/check-purple.svg'
+import CopyIcon from '~/svgs/copy.svg'
 
 import { ShareReferralLinkModal } from './ShareReferralLinkModal'
 
@@ -52,7 +55,7 @@ export function ShareReferralLink({ referralCode }) {
           </div>
         </div>
         <PrimaryButton className='mt-6 flex w-full items-center justify-center' onClick={shareHandler}>
-          <ShareIcon className='inline-block h-4 w-4' />
+          <Image src='/svgs/share.svg' className='inline-block size-4' />
           <span className='text-base font-medium'>{t('Share')}</span>
         </PrimaryButton>
       </div>

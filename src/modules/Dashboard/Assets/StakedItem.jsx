@@ -14,6 +14,7 @@ import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
@@ -21,7 +22,6 @@ import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -271,7 +271,7 @@ function StakedItem({ position, isXlDown }) {
             <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
             {renderTokenValue && (
               <>
-                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+                <InfoIcon data-tooltip-id={`value-${position.positionId}`} />
                 <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
               </>
             )}

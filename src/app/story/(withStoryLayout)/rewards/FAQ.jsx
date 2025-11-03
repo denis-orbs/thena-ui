@@ -2,8 +2,8 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 
 import { TextHeading } from '@/components/typography'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { CollapseUpIcon, ExpandDownIcon } from '@/svgs'
 
 export function FAQ() {
   const t = useTranslations()
@@ -58,9 +58,9 @@ export function FAQ() {
                 {t(faq.title)}
               </TextHeading>
               {expansions[index] ? (
-                <CollapseUpIcon className='h-5 w-5 cursor-pointer lg:hidden' />
+                <ChevronDownIcon isRevert className='h-5 w-5 cursor-pointer lg:hidden' />
               ) : (
-                <ExpandDownIcon className='h-5 w-5 cursor-pointer lg:hidden' />
+                <ChevronDownIcon className='h-5 w-5 cursor-pointer lg:hidden' />
               )}
             </div>
             <span className={cn('text-base text-neutral-300 lg:block', expansions[index] ? 'block' : 'hidden')}>

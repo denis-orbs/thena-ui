@@ -7,10 +7,10 @@ import Loading from '@/app/loading'
 import Box from '@/components/box'
 import Highlight from '@/components/highlight'
 import { Paragraph, TextHeading } from '@/components/typography'
+import InfoIcon from '@/icons/InfoIcon'
 import { v4Client } from '@/lib/graphql'
 import { sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
-import { InfoCircleWhite } from '@/svgs'
 
 const V4_USER_ACHIEVEMENT_COMPLETED = gql`
   query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {
@@ -80,7 +80,7 @@ export function UserCompletedAchievements({ userId }) {
           <div className='px-6'>
             <div className='flex w-full flex-col items-center justify-center gap-4'>
               <Highlight>
-                <InfoCircleWhite className='h-4 w-4' />
+                <InfoIcon className='stroke-neutral-50' />
               </Highlight>
               <div className='flex w-72 flex-col items-center gap-3 lg:w-[416px]'>
                 <h2>{t('No Achievement found')}</h2>

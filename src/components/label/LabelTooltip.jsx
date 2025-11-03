@@ -2,8 +2,8 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import CustomTooltip from '@/components/tooltip'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 export default function LabelTooltip({
   label = '',
@@ -24,7 +24,7 @@ export default function LabelTooltip({
       </p>
       {showInfoIcon && (
         <>
-          <InfoIcon className='ml-[6px] h-4 w-4 stroke-neutral-400' data-tooltip-id={id} />
+          <InfoIcon className='ml-[6px]' data-tooltip-id={id} />
           <CustomTooltip
             className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
             id={id}

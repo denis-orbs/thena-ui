@@ -1,8 +1,8 @@
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { OutlinedButton } from '@/components/buttons/Button'
-import { ArrowsDownIcon, SoundOffIcon, SoundOnIcon } from '@/svgs'
 
 import VideoBanner from './Video'
 
@@ -20,13 +20,17 @@ export default function Banner({ videoRef, isMuted, settingSound, handleScroll }
           muted={isMuted}
         />
         <OutlinedButton className='absolute top-5 right-4 border-none p-2' onClick={settingSound}>
-          {isMuted ? <SoundOffIcon className='h-8 w-6' /> : <SoundOnIcon className='h-8 w-6' />}
+          {isMuted ? (
+            <Image src='/svgs/sound-off.svg' className='h-8 w-6' />
+          ) : (
+            <Image src='/svgs/sound-on.svg' className='h-8 w-6' />
+          )}
         </OutlinedButton>
         <div className='font-archia absolute bottom-0 left-0 w-full p-0 text-center text-[28px] font-semibold text-white md:bottom-3 md:text-[40px] lg:bottom-6 lg:px-4 lg:pb-9 lg:text-[72px]'>
           <p>{t('Get Ready for THE Story of THENA')}</p>
           <div className='mt-3 flex w-full justify-center'>
             <OutlinedButton className='hidden border-none lg:block' onClick={handleScroll}>
-              <ArrowsDownIcon className='h-8 w-6' />
+              <Image src='/svgs/chevrons-down.svg' className='h-8 w-6' />
             </OutlinedButton>
           </div>
         </div>

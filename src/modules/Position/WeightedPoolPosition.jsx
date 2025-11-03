@@ -17,9 +17,9 @@ import {
   useGaugeUnstakeWeighted,
   usePositionData,
 } from '@/hooks/weightedPool/useWeigtedPool'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
-import { InfoIcon } from '@/svgs'
 
 import GaugeWeightedManageModal from './GaugeWeightedManageModal'
 import RemoveWeightedPositionModal from './ManageWeightedPositionModal'
