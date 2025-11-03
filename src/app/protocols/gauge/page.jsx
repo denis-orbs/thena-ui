@@ -79,7 +79,7 @@ export default function GaugePage() {
               ) : (
                 <p className='text-neutral-400'>{t('Select Pair')}</p>
               )}
-              <ChevronDownIcon className='h-5 w-5' isRevert={isOpen} />
+              <ChevronDownIcon isRevert={isOpen} />
             </div>
           </div>
 

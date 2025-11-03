@@ -155,7 +155,7 @@ function Collapsible({
             </p>
           )}
         </div>
-        <ChevronDownIcon isRevert={isOpen} className='absolute right-4 bottom-4 h-5 w-5 text-neutral-50 duration-300' />
+        <ChevronDownIcon isRevert={isOpen} className='absolute right-4 bottom-4 text-neutral-50 duration-300' />
       </div>
       {isOpen && (
         <div className='w-full px-2'>

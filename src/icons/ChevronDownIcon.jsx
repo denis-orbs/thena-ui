@@ -8,7 +8,7 @@ export default function ChevronDownIcon({ className, isRevert = false, ...rest }
   return (
     <ChevronDown
       className={cn(
-        'transform stroke-neutral-400! transition-all ease-in-out',
+        'h-5 w-5 transform stroke-neutral-400! transition-all ease-in-out',
         className,
         isRevert ? 'rotate-180' : 'rotate-0',
       )}

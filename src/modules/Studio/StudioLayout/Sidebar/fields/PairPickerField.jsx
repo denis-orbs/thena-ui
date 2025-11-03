@@ -61,7 +61,7 @@ export default function PairPickerField({ label, value, onChange, options = [] }
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon className='h-5 w-5' isRevert={open} />
+        <ChevronDownIcon isRevert={open} />
       </div>
       <PairModal
         popup={open}

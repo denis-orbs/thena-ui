@@ -245,7 +245,7 @@ function ChainMobileSelect({ t }) {
           <CircleImage src={selected.img} alt='' className='h-5 w-5' />
           <TextHeading>{t(selected.label)}</TextHeading>
         </div>
-        <ChevronDownIcon isRevert={open} className='h-5 w-5' />
+        <ChevronDownIcon isRevert={open} />
       </div>
       <div
         className={cn(
@@ -1175,7 +1175,16 @@ function Header() {
                   {menu.sub && (
                     <ChevronDownIcon
                       isRevert={selected?.label === menu.label}
-                      className='stroke-neutral-200! duration-300'
+                      className='size-4 !stroke-neutral-200 transition-transform duration-300 ease-in-out'
+                      onClick={e => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        if (selected?.label === menu.label) {
+                          setSelected(null)
+                        } else {
+                          setSelected(menu)
+                        }
+                      }}
                     />
                   )}
                 </div>
@@ -1244,7 +1253,7 @@ function Header() {
         aria-label='Back to top'
       >
         <div className='flex h-5'>
-          <ChevronDownIcon isRevert className='h-5 w-5' />
+          <ChevronDownIcon isRevert />
           <span className='ml-2 text-base leading-5 font-medium text-neutral-400'>{t('Back to Top')}</span>
         </div>
       </motion.button>

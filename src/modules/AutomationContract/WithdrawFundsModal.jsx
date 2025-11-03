@@ -51,7 +51,7 @@ function WithdrawFundsModal({ contract, popup, setPopup, onWithdrawSuccess }) {
           ) : (
             <p className='text-neutral-400'>{t('Select ChainLINK')}</p>
           )}
-          <ChevronDownIcon className='h-5 w-5' isRevert={tokenPopup} />
+          <ChevronDownIcon isRevert={tokenPopup} />
         </div>
         <SelectTokenFromList
           allowSearch={false}

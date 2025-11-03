@@ -142,7 +142,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon className='h-5 w-5' isRevert={isOpen} />
+        <ChevronDownIcon isRevert={isOpen} />
       </div>
       <div className={cn('float-right flex flex-row items-center', width < 450 ? 'mt-3 justify-between' : '')}>
         <div className='mr-3'>

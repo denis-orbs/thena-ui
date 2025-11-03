@@ -82,7 +82,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName, itemsAct
               )}
             >
               <TabItem item={item} size={size} className={itemClassName} disabled={item.disabled || false} />
-              <ChevronDownIcon className='h-5 w-5' isRevert={hoveredIndex === index} />
+              <ChevronDownIcon isRevert={hoveredIndex === index} />
             </div>
             {hoveredIndex === index && (
               <ul

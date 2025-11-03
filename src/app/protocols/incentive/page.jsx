@@ -159,7 +159,7 @@ export default function IncentivePage() {
                 ) : (
                   <p className='text-neutral-400'>{t('Select Pair')}</p>
                 )}
-                <ChevronDownIcon isRevert={pairOpen} className='h-5 w-5' />
+                <ChevronDownIcon isRevert={pairOpen} />
               </div>
             </div>
 
@@ -182,7 +182,7 @@ export default function IncentivePage() {
                 ) : (
                   <p className='text-neutral-400'>{t('Select Asset')}</p>
                 )}
-                <ChevronDownIcon isRevert={pairOpen} className='h-5 w-5' />
+                <ChevronDownIcon isRevert={pairOpen} />
               </div>
             </div>
 
