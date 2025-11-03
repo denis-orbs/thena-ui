@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { cn } from '@/lib/utils'
-import { ShadowIcon } from '@/svgs'
+
+import ShadowIcon from '~/svgs/shadow.svg'
 
 function Highlight({ children, className }) {
   return (

@@ -3,7 +3,8 @@ import ReactDatePicker from 'react-datepicker'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/lib/utils'
-import { CalendarIcon } from '@/svgs'
+
+import CalendarIcon from '~/svgs/calendar.svg'
 
 function DateInput({
   className,

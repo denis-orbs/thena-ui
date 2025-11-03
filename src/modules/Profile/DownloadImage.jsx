@@ -1,6 +1,7 @@
 'use client'
 
 import html2canvas from 'html2canvas-pro'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCallback } from 'react'
 
@@ -9,7 +10,6 @@ import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { rewriteS3Host } from '@/lib/utils'
-import { DownloadIcon } from '@/svgs'
 
 export default function DownloadButton({ fileName, scale = 1 }) {
   const t = useTranslations()
@@ -75,7 +75,7 @@ export default function DownloadButton({ fileName, scale = 1 }) {
 
   return (
     <PrimaryButton onClick={handleRender} className='w-full'>
-      <DownloadIcon className='mr-2 h-4 w-4' />
+      <Image src='/svgs/download.svg' className='mr-2 size-4' />
       {t('Download image')}
     </PrimaryButton>
   )

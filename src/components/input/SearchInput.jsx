@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SearchIcon, XIcon } from '@/svgs'
+import SearchIcon from '~/svgs/search.svg'
+import XIcon from '~/svgs/x-close.svg'
 
 import Input from '.'
 

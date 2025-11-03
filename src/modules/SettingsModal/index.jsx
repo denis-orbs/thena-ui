@@ -10,7 +10,8 @@ import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
 import { LOCALES } from '@/constant'
 import { useChainSettings, useLocaleSettings, useSettings } from '@/state/settings/hooks'
-import { SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 const slipageTolerance = [0.1, 0.5, 1]
 

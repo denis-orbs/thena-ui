@@ -3,6 +3,7 @@
 import { getLatestAuthType } from '@particle-network/auth-core'
 import { useAuthCore } from '@particle-network/auth-core-modal'
 import { useAccountModal, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import useSWR from 'swr'
@@ -14,7 +15,6 @@ import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 import { cn, formatAddress } from '@/lib/utils'
-import { PowerCircleIcon } from '@/svgs'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 import NextImage from '../image/NextImage'
@@ -120,7 +120,7 @@ export default function ConnectButton({ className, isHeader = false, isMobile = 
 
   return (
     <PrimaryButton className={cn('leading-5', className)} onClick={() => openConnectModal()}>
-      {isHeader && isMini ? <PowerCircleIcon className='!size-4' /> : t('Connect Wallet')}
+      {isHeader && isMini ? <Image src='/svgs/power-icon.svg' className='!size-4' /> : t('Connect Wallet')}
     </PrimaryButton>
   )
 }

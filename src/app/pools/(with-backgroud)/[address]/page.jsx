@@ -21,6 +21,8 @@ import { PAIR_TYPES, SPECIAL_POOLS, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
@@ -31,7 +33,9 @@ import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
+
+import AnalyticsIcon from '~/svgs/analytics.svg'
+import ExternalIcon from '~/svgs/external.svg'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
 const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
@@ -42,7 +46,7 @@ function NoPosition() {
   return (
     <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-10'>
       <Highlight>
-        <InfoCircleWhite className='h-4 w-4' />
+        <InfoIcon className='stroke-neutral-50' />
       </Highlight>
       <div className='flex flex-col items-center gap-3'>
         <h2>{t('No Position Found')}</h2>
@@ -397,7 +401,7 @@ export default function SpecificPoolPage({ params }) {
                   ) : (
                     <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
                       <Highlight>
-                        <InfoCircleWhite className='h-4 w-4' />
+                        <InfoIcon className='stroke-neutral-50' />
                       </Highlight>
                       <div className='flex flex-col items-center gap-3'>
                         <h2>{t('Select Pool Strategy')}</h2>

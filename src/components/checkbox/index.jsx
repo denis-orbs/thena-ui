@@ -1,7 +1,7 @@
 import React from 'react'
 
+import CheckIcon from '@/icons/CheckIcon'
 import { cn } from '@/lib/utils'
-import { CheckIcon } from '@/svgs'
 
 function CheckBox({ className, checked, setChecked = () => {}, ...rest }) {
   return (

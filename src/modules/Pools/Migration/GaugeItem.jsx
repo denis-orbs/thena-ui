@@ -8,8 +8,8 @@ import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { POSITION_EARNED_TYPES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' }) {
   const t = useTranslations()
@@ -171,7 +171,7 @@ export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' 
         <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
         <div className='flex items-center gap-1'>
           <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
-          <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />
+          <InfoIcon data-tooltip-id={`net-${pool.address}`} />
           <CustomTooltip id={`net-${pool.address}`}>
             {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
             {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}

@@ -24,11 +24,11 @@ import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
 import { GaugeItemManual } from '@/modules/Pools/Migration'
-import { ArrowRightIcon } from '@/svgs'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()
@@ -297,7 +297,7 @@ export function ManualMigrationPage({ tokenId }) {
           </div>
 
           <div className='flex items-center justify-center'>
-            <ArrowRightIcon className='mx-auto h-5 w-5 rotate-90 md:rotate-0' />
+            <ArrowLeftIcon className='mx-auto size-5 -rotate-90 md:rotate-180' />
           </div>
 
           <div className='flex h-full w-full flex-col'>

@@ -29,6 +29,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
@@ -36,7 +37,6 @@ import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -287,9 +287,7 @@ export default function VotePage() {
         rewards: (
           <div className='flex items-center gap-1'>
             <Paragraph>${formatAmount(pool.gauge.bribeUsd)}</Paragraph>
-            {pool.gauge.bribeUsd.gt(0) && (
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
-            )}
+            {pool.gauge.bribeUsd.gt(0) && <InfoIcon data-tooltip-id={`projected-${pool.gauge.address}`} />}
             <CustomTooltip className='min-w-[136px]' id={`projected-${pool.gauge.address}`}>
               <div className='flex flex-col gap-1'>
                 {pool.gauge.bribes && pool.gauge.bribes.bribe && (

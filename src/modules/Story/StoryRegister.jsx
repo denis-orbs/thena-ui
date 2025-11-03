@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
@@ -10,9 +11,8 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { THEStoryContext } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { errorToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
-import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
 import { useRegisterToTHEStory } from '.'
 import SelectCountry from './SelectCountry'
@@ -101,13 +101,13 @@ export default function StoryRegister({ isRegistered }) {
       <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-4 md:px-6 lg:px-8'>
         {isRegistered ? (
           <div className='flex flex-col justify-center'>
-            <SuccessIcon className='mx-auto h-20 w-20' />
+            <Image src='/svgs/successicon.svg' className='mx-auto size-20' />
             <p className='font-archia mx-auto mb-10 max-w-[400px] text-center text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
             <PrimaryButton className='w-full' onClick={() => router.push('/story/chapters')}>
               {t('Go to Chapters page')}
-              <ChevronRightIcon className={cn('h-4 w-4 text-white')} />
+              <ChevronRightIcon className='text-white' />
             </PrimaryButton>
           </div>
         ) : (

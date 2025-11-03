@@ -18,7 +18,8 @@ import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import { SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 export const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([

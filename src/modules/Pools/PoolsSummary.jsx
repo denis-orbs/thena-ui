@@ -4,7 +4,8 @@ import React from 'react'
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { formatAmount } from '@/lib/utils'
-import { CoinsStackedIcon } from '@/svgs'
+
+import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 
 function PoolsSummary({ pools }) {
   const t = useTranslations()

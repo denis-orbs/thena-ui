@@ -13,7 +13,8 @@ import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
-import { RefreshIcon } from '@/svgs'
+
+import RefreshIcon from '~/svgs/refresh.svg'
 
 export const fetchManualInfo = async (account, tokenId, chainId) => {
   const algebraContract = getPositionManagerContract(chainId, 2)

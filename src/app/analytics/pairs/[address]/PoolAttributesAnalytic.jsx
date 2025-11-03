@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 import { zeroAddress } from 'viem'
@@ -10,7 +11,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import PieChart from '@/modules/WeightedPool/PieChart'
-import { TargetIcon } from '@/svgs'
 
 export function TokenAnalytics({ pair, classNames }) {
   const { tokens } = pair || {}
@@ -32,7 +32,7 @@ export function TokenAnalytics({ pair, classNames }) {
             <div className='flex justify-between gap-4'>
               <TextSubHeading className='text-xs'>{`${t('Pool')} %`}</TextSubHeading>
               <div className='flex gap-2'>
-                <TargetIcon className='size-4' />
+                <Image src='/svgs/target.svg' className='size-4' />
                 <TextSubHeading className='text-xs'>{`${t('Target')} ${token.weight}%`}</TextSubHeading>
               </div>
             </div>

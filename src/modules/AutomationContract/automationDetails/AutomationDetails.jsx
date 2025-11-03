@@ -9,9 +9,11 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS, PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import useWallet from '@/hooks/useWallet'
+import CheckIcon from '@/icons/CheckIcon'
 import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { CheckIcon, CopyArenaIcon } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
 
 function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()

@@ -9,7 +9,8 @@ import { Paragraph } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { Bound, updateIsReverse } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { TransferIcon } from '@/svgs'
+
+import TransferIcon from '~/svgs/switch-horizontal.svg'
 
 export default function StartingPriceInput({ baseCurrency, quoteCurrency, mintInfo, lastPrice }) {
   const t = useTranslations()

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Banner from 'public/images/arena/tc_cover_image.png'
 import React, { useMemo } from 'react'
@@ -18,7 +19,6 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { cn, formatAddress, formatAmount, fromWei, isHexColor, isInvalidAmount } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
-import { PriceCup, StackCoin, UserIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 import PriceTooltip from './PriceTooltip'
@@ -114,7 +114,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             />
             {!showCheckedHidden ? (
               <NeutralBadge className='absolute top-4 right-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
-                <UserIcon className='h-3 w-3' />
+                <Image src='/svgs/user-icon.svg' className='h-3 w-3' />
                 {`${competition.participantCount}/${competition.maxParticipants}`}
               </NeutralBadge>
             ) : (
@@ -187,14 +187,14 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           </h3>
           <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
             <Paragraph className='flex items-center text-nowrap'>
-              <PriceCup className='mr-2 h-5 w-5' />
+              <Image src='/svgs/cup.svg' className='mr-2 h-5 w-5' />
               <span className='mr-1'>${formatAmount(parseToUSD)}</span>
 
               <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
             </Paragraph>
 
             <Paragraph className='flex items-center text-nowrap'>
-              <StackCoin className='mr-1 h-5 w-5' />
+              <Image src='/svgs/stack-coin.svg' className='mr-1 h-5 w-5' />
               <span>{entryFee}</span>
             </Paragraph>
           </div>

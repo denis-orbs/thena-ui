@@ -20,9 +20,10 @@ import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
 import TxnSettings from '@/modules/SettingsModal'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
-import { InfoIcon, SwitchVerticalIcon } from '@/svgs'
+import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import Spinner from '@/components/spinner'
 import WarningModal from '@/app/swap/WarningModal'
+import InfoIcon from '@/icons/InfoIcon'
 
 const MAX_PRICE_IMPACT = 20
 export default function SwapBest({

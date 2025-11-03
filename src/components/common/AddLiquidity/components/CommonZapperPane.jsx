@@ -19,9 +19,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
+import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 import WarningZapper from './WarningZapper'
 
@@ -329,7 +329,7 @@ export function CommonZapperPane({
                   </div>
                   {priceImpact > 4.9 && (
                     <Alert>
-                      <InfoIcon className='stroke-error-600 h-4 w-4' />
+                      <InfoIcon className='stroke-error-600 size-4' />
                       <p>{t('High Slippage Warning')}</p>
                     </Alert>
                   )}

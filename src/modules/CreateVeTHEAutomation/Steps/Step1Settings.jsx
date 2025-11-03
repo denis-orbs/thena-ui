@@ -10,10 +10,10 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { LINK_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'
-import { InfoIcon } from '@/svgs'
 
 import SelectExecutionTime from '../SelectExecutionTime'
 
@@ -87,7 +87,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
           onChange={() => updateSetting(SETTINGS_TYPE.CLAIM)}
           label='Claim rebase rewards every week'
         />
-        <InfoIcon data-tooltip-id='setting-claim-rebase' className='h-4 w-4 stroke-neutral-400' />
+        <InfoIcon data-tooltip-id='setting-claim-rebase' />
         <CustomTooltip
           className='z-40 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
           id='setting-claim-rebase'
@@ -102,7 +102,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
           onChange={() => updateSetting(SETTINGS_TYPE.RELOCK)}
           label='Relock veTHE every 1 Week'
         />
-        <InfoIcon data-tooltip-id='settings-relock' className='h-4 w-4 stroke-neutral-400' />
+        <InfoIcon data-tooltip-id='settings-relock' />
         <CustomTooltip
           className='z-40 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
           id='settings-relock'
@@ -117,7 +117,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
         <div className='flex flex-row items-center gap-1'>
           <TextHeading className='text-base lg:text-lg'>{t('Minimum Link Balance needed')}</TextHeading>
 
-          <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400 max-lg:hidden' />
+          <InfoIcon data-tooltip-id='setting-mind-funds' className='max-lg:hidden' />
           <CustomTooltip className='z-40' id='setting-mind-funds' place='bottom'>
             {t('This is the estimated total deposit based on your current contract settings')}
           </CustomTooltip>

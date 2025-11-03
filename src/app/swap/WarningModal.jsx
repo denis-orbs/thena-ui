@@ -5,7 +5,7 @@ import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
-import { InfoCircleWhite } from '@/svgs'
+import InfoIcon from '@/icons/InfoIcon'
 
 function WarningModal({ popup, setPopup, handleSwap }) {
   const t = useTranslations()
@@ -22,7 +22,7 @@ function WarningModal({ popup, setPopup, handleSwap }) {
       <ModalBody>
         <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
           <Highlight className='bg-error-500'>
-            <InfoCircleWhite className='h-4 w-4' />
+            <InfoIcon className='stroke-neutral-50' />
           </Highlight>
           <div className='flex flex-col items-center gap-3'>
             <h2>{t('Price impact too high')}</h2>

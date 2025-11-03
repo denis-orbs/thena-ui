@@ -5,7 +5,8 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import Toggle from '@/components/toggle'
 import { cn, formatAmount } from '@/lib/utils'
-import { Expand06Icon } from '@/svgs'
+
+import Expand06Icon from '~/svgs/expand-06.svg'
 
 import AnalyticsReChart from './AnalyticsReChart'
 import Box from '../box'

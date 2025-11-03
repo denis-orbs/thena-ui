@@ -8,7 +8,7 @@ import { Neutral } from '@/components/alert'
 import Box from '@/components/box'
 import { EmphasisButton, SecondaryButton } from '@/components/buttons/Button'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { InfoIcon } from '@/svgs'
+import InfoIcon from '@/icons/InfoIcon'
 
 export default function ProtocolsPage() {
   const { push } = useRouter()
@@ -23,7 +23,7 @@ export default function ProtocolsPage() {
         </div>
         <Neutral className='justify-between lg:p-8'>
           <div className='flex items-center gap-4'>
-            <InfoIcon className='h-4 w-4 min-w-4 stroke-neutral-600 lg:h-8 lg:w-8 lg:min-w-8' />
+            <InfoIcon className='min-w-4 stroke-neutral-600 lg:size-8 lg:min-w-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading className='text-xl'>{t('What are Gauges')}</TextHeading>
               <Paragraph>{t('Gauges Description')}</Paragraph>
@@ -56,16 +56,6 @@ export default function ProtocolsPage() {
           </Box>
         </div>
       </div>
-      {/* <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
-        <Highlight>
-          <InfoCircleWhite className='h-4 w-4' />
-        </Highlight>
-        <div className='flex flex-col items-center gap-3'>
-          <h2>Other inquiries?</h2>
-          <Paragraph className='mt-3 text-center'>Reach out to us!</Paragraph>
-        </div>
-        <EmphasisButton>Support system</EmphasisButton>
-      </div> */}
     </div>
   )
 }

@@ -1,23 +1,14 @@
 'use client'
 
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
 import React from 'react'
 
-import { TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
 import { CreatedChart } from '@/modules/ArenaAnalytics/CreatedChart'
-import { ArrowLeftIcon } from '@/svgs'
 
 function TCCreatedPage() {
-  const t = useTranslations()
-
   return (
     <div className='mt-10 flex flex-col gap-10'>
-      <Link href='/arena/analytics'>
-        <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-          {t('Back')}
-        </TextButton>
-      </Link>
+      <BackButton href='/arena/analytics' />
       <CreatedChart />
     </div>
   )

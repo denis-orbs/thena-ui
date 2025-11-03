@@ -16,12 +16,16 @@ import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
+import CheckIcon from '@/icons/CheckIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import dayjs from '@/lib/arenaDayjs'
 import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
-import { CheckIcon, CopyArenaIcon, ExternalIcon, InfoIcon } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
+import ExternalIcon from '~/svgs/external.svg'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -155,7 +159,7 @@ export function UserInfo({ userInfo, following, followers }) {
             </div>
             {isOwnProfile && !userInfo.usernameNfts.length && (
               <Box className='border-primary-800 bg-primary-950 flex items-center justify-between gap-2 border p-2 pl-3 lg:p-2 lg:pl-3'>
-                <InfoIcon className='stroke-primary-600 h-4 w-4' />
+                <InfoIcon className='stroke-primary-600' />
                 <TextHeading className='text-base'>
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>

@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useState } from 'react'
 import { mutate } from 'swr'
@@ -10,7 +9,8 @@ import 'react-quill-emoji/dist/quill-emoji.css'
 import './style.css'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
 import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
@@ -18,7 +18,6 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { cn, isValidHttpUrl } from '@/lib/utils'
-import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
 import { SelectNameColor } from './SelectNameColor'
@@ -90,13 +89,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
 
   return (
     <div className='flex flex-col gap-10 pt-10'>
-      <div>
-        <Link href={isAdmin ? '/arena/admin' : '/arena/profile'}>
-          <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-            {t('Back')}
-          </TextButton>
-        </Link>
-      </div>
+      <BackButton href={isAdmin ? '/arena/admin' : '/arena/profile'} />
       <TextHeading className='text-3xl'>{t('Edit Profile')}</TextHeading>
 
       <Box className='flex flex-col gap-10'>
@@ -177,7 +170,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
                     alt='demo-checkmark'
                   />
                 ) : (
-                  <Verified className='ml-2 size-5' />
+                  <Image src='/svgs/verified-tick.svg' className='ml-2 size-5' />
                 )
               ) : (
                 <></>

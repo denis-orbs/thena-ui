@@ -6,10 +6,12 @@ import { useCallback, useMemo } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { HyperLink, TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
 import { useTHEStory } from '@/context/THEStoryContext'
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
-import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
+
+import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
 import {
@@ -228,7 +230,7 @@ export function ChapterProcess({
             className={cn('order-1 w-1/2 cursor-pointer text-gray-100 lg:w-auto', preChapterIndex ? '' : 'opacity-40')}
             onClick={() => preChapterIndex && setSelectedChapterIndex(preChapterIndex)}
           >
-            <ArrowBackwardIcon className='inline-block h-5 w-5' />
+            <ArrowForwardSmallIcon className='inline-block h-5 w-5' />
             <span>{t('Back')}</span>
           </div>
           <p className='order-3 mt-3 w-full text-center text-[18px] leading-5 font-medium text-neutral-300 lg:order-2 lg:mt-0 lg:w-auto'>
@@ -301,7 +303,7 @@ export function ChapterProcess({
                       onClick={() => handleTask(task)}
                     >
                       <span>{t('Start task')}</span>
-                      <ChevronRightIcon className='size-4' />
+                      <ChevronRightIcon className='text-white' />
                     </PrimaryButton>
                   )}
                 </div>

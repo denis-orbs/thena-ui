@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import React, { useState } from 'react'
 import { useTranslations } from 'use-intl'
 
@@ -6,8 +7,8 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount } from '@/lib/utils'
-import { CoinsHandIcon, InfoNeutralIcon } from '@/svgs'
 
 function Attributes({ tokens, fees, isMobile }) {
   const t = useTranslations()
@@ -15,7 +16,7 @@ function Attributes({ tokens, fees, isMobile }) {
     <div className={cn(isMobile && 'rounded-lg bg-neutral-900 px-5 py-3')}>
       <div className='flex items-center justify-between py-4'>
         <div className='flex items-center gap-4'>
-          <CoinsHandIcon className='size-6 lg:size-9' />
+          <Image src='/svgs/coins-hand.svg' className='size-6 lg:size-9' />
           <Paragraph className='text-sm text-neutral-50 lg:text-base'>{t('Pool Fees')}</Paragraph>
         </div>
         <Paragraph className='text-sm text-neutral-50 lg:text-base'>{`${fees} %`}</Paragraph>
@@ -107,7 +108,7 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
             )}
             onClick={() => setShow(prev => !prev)}
           >
-            <InfoNeutralIcon className='size-4' />
+            <InfoIcon />
           </EmphasisButton>
         </div>
 

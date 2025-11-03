@@ -6,7 +6,6 @@ import { TextHeading } from '@/components/typography'
 import { useFixViewport } from '@/hooks/useFixViewPort'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import { cn, formatAddress, rewriteS3Host } from '@/lib/utils'
-import { Verified } from '@/svgs'
 
 import ImagePreview from './ImagePreview'
 import { VerifyPopover } from './VerifyPopover'
@@ -146,7 +145,7 @@ export default function ShareProfileStatsDetail({
                       alt='demo-checkmark'
                     />
                   ) : (
-                    <Verified className='ml-1 h-5 w-8 cursor-pointer' />
+                    <Image src='/svgs/verified-tick.svg' className='ml-1 h-5 w-8 cursor-pointer' />
                   )}
                 </>
               )}

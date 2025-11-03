@@ -31,12 +31,15 @@ import {
   useTCSpotOOESwap,
 } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import CandleStickChart from '@/modules/SwapChart/CandleStickChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
-import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
+
+import RefreshIcon from '~/svgs/refresh.svg'
+import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 
 import SettingSideBar, { serviceList } from './SettingSideBar'
 
@@ -504,7 +507,7 @@ export function TCTradeSideBar({
                 )}
                 {priceImpact > 5 && (
                   <Alert>
-                    <InfoIcon className='stroke-error-600 h-4 w-4' />
+                    <InfoIcon className='stroke-error-600' />
                     <p>{t('Price impact too high')}</p>
                   </Alert>
                 )}

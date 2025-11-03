@@ -6,7 +6,9 @@ import Input from '@/components/input'
 import DateInput from '@/components/input/DateInput'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 import { errorToast } from '@/lib/notify'
-import { MinusIcon, PlusIcon } from '@/svgs'
+
+import MinusIcon from '~/svgs/minus.svg'
+import PlusIcon from '~/svgs/plus.svg'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
 

@@ -8,7 +8,9 @@ import Spinner from '@/components/spinner'
 import { Paragraph } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useValidateUserName } from '@/hooks/useThenaIdContract'
-import { CheckCircleIcon, RandomDice } from '@/svgs'
+
+import CheckCircleIcon from '~/svgs/checkCircle.svg'
+import RandomDice from '~/svgs/random-dice.svg'
 
 function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '', randomThenaId }) {
   const [thenaId, setThenaId] = useState(defaultThenaId || '')

@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { forwardRef, useEffect } from 'react'
 
 import { Paragraph } from '@/components/typography'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import { SwapIcon } from './SwapIcon'
 import { BNB, Thena } from '../CoinIcons'
@@ -24,7 +24,7 @@ function CoinBadge({ className, name }) {
         {coin}
         <Paragraph className='text-xs font-semibold tracking-[-4%] md:text-base'>{name}</Paragraph>
       </div>
-      <ChevronDownIcon className='h-4 w-4' />
+      <ChevronDownIcon />
     </div>
   )
 }
@@ -129,7 +129,7 @@ export function IntroductionIllustration() {
             <BNB className='h-4 w-4 md:h-5 md:w-5' width={20} height={20} />
             <Paragraph className='text-xs font-semibold tracking-[-4%] md:text-base'>BNB/THE</Paragraph>
           </div>
-          <ChevronDownIcon className='h-4 w-4' />
+          <ChevronDownIcon />
         </div>
         <Image src='/images/home/stats/graph.png' className='h-full w-full' alt='graph' width={351} height={190} />
       </FeatureCard>

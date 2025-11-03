@@ -4,9 +4,9 @@ import { useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { isoDateToTimeStampSeconds } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
-import { ChevronRightIcon } from '@/svgs'
 
 import { ChapterProcess } from './ChapterProcess'
 import { ChapterTabNavigator } from './ChapterTabNavigator'
@@ -122,7 +122,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
                   <PrimaryButton className='mt-4 w-full lg:mt-9'>
                     <div className='flex items-center justify-between'>
                       <span className='mr-1 text-left'>{t('View BNB Chain')}</span>
-                      <ChevronRightIcon className='size-4' />
+                      <ChevronRightIcon />
                     </div>
                   </PrimaryButton>
                 </Link>

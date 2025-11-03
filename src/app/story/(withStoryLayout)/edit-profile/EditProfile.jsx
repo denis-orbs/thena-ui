@@ -7,7 +7,8 @@ import Input from '@/components/input'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useUpdateParticipantProfile } from '@/modules/Story'
 import SelectCountry from '@/modules/Story/SelectCountry'
-import { ArrowBackwardIcon } from '@/svgs'
+
+import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 
 import { SelectAvatar } from './SelectAvatar'
 
@@ -71,7 +72,7 @@ export function EditProfile({ userInfo, updateUserInfo }) {
     <form onSubmit={handleUpdateProfile}>
       <div className='mt-[10px]'>
         <Link className='text-gray-100' href='/story/profile'>
-          <ArrowBackwardIcon className='inline-block h-5 w-5 opacity-40' />
+          <ArrowForwardSmallIcon className='inline-block h-5 w-5 rotate-180 opacity-40' />
           <span className='opacity-40'>{t('Back')}</span>
         </Link>
 

@@ -27,6 +27,7 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import useWallet from '@/hooks/useWallet'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
@@ -36,7 +37,6 @@ import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
 import NotConnected from './NotConnected'
 
@@ -238,7 +238,7 @@ export default function HoldingsPage() {
             )}
           >
             <div className='h-8 w-8'>
-              <InfoIcon className='stroke-primary-600 h-8 w-8' />
+              <InfoIcon className='stroke-primary-600 size-8' />
             </div>
 
             <div className='flex flex-col'>
@@ -322,7 +322,7 @@ export default function HoldingsPage() {
             ) : (
               <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
                 <Highlight>
-                  <InfoCircleWhite className='h-4 w-4' />
+                  <InfoIcon className='stroke-neutral-50' />
                 </Highlight>
                 <div className='flex flex-col items-center gap-3'>
                   <h2>{t('No Position Found')}</h2>

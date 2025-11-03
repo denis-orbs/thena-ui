@@ -3,7 +3,7 @@ import { memo, useCallback, useState } from 'react'
 
 import { TextButton } from '@/components/buttons/Button'
 import Spinner from '@/components/spinner'
-import { ArrowLeftIcon } from '@/svgs'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 
 import { TYPE_SEE } from './constants'
 import { SearchTCs } from './SearchTCs'

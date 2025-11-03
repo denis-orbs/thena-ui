@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useMemo, useRef, useState } from 'react'
@@ -8,8 +9,8 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { isoDateToTimeStampSeconds } from '@/lib/utils'
-import { ChevronRightIcon, LogoTextIcon, LogoWithTextIcon } from '@/svgs'
 
 import { useFetchChaptersAndTasks } from '.'
 import Banner from './Banner'
@@ -74,7 +75,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               <div className='mb-5 flex flex-wrap items-center justify-center gap-2'>
                 <p className='font-archia text-[36px] font-semibold md:text-[72px]'>THE Story of</p>
                 <div className='flex justify-center'>
-                  <LogoWithTextIcon className='w-[152px] md:w-[268px]' />
+                  <Image src='/svgs/logo-with-text.svg' className='w-[152px] md:w-[268px]' />
                 </div>
               </div>
               <p className='leading-[1.3] text-[#D1D0D2] lg:text-[18px]'>
@@ -110,7 +111,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
               <span className='inline-block align-bottom'>
-                <LogoTextIcon className='mr-2 ml-1 h-[20px] w-[90px]' />
+                <Image src='/svgs/logo.svg' className='mr-2 ml-1 h-[20px] w-[90px]' />
               </span>
               <span className='lg:ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}
@@ -143,7 +144,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                   >
                     <PrimaryButton className='h-auto w-full md:w-[420px]'>
                       {t('View BNB Chain')}
-                      <ChevronRightIcon className='h-4 w-4 text-white' />
+                      <ChevronRightIcon className='text-white' />
                     </PrimaryButton>
                   </Link>
                 </div>

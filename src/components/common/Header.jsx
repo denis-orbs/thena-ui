@@ -27,25 +27,22 @@ import { useSignWallet } from '@/hooks/useSignWallet'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import {
-  ArrowRightIcon,
-  ChevronDownColorIcon,
-  ChevronDownIcon,
-  ChevronDownWhiteIcon,
-  ExternalIcon,
-  HamburgerIcon,
-  InfoNeutralIcon,
-  LanguageIcon,
-  XIcon,
-} from '@/svgs'
 import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
 import LogoMobile from '~/logo-mobile.svg'
+import ChevronDownColorIcon from '~/svgs/cheveron-down-color.svg'
+import ExternalIcon from '~/svgs/external.svg'
+import HamburgerIcon from '~/svgs/hamburger.svg'
+import LanguageIcon from '~/svgs/language.svg'
+import XIcon from '~/svgs/x-close.svg'
 
 import ConnectButton from '../buttons/ConnectButton'
 import { TextIconButton } from '../buttons/IconButton'
@@ -83,7 +80,7 @@ function BridgeMaintainModal({ show, onClose }) {
       <ModalBody className='pt-0'>
         <div className='flex w-full flex-col items-center justify-center gap-4 px-4'>
           <Highlight className='bg-primary-600'>
-            <InfoNeutralIcon className='size-5 [&>path]:stroke-neutral-100' />
+            <InfoIcon className='size-5 [&>path]:stroke-neutral-100' />
           </Highlight>
           <div className='mt-3'>
             <Paragraph className='text-neutral-50'>
@@ -248,9 +245,7 @@ function ChainMobileSelect({ t }) {
           <CircleImage src={selected.img} alt='' className='h-5 w-5' />
           <TextHeading>{t(selected.label)}</TextHeading>
         </div>
-        <ChevronDownIcon
-          className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-        />
+        <ChevronDownIcon isRevert={open} className='h-5 w-5' />
       </div>
       <div
         className={cn(
@@ -385,12 +380,12 @@ function V3Banner({ onClose }) {
             className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'
             onClick={() => push('/dashboard')}
           >
-            {t('Migrate Now')} <ArrowRightIcon className='ml-1 h-4 w-4' />
+            {t('Migrate Now')} <ArrowLeftIcon className='ml-1 rotate-180' />
           </TertiaryButton>
           {new Date() >= new Date('2025-05-29') && (
             <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
               <TertiaryButton className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'>
-                {t('Learn More')} <ArrowRightIcon className='ml-1 h-4 w-4' />
+                {t('Learn More')} <ArrowLeftIcon className='ml-1 rotate-180' />
               </TertiaryButton>
             </Link>
           )}
@@ -1178,20 +1173,9 @@ function Header() {
                     <TextSubHeading>{menu.subheading}</TextSubHeading>
                   </div>
                   {menu.sub && (
-                    <ChevronDownWhiteIcon
-                      onClick={e => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        if (selected?.label === menu.label) {
-                          setSelected(null)
-                        } else {
-                          setSelected(menu)
-                        }
-                      }}
-                      className={cn(
-                        'size-4 !stroke-neutral-200 transition-transform duration-300 ease-in-out',
-                        selected?.label === menu.label ? 'rotate-0' : 'rotate-180',
-                      )}
+                    <ChevronDownIcon
+                      isRevert={selected?.label === menu.label}
+                      className='stroke-neutral-200! duration-300'
                     />
                   )}
                 </div>
@@ -1260,7 +1244,7 @@ function Header() {
         aria-label='Back to top'
       >
         <div className='flex h-5'>
-          <ChevronDownIcon className='size-5 rotate-180 stroke-neutral-400' />
+          <ChevronDownIcon isRevert className='h-5 w-5' />
           <span className='ml-2 text-base leading-5 font-medium text-neutral-400'>{t('Back to Top')}</span>
         </div>
       </motion.button>

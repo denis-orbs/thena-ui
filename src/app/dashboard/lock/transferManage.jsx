@@ -14,7 +14,8 @@ import { useTransfer } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
-import { CheckCircleIcon } from '@/svgs'
+
+import CheckCircleIcon from '~/svgs/checkCircle.svg'
 
 export default function TransferManage({ selected, setPopup, updateVeTHEs, status, contract, mutateAutomationData }) {
   const [address, setAddress] = useState('')

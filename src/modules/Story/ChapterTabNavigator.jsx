@@ -1,7 +1,7 @@
+import Image from 'next/image'
 import { useTranslations } from 'use-intl'
 
 import { cn } from '@/lib/utils'
-import { Lock2Icon } from '@/svgs'
 
 export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, classOfButton }) {
   const t = useTranslations()
@@ -26,7 +26,7 @@ export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, 
           }}
         >
           <div className='flex flex-row items-center'>
-            {!chapterTab.available && <Lock2Icon className='mr-1 h-5 w-5' />}
+            {!chapterTab.available && <Image src='/svgs/lock-2.svg' className='mr-1 h-5 w-5' />}
             <span
               className={cn('flex text-[14px] whitespace-nowrap lg:text-[16px]', !chapterTab.available && 'opacity-40')}
             >

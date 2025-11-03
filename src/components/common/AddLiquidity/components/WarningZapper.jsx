@@ -5,8 +5,11 @@ import React, { useState } from 'react'
 
 import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph, TextSubHeading } from '@/components/typography'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { ChevronUpIcon, InfoIcon, LinkExternalPrimaryIcon } from '@/svgs'
+
+import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 
 function WarningZapper() {
   const t = useTranslations()
@@ -22,12 +25,9 @@ function WarningZapper() {
           <NewTextSubHeading className='text-primary-100 text-xl leading-6 md:text-2xl xl:text-xl! xl:leading-7'>
             {t('Important Information about Zapper')}
           </NewTextSubHeading>
-
-          <ChevronUpIcon
-            className={cn(
-              'w-7 min-w-7 cursor-pointer p-1 transition-all duration-300 ease-in-out md:w-9 md:min-w-9 md:p-2',
-              !showWarning && 'rotate-180',
-            )}
+          <ChevronDownIcon
+            isRevert={showWarning}
+            className='stroke-primary-600! w-7 min-w-7 cursor-pointer p-1 duration-300 md:h-9 md:w-9 md:min-w-9 md:p-2'
             onClick={() => setShowWarning(show => !show)}
           />
         </div>

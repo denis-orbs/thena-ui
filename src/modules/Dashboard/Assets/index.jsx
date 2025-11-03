@@ -7,8 +7,8 @@ import { useSelector } from 'react-redux'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn, formatAmount } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
@@ -76,7 +76,7 @@ function UserAssets({ setPositionRewards }) {
                       <Paragraph className='text-base font-medium text-neutral-500'>
                         {t(showTable ? 'Close' : 'Open')}
                       </Paragraph>
-                      <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
+                      <ChevronDownIcon className='h-6 w-6' isRevert={showTable} />
                     </div>
                   </div>
 

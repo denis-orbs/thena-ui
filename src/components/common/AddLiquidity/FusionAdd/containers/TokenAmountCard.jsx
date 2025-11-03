@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { WBNB } from 'thena-sdk-core'
@@ -14,7 +15,6 @@ import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useCurrencyLogo, useCurrencyPrice } from '@/hooks/fusion/useCurrencyLogo'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { LockIcon } from '@/svgs'
 
 /**
  * @param {Object} props
@@ -112,7 +112,7 @@ export function TokenAmountCard({
         showOutsideWarning && (
           <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
             <Highlight>
-              <LockIcon className='h-4 w-4' />
+              <Image src='/svgs/lock.svg' className='size-4' />
             </Highlight>
             <Paragraph>{t('The market price is outside')}</Paragraph>
             <Paragraph>{t('Single-asset deposit only')}</Paragraph>

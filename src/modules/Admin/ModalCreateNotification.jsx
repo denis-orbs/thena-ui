@@ -12,7 +12,8 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useCreateNotification } from '@/hooks/useAdminCreateNotification'
 import { successToast } from '@/lib/notify'
 import { isValidHttpUrl } from '@/lib/utils'
-import { ChartIcon } from '@/svgs'
+
+import ChartIcon from '~/svgs/chart-line.svg'
 
 import { ModalAnalyticNotification } from './ModalAnalyticNotification'
 import { ModalSelectUser } from './ModalSelectUser'

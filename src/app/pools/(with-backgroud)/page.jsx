@@ -27,11 +27,15 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, getLiquidityRangeType, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
-import { BarChartIcon, ChevronDownWhiteIcon, InfoIcon, PoolCoinsIcon } from '@/svgs'
+
+import BarChartIcon from '~/svgs/bar-chart.svg'
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 
 import NewListings from '../NewListings'
 
@@ -402,7 +406,7 @@ export default function PoolsPage() {
             {(pool.token0?.isWarning || pool.token1?.isWarning) && (
               <>
                 <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
-                  <InfoIcon className='stroke-warn-700 size-4' />
+                  <InfoIcon className='stroke-warn-700' />
                 </div>
                 <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md py-2!' place='top'>
                   <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
@@ -415,9 +419,7 @@ export default function PoolsPage() {
           <div>
             <div className='flex items-center gap-1'>
               <Paragraph className='break-all'>{pool.apr}</Paragraph>
-              {pool.subpools.length > 0 && (
-                <InfoIcon className='h-4 w-4 min-w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
-              )}
+              {pool.subpools.length > 0 && <InfoIcon data-tooltip-id={`pair-${pool.address}`} />}
             </div>
             <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
               <div className='flex flex-col gap-1'>
@@ -440,7 +442,7 @@ export default function PoolsPage() {
         tvl: (
           <div className='flex items-center gap-1'>
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
-            <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
+            <InfoIcon data-tooltip-id={`tvl-${pool.address}`} />
             {/* TODO: Check for weighted pools */}
             {pool.type === PAIR_TYPES.WEIGHTED ? (
               <CustomTooltip id={`tvl-${pool.address}`}>
@@ -636,11 +638,9 @@ export default function PoolsPage() {
               <TextHeading className='text-xl font-medium text-neutral-50 md:text-2xl'>
                 {t('THE Single Sided Vaults')}
               </TextHeading>
-              <ChevronDownWhiteIcon
-                className={cn(
-                  'size-8 cursor-pointer stroke-neutral-50! transition-all duration-150 ease-in-out',
-                  toggleVault ? 'rotate-180' : 'rotate-0',
-                )}
+              <ChevronDownIcon
+                isRevert={toggleVault}
+                className='size-8 cursor-pointer stroke-neutral-50!'
                 onClick={() => setToggleVault(!toggleVault)}
               />
             </div>

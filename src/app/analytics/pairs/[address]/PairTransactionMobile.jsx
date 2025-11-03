@@ -9,16 +9,14 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { TXN_TYPE } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  BackRevertIcon,
-  ChevronDownIcon,
-  CoinsStackedIcon,
-  InfoCircleWhite,
-  ReverseIcon,
-} from '@/svgs'
+
+import BackRevertIcon from '~/svgs/backRevert.svg'
+import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import ReverseIcon from '~/svgs/reverse.svg'
 
 function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSizeChange, className = '' }) {
   const [showPageSizeOptions, setShowPageSizeOptions] = useState(false)
@@ -150,7 +148,7 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
         })}
         {/* Next Button */}
         <TextIconButton
-          Icon={ArrowRightIcon}
+          Icon={ArrowLeftIcon}
           className='size-8'
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
@@ -165,7 +163,7 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
           type='button'
         >
           {pageSize}
-          <ChevronDownIcon className={cn('size-4', showPageSizeOptions && 'rotate-180')} />
+          <ChevronDownIcon isRevert={showPageSizeOptions} />
         </button>
         {showPageSizeOptions && (
           <ul
@@ -303,7 +301,7 @@ function TransactionMobile({
         ) : (
           <div className='flex flex-col items-center justify-center py-8 text-center'>
             <Highlight>
-              <InfoCircleWhite className='h-4 w-4' />
+              <InfoIcon className='stroke-neutral-50' />
             </Highlight>
             <TextHeading className='text-neutral-400'>{t('No transactions found')}</TextHeading>
           </div>

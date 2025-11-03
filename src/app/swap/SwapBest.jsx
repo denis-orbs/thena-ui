@@ -24,12 +24,15 @@ import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
 import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
-import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
-import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
 import Spinner from '@/components/spinner'
+import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
+import InfoIcon from '@/icons/InfoIcon'
+
+import RefreshIcon from '~/svgs/refresh.svg'
+import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 
 const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
   ssr: false,
@@ -458,7 +461,7 @@ export default function SwapBest({
                   </div>
                   {priceImpact > 5 && (
                     <Alert>
-                      <InfoIcon className='stroke-error-600 h-4 w-4' />
+                      <InfoIcon className='stroke-error-600' />
                       <p>{t('Price impact too high')}</p>
                     </Alert>
                   )}

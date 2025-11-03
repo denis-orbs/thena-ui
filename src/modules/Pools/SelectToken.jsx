@@ -13,9 +13,10 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import WarningIcon from '@/icons/WarningIcon'
 import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
-import { ChevronDownIcon, WarningTriangleIcon } from '@/svgs'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 
@@ -236,10 +237,7 @@ function SelectToken({
             TrailingIcon={
               !isDisabled && (
                 <ChevronDownIcon
-                  className={cn(
-                    'transform cursor-pointer transition-all duration-150 ease-out',
-                    open ? 'rotate-180' : 'rotate-0',
-                  )}
+                  isRevert={open}
                   onMouseDown={e => {
                     e.preventDefault()
                     setOpen(!open)
@@ -328,7 +326,7 @@ function SelectToken({
       </div>
       {isError && (
         <p className='text-error-500 mt-1 mb-2 flex gap-1'>
-          <WarningTriangleIcon className='h-5 w-5' />
+          <WarningIcon className='size-5' />
           <span>{errorMessage}</span>
         </p>
       )}

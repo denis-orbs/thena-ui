@@ -7,7 +7,10 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
-import { ArrowForwardSmallIcon, CheckPurpleLargeIcon, StarLineLargeIcon } from '@/svgs'
+
+import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
+import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
+import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 
 const BASE_DAILY_SWAP_POINT = 10
 

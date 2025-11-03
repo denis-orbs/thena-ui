@@ -2,7 +2,6 @@ import Image from 'next/image'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn, formatAmount, rewriteS3Host } from '@/lib/utils'
-import { LogoFooterIcon, LogoIcon } from '@/svgs'
 
 function BoxShow({ value, title, className }) {
   return (
@@ -73,8 +72,8 @@ function ImagePreview({
         )}
       </div>
       <div className='absolute bottom-0 left-0 flex w-full justify-between px-10 py-9'>
-        <LogoIcon className='h-7 w-30' />
-        <LogoFooterIcon className='h-6 w-[118px]' />
+        <Image src='/logo.svg' className='h-7 w-30' />
+        <Image src='/svgs/logo-footer-thena.svg' className='h-6 w-[118px]' />
       </div>
     </>
   )

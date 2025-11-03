@@ -1,8 +1,10 @@
+import Image from 'next/image'
 import { useRef } from 'react'
 
 import { useFixViewport } from '@/hooks/useFixViewPort'
 import { cn } from '@/lib/utils'
-import { LogoIcon, ThenaFiLinkIcon } from '@/svgs'
+
+import LogoIcon from '~/logo.svg'
 
 export default function PreviewCanvas({ children, background }) {
   const parentRef = useRef(null)
@@ -46,7 +48,7 @@ export default function PreviewCanvas({ children, background }) {
         <div className='flex items-center justify-center'>{children}</div>
         <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
           <LogoIcon className='h-8 w-auto' />
-          <ThenaFiLinkIcon className='h-4 w-auto' />
+          <Image src='/svgs/thena-fi-link.svg' className='h-4 w-auto' />
         </div>
       </div>
     </>

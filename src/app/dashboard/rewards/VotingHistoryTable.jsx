@@ -11,11 +11,11 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { LOCALES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { usePools } from '@/state/pools/hooks'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -212,10 +212,7 @@ export default function VotingHistoryTable({ userVotes }) {
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(calRewardUsd(vote.rewards))}</Paragraph>
             {vote.rewards?.length > 0 && (
               <>
-                <InfoIcon
-                  className='size-4 stroke-neutral-400'
-                  data-tooltip-id={`my-reward-${vote.tokenId}-${vote.pool?.address}`}
-                />
+                <InfoIcon data-tooltip-id={`my-reward-${vote.tokenId}-${vote.pool?.address}`} />
                 <CustomTooltip id={`my-reward-${vote.tokenId}-${vote.pool?.address}`}>
                   {(vote.rewards || []).every(item => +item.amount === 0) ? (
                     <>
@@ -268,7 +265,7 @@ export default function VotingHistoryTable({ userVotes }) {
       ) : (
         <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
           <Highlight>
-            <InfoCircleWhite className='h-4 w-4' />
+            <InfoIcon className='stroke-neutral-50' />
           </Highlight>
           <div className='flex flex-col items-center gap-3'>
             <h2>{t('No voting history')}</h2>

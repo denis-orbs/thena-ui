@@ -16,6 +16,7 @@ import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import usePrevious from '@/hooks/usePrevious'
+import InfoIcon from '@/icons/InfoIcon'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
@@ -24,7 +25,6 @@ import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
-import { InfoIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -252,7 +252,7 @@ function ManualItem({ position, isXlDown }) {
           <TextHeading>${formatAmount(position.fiatValueOfLiquidity)}</TextHeading>
           {renderTokenValue && (
             <>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+              <InfoIcon data-tooltip-id={`value-${position.positionId}`} />
               <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
             </>
           )}

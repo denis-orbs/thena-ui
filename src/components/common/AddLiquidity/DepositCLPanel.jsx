@@ -5,9 +5,9 @@ import React, { useState } from 'react'
 import AddLiquidityCLPane from '@/app/pools/(add-liquidity)/add-liquidity/ClPool/AddLiquidityCLPane'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
-import { InfoIcon } from '@/svgs'
 
 export function PoolAttributes({ pair, strategy, classNames }) {
   const t = useTranslations()
@@ -29,7 +29,7 @@ export function PoolAttributes({ pair, strategy, classNames }) {
               show ? 'bg-neutral-600' : 'bg-neutral-800',
             )}
           >
-            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+            <InfoIcon className='md:size-5' />
           </i>
         </div>
       </div>

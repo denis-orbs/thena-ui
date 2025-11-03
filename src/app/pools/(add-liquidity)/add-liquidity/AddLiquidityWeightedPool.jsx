@@ -8,7 +8,8 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
 import { tokensSelected } from '@/state/weightedPool/action'
-import { ScalesIcon } from '@/svgs'
+
+import ScalesIcon from '~/svgs/scales.svg'
 
 function AddLiquidityWeightedPool({ setCurrentStep }) {
   const t = useTranslations()

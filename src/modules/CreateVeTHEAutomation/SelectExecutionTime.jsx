@@ -5,8 +5,8 @@ import React, { useState } from 'react'
 
 import DateInput from '@/components/input/DateInput'
 import { Paragraph, TextHeading } from '@/components/typography'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 const week = 86400 * 7 * 1000
 const HOUR = 3600 * 1000
@@ -75,7 +75,7 @@ function SelectExecutionTime({ executionTime, updateData }) {
                 show ? 'bg-neutral-600' : 'bg-neutral-900',
               )}
             >
-              <InfoIcon className='size-4 stroke-neutral-400' />
+              <InfoIcon />
             </i>
           </div>
         </div>

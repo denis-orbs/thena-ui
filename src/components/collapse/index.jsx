@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { ChevronDownIcon } from '@/svgs'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 
 import Divider from '../divider'
 

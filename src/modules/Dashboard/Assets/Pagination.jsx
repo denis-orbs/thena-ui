@@ -1,8 +1,10 @@
 import React from 'react'
 
 import Dropdown from '@/components/dropdown'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { cn } from '@/lib/utils'
-import { ArrowLeftIcon, ArrowRightIcon, PoolCoinsIcon } from '@/svgs'
+
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 
 function PaginateButton({ children, onClick, disabled, active, className }) {
   return (
@@ -49,7 +51,7 @@ function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, set
                 'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
             )}
           >
-            <ArrowLeftIcon className='size-4' />
+            <ArrowLeftIcon />
           </PaginateButton>
           {totalPages < 6 &&
             new Array(totalPages).fill(0).map((item, idx) => (
@@ -135,7 +137,7 @@ function Pagination({ currentPage, setCurrentPage, totalPages, itemsPerPage, set
                 'cursor-not-allowed hover:bg-inherit active:outline-hidden active:outline-transparent',
             )}
           >
-            <ArrowRightIcon className='size-4' />
+            <ArrowLeftIcon className='rotate-180' />
           </PaginateButton>
         </div>
       )}

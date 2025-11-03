@@ -19,6 +19,8 @@ import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
+import InfoIcon from '@/icons/InfoIcon'
+import WarningIcon from '@/icons/WarningIcon'
 import {
   cn,
   formatAmount,
@@ -33,7 +35,6 @@ import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon, WarningTriangleIcon } from '@/svgs'
 
 import APR from './APR'
 import Range from './Range'
@@ -274,7 +275,7 @@ function NotStakedItem({ position, isXlDown }) {
                     )}
                   >
                     <div className='flex items-center gap-2 text-xs'>
-                      <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                      <WarningIcon />
                       <span className='text-error-100'>{t('This is Idle')}</span>
                     </div>
                     <ErrorButton
@@ -310,7 +311,7 @@ function NotStakedItem({ position, isXlDown }) {
                   )}
                 >
                   <div className='flex items-center gap-2 text-xs'>
-                    <WarningTriangleIcon className='stroke-error-600 h-4 w-4' />
+                    <WarningIcon />
                     <span className='text-error-100'>{t('This is Idle')}</span>
                   </div>
                   <ErrorButton
@@ -377,7 +378,7 @@ function NotStakedItem({ position, isXlDown }) {
             <TextHeading>${formatAmount(position.account.totalUsd.minus(position.account.stakedUsd))}</TextHeading>
             {renderTokenValue && (
               <>
-                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`value-${position.positionId}`} />
+                <InfoIcon data-tooltip-id={`value-${position.positionId}`} />
                 <CustomTooltip id={`value-${position.positionId}`}>{renderTokenValue}</CustomTooltip>
               </>
             )}
@@ -397,10 +398,7 @@ function NotStakedItem({ position, isXlDown }) {
           <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
           {feesInUsd.gt(0) && (
             <>
-              <InfoIcon
-                className='h-4 w-4 stroke-neutral-400 max-xl:hidden'
-                data-tooltip-id={`not-stake-${position.address}`}
-              />
+              <InfoIcon className='max-xl:hidden' data-tooltip-id={`not-stake-${position.address}`} />
               <CustomTooltip id={`not-stake-${position.address}`}>
                 {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${position.token0.symbol}`}</p>}
                 {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${position.token1.symbol}`}</p>}

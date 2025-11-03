@@ -9,9 +9,12 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { SCAN_URLS } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
+import CheckIcon from '@/icons/CheckIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { CheckIcon, CopyArenaIcon, InfoCircleWhite } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
 
 const sortOptions = [
   {
@@ -114,7 +117,7 @@ function HistoryContract({ histories }) {
       ) : (
         <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
           <Highlight>
-            <InfoCircleWhite className='h-4 w-4' />
+            <InfoIcon className='stroke-neutral-50' />
           </Highlight>
           <div className='flex flex-col items-center gap-3'>
             <h2>{t('No History Found')}</h2>

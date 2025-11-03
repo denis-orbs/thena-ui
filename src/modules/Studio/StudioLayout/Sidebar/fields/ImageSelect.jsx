@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 function ImageSelect({ options, selectedOption, setSelectedOption }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -53,7 +53,7 @@ function ImageSelect({ options, selectedOption, setSelectedOption }) {
               <span className='text-sm text-gray-300'>Select an option</span>
             )}
           </div>
-          <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDownIcon className='h-4 w-4' isRevert={isOpen} />
         </EmphasisButton>
       )}
 

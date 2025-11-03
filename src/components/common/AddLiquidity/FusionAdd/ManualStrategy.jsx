@@ -9,11 +9,13 @@ import Input from '@/components/input'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { FusionRangeType, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
+import WarningIcon from '@/icons/WarningIcon'
 import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { TransferIcon, WarningTriangleYellowIcon } from '@/svgs'
+
+import TransferIcon from '~/svgs/switch-horizontal.svg'
 
 import WarningStartingPrice from '../components/WarningStartingPrice'
 
@@ -152,7 +154,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, position, isEarnFee
         {position && position.outOfRange ? (
           <div className={cn('border-warn-900 bg-warn-950 flex gap-4 rounded-lg border px-5 py-4 max-sm:mt-4 xl:mb-2')}>
             <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
-              <WarningTriangleYellowIcon className='stroke-warn-600 size-full' />
+              <WarningIcon className='stroke-warn-600 size-full' />
             </div>
             <div className='flex flex-col gap-1'>
               <NewTextHeading className='text-warn-100 text-xl! font-medium'>{t('OUT OF RANGE')}</NewTextHeading>

@@ -14,11 +14,11 @@ import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
 
 import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
@@ -378,7 +378,7 @@ export function StrategyTitle({
               show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+            <InfoIcon className='md:size-5' />
           </i>
         </div>
         <div className={cn(!hasToggle && 'hidden')}>

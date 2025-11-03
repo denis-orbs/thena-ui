@@ -22,7 +22,8 @@ import { getVeTHEContract } from '@/lib/contracts'
 import { fetchStats } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
-import { ExternalIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
 
 import VotingChart from '../Chart/VotingChart'
 import SectionDivider from '../SectionDivider'

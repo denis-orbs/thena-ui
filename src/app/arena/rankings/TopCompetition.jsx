@@ -17,7 +17,10 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
-import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+
+import FirstPrizeIcon from '~/svgs/first-prize.svg'
+import SecondPrizeIcon from '~/svgs/second-prize.svg'
+import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 
 import MenuTab from './MenuTab'
 

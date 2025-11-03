@@ -6,7 +6,7 @@ import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
-import { InfoNeutralIcon } from '@/svgs'
+import InfoIcon from '@/icons/InfoIcon'
 
 function ItemLoading() {
   return (
@@ -25,7 +25,7 @@ function StatsItem({ title, value, tooltip = null, tooltipId = 'test' }) {
         {title}
         {tooltip && (
           <>
-            <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id={tooltipId} />
+            <InfoIcon className='ml-1' data-tooltip-id={tooltipId} />
             <CustomTooltip
               className='z-50 max-w-[320px] min-w-[136px] bg-neutral-500! shadow-xl after:bg-neutral-500!'
               id={tooltipId}

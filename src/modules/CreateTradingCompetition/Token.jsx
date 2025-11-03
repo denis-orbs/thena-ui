@@ -16,8 +16,8 @@ import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useTC } from '@/context/tcContext'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -249,7 +249,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               type='button'
             >
               <InfoIcon
-                className={`absolute top-1 right-1 h-4 w-4 ${!depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 ${!depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='deposit-type-free'
               />
               {t('Free')}
@@ -276,7 +276,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }}
             >
               <InfoIcon
-                className={`absolute top-1 right-1 h-4 w-4 ${depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 ${depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='deposit-type-fixed'
               />
               {t('Fixed')}
@@ -425,7 +425,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }}
             >
               <InfoIcon
-                className={`absolute top-1 right-1 h-4 w-4 ${winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 ${winType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='win-type-pnl'
               />
               {t('%PNL')}
@@ -450,7 +450,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               type='button'
             >
               <InfoIcon
-                className={`absolute top-1 right-1 h-4 w-4 ${!winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                className={`absolute top-1 right-1 ${!winType ? 'stroke-white' : 'stroke-neutral-400'}`}
                 data-tooltip-id='win-type-amount'
               />
               {t('Amount')}

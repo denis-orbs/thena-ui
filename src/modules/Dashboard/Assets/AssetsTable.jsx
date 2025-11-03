@@ -6,9 +6,9 @@ import NewSearchInput from '@/components/input/NewSearchInput'
 import { TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import useWallet from '@/hooks/useWallet'
+import ArrowDownIcon from '@/icons/ArrowDownIcon'
 import { cn, formatNumber } from '@/lib/utils'
 import { calculateManualAPR } from '@/state/fusion/utils'
-import { ArrowDownIcon } from '@/svgs'
 
 import FarmingItem from './FarmingItem'
 import ManualItem from './ManualItem'
@@ -96,7 +96,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
                   {sort.value === column.value && !column.disabled && (
                     <ArrowDownIcon
                       className={cn(
-                        'transfrom size-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                        'transfrom transition-all duration-150 ease-out',
                         sort.isDesc ? 'rotate-0' : 'rotate-180',
                       )}
                     />
