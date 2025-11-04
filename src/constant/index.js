@@ -236,16 +236,11 @@ export const STABLE_TOKENS = {
 
 export const DoubleRewarders = {
   [CHAIN_ID.BSC]: [
-    {
-      pairAddress: '0x2b3510f57365aa17bff8e6360ea67c136175dc6d',
-      doubleRewarderAddress: '0xA7266B2303725F731851dfE944a432f8A2EA5c9c',
-      doubleRewarderSymbol: 'PSTAKE',
-    },
-    {
-      pairAddress: '0x3765476bffe43cf4c0656bf3a7529c54ae247056',
-      doubleRewarderAddress: '0x28BB19EAFB1f637ECC754f458f9d415b00287AF7',
-      doubleRewarderSymbol: 'liveTHE',
-    },
+    // {
+    //   pairAddress: '0x3765476bffe43cf4c0656bf3a7529c54ae247056',
+    //   doubleRewarderAddress: '0x28BB19EAFB1f637ECC754f458f9d415b00287AF7',
+    //   doubleRewarderSymbol: 'liveTHE',
+    // },
   ],
   [CHAIN_ID.OPBNB]: [],
   97: [],

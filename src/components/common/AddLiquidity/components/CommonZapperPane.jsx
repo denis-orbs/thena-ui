@@ -27,7 +27,7 @@ import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import WarningZapper from './WarningZapper'
 
 const getZapAddress = (strategy, chainId) => {
-  if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.gammaZap[chainId], isV1: false }
+  if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.GammaZap[chainId], isV1: false }
   if (strategy.type === PAIR_TYPES.CLASSIC) {
     return { address: Contracts.classicZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
   }

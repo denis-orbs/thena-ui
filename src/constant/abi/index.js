@@ -1,29 +1,12 @@
-import veTheAutomationAbi from './automation/veTheAutomation.json'
-import veTheAutomationFactoryAbi from './automation/veTheAutomationFactory.json'
 import ERC20Abi from './erc20.json'
-import extraRewarderAbi from './extraRewarder.json'
-import factoryAbi from './factory.json'
-import farmCenterAbi from './farmCenter.json'
 import ichiVaultV3 from './fusion/ichiVaultV3.json'
-import gammaZapAbi from './gammaZap.json'
-import gaugeAbi from './gauge.json'
-import gaugeV3Abi from './gaugeV3.json'
-import globalFactoryAbi from './globalFactory.json'
-import hypervisorMFDAbi from './hypervisorMFD.json'
-import ichiMFDAbi from './ichiMFD.json'
-import incentiveMakerAbi from './incentiveMaker.json'
-import linkTokenAbi from './linkToken.json'
-import MFDFactoryAbi from './MFDFactory.json'
+import { GaugeABI } from './GaugeABI'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
 import emojiClubAbi from './mint/emojiClub.json'
 import emojiNumeralAbi from './mint/emojiNumeral.json'
 import hindiNumeralAbi from './mint/hindiNumeral.json'
 import numeralAbi from './mint/numeral.json'
-import minterAbi from './minter.json'
-import multiCallAbi from './multiCall.json'
-import multiFeeDistributionAbi from './multiFeeDistribution.json'
-import muonAbi from './muon.json'
 import nonfungiblePositionManagerV2Abi from './nonfungiblePositionManagerv2.json'
 import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json'
 import pairAbi from './pair.json'
@@ -58,24 +41,9 @@ export {
   emojiClubAbi,
   emojiNumeralAbi,
   ERC20Abi,
-  extraRewarderAbi,
-  factoryAbi,
-  farmCenterAbi,
-  gammaZapAbi,
-  gaugeAbi,
-  gaugeV3Abi,
-  globalFactoryAbi,
+  GaugeABI,
   hindiNumeralAbi,
-  hypervisorMFDAbi,
-  ichiMFDAbi,
   ichiVaultV3,
-  incentiveMakerAbi,
-  linkTokenAbi,
-  MFDFactoryAbi,
-  minterAbi,
-  multiCallAbi,
-  multiFeeDistributionAbi,
-  muonAbi,
   nonfungiblePositionManagerV2Abi,
   nonfungiblePositionManagerV3Abi,
   numeralAbi,
@@ -91,8 +59,6 @@ export {
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
-  veTheAutomationAbi,
-  veTheAutomationFactoryAbi,
   voterAbi,
   voterV2Abi,
   votingIncentivesAbi,

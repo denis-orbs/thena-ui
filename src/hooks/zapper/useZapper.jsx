@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import gammaZapAbi from '@/constant/abi/gammaZap.json'
+import { GammaZapABI } from '@/constant/abi/GammaZapABI'
 import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -645,7 +645,7 @@ export const useGammaZapper = () => {
           throw new Error('Please connect your wallet')
         }
 
-        const zapAddress = Contracts.gammaZap[chainId]
+        const zapAddress = Contracts.GammaZap[chainId]
         const wrapId = uuidv4()
         const key = uuidv4()
         const approveId = uuidv4()
@@ -713,7 +713,7 @@ export const useGammaZapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: gammaZapAbi,
+              abi: GammaZapABI,
             },
             'zapInOdos',
             [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams, gammaSlippage, true],
@@ -724,7 +724,7 @@ export const useGammaZapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: gammaZapAbi,
+              abi: GammaZapABI,
             },
             'zapIn',
             [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress, gammaSlippage, true],

@@ -4,10 +4,11 @@ import { ChainId } from 'thena-sdk-core/dist'
 import { formatEther } from 'viem'
 
 import { DoubleRewarders } from '@/constant'
-import extraRewarderAbi from '@/constant/abi/extraRewarder.json'
+import { ExtraRewarderABI } from '@/constant/abi/ExtraRewarderABI'
+import { MinterABI } from '@/constant/abi/MinterABI'
+import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getMinterContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -23,7 +24,7 @@ export const useExtraRewardsInfo = () => {
       const stops = await callMulti(
         rewarders.map(pool => ({
           address: pool.doubleRewarderAddress,
-          abi: extraRewarderAbi,
+          abi: ExtraRewarderABI,
           functionName: 'stop',
           chainId: networkId,
         })),
@@ -37,7 +38,7 @@ export const useExtraRewardsInfo = () => {
       const rewardRates = await callMulti(
         activeRewarders.map(pool => ({
           address: pool.doubleRewarderAddress,
-          abi: extraRewarderAbi,
+          abi: ExtraRewarderABI,
           functionName: 'rewardPerSecond',
           chainId: networkId,
         })),
@@ -47,7 +48,7 @@ export const useExtraRewardsInfo = () => {
         pendingRewards = await callMulti(
           activeRewarders.map(pool => ({
             address: pool.doubleRewarderAddress,
-            abi: extraRewarderAbi,
+            abi: ExtraRewarderABI,
             functionName: 'pendingReward',
             args: [account],
             chainId: networkId,
@@ -76,7 +77,10 @@ export const useVoteEmissions = () => {
 
   useEffect(() => {
     const fetchSupply = async () => {
-      const minterContract = getMinterContract()
+      const minterContract = {
+        address: Contracts.Minter[networkId],
+        abi: MinterABI,
+      }
       const weekly_emission = await readCall(minterContract, 'weekly_emission')
       const lpEmissionRes = fromWei(weekly_emission).times(0.675)
       setVoteEmissions(lpEmissionRes.times(prices.THE).div(100))

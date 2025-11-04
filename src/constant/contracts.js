@@ -32,7 +32,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B',
     [CHAIN_ID.OPBNB]: '0xD6f6e27e96535749587Ac77bfc83607A743e765f',
   },
-  factory: {
+  SolidlyFactory: {
     [CHAIN_ID.BSC]: '0xAFD89d21BdB66d00817d4153E055830B1c2B3970',
   },
   veTHE: {
@@ -47,7 +47,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x8FBB1ECEbb9E9839bC0dE00b9c4C585CabDD0462',
     [CHAIN_ID.TEST_BSC]: '0x2e974a81F68eAFA2A197A3A6eb6e75949504524E',
   },
-  minter: {
+  Minter: {
     [CHAIN_ID.BSC]: '0x86069FEb223EE303085a1A505892c9D4BdBEE996',
     [CHAIN_ID.TEST_BSC]: '0x880a58766cd15139bA816a57197f7393D97D6628',
   },
@@ -108,7 +108,7 @@ const Contracts = {
   stableZap: {
     [CHAIN_ID.BSC]: '0x25c1b34d6f2647485f6e348c2152d076fcb4f51e',
   },
-  gammaZap: {
+  GammaZap: {
     [CHAIN_ID.BSC]: '0x6d391cf13c4c36ce1dade405f4eb667b93d7f991',
   },
   gammaUniProxy: {
@@ -152,7 +152,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xd2D64e094D37dD7D7759603fB9ed6b2306D1e5b2',
     [CHAIN_ID.TEST_BSC]: '0x02308f4455CD6d2109092c7903D1ed843440e1F7',
   },
-  globalFactory: {
+  GlobalFactory: {
     [CHAIN_ID.BSC]: '0x247009C6F39bC08d5d39ac38c9D5a0D316947D9C',
     [CHAIN_ID.TEST_BSC]: '0x4C9498aB0639A7aa67bCaB0dDac3C73B7212CA7B',
   },
@@ -184,11 +184,11 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x6F866dFb4eC07864807217c48E4Ff58b137C15a7',
     [CHAIN_ID.TEST_BSC]: '0xbBEA218F6E61f36a2a98eC342100b1E73D60CBb6',
   },
-  farmingCenter: {
+  FarmingCenter: {
     [CHAIN_ID.BSC]: '0x0cd53EeB75D72EE0E3e64206b63d7204351d08Bf',
     [CHAIN_ID.TEST_BSC]: '0x198DAb4B4E03f9f3f44e605d567b15bB72138a14',
   },
-  incentiveMaker: {
+  IncentiveMaker: {
     [CHAIN_ID.BSC]: '0x80ad2f2Ed4F00b152D7cA5E74920c944BFEF0701',
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
