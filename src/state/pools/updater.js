@@ -17,18 +17,17 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import {
-  factoryAbi,
-  gaugeV3Abi,
-  hypervisorMFDAbi,
-  ichiMFDAbi,
-  ichiVaultV3,
-  MFDFactoryAbi,
-  pairAbi,
-  pairAPIAbi,
-  voterAbi,
-} from '@/constant/abi'
-import { gammaHypervisorAbiV3, ichiVaultAbi } from '@/constant/abi/fusion'
+import factoryAbi from '@/constant/abi/factory.json'
+import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
+import gaugeV3Abi from '@/constant/abi/gaugeV3.json'
+import hypervisorMFDAbi from '@/constant/abi/hypervisorMFD.json'
+import ichiMFDAbi from '@/constant/abi/ichiMFD.json'
+import MFDFactoryAbi from '@/constant/abi/MFDFactory.json'
+import pairAbi from '@/constant/abi/pair.json'
+import pairAPIAbi from '@/constant/abi/pairAPI.json'
+import voterAbi from '@/constant/abi/voter.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'

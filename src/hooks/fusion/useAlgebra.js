@@ -7,7 +7,7 @@ import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
 import { TXN_STATUS } from '@/constant'
-import { pluginFactoryAbi } from '@/constant/abi'
+import pluginFactoryAbi from '@/constant/abi/pluginFactoryAbi.json'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'

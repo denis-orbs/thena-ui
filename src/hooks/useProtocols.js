@@ -3,9 +3,10 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { BribeABI } from '@/constant/abi/BribeABI'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getBribeContract, getERC20Contract, getGlobalFactoryContract } from '@/lib/contracts'
+import { getERC20Contract, getGlobalFactoryContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -124,7 +125,10 @@ export const useBribeAdd = () => {
         }
       }
 
-      const bribeContract = getBribeContract(bribeAddress, chainId)
+      const bribeContract = {
+        address: bribeAddress,
+        abi: BribeABI,
+      }
       const txHash = await writeTxn(key, bribeuuid, bribeContract, 'notifyRewardAmountForMultipleEpoch', [
         asset.address,
         Object.values(amounts).map(val => toWei(val, asset.decimals).toFixed(0)),

@@ -1,17 +1,9 @@
-import algebraFactoryAbi from './algebraFactoryAbi.json'
 import veTheAutomationAbi from './automation/veTheAutomation.json'
 import veTheAutomationFactoryAbi from './automation/veTheAutomationFactory.json'
-import basePluginAbi from './basePluginAbi.json'
-import bribeAbi from './bribe.json'
-import claimerAbi from './claimer.json'
-import dibsAbi from './dibs.json'
-import dibsLotteryAbi from './dibsLottery.json'
-import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
 import farmCenterAbi from './farmCenter.json'
-import algebraPoolV3Abi from './fusion/AlgebraPoolV3.json'
 import ichiVaultV3 from './fusion/ichiVaultV3.json'
 import gammaZapAbi from './gammaZap.json'
 import gaugeAbi from './gauge.json'
@@ -41,7 +33,6 @@ import rewardEarnedAbi from './rewardEarned.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
-import testnetClaimerAbi from './testnet-claimer.json'
 import ThenianAbi from './thenian.json'
 import vammZapAbi from './vammZap.json'
 import veDistAbi from './veDist.json'
@@ -61,16 +52,8 @@ import weightedPoolFactoryAbi from './weighted-pool/weightedPoolFactory.json'
 import weightedPoolFeesAbi from './weighted-pool/weightedPoolFees.json'
 
 export {
-  algebraFactoryAbi,
-  algebraPoolV3Abi,
   arabicAbi,
-  basePluginAbi,
-  bribeAbi,
   characterSetAbi,
-  claimerAbi,
-  dibsAbi,
-  dibsLotteryAbi,
-  dibsRewarderAbi,
   emergencyRouterAbi,
   emojiClubAbi,
   emojiNumeralAbi,
@@ -103,7 +86,6 @@ export {
   routerAbi,
   royaltyAbi,
   stakingAbi,
-  testnetClaimerAbi,
   ThenianAbi,
   vammZapAbi,
   veDistAbi,

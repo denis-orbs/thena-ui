@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import { nonfungiblePositionManagerV2Abi } from '@/constant/abi'
+import nonfungiblePositionManagerV2Abi from '@/constant/abi/nonfungiblePositionManagerv2.json'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'

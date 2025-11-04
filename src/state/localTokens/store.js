@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { getAddress } from 'viem'
+import { erc20Abi, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { ERC20Abi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
 import { getTokenCurrentUSDPrice } from '@/modules/SwapChart/fetch'
@@ -40,7 +39,7 @@ export const useLocalTokens = () => {
 
   const { data: balances } = useReadContracts({
     contracts: localTokens.map(token => ({
-      abi: ERC20Abi,
+      abi: erc20Abi,
       address: token.address,
       functionName: 'balanceOf',
       args: [account],

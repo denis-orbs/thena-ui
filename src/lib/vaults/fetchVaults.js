@@ -1,4 +1,5 @@
-import { gaugeSimpleAbi, ichiVaultAbi } from '@/constant/abi/fusion'
+import gaugeSimpleAbi from '@/constant/abi/fusion/gaugeSimple.json'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
 import { callMulti } from '../contractActions'

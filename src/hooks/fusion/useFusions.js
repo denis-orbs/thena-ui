@@ -5,12 +5,12 @@ import { computePoolAddress, Pool } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { algebraFactoryAbi } from '@/constant/abi'
-import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
+import { AlgebraFactoryABI } from '@/constant/abi/AlgebraFactoryABI'
+import newPoolAbi from '@/constant/abi/fusion/newPool.json'
+import poolAbi from '@/constant/abi/fusion/pool.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getAlgebraFactoryContract } from '@/lib/contracts'
 
 import { getCurrency, useGetAssetFn } from './Tokens'
 import useWallet from '../useWallet'
@@ -38,7 +38,7 @@ const fetchPoolAddress = async (transformed, version = 3) => {
       .filter(value => !!value)
       .map(value => ({
         address: version === 2 ? Contracts.algebraFactoryV2[_networkId] : Contracts.algebraFactoryV3[_networkId],
-        abi: algebraFactoryAbi,
+        abi: AlgebraFactoryABI,
         functionName: 'computePoolAddress',
         args: [value[0]?.address, value[1]?.address],
         _networkId,
@@ -131,9 +131,9 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
       : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
   }
 
-  const algebraContract = getAlgebraFactoryContract(chainId, version)
   const { data: poolAddress } = useReadContract({
-    ...algebraContract,
+    address: version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+    abi: AlgebraFactoryABI,
     functionName,
     args,
     query: {
@@ -202,7 +202,10 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
       : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
   }
 
-  const algebraContract = getAlgebraFactoryContract(chainId, version)
+  const algebraContract = {
+    address: version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+    abi: AlgebraFactoryABI,
+  }
   let poolAddress
   if (!!token0?.address && !!token1?.address && !!chainId) {
     poolAddress = await readCall(algebraContract, functionName, [...args], chainId)
@@ -337,7 +340,8 @@ export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
         const isFarmingPool = pool.deployer === zeroAddress
 
         return {
-          ...getAlgebraFactoryContract(chainId, pool.version), // algebraContract,
+          address: pool.version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+          abi: AlgebraFactoryABI,
           functionName:
             pool.version === 2
               ? 'poolByPair'

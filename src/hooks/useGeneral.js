@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core/dist'
 import { formatEther } from 'viem'
 
 import { DoubleRewarders } from '@/constant'
-import { extraRewarderAbi } from '@/constant/abi'
+import extraRewarderAbi from '@/constant/abi/extraRewarder.json'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getMinterContract } from '@/lib/contracts'

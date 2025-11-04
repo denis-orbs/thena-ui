@@ -1,11 +1,11 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
+import { AlgebraFactoryABI } from '@/constant/abi/AlgebraFactoryABI'
+import { BasePluginABI } from '@/constant/abi/BasePluginABI'
+import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { getAlgebraFactoryContract } from '@/lib/contracts'
-
-import useWallet from '../useWallet'
+import { useChainSettings } from '@/state/settings/hooks'
 
 /**
  * usePoolAlgebraInfo Hook
@@ -19,14 +19,18 @@ import useWallet from '../useWallet'
  *   - incentiveAddress: The address of the incentive contract associated with the pool.
  */
 export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true) => {
-  const { chainId } = useWallet()
+  const { networkId } = useChainSettings()
   const currency0 = useCurrency(token0Address)
   const currency1 = useCurrency(token1Address)
   const [baseCurrency, quoteCurrency] = currency0?.wrapped?.sortsBefore(currency1?.wrapped)
     ? [currency0?.wrapped, currency1?.wrapped]
     : [currency1?.wrapped, currency0?.wrapped]
 
-  const algebraFactory = getAlgebraFactoryContract(chainId, 3)
+  const algebraFactory = {
+    address: Contracts.algebraFactoryV3[networkId],
+    abi: AlgebraFactoryABI,
+  }
+
   const { data: poolAddresses } = useReadContracts({
     contracts: [
       {
@@ -37,7 +41,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
       {
         ...algebraFactory,
         functionName: 'computeCustomPoolAddress',
-        args: [Contracts.pluginFactory[chainId], baseCurrency?.address, quoteCurrency?.address],
+        args: [Contracts.pluginFactory[networkId], baseCurrency?.address, quoteCurrency?.address],
       },
     ],
     query: {
@@ -51,7 +55,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
 
   const { data: pluginAddress } = useReadContract({
     address: poolAddress,
-    abi: algebraPoolV3Abi,
+    abi: AlgebraPoolV3ABI,
     functionName: 'plugin',
     query: {
       enabled: !!poolAddress,
@@ -61,7 +65,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
 
   const { data: incentiveAddress } = useReadContract({
     address: pluginAddress,
-    abi: basePluginAbi,
+    abi: BasePluginABI,
     functionName: 'incentive',
     query: {
       enabled: !!pluginAddress,
@@ -76,9 +80,12 @@ const POOLS_ADMINISTRATOR_ROLE = '0xb73ce166ead2f8e9add217713a7989e4edfba9625f71
 const PLUGIN_FACTORY_ADMINISTRATOR = '0x267da724c255813ae00f4522fe843cb70148a4b8099cbc5af64f9a4151e55ed6'
 
 export const useGetAdministrator = () => {
-  const { chainId } = useWallet()
+  const { networkId } = useChainSettings()
 
-  const algebraFactory = getAlgebraFactoryContract(chainId, 3)
+  const algebraFactory = {
+    address: Contracts.algebraFactoryV3[networkId],
+    abi: AlgebraFactoryABI,
+  }
 
   const { data: roleMemberCounts } = useReadContracts({
     contracts: [

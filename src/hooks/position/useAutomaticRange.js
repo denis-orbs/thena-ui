@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import useSWR from 'swr'
 
 import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import { gammaHypervisorAbi, gammaHypervisorAbiV3, ichiVaultAbi, ichiVaultAbiV3 } from '@/constant/abi/fusion'
+import gammaHypervisorAbi from '@/constant/abi/fusion/gammaHypervisor.json'
+import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import ichiVaultAbiV3 from '@/constant/abi/fusion/ichiVaultV3.json'
 import { callMulti } from '@/lib/contractActions'
 
 const strategyAbi = {

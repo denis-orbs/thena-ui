@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { gammaZapAbi, vammZapAbi } from '@/constant/abi'
+import gammaZapAbi from '@/constant/abi/gammaZap.json'
+import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {

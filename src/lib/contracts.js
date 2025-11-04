@@ -1,11 +1,6 @@
 import { ChainId } from 'thena-sdk-core'
 
 import {
-  algebraFactoryAbi,
-  bribeAbi,
-  claimerAbi,
-  dibsAbi,
-  dibsLotteryAbi,
   dibsRewarderAbi,
   emergencyRouterAbi,
   ERC20Abi,
@@ -18,14 +13,12 @@ import {
   minterAbi,
   multiCallAbi,
   multiFeeDistributionAbi,
-  muonAbi,
   nonfungiblePositionManagerV2Abi,
   nonfungiblePositionManagerV3Abi,
   pairAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
-  testnetClaimerAbi,
   ThenianAbi,
   veDistAbi,
   veTHEAbi,
@@ -67,7 +60,7 @@ import {
   ichiVaultAbiV3,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
-import Contracts, { CHAIN_ID } from '@/constant/contracts'
+import Contracts from '@/constant/contracts'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
@@ -83,8 +76,6 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
   ************************************************************************************************** */
 
 export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
-
-export const getTheContract = chainId => getContract(ERC20Abi, Contracts.THE, chainId)
 
 export const getWBNBContract = chainId => getContract(wbnbAbi, Contracts.WBNB, chainId)
 
@@ -118,8 +109,6 @@ export const getVotingIncentivesContract = (address, chainId) => getContract(vot
 
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 
-export const getBribeContract = (address, chainId) => getContract(bribeAbi, address, chainId)
-
 export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 
 export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi, Contracts.globalFactory, chainId)
@@ -132,15 +121,6 @@ export const getTheNftContract = () => getContract(ThenianAbi, Contracts.theNFT,
 export const getNftStakingContract = () => getContract(stakingAbi, Contracts.nftStaking, ChainId.BSC)
 
 export const getRoyaltyContract = () => getContract(royaltyAbi, Contracts.royalty, ChainId.BSC)
-
-/** **************************************************************************************************
-                                          DIBS
- ************************************************************************************************** */
-export const getDibsContract = () => getContract(dibsAbi, Contracts.dibs, ChainId.BSC)
-
-export const getDibsLotteryContract = () => getContract(dibsLotteryAbi, Contracts.dibsLottery, ChainId.BSC)
-
-export const getMuonContract = () => getContract(muonAbi, Contracts.muon, ChainId.BSC)
 
 /** **************************************************************************************************
                                           FUSION (Algebra)
@@ -235,20 +215,6 @@ export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, C
 export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)
 
 export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Contracts.tcPerpRewarder, ChainId.BSC)
-
-/** ******************************************************************************************************
-                                          Claimer
-******************************************************************************************************* */
-export const getClaimerContract = chainId =>
-  getContract(chainId === CHAIN_ID.TEST_BSC ? testnetClaimerAbi : claimerAbi, Contracts.claimer, chainId)
-
-/** ******************************************************************************************************
-                                          ALGEBRA_FACTORY
-******************************************************************************************************* */
-export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
-  const address = version === 3 ? Contracts.algebraFactoryV3 : Contracts.algebraFactoryV2
-  return getContract(algebraFactoryAbi, address, chainId)
-}
 
 /** ******************************************************************************************************
                                           NONFUNGIBLE_POSITION_MANAGER

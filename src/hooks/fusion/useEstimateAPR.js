@@ -9,7 +9,8 @@ import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fus
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
+import eternalVirtualPoolAbi from '@/constant/abi/fusion/eternalVirtualPool.json'
+import newPoolAbi from '@/constant/abi/fusion/newPool.json'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'

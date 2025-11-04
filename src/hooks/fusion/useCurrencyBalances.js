@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import { BNB, CurrencyAmount, JSBI } from 'thena-sdk-core'
+import { erc20Abi } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { ZERO_ADDRESS } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { toWei } from '@/lib/utils'
 
@@ -16,7 +16,7 @@ export function useCurrencyBalances(currencies) {
 
   const { data: balancesOf } = useReadContracts({
     contracts: currencies.map(c => ({
-      abi: ERC20Abi,
+      abi: erc20Abi,
       address: c?.address === 'BNB' ? ZERO_ADDRESS : c?.address,
       functionName: 'balanceOf',
       args: [account],
