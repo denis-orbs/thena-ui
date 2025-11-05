@@ -1,8 +1,8 @@
-import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import NextImage from '@/components/image/NextImage'
 import { SuccessMessage } from '@/components/message'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 
@@ -55,7 +55,7 @@ export function ShareReferralLink({ referralCode }) {
           </div>
         </div>
         <PrimaryButton className='mt-6 flex w-full items-center justify-center' onClick={shareHandler}>
-          <Image src='/svgs/share.svg' className='inline-block size-4' />
+          <NextImage src='/svgs/share.svg' alt='share icon' className='inline-block size-4' />
           <span className='text-base font-medium'>{t('Share')}</span>
         </PrimaryButton>
       </div>

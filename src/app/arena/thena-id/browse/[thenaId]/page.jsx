@@ -15,6 +15,7 @@ import Box from '@/components/box'
 import BackButton from '@/components/buttons/BackButton'
 import { EmphasisButton, TertiaryButton } from '@/components/buttons/Button'
 import ImageThenaId from '@/components/image/ImageThenaId'
+import NextImage from '@/components/image/NextImage'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
@@ -302,7 +303,9 @@ function ThenaIdPage() {
                       target='_blank'
                     >
                       <EmphasisButton
-                        leading={<Image src='/images/icon-button-make-offer.png' width={30} height={30} />}
+                        leading={
+                          <NextImage src='/images/icon-button-make-offer.png' alt='offer icon' width={30} height={30} />
+                        }
                       >
                         {t('Make Offer on Element')}
                       </EmphasisButton>

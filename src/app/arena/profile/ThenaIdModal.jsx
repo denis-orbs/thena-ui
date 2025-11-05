@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
@@ -164,7 +163,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
                   disabled={thenaIds.length === 1}
                   className='bg-red-600 p-2 hover:bg-red-600'
                 >
-                  <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
+                  <NextImage src='/svgs/minus-v2.svg' alt='minus' width={20} height={20} />
                 </PrimaryButton>
                 <PrimaryButton
                   onClick={() => {
@@ -181,7 +180,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
                   className='bg-green-600 p-2 hover:bg-green-600'
                   disabled={thenaIds.length >= 10}
                 >
-                  <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
+                  <NextImage src='/svgs/plus-v2.svg' alt='plus' width={20} height={20} />
                 </PrimaryButton>
               </div>
               {type === 'gift' && (

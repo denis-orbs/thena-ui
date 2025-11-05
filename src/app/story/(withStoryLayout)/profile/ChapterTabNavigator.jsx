@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import { useTranslations } from 'use-intl'
 
+import NextImage from '@/components/image/NextImage'
 import { cn } from '@/lib/utils'
 
 import Check2Icon from '~/svgs/check2.svg'
@@ -34,7 +34,11 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
           }}
         >
           <div className='flex flex-row items-center justify-center'>
-            {!isAvailable(chapter) ? <Image src='/svgs/lock-2.svg' className='mr-1 h-5 w-5' /> : <></>}
+            {!isAvailable(chapter) ? (
+              <NextImage src='/svgs/lock-2.svg' alt='lock icon' className='mr-1 h-5 w-5' />
+            ) : (
+              <></>
+            )}
             <span className={!isAvailable(chapter) ? 'opacity-40' : ''}>
               {chapter.isCompleted && <Check2Icon className='mr-1 inline-block h-5 w-5' />}
               {chapter.index === selectedChapterIndex ? `${t('Chapter')} ${chapter.index}` : chapter.index}

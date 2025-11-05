@@ -1,10 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Highlight from '@/components/highlight'
+import NextImage from '@/components/image/NextImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
@@ -38,7 +38,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <Image src='/svgs/lock.svg' className='size-4' />
+              <NextImage src='/svgs/lock.svg' alt='lock icon' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Lock')}</TextHeading>
@@ -54,7 +54,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <Image src='/svgs/merge.svg' className='size-4' />
+              <NextImage src='/svgs/merge.svg' alt='merge icon' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Merge')}</TextHeading>
@@ -70,7 +70,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <Image src='/svgs/split.svg' className='size-4' />
+              <NextImage src='/svgs/split.svg' alt='split icon' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Split')}</TextHeading>
@@ -86,7 +86,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <Image src='svgs/switch-horizontal.svg' className='size-4' />
+              <NextImage src='svgs/switch-horizontal.svg' alt='horizontal icon' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Transfer')}</TextHeading>

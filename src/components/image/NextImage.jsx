@@ -9,7 +9,7 @@ import Skeleton from '../skeleton'
  *
  * @description Must set width using `w-` className
  */
-export default function NextImage({ src, alt, className, ...rest }) {
+export default function NextImage({ src, alt = 'thena image', className, ...rest }) {
   const [status, setStatus] = useState('loading')
 
   if (!src) {
