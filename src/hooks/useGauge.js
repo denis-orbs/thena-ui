@@ -4,10 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { ClaimerABI } from '@/constant/abi/ClaimerABI'
+import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
-  getClaimerContract,
   getERC20Contract,
   getFarmingCenterContract,
   getGammaHyperVisorContract,
@@ -241,7 +242,10 @@ export const useGaugeAllHarvest = () => {
     if (newGauge.size > 0) {
       const params = []
       newGauge.forEach(pair => params.push(pair.args))
-      const claimer = getClaimerContract(chainId)
+      const claimer = {
+        address: Contracts.claimer[chainId],
+        abi: ClaimerABI,
+      }
       if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {
         setPending(false)
         return

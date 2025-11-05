@@ -7,7 +7,9 @@ import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddres
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { weightedPoolAbi, weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
+import weightedPoolAbi from '@/constant/abi/weighted-pool/weightedPool.json'
+import weightedPoolFactoryAbi from '@/constant/abi/weighted-pool/weightedPoolFactory.json'
+import weightedPoolFeesAbi from '@/constant/abi/weighted-pool/weightedPoolFees.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'

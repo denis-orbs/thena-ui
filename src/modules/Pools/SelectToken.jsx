@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { formatUnits, getAddress, isAddress } from 'viem'
+import { erc20Abi, formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import TokenBadge from '@/components/badges/TokenBadge'
@@ -8,7 +8,6 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
 import { SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -106,22 +105,22 @@ function SelectToken({
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'name',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'symbol',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'decimals',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'balanceOf',
         address: search,
         args: [account],

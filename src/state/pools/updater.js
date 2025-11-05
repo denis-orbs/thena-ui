@@ -17,25 +17,23 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import {
-  factoryAbi,
-  gaugeV3Abi,
-  hypervisorMFDAbi,
-  ichiMFDAbi,
-  ichiVaultV3,
-  MFDFactoryAbi,
-  pairAbi,
-  pairAPIAbi,
-  voterAbi,
-} from '@/constant/abi'
-import { gammaHypervisorAbiV3, ichiVaultAbi } from '@/constant/abi/fusion'
+import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
+import { GaugeV3ABI } from '@/constant/abi/GaugeV3ABI'
+import { HypervisorMFDABI } from '@/constant/abi/HypervisorMFDABI'
+import { IchiMFDABI } from '@/constant/abi/IchiMFDABI'
+import { MFDFactoryABI } from '@/constant/abi/MFDFactoryABI'
+import pairAbi from '@/constant/abi/pair.json'
+import pairAPIAbi from '@/constant/abi/pairAPI.json'
+import { SolidlyFactoryABI } from '@/constant/abi/SolidlyFactoryABI'
+import voterAbi from '@/constant/abi/voter.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { fetchFusionPools } from '@/lib/api'
 import { callMulti, simulateCall } from '@/lib/contractActions'
-import { getIchiMFDAbi } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 
 import { updatePools, updatePoolsMigration } from './actions'
@@ -48,13 +46,16 @@ const pairABI = {
 }
 
 const mfdABI = {
-  hypervisor: hypervisorMFDAbi,
-  ichi: ichiMFDAbi,
+  hypervisor: HypervisorMFDABI,
+  ichi: IchiMFDABI,
 }
 
 const simulateICHIEarnedRewards = async (receiver, chainId) => {
   try {
-    const contract = getIchiMFDAbi(receiver, chainId)
+    const contract = {
+      address: receiver,
+      abi: IchiMFDABI,
+    }
     return await simulateCall(contract, 'getAllRewards', [], chainId)
   } catch (error) {
     return [0n]
@@ -91,7 +92,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       }))
 
       const isPairCalls = pairsList.map(pair => ({
-        address: Contracts.factory[chainId],
+        address: Contracts.SolidlyFactory[chainId],
         name: 'isPair',
         params: [pair.address],
       }))
@@ -110,10 +111,10 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
 
       const [gaugeForPools, isPairs, accountLpBalances, receivers] = await Promise.all([
         createCallMulti(gaugeForPoolCalls, voterAbi),
-        createCallMulti(isPairCalls, factoryAbi),
+        createCallMulti(isPairCalls, SolidlyFactoryABI),
         createCallMulti(accountLpBalanceCalls, pairABI[type]),
         !isClassicPair && receiverCalls.length
-          ? createCallMulti(receiverCalls, isHypervisorPair ? gammaHypervisorAbiV3 : MFDFactoryAbi)
+          ? createCallMulti(receiverCalls, isHypervisorPair ? gammaHypervisorAbiV3 : MFDFactoryABI)
           : [],
       ])
 
@@ -189,8 +190,8 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       }
 
       const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
-        createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? gaugeV3Abi : mfdABI[type]),
-        isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? gaugeV3Abi : mfdABI[type]),
+        createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
+        isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
         createCallMulti(claimable0Calls, isClassicPair ? pairAbi : mfdABI[type]),
         createCallMulti(claimable1Calls, isClassicPair ? pairAbi : mfdABI[type]),
       ])

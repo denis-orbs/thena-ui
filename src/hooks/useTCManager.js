@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { maxUint256, parseEventLogs } from 'viem'
 
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
-import { tcManagerAbi } from '@/constant/abi/core'
+import tcManagerAbi from '@/constant/abi/core/tcManager.json'
 import { useTC } from '@/context/tcContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'

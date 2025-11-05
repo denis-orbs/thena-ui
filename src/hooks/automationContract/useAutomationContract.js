@@ -3,18 +3,16 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, maxUint256 } from 'viem'
+import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { AUTOMATION_STATUS, CHAINLINK_TOKEN, PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { VeTheAutomationABI } from '@/constant/abi/automation/VeTheAutomationABI'
+import { VeTheAutomationFactoryABI } from '@/constant/abi/automation/VeTheAutomationFactoryABI'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
-import {
-  getLinkTokenContract,
-  getVeTheAutomationContract,
-  getVeTheAutomationFactoryContract,
-  getVeTHEContract,
-} from '@/lib/contracts'
+import { getVeTHEContract } from '@/lib/contracts'
 import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -23,13 +21,22 @@ import useWallet from '../useWallet'
 
 const DEFAULT_LINK_REQUIRE = 0.5
 
+const getVeTheAutoContract = address => ({
+  address,
+  abi: VeTheAutomationABI,
+})
+
+const VeTheAutomationFactoryContract = {
+  address: Contracts.veTheAutomationFactory[CHAIN_ID.BSC],
+  abi: VeTheAutomationFactoryABI,
+}
+
 export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
   const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
   // Get minimum fund chainLINK
   const { data: minimumFunds, isLoading } = useReadContract({
-    ...veTheAutomationFactoryContract,
+    ...VeTheAutomationFactoryContract,
     functionName: 'getMinimumFunds',
     args: [operations, poolLength],
     enabled: Boolean(veTHEId) && Boolean(chainId),
@@ -48,31 +55,26 @@ export const useCreateAutomation = () => {
   const { chainId } = useWallet()
   const t = useTranslations()
 
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-
   const { startTxn, endTxn, writeTxn, writeTxn2 } = useTxn()
 
-  const handleGetAddress = useCallback(
-    async txnReceipt => {
-      try {
-        const event = txnReceipt.logs[0]
-        const eventLogs = decodeEventLog({
-          abi: veTheAutomationFactoryContract.abi,
-          data: event.data,
-          topics: event.topics,
-        })
+  const handleGetAddress = useCallback(async txnReceipt => {
+    try {
+      const event = txnReceipt.logs[0]
+      const eventLogs = decodeEventLog({
+        abi: VeTheAutomationFactoryContract.abi,
+        data: event.data,
+        topics: event.topics,
+      })
 
-        if (eventLogs?.args) {
-          return eventLogs.args.automation
-        }
-
-        return ''
-      } catch (error) {
-        console.log('Failed to get automation address', error)
+      if (eventLogs?.args) {
+        return eventLogs.args.automation
       }
-    },
-    [veTheAutomationFactoryContract],
-  )
+
+      return ''
+    } catch (error) {
+      console.log('Failed to get automation address', error)
+    }
+  }, [])
 
   const onCreateAutomation = useCallback(
     async (contract, onSuccess = () => {}) => {
@@ -125,7 +127,7 @@ export const useCreateAutomation = () => {
           },
         })
 
-        const txnReceipt = await writeTxn2(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
+        const txnReceipt = await writeTxn2(key, createAutouuid, VeTheAutomationFactoryContract, 'createAutomation', [
           tokenId,
           Math.floor(startTimestamp / 1000),
           operations,
@@ -140,7 +142,7 @@ export const useCreateAutomation = () => {
 
         const automationAddress = await handleGetAddress(txnReceipt)
 
-        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(automationAddress)
 
         const isApproveAutomation = await readCall(
           theContract,
@@ -149,7 +151,10 @@ export const useCreateAutomation = () => {
           chainId,
         )
 
-        const linkTokenContract = getLinkTokenContract(chainlink.address, chainId)
+        const linkTokenContract = {
+          address: chainlink.address,
+          abi: erc20Abi,
+        }
         if (
           !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
         ) {
@@ -189,7 +194,7 @@ export const useCreateAutomation = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, handleGetAddress, startTxn, t, veTheAutomationFactoryContract, writeTxn, writeTxn2],
+    [chainId, endTxn, handleGetAddress, startTxn, t, writeTxn, writeTxn2],
   )
 
   return { onCreateAutomation, pending }
@@ -215,11 +220,9 @@ export const useVeTheAutomations = () => {
   const { veTHEs } = useVeTHEsContext()
 
   const fetchAutomationContracts = useCallback(async () => {
-    const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-
     const contractAddresses = await callMulti(
       veTHEs.map(veTHE => ({
-        ...veTheAutomationFactoryContract,
+        ...VeTheAutomationFactoryContract,
         functionName: 'tokenIdToAutomation',
         args: [veTHE.id],
         chainId,
@@ -228,7 +231,7 @@ export const useVeTheAutomations = () => {
 
     const contractsStatuses = await callMulti(
       contractAddresses.map(address => ({
-        ...getVeTheAutomationContract(address, chainId),
+        ...getVeTheAutoContract(address),
         functionName: 'status',
       })),
     )
@@ -236,7 +239,7 @@ export const useVeTheAutomations = () => {
     // Min balance for the automation to run
     const contractsMinBalance = await callMulti(
       contractAddresses.map(address => ({
-        ...getVeTheAutomationContract(address, chainId),
+        ...getVeTheAutoContract(address),
         functionName: 'getMinBalance',
       })),
     )
@@ -244,7 +247,7 @@ export const useVeTheAutomations = () => {
     // LINK balance of the automation
     const contractsBalance = await callMulti(
       contractAddresses.map(address => ({
-        ...getVeTheAutomationContract(address, chainId),
+        ...getVeTheAutoContract(address),
         functionName: 'getBalance',
       })),
     )
@@ -252,7 +255,7 @@ export const useVeTheAutomations = () => {
     // Automation operations
     const contractsOperationsHex = await callMulti(
       contractAddresses.map(address => ({
-        ...getVeTheAutomationContract(address, chainId),
+        ...getVeTheAutoContract(address),
         functionName: 'operations',
       })),
     )
@@ -287,16 +290,15 @@ export const useVeTheAutomations = () => {
 export const useAutomationContractDetail = tokenId => {
   const { chainId } = useWallet()
   const pools = useV3PoolsWithGauge()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
   const { data: automationAddress, refetch: mutateData1 } = useReadContract({
-    ...veTheAutomationFactoryContract,
+    ...VeTheAutomationFactoryContract,
     functionName: 'tokenIdToAutomation',
     args: [tokenId],
     enabled: Boolean(tokenId) && Boolean(chainId),
   })
 
-  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+  const veTheAutomationContract = getVeTheAutoContract(automationAddress)
 
   const {
     data: contractInfo,
@@ -412,7 +414,6 @@ const ACTION_PAUSE_TYPE = {
 
 export const usePauseAutomation = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
 
   const t = useTranslations()
 
@@ -422,7 +423,7 @@ export const usePauseAutomation = () => {
     async (automationAddress, type, onSuccess) => {
       const key = uuidv4()
       const pauseuuid = uuidv4()
-      const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+      const veTheAutomationContract = getVeTheAutoContract(automationAddress)
 
       startTxn({
         key,
@@ -464,7 +465,7 @@ export const usePauseAutomation = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
 
   return { onPauseAutomation, pending }
@@ -483,7 +484,7 @@ export const useCancelAutomation = () => {
       const key = uuidv4()
       const canceluuid = uuidv4()
       const withdrawuuid = uuidv4()
-      const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+      const veTheAutomationContract = getVeTheAutoContract(automationAddress)
 
       const erc20Address = CHAINLINK_TOKEN[chainId][0].address
 
@@ -538,7 +539,6 @@ export const useCancelAutomation = () => {
 
 export const useEditAutomation = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
 
   const t = useTranslations()
 
@@ -548,7 +548,7 @@ export const useEditAutomation = () => {
     async (contract, onSuccess = () => {}) => {
       const key = uuidv4()
       const operationsuuid = uuidv4()
-      const veTheAutomationContract = getVeTheAutomationContract(contract.address, chainId)
+      const veTheAutomationContract = getVeTheAutoContract(contract.address)
 
       const { settings, votes } = contract
 
@@ -592,7 +592,7 @@ export const useEditAutomation = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
 
   return { onEditAutomation, pending }
@@ -611,7 +611,7 @@ export const useActiveAutomation = () => {
       const approveAutomationuuid = uuidv4()
       const approveChainlinkuuid = uuidv4()
 
-      const theContract = getVeTHEContract(chainId)
+      const veTheContract = getVeTHEContract(chainId)
       setPending(true)
 
       startTxn({
@@ -637,15 +637,18 @@ export const useActiveAutomation = () => {
       })
 
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(automationAddress)
 
         const isApproveAutomation = await readCall(
-          theContract,
+          veTheContract,
           'isApprovedOrOwner',
           [automationAddress, tokenId],
           chainId,
         )
-        const linkTokenContract = getLinkTokenContract(chainlink.address, chainId)
+        const linkTokenContract = {
+          address: chainlink.address,
+          abi: erc20Abi,
+        }
         if (
           !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
         ) {
@@ -655,7 +658,7 @@ export const useActiveAutomation = () => {
 
         if (!isApproveAutomation) {
           if (
-            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+            !(await writeTxn(key, approveAutomationuuid, veTheContract, 'setApprovalForAll', [automationAddress, true]))
           ) {
             setPending(false)
             return
@@ -694,7 +697,6 @@ export const useActiveAutomation = () => {
 
 export const useEditGasLimit = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const t = useTranslations()
 
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -702,7 +704,7 @@ export const useEditGasLimit = () => {
   const onEditGasLimit = useCallback(
     async (address, gasLimit, onSuccess = () => {}) => {
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(address)
         const key = uuidv4()
         const editGasLimituuid = uuidv4()
         setPending(true)
@@ -738,14 +740,13 @@ export const useEditGasLimit = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
   return { onEditGasLimit, pending }
 }
 
 export const useEditMaxGasPrice = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const t = useTranslations()
 
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -753,7 +754,7 @@ export const useEditMaxGasPrice = () => {
   const onEditMaxGasPrice = useCallback(
     async (address, max, onSuccess = () => {}) => {
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(address)
         const key = uuidv4()
         const editGasLimituuid = uuidv4()
         setPending(true)
@@ -789,14 +790,13 @@ export const useEditMaxGasPrice = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
   return { onEditMaxGasPrice, pending }
 }
 
 export const useSetRunTimestamp = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const t = useTranslations()
 
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -804,7 +804,7 @@ export const useSetRunTimestamp = () => {
   const onSetRunTimestamp = useCallback(
     async (address, timestamp, onSuccess = () => {}) => {
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(address)
         const key = uuidv4()
         const setRunTimesuuid = uuidv4()
         setPending(true)
@@ -844,7 +844,7 @@ export const useSetRunTimestamp = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
   return { onSetRunTimestamp, pending }
 }
@@ -859,8 +859,11 @@ export const useDepositFunds = () => {
   const onDepositFunds = useCallback(
     async (automationAddress, tokenAddress, amount, onSuccess = () => {}) => {
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-        const linkTokenContract = getLinkTokenContract(tokenAddress, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(automationAddress)
+        const linkTokenContract = {
+          address: tokenAddress,
+          abi: erc20Abi,
+        }
         const key = uuidv4()
         const deposituuid = uuidv4()
         const approveuuid = uuidv4()
@@ -923,7 +926,6 @@ export const useDepositFunds = () => {
 
 export const useWithdrawFunds = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const t = useTranslations()
 
   const { startTxn, endTxn, writeTxn } = useTxn()
@@ -931,7 +933,7 @@ export const useWithdrawFunds = () => {
   const onWithdrawFunds = useCallback(
     async (automationAddress, tokenAddress, onSuccess = () => {}) => {
       try {
-        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+        const veTheAutomationContract = getVeTheAutoContract(automationAddress)
         const key = uuidv4()
         const withdrawuuid = uuidv4()
         setPending(true)
@@ -967,7 +969,7 @@ export const useWithdrawFunds = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [endTxn, startTxn, t, writeTxn],
   )
   return { onWithdrawFunds, pending }
 }

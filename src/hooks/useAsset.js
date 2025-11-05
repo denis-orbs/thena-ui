@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
+import { erc20Abi } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
-import { ERC20Abi } from '@/constant/abi'
 import { fetchAssets } from '@/lib/api'
 import { fromWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
@@ -28,7 +28,7 @@ export const useAsset = (networkId, address) => {
   )
 
   const { data: balanceOf } = useReadContract({
-    abi: ERC20Abi,
+    abi: erc20Abi,
     address: asset?.address,
     functionName: 'balanceOf',
     args: [account],

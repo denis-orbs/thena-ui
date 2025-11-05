@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo, useRef } from 'react'
 import useSWRImmutable from 'swr/immutable'
-import { formatUnits } from 'viem'
+import { erc20Abi, formatUnits } from 'viem'
 
-import { ERC20Abi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
 import { fetchCustomAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
@@ -18,7 +17,7 @@ const fetchAssetsBalances = async (assets, account, networkId) => {
   const res = await callMulti(
     assets.map(asset => ({
       address: asset.address,
-      abi: ERC20Abi,
+      abi: erc20Abi,
       functionName: 'balanceOf',
       args: [account],
       chainId: networkId,

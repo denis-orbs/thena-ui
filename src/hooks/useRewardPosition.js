@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { ClaimerABI } from '@/constant/abi/ClaimerABI'
+import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import {
-  getClaimerContract,
   getFarmingCenterContract,
   getGammaHyperVisorContract,
   getGaugeContract,
@@ -132,7 +133,10 @@ export const useRewardPosition = () => {
     if (newGauge.size > 0) {
       const params = []
       newGauge.forEach(pair => params.push(pair.args))
-      const claimer = getClaimerContract(chainId)
+      const claimer = {
+        address: Contracts.claimer[chainId],
+        abi: ClaimerABI,
+      }
       if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {
         setPending(false)
         return

@@ -7,19 +7,17 @@ import { useReadContract, useReadContracts } from 'wagmi'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
+import { BribeABI } from '@/constant/abi/BribeABI'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import useWallet from '@/hooks/useWallet'
-import { getBribeContract } from '@/lib/contracts'
 import { ItemToken } from '@/modules/TokenModal/ItemToken'
 
 export function TokenModal({ popup, setPopup, pair, selectedAsset, setSelectedAsset, otherAsset, setOtherAsset }) {
   const t = useTranslations()
-  const { chainId } = useWallet()
 
-  const bribeContract = getBribeContract(pair?.gauge?.bribe, chainId)
   const { data: tokenLength = 0 } = useReadContract({
-    ...bribeContract,
+    abi: BribeABI,
+    address: pair?.gauge?.bribe,
     functionName: 'rewardsListLength',
     query: {
       enabled: !!pair?.gauge?.bribe,
@@ -28,7 +26,8 @@ export function TokenModal({ popup, setPopup, pair, selectedAsset, setSelectedAs
 
   const { data: whiteList } = useReadContracts({
     contracts: Array.from({ length: Number(tokenLength) }, (_, i) => ({
-      ...bribeContract,
+      abi: BribeABI,
+      address: pair?.gauge?.bribe,
       functionName: 'rewardTokens',
       args: [i],
     })),
