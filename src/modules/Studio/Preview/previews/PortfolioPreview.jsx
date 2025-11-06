@@ -21,13 +21,13 @@ function PortfolioPreview({ state }) {
   )
 
   return pair ? (
-    <div className='mt-20 flex flex-col gap-[45px]'>
+    <div className='flex flex-col gap-5'>
       <div className='flex flex-col items-center justify-center gap-3 text-center'>
         <TextHeading className='text-[32px]! leading-10! font-semibold'>
           {t('Your [amount] Can Earn', { amount: `$${formatAmount(amount, true)}` })}
         </TextHeading>
         <TextHeading
-          className='font-archia text-[164px]! leading-[170px]! font-semibold tracking-[0.02em]'
+          className='font-archia text-[152px]! leading-[180px]! font-semibold tracking-[0.02em]'
           style={{ color: '#D642DB' }}
         >
           ${formatAmount(calculateProfitPerDay(maxApr, amount), true)}

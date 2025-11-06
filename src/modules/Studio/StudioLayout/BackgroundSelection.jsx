@@ -33,6 +33,7 @@ function BackgroundSelection({ state, setField, tpl }) {
       {
         id: 1,
         name: '3D Grid',
+        shortName: 'Grid',
         image: '/images/content-studio/3d_grid.png',
         value: '/images/content-studio/3d_grid1.png',
         mini: '/images/content-studio/3d_grid_option.png',
@@ -40,6 +41,7 @@ function BackgroundSelection({ state, setField, tpl }) {
       {
         id: 2,
         name: 'Violet Glow',
+        shortName: 'Glow',
         image: '/images/content-studio/violet_glow.png',
         value: '/images/content-studio/violet_glow1.png',
         mini: '/images/content-studio/violet_glow_option.png',
@@ -47,6 +49,7 @@ function BackgroundSelection({ state, setField, tpl }) {
       {
         id: 3,
         name: 'Starry Night',
+        shortName: 'Starry',
         image: '/images/content-studio/starry_night.png',
         value: '/images/content-studio/starry_night1.png',
         mini: '/images/content-studio/starry_night_option.png',
@@ -54,13 +57,15 @@ function BackgroundSelection({ state, setField, tpl }) {
       {
         id: 4,
         name: 'Tech Horizon',
+        shortName: 'Tech',
         image: '/images/content-studio/tech_horizon.png',
         value: '/images/content-studio/tech_horizon1.png',
         mini: '/images/content-studio/tech_horizon_option.png',
       },
       {
         id: 5,
-        name: 'No Background',
+        name: 'Empty',
+        shortName: 'Empty',
         image: null,
         value: null,
         mini: '/images/content-studio/transparent_option.png',
@@ -69,6 +74,7 @@ function BackgroundSelection({ state, setField, tpl }) {
         id: 6,
         isCustom: true,
         name: 'Custom image',
+        shortName: 'Custom',
         image: null,
         value: null,
         mini: (
@@ -88,34 +94,39 @@ function BackgroundSelection({ state, setField, tpl }) {
 
   return (
     <>
-      <div className='mt-auto hidden w-full flex-col gap-2 xl:flex'>
-        <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
+      <div className='mt-auto hidden w-full flex-col gap-4 xl:flex'>
+        <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white xl:leading-[35px]'>
           {t('Background Image')}
         </TextHeading>
-        <div className='grid w-full grid-cols-6 gap-3 max-md:grid-cols-2'>
+        <div className='grid w-full grid-cols-6 gap-4 px-px pb-px'>
           {imageOptions.map(option => (
             <div
               key={option.id}
               className={cn(
-                'flex cursor-pointer flex-col items-center gap-3 rounded-xl border p-3 transition-all duration-150 ease-out',
+                'flex cursor-pointer flex-col items-center gap-3 rounded-xl px-2 py-3 outline transition-all duration-150 ease-out',
                 background.id === option.id
-                  ? 'border-primary-800 bg-[#230924]'
-                  : 'border-neutral-700 hover:bg-neutral-800',
+                  ? 'outline-primary-800 bg-[#230924]'
+                  : 'outline-neutral-700 hover:bg-neutral-800',
               )}
               onClick={() => setField('background', option)}
             >
               {isString(option.mini) ? (
                 <Image
-                  className='h-full w-full object-cover'
+                  className='rounded-lg object-cover xl:h-[75px] xl:w-[97.33px] 2xl:h-[75px] 2xl:w-[111.33px]'
                   src={option.mini}
                   alt={option.name}
-                  width={100}
-                  height={100}
+                  width={97.33}
+                  height={75}
                 />
               ) : (
                 option.mini
               )}
-              <Paragraph className='text-md text-center text-neutral-200'>{option.name}</Paragraph>
+              <Paragraph className='text-md hidden text-center leading-5 text-neutral-200 2xl:flex'>
+                {option.name}
+              </Paragraph>
+              <Paragraph className='text-md text-center leading-5 text-neutral-200 2xl:hidden'>
+                {option.shortName}
+              </Paragraph>
             </div>
           ))}
         </div>
@@ -140,7 +151,7 @@ function BackgroundSelection({ state, setField, tpl }) {
 
           {/* Dropdown Options */}
           {open && (
-            <div className='absolute top-full right-0 z-50 mt-2 h-[250px] w-full space-y-4 overflow-y-auto rounded-lg border border-neutral-700 bg-neutral-900 p-4 shadow-2xl backdrop-blur-md'>
+            <div className='absolute top-full right-0 z-50 mt-2 w-full space-y-4 overflow-y-auto rounded-lg border border-neutral-700 bg-neutral-900 p-4 shadow-2xl backdrop-blur-md'>
               {imageOptions
                 .filter(option => !option.isCustom)
                 .map(option => (
@@ -190,7 +201,11 @@ function BackgroundSelection({ state, setField, tpl }) {
           className='hidden'
           ref={imgInputRef}
         />
-        <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
+        <PreviewCanvas
+          background={state.background}
+          className={cn('flex', state.background.id !== 6 && 'hidden')}
+          watermark='THENA'
+        >
           <Preview state={state} setField={setField} />
         </PreviewCanvas>
         <div className='flex items-center justify-center gap-2'>
@@ -227,17 +242,23 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
   const t = useTranslations()
 
   return (
-    <Modal showHeadModal={false} isOpen={openPreview} onClose={() => setOpenPreview(false)}>
+    <Modal
+      showHeadModal={false}
+      isOpen={openPreview}
+      onClose={() => setOpenPreview(false)}
+      className='center-modal'
+      width='90%'
+    >
       <ModalBody>
         <div className='flex flex-col gap-3'>
           <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
             <Preview state={state} setField={setField} />
           </PreviewCanvas>
           <div className='flex items-center justify-center gap-2'>
+            <DownloadImage scale={1920 / 1024} fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
             <EmphasisButton className='w-1/2' onClick={() => setOpenPreview(false)}>
               <EditIcon className='size-4' /> {t('Edit')}
             </EmphasisButton>
-            <DownloadImage scale={1920 / 1024} fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
           </div>
           {!account ? (
             <ConnectButton className='w-1/2' />

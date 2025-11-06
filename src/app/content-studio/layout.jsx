@@ -16,12 +16,14 @@ export default function ContentStudioLayout({ children }) {
       <Suspense fallback={<Loading />}>
         <LayoutWithBackButton
           hiddenBackButton
-          className='3xl:w-[1464px] 3xl:pt-8! pt-6! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]'
+          className='3xl:pt-10! mt-6! max-w-[1344px]! xl:mx-12 xl:-mt-2! 2xl:mx-auto'
         >
-          <TextHeading className='font-archia text-2xl font-semibold text-neutral-50 xl:text-5xl'>
+          <TextHeading className='font-archia 3xl:text-[48px] 3xl:leading-[48px] text-2xl font-semibold text-neutral-50 xl:text-4xl xl:leading-10 2xl:text-[40px] 2xl:leading-[48px]'>
             {t('Content Studio')}
           </TextHeading>
-          <div className='relative mt-3 gap-8 overflow-y-auto rounded-xl xl:bg-neutral-900 xl:p-4'>{children}</div>
+          <div className='relative mt-3 gap-8 overflow-y-auto rounded-xl xl:mt-8 xl:bg-neutral-900 xl:p-4'>
+            {children}
+          </div>
         </LayoutWithBackButton>
       </Suspense>
     </main>

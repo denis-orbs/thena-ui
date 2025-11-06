@@ -32,7 +32,7 @@ export default function Tabs() {
   return (
     <div className='w-full'>
       <Selection
-        className='h-8 w-full flex-1 items-stretch lg:h-11'
+        className='h-11 w-full flex-1 items-stretch rounded-lg'
         classNames={{
           items: 'md:text-sm text-xs',
         }}

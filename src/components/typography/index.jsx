@@ -12,7 +12,7 @@ export function Paragraph({ children, className, title = undefined, ...props }) 
 
 export function TextHeading({ children, className, ...props }) {
   return (
-    <span className={cn(['font-medium text-neutral-50'], className)} {...props}>
+    <span className={cn('font-medium text-neutral-50', className)} {...props}>
       {children}
     </span>
   )

@@ -349,6 +349,18 @@
     opacity: 0;
   }
 
+  .center-modal {
+    top: 50% !important;
+    transform: translate(0%, -50%) !important;
+    position: absolute;
+  }
+
+  @media screen and (min-width: 1024px) {
+    .center-modal {
+      transform: translate(-50%, -50%) !important;
+    }
+  }
+
   .notify-class {
     z-index: 99999;
   }

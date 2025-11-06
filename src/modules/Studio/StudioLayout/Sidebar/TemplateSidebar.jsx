@@ -198,16 +198,16 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
 
   const ref = useRef(null)
   return (
-    <aside className='flex h-full flex-col gap-6 rounded-xl xl:min-h-[576px]'>
-      <div className='flex flex-1 flex-col gap-6'>
+    <aside className='flex h-full flex-col justify-between rounded-xl xl:min-h-[576px]'>
+      <div className='flex flex-1 flex-col gap-5 xl:gap-6'>
         <Tabs />
         <div className='flex flex-col gap-1'>
           {title && (
-            <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white max-xl:hidden'>
+            <TextHeading className='font-archia text-2xl leading-[35px]! font-semibold -tracking-[0.03em] text-white max-xl:hidden'>
               {t(title)}
             </TextHeading>
           )}
-          {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
+          {subTitle && <Paragraph className='leading-5!'>{t(subTitle)}</Paragraph>}
         </div>
         <div ref={ref} className={cn('scrollbar-gutter-stable space-y-4')}>
           {hydratedFields.map((f, index) => {

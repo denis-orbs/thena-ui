@@ -30,7 +30,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
   return (
     <div ref={wrapperRef} className='relative flex items-center gap-2'>
       <div
-        className='flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
+        className='flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-3 py-3'
         onClick={() => setOpen(!open)}
       >
         {value ? (

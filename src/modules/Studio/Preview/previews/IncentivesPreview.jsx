@@ -83,7 +83,7 @@ function IncentivesPreview({ state }) {
   }
 
   return (
-    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-25')}>
+    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-17')}>
       <div
         className={cn(
           'grid',

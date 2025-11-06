@@ -28,6 +28,14 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
 
+  const [origin, setOrigin] = useState(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin)
+    }
+  }, [])
+
   useEffect(() => {
     if (openShareModal) {
       setPostContent('')
@@ -81,7 +89,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
         account.toLowerCase(),
         'CONTENT_STUDIO',
         async data => {
-          setImageUrl(`https://thena.fi/studio/${data.split('/content-studio/')[1]}`)
+          setImageUrl(`${origin}/studio/${data.split('/content-studio/')[1]}`)
           setUploading(false)
           setOpenShareModal(true)
         },

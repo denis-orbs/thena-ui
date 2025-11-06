@@ -140,8 +140,9 @@ export default function PoolsAprPreview({ state }) {
     <div
       className={cn(
         'h-full w-full px-10',
-        pairs.length > 1 && 'pt-16',
-        (pairs.length === 3 || pairs.length === 2) && 'pt-25',
+        pairs.length > 1 && 'pt-[56px]',
+        pairs.length === 2 && 'pt-[82px]',
+        pairs.length === 3 && 'pt-20',
       )}
     >
       <div className='grid grid-cols-1 gap-8'>
