@@ -10,8 +10,10 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { LINK_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
-import { InfoIcon, PlusIcon } from '@/svgs'
+
+import PlusIcon from '~/svgs/plus.svg'
 
 import VotingPairItem from './Steps/votingPairs/VotingPairItem'
 
@@ -80,7 +82,7 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoad
             <div className='flex flex-row items-center gap-1'>
               <TextHeading className='text-base lg:text-lg'>{t('Minimum Link Balance needed')}</TextHeading>
 
-              <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400 max-lg:hidden' />
+              <InfoIcon data-tooltip-id='setting-mind-funds' className='max-lg:hidden' />
               <CustomTooltip className='z-40' id='setting-mind-funds' place='bottom'>
                 {t('This is the estimated total deposit based on your current contract settings')}
               </CustomTooltip>

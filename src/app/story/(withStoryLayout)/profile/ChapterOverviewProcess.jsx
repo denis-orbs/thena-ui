@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
-import { Check2Icon } from '@/svgs'
+import Check2Icon from '~/svgs/check2.svg'
 
 import { TaskType } from '../../constant'
 
@@ -38,13 +38,11 @@ export function ChapterOverviewProcess({ chapter }) {
         <hr className='my-4 border-neutral-600' />
         <div>
           <div className='flex items-center'>
-            {/* <ChapterLogoIcon className='inlin h-5 w-5' /> */}
             <p className='text-gradient-primary inline-block text-base leading-5 font-medium tracking-[.03em]'>
               {t('Chapter').toUpperCase()} {chapter.index}
             </p>
           </div>
           <div className='my-4 mt-1 flex items-center'>
-            {/* <Lock2Icon className='mr-1 inline-block h-[30px] w-[30px]' /> */}
             <h3 className='text-3xl font-semibold'>{Boolean(chapter.name) && t(chapter.name)}</h3>
           </div>
 

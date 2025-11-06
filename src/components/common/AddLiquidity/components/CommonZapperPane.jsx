@@ -13,20 +13,21 @@ import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
-import { routerAbi, vammZapAbi } from '@/constant/abi'
+import routerAbi from '@/constant/abi/router.json'
+import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
+import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 import WarningZapper from './WarningZapper'
 
 const getZapAddress = (strategy, chainId) => {
-  if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.gammaZap[chainId], isV1: false }
+  if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.GammaZap[chainId], isV1: false }
   if (strategy.type === PAIR_TYPES.CLASSIC) {
     return { address: Contracts.classicZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
   }
@@ -329,7 +330,7 @@ export function CommonZapperPane({
                   </div>
                   {priceImpact > 4.9 && (
                     <Alert>
-                      <InfoIcon className='stroke-error-600 h-4 w-4' />
+                      <InfoIcon className='stroke-error-600 size-4' />
                       <p>{t('High Slippage Warning')}</p>
                     </Alert>
                   )}

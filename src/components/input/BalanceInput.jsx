@@ -1,10 +1,10 @@
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
+import { erc20Abi } from 'viem'
 import { useBalance, useReadContract } from 'wagmi'
 
 import { BNB_LOGO, BSC_LOGO } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
@@ -33,7 +33,7 @@ function BalanceInput({
   const { account } = useWallet()
 
   const { data: balanceOf } = useReadContract({
-    abi: ERC20Abi,
+    abi: erc20Abi,
     address: asset?.address,
     functionName: 'balanceOf',
     args: [account],

@@ -15,11 +15,11 @@ import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { useV1Migrate } from '@/hooks/useV1Liquidity'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useGetAutoPoolMigration, usePairInfo, usePools } from '@/state/pools/hooks'
-import { ArrowRightIcon } from '@/svgs'
 
 import NavigateToAddLiquidityModal from './NavigateToAddLiquidityModal'
 
@@ -180,12 +180,6 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
   return (
     <div className='mx-auto max-w-5xl'>
-      {/* <div className='h-11 w-[98px]'>
-        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
-          {t('Back')}
-        </TextButton>
-      </div> */}
-
       <Box className='rounded-xl bg-neutral-900 px-3 py-6 lg:px-7'>
         <div className='mb-10 flex flex-col gap-2'>
           <TextHeading className='font-archia text-3xl'>{t('Migration')}</TextHeading>
@@ -207,7 +201,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
           {!withdraw && (
             <>
               <span className='flex items-center justify-center'>
-                <ArrowRightIcon className='mx-auto h-5 w-5 max-lg:rotate-90' />
+                <ArrowLeftIcon className='mx-auto size-5 max-lg:-rotate-90' />
               </span>
 
               <article className='flex h-full w-full flex-col'>

@@ -2,7 +2,8 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
+import newPoolAbi from '@/constant/abi/fusion/newPool.json'
+import poolAbi from '@/constant/abi/fusion/pool.json'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 

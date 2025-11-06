@@ -7,7 +7,7 @@ import React from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import { Paragraph } from '@/components/typography'
-import { InfoCircleWhite } from '@/svgs'
+import InfoIcon from '@/icons/InfoIcon'
 
 export function NoRewards() {
   const { push } = useRouter()
@@ -16,7 +16,7 @@ export function NoRewards() {
   return (
     <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
       <Highlight>
-        <InfoCircleWhite className='h-4 w-4' />
+        <InfoIcon className='stroke-neutral-50' />
       </Highlight>
       <div className='flex flex-col items-center gap-3'>
         <h2>{t('No Rewards Found')}</h2>

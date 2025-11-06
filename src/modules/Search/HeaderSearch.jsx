@@ -7,7 +7,8 @@ import useDebounce from '@/hooks/useDebounce'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
-import { SearchIcon } from '@/svgs'
+
+import SearchIcon from '~/svgs/search.svg'
 
 import {
   V4_ID_COUNT,

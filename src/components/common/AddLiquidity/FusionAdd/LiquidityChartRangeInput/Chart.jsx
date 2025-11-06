@@ -7,7 +7,8 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading } from '@/components/typography'
 import { Bound } from '@/state/fusion/actions'
 import { Presets } from '@/state/fusion/reducer'
-import { ResetIcon } from '@/svgs'
+
+import ResetIcon from '~/svgs/reset.svg'
 
 import { Area } from './Area'
 import { AxisBottom } from './AxisBottom'
@@ -153,7 +154,7 @@ export function Chart({
               setZoom(null)
             }}
           >
-            <ResetIcon className='h-4 w-4' />
+            <ResetIcon className='size-4' />
             {t('Reset')}
           </EmphasisButton>
         </div>

@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { CurrencyAmount, TradeType } from 'thena-sdk-core'
 import { encodeRouteToPath, Trade } from 'thenafi-fusion-sdk'
 
-import { fusionQuoterAbi } from '@/constant/abi/fusion'
+import fusionQuoterAbi from '@/constant/abi/fusion/fusionQuoter.json'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'

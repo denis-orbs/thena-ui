@@ -9,8 +9,7 @@ import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useWithdrawFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
-import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 
 import SelectTokenFromList from '../SelectTokenModal/SelectTokenFromList'
 
@@ -52,12 +51,7 @@ function WithdrawFundsModal({ contract, popup, setPopup, onWithdrawSuccess }) {
           ) : (
             <p className='text-neutral-400'>{t('Select ChainLINK')}</p>
           )}
-          <ChevronDownIcon
-            className={cn(
-              'transfrom h-5 w-5 transition-all duration-150 ease-out',
-              tokenPopup ? 'rotate-180' : 'rotate-0',
-            )}
-          />
+          <ChevronDownIcon isRevert={tokenPopup} />
         </div>
         <SelectTokenFromList
           allowSearch={false}

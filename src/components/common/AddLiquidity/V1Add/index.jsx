@@ -7,11 +7,13 @@ import React, { useMemo, useState } from 'react'
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import NextImage from '@/components/image/NextImage'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { SettingsIcon, ZapperIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 import { ManualPaneV1 } from './ManualPaneV1'
 import { CommonZapperPane } from '../components/CommonZapperPane'
@@ -47,7 +49,7 @@ export default function V1Add({
       {
         label: (
           <div className='flex items-center justify-center gap-1'>
-            <ZapperIcon className='size-5' />
+            <NextImage src='/svgs/zapper.svg' alt='zapper icon' className='size-5' />
             <span>{t('Zapper Deposit')}</span>
           </div>
         ),

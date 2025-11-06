@@ -9,7 +9,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 
-import { ArrowBackwardIcon, ArrowForwardSmallIcon } from '@/svgs'
+import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 
 import { Heading } from './Common/Heading'
 import HomeImage from './Common/HomeImage'
@@ -108,7 +108,7 @@ function Updates() {
             </Swiper>
             <div className='absolute bottom-0 z-10 hidden w-full justify-between px-4 lg:flex'>
               <div className='custom-swiper-button-prev inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-[#007aff]/85'>
-                <ArrowBackwardIcon className='size-5 [&>path]:stroke-[#007aff]' />
+                <ArrowForwardSmallIcon className='size-5 rotate-180 [&>path]:stroke-[#007aff]' />
               </div>
               <div className='custom-swiper-button-next inline-block cursor-pointer rounded-full border-2 border-[#007aff] p-1 hover:border-[#007aff]/85'>
                 <ArrowForwardSmallIcon className='size-5 [&>path]:stroke-[#007aff]' />

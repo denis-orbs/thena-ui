@@ -12,7 +12,10 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 import PreviewCanvas from '@/modules/Studio/Preview/PreviewCanvas'
-import { ChevronDownIcon, EditIcon, ImageUpIcon } from '@/svgs'
+
+import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import EditIcon from '~/svgs/edit.svg'
+import ImageUpIcon from '~/svgs/image-up.svg'
 
 import DownloadImage from './DownloadImage'
 import ShareImage from './ShareImage'
@@ -133,7 +136,7 @@ function BackgroundSelection({ state, setField, tpl }) {
                 <span className='text-sm text-gray-300'>{t('Select Background Image')}</span>
               )}
             </div>
-            <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+            <ChevronDownIcon className={cn('size-4 transition-transform duration-200', open && 'rotate-180')} />
           </EmphasisButton>
 
           {/* Dropdown Options */}
@@ -234,7 +237,7 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
           </PreviewCanvas>
           <div className='flex items-center justify-center gap-2'>
             <EmphasisButton className='w-1/2' onClick={() => setOpenPreview(false)}>
-              <EditIcon className='h-4 w-4' /> {t('Edit')}
+              <EditIcon className='size-4' /> {t('Edit')}
             </EmphasisButton>
             {shouldUseS3Upload && !account ? (
               <ConnectButton className='w-1/2' />

@@ -12,7 +12,8 @@ import { useClaimTheNFT } from '@/hooks/useClaimTheNFT'
 import { useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
-import { ExternalIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
 
 import SectionDivider from '../SectionDivider'
 

@@ -82,6 +82,18 @@ function KyberZapperPane({
     [asset0, asset1],
   )
 
+  const isENFPool = useMemo(
+    () =>
+      asset0 &&
+      asset1 &&
+      [asset0.address.toLowerCase(), asset1.address.toLowerCase()].includes(
+        '0x418f9e4976f467efdb31b2009ac69a7e30ef58b7',
+      ),
+    [asset0, asset1],
+  )
+
+  const isDisabled = useMemo(() => isFetching || !data?.route || isENFPool, [data, isFetching, isENFPool])
+
   const [liquidityAdded, addLiquidityAction, swaps] = useMemo(() => {
     const liquidityData = data?.positionDetails?.addedLiquidity
     const liquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
@@ -246,8 +258,8 @@ function KyberZapperPane({
           {t('Cancel')}
         </EmphasisButton>
         {account ? (
-          <PrimaryButton disabled={isFetching || !data?.route} onClick={handleKyberAddLiquidity} className='w-full'>
-            {t('Add Liquidity')}
+          <PrimaryButton disabled={isDisabled} onClick={handleKyberAddLiquidity} className='w-full'>
+            {isENFPool ? 'Zapper is not available for this pool.' : t('Add Liquidity')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />

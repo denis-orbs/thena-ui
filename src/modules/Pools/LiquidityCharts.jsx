@@ -12,16 +12,16 @@ import Selection from '@/components/selection'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import { ichiVaultAbi } from '@/constant/abi/fusion'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
+import InfoIcon from '@/icons/InfoIcon'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 
@@ -308,7 +308,7 @@ export default function LiquidityCharts({
   ) : (
     <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
       <Highlight>
-        <InfoCircleWhite className='h-4 w-4' />
+        <InfoIcon className='stroke-neutral-50' />
       </Highlight>
       <div className='flex flex-col items-center gap-3'>
         <h2>{t('Select Pool Strategy')}</h2>

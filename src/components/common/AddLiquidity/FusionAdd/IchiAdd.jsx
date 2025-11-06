@@ -10,7 +10,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextHeading } from '@/components/typography'
-import { ichiVaultAbi } from '@/constant/abi/fusion'
+import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
@@ -18,7 +18,8 @@ import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import { SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 export const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([

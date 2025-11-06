@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
+import { erc20Abi } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { CHAINLINK_TOKEN } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { fromWei } from '@/lib/utils'
 
@@ -18,7 +18,7 @@ const useChainLINKData = () => {
   const contracts = useMemo(() => {
     if (!account || tokens.length === 0) return []
     return tokens?.map(token => ({
-      abi: ERC20Abi,
+      abi: erc20Abi,
       address: token.address,
       functionName: 'balanceOf',
       args: [account],

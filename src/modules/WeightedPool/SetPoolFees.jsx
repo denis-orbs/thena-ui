@@ -7,8 +7,8 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn } from '@/lib/utils'
-import { InfoNeutralIcon } from '@/svgs'
 
 export default function SetPoolFees({ fees, setFees }) {
   const [show, setShow] = useState(false)
@@ -48,7 +48,7 @@ export default function SetPoolFees({ fees, setFees }) {
             )}
             onClick={() => setShow(prev => !prev)}
           >
-            <InfoNeutralIcon className='h-4 w-4' />
+            <InfoIcon />
           </EmphasisButton>
         </div>
 

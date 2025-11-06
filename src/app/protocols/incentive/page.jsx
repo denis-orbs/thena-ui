@@ -2,12 +2,12 @@
 
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
 
 import { Neutral } from '@/components/alert'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
+import BackButton from '@/components/buttons/BackButton'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import IconGroup from '@/components/icongroup'
@@ -20,11 +20,13 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useBribeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
-import { ArrowLeftIcon, ChevronDownIcon, InfoIcon } from '@/svgs'
 
 import { TokenModal } from './TokenModal'
 
@@ -52,7 +54,6 @@ export default function IncentivePage() {
   const [isConfirmState, setIsConfirmState] = useState(false)
   const [amounts, setAmounts] = useState({})
   const total = Object.values(amounts).reduce((sum, curr) => sum + Number(curr), 0)
-  const { push } = useRouter()
   const { account } = useWallet()
   const [isFixedAmount, setIsFixedAmount] = useState(false)
   const [pair, setPair] = useState(null)
@@ -87,9 +88,7 @@ export default function IncentivePage() {
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
-        <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/protocols')}>
-          {t('Back')}
-        </TextButton>
+        <BackButton href='/protocols' />
         <h2 className='font-archia'>{t('Voting Incentive')}</h2>
       </div>
 
@@ -160,12 +159,7 @@ export default function IncentivePage() {
                 ) : (
                   <p className='text-neutral-400'>{t('Select Pair')}</p>
                 )}
-                <ChevronDownIcon
-                  className={cn(
-                    'transfrom h-5 w-5 transition-all duration-150 ease-out',
-                    pairOpen ? 'rotate-180' : 'rotate-0',
-                  )}
-                />
+                <ChevronDownIcon isRevert={pairOpen} />
               </div>
             </div>
 
@@ -188,19 +182,13 @@ export default function IncentivePage() {
                 ) : (
                   <p className='text-neutral-400'>{t('Select Asset')}</p>
                 )}
-                <ChevronDownIcon
-                  className={cn(
-                    'transfrom h-5 w-5 transition-all duration-150 ease-out',
-                    pairOpen ? 'rotate-180' : 'rotate-0',
-                  )}
-                />
+                <ChevronDownIcon isRevert={pairOpen} />
               </div>
             </div>
 
             <div className={cn('flex flex-col gap-2', !asset && 'hidden')}>
               <TextHeading className='flex items-center gap-1'>
-                {t('Number of Epochs')}{' '}
-                <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='NUMBER_OF_EPOCHS' />
+                {t('Number of Epochs')} <InfoIcon className='ml-1' data-tooltip-id='NUMBER_OF_EPOCHS' />
                 <CustomTooltip id='NUMBER_OF_EPOCHS' className='max-w-[320px]'>
                   Number of epochs is the number of times that the bribe is distributed
                 </CustomTooltip>

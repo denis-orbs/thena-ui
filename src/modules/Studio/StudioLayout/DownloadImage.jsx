@@ -6,7 +6,8 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { cn, rewriteS3Host } from '@/lib/utils'
-import { DownloadIcon } from '@/svgs'
+
+import DownloadIcon from '~/svgs/download.svg'
 
 // Utility function for delays
 const delay = ms =>
@@ -142,7 +143,7 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', shoul
         </>
       ) : (
         <>
-          <DownloadIcon className='h-4 w-4' />
+          <DownloadIcon className='size-4' />
           {t('Download')}
         </>
       )}

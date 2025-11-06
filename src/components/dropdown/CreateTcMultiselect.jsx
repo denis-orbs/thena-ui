@@ -2,8 +2,8 @@
 
 import React, { useMemo, useState } from 'react'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import CheckBox from '../checkbox'
 import Input from '../input'
@@ -44,11 +44,7 @@ function CreateTcMultiSelect({ className, data, selected, setSelected }) {
         val={selected.length ? `${selected.length} Selected` : ''}
         onClick={() => setOpen(!open)}
         placeholder='Select Pairs'
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} />}
         readOnly
       />
       <Modal

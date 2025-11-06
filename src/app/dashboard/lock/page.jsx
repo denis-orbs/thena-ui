@@ -18,6 +18,7 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useWithdrawLock } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import AutomationButton from '@/modules/AutomationContract/AutomationButton'
 import AutomationStatus from '@/modules/AutomationContract/AutomationStatus'
@@ -25,7 +26,10 @@ import AutomationsWarning from '@/modules/AutomationContract/AutomationsWarning'
 import LockExpire from '@/modules/AutomationContract/LockExpire'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { useChainSettings } from '@/state/settings/hooks'
-import { GiftIcon, InfoCirclePrimary, InfoCircleWhite, LockIcon, RefreshIcon } from '@/svgs'
+
+import GiftIcon from '~/svgs/gift.svg'
+import LockIcon from '~/svgs/lock.svg'
+import RefreshIcon from '~/svgs/refresh.svg'
 
 import CreateLockModal from './createLockModal'
 import ManageModal from './manageModal'
@@ -229,7 +233,7 @@ export default function LockPage() {
             <article className={cn('my-4 flex flex-col gap-4 lg:flex-row', veTHEs.length > 0 && 'hidden lg:flex')}>
               <Info className='flex-col justify-between sm:flex-row lg:p-8'>
                 <div className='flex items-center gap-4'>
-                  <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                  <InfoIcon className='stroke-primary-600 min-w-4 lg:size-8 lg:min-w-8' />
                   <p>{t('Lock THE Desciption')}</p>
                 </div>
                 <TertiaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => goToDoc(docLink)}>
@@ -239,7 +243,7 @@ export default function LockPage() {
 
               <Info className={cn('flex-col justify-between sm:flex-row lg:p-8', !isNearlyExpired && 'hidden')}>
                 <div className='flex items-center gap-4'>
-                  <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                  <InfoIcon className='stroke-primary-600 min-w-4 lg:size-8 lg:min-w-8' />
                   <p>{t('Warning THE claim rebase fee')}</p>
                 </div>
                 <PrimaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => push('/dashboard/rewards')}>
@@ -269,7 +273,7 @@ export default function LockPage() {
             ) : (
               <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
                 <Highlight>
-                  <InfoCircleWhite className='h-4 w-4' />
+                  <InfoIcon className='stroke-neutral-50' />
                 </Highlight>
                 <div className='flex flex-col items-center gap-3'>
                   <h2>{t('No veTHE found')}</h2>

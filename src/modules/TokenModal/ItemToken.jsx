@@ -10,7 +10,11 @@ import useWallet from '@/hooks/useWallet'
 import { addToken, cn, formatAmount, goScan } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon, MinusIcon, PlusCircleIcon, PlusIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
+import MinusIcon from '~/svgs/minus.svg'
+import PlusIcon from '~/svgs/plus.svg'
+import PlusCircleIcon from '~/svgs/plus-circle.svg'
 
 import WarningModal from './WarningModal'
 

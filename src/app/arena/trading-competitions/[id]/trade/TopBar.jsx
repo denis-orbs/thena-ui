@@ -1,22 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import Loading from '@/app/loading'
 import Box from '@/components/box'
-import { TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
-import { ArrowLeftIcon, InfoIcon } from '@/svgs'
 
 function TopBar({ competition = {}, balance }) {
   const { id } = useParams()
@@ -67,12 +66,8 @@ function TopBar({ competition = {}, balance }) {
   return (
     <div className='my-10 flex flex-col gap-10'>
       <div>
-        <Link href={`/arena/trading-competitions/${id}`}>
-          <TextButton className='mb-6 pl-1' LeadingIcon={ArrowLeftIcon}>
-            {t('Back')}
-          </TextButton>
-        </Link>
-        <div className='flex justify-between'>
+        <BackButton href={`/arena/trading-competitions/${id}`} />
+        <div className='mt-6 flex justify-between'>
           <TextHeading className='text-xl lg:text-3xl'>{competition?.name}</TextHeading>
         </div>
       </div>
@@ -100,7 +95,7 @@ function TopBar({ competition = {}, balance }) {
                     {formatAmount(fromWei(pnl, competition?.competitionRules?.winningTokenDecimal), false, 10, false)}
                   </TextHeading>
                 </div>
-                <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
+                <InfoIcon className='hidden lg:block' data-tooltip-id='user-pnl-tooltip' />
                 <CustomTooltip id='user-pnl-tooltip' className='max-w-[500px]'>
                   {t('This Is Your PNL', { ticker: competition.competitionRules?.winningToken?.symbol })}
                 </CustomTooltip>

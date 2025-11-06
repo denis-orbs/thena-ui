@@ -20,7 +20,8 @@ import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
 import SideBarCreateWeighted from '@/modules/WeightedPool/SideBarCreateWeighted'
-import { ScalesIcon } from '@/svgs'
+
+import ScalesIcon from '~/svgs/scales.svg'
 
 function PoolWithStep({
   currentStep,

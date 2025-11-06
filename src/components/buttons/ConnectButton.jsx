@@ -14,7 +14,8 @@ import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 import { cn, formatAddress } from '@/lib/utils'
-import { PowerCircleIcon } from '@/svgs'
+
+import PowerIcon from '~/svgs/power-icon.svg'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 import NextImage from '../image/NextImage'
@@ -120,7 +121,7 @@ export default function ConnectButton({ className, isHeader = false, isMobile = 
 
   return (
     <PrimaryButton className={cn('leading-5', className)} onClick={() => openConnectModal()}>
-      {isHeader && isMini ? <PowerCircleIcon className='!size-4' /> : t('Connect Wallet')}
+      {isHeader && isMini ? <PowerIcon className='!size-4' /> : t('Connect Wallet')}
     </PrimaryButton>
   )
 }

@@ -2,19 +2,15 @@ import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { erc20Abi } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import { rewardEarnedAbi } from '@/constant/abi'
+import { ClaimerABI } from '@/constant/abi/ClaimerABI'
+import rewardEarnedAbi from '@/constant/abi/rewardEarned.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import {
-  getClaimerContract,
-  getTheContract,
-  getVeDistContract,
-  getVeTHEContract,
-  getVoterContract,
-} from '@/lib/contracts'
+import { getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -32,7 +28,10 @@ export const useCreateLock = () => {
         const createuuid = uuidv4()
         const unlockString = dayjs(date).format('MMM D, YYYY')
         const unlockTime = dayjs(date).diff(dayjs(), 'second')
-        const theContract = getTheContract(chainId)
+        const theContract = {
+          address: Contracts.THE[chainId],
+          abi: erc20Abi,
+        }
         const veTHEaddress = Contracts.veTHE[chainId]
         setPending(true)
         const allowance = await readCall(theContract, 'allowance', [account, veTHEaddress], chainId)
@@ -212,7 +211,10 @@ export const useIncreaseLock = () => {
         const key = uuidv4()
         const approveuuid = uuidv4()
         const increaseuuid = uuidv4()
-        const theContract = getTheContract(chainId)
+        const theContract = {
+          address: Contracts.THE[chainId],
+          abi: erc20Abi,
+        }
         const veTHEaddress = Contracts.veTHE[chainId]
 
         setPending(true)
@@ -736,7 +738,10 @@ export const useClaimBribes = () => {
       try {
         setPending(true)
         const key = uuidv4()
-        const claimContract = getClaimerContract(chainId)
+        const claimContract = {
+          address: Contracts.claimer[chainId],
+          abi: ClaimerABI,
+        }
         const claimuuid = uuidv4()
         const params = [[pool?.votingIncentives], [(pool?.rewards || []).map(item => item.address)]]
 
@@ -752,13 +757,7 @@ export const useClaimBribes = () => {
           },
         })
 
-        const isSuccess = await writeTxn(
-          key,
-          claimuuid,
-          claimContract,
-          chainId === CHAIN_ID.TEST_BSC ? 'claimVotingIncetivesAddress' : 'claimVotingIncentivesAddress',
-          params,
-        )
+        const isSuccess = await writeTxn(key, claimuuid, claimContract, 'claimVotingIncentivesAddress', params)
         if (!isSuccess) {
           setPending(false)
           return
@@ -1058,7 +1057,10 @@ export const useClaimAll = () => {
 
         // Claim bribes
         if (veRewards.length > 0) {
-          const claimContract = getClaimerContract(chainId)
+          const claimContract = {
+            address: Contracts.claimer[chainId],
+            abi: ClaimerABI,
+          }
           const votingIncentives = []
           const rewardsTokensArray = []
           veRewards.forEach(item => {

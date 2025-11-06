@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { formatUnits, getAddress, isAddress } from 'viem'
+import { erc20Abi, formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import TokenBadge from '@/components/badges/TokenBadge'
@@ -8,14 +8,14 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
 import { SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
+import WarningIcon from '@/icons/WarningIcon'
 import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
-import { ChevronDownIcon, WarningTriangleIcon } from '@/svgs'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 
@@ -105,22 +105,22 @@ function SelectToken({
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'name',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'symbol',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'decimals',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'balanceOf',
         address: search,
         args: [account],
@@ -236,10 +236,7 @@ function SelectToken({
             TrailingIcon={
               !isDisabled && (
                 <ChevronDownIcon
-                  className={cn(
-                    'transform cursor-pointer transition-all duration-150 ease-out',
-                    open ? 'rotate-180' : 'rotate-0',
-                  )}
+                  isRevert={open}
                   onMouseDown={e => {
                     e.preventDefault()
                     setOpen(!open)
@@ -328,7 +325,7 @@ function SelectToken({
       </div>
       {isError && (
         <p className='text-error-500 mt-1 mb-2 flex gap-1'>
-          <WarningTriangleIcon className='h-5 w-5' />
+          <WarningIcon className='size-5' />
           <span>{errorMessage}</span>
         </p>
       )}

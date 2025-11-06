@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl'
 
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
-import { RegisterIcon, SendIcon, StarWhiteIcon, TaskCheckedIcon } from '@/svgs'
 
 export function HowItWork() {
   const t = useTranslations()
@@ -11,25 +10,25 @@ export function HowItWork() {
       <div className='grid grid-cols-1 gap-y-12 md:grid-cols-4'>
         <HowItWorksItem
           className='h-12 w-12'
-          icon={SendIcon}
+          icon='/svgs/send.svg'
           title={t('Send Invitation')}
           description={t('Send Invitation Description')}
         />
         <HowItWorksItem
           className='h-12 w-12'
-          icon={RegisterIcon}
+          icon='/svgs/register.svg'
           title={t('Registration')}
           description={t('Registration Description')}
         />
         <HowItWorksItem
           className='h-12 w-12'
-          icon={TaskCheckedIcon}
+          icon='/svgs/task-checked.svg'
           title={t('1 Weekly Task')}
           description={t('1 Weekly Task Description')}
         />
         <HowItWorksItem
           className='h-12 w-12'
-          icon={StarWhiteIcon}
+          icon='/svgs/star-white.svg'
           title={t('Receive 10 Points')}
           description={t('Receive 10 Points Description')}
         />

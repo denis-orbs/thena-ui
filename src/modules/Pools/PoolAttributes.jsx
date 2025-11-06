@@ -6,14 +6,18 @@ import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, PAIR_TYPES, SCAN_URLS } from '@/constant'
-import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
-import { newPoolAbi } from '@/constant/abi/fusion'
+import { BasePluginABI } from '@/constant/abi/BasePluginABI'
+import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
+import newPoolAbi from '@/constant/abi/fusion/newPool.json'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useCopyText } from '@/hooks/useCopyText'
+import CheckIcon from '@/icons/CheckIcon'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { CheckIcon, CopyArenaIcon, LinkExternalPrimaryIcon } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
+import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 
 export function PoolAttributesCL({ strategy, pool }) {
   const isAutomatic = !MANUAL_TYPES.includes(strategy.title)
@@ -27,7 +31,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { data: plugInAddress } = useReadContract({
     address: strategy?.address,
-    abi: algebraPoolV3Abi,
+    abi: AlgebraPoolV3ABI,
     functionName: 'plugin',
     query: {
       enabled: MANUAL_TYPES.includes(strategy?.title),
@@ -36,7 +40,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   })
   const { data: feeType } = useReadContract({
     address: plugInAddress,
-    abi: basePluginAbi,
+    abi: BasePluginABI,
     functionName: 'feeType',
     query: {
       enabled: !!plugInAddress && plugInAddress !== zeroAddress,

@@ -6,7 +6,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import Modal, { ModalBody } from '@/components/modal'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { ChevronRightIcon } from '@/svgs'
+import ChevronRightIcon from '@/icons/ChevronRightIcon'
 
 function DiscoverModal({ showLearnMore, text, keyOpen, title = '', titleStyle, showHeadModal = true }) {
   const [checked, setChecked] = useState(true)
@@ -67,7 +67,7 @@ function DiscoverModal({ showLearnMore, text, keyOpen, title = '', titleStyle, s
               <Link className='w-full lg:w-[140px]' href='https://docs.thena.fi/thena/arena' target='_blank'>
                 <PrimaryButton className='w-full p-3'>
                   {t('Learn more')}
-                  <ChevronRightIcon className='h-4 w-4 text-white' />
+                  <ChevronRightIcon className='text-white' />
                 </PrimaryButton>
               </Link>
             )}

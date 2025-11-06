@@ -3,10 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import NextImage from '@/components/image/NextImage'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { SettingsIcon, ZapperIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 import KyberZapperIncreasePane from './FusionAdd/KyberZapperIncreasePane'
 import KyberZapperPane from './FusionAdd/KyberZapperPane'
@@ -48,7 +50,7 @@ export default function ManualAddPanel({
       {
         label: (
           <div className='flex items-center justify-center gap-1'>
-            <ZapperIcon className='size-4' />
+            <NextImage src='/svgs/zapper.svg' alt='zapper icon' className='size-4' />
             <span>{t('Zapper Deposit')}</span>
           </div>
         ),

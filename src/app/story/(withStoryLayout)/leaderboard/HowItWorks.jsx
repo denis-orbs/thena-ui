@@ -2,7 +2,11 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
-import { AwardIcon, CrownIcon, GiftIcon, StarLineWhiteIcon } from '@/svgs'
+
+import AwardIcon from '~/svgs/award.svg'
+import CrownIcon from '~/svgs/crown.svg'
+import GiftIcon from '~/svgs/gift.svg'
+import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
 
 export default function HowItWorks() {
   const t = useTranslations()

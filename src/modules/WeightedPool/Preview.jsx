@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -11,7 +12,6 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { errorToast } from '@/lib/notify'
 import { formatAmount, toWei, wrappedAddress } from '@/lib/utils'
-import { CoinsHandIcon } from '@/svgs'
 
 import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'
@@ -79,7 +79,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
                 $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
               </TextHeading>
               <div className='flex gap-3'>
-                <CoinsHandIcon className='h-5 w-5' />
+                <Image src='/svgs/coins-hand.svg' className='size-5' />
                 <Paragraph className='text-base! leading-5!'>{`Fees ${fees} %`}</Paragraph>
               </div>
             </div>

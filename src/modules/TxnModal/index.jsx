@@ -9,9 +9,11 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { TextHeading } from '@/components/typography'
 import { TXN_STATUS } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { clearRetryParams, closeRetryTransactionModal } from '@/state/transactions/actions'
 import { useTxn } from '@/state/transactions/hooks'
-import { CheckCircleIcon, InfoIcon } from '@/svgs'
+
+import CheckCircleIcon from '~/svgs/checkCircle.svg'
 
 function TxnModal() {
   const { popup, title, transactions, final, retryParams, retryModalIsOpen, retryResolver } = useSelector(
@@ -78,13 +80,13 @@ function TxnModal() {
                   <CircleImage className='h-5 w-5 rounded-full' src='/images/spin.png' alt='thena spin' />
                 )}
                 {txn.status === TXN_STATUS.PENDING && <Spinner />}
-                {txn.status === TXN_STATUS.FAILED && <InfoIcon className='stroke-error-600 h-5 w-5' />}
+                {txn.status === TXN_STATUS.FAILED && <InfoIcon className='stroke-error-600 size-5' />}
               </div>
             ))}
         </div>
         {final && (
           <Info>
-            <InfoIcon className='stroke-primary-600 h-4 w-4' />
+            <InfoIcon className='stroke-primary-600' />
             <p>{t('All done')}</p>
           </Info>
         )}

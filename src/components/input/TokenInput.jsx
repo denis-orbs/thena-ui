@@ -3,9 +3,9 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { BNB_LOGO, BSC_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn, formatAmount } from '@/lib/utils'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
-import { ChevronDownIcon } from '@/svgs'
 
 import TokenBadge from '../badges/TokenBadge'
 import { EmphasisButton } from '../buttons/Button'
@@ -108,7 +108,7 @@ function TokenInput({
                   className='h-9 w-[130px]! rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
                   onClick={() => setTokenPopup(true)}
                 >
-                  {t('Select Token')} <ChevronDownIcon className='h-4 w-4 stroke-neutral-200! text-neutral-200' />
+                  {t('Select Token')} <ChevronDownIcon className='stroke-neutral-200! text-neutral-200' />
                 </EmphasisButton>
               ) : (
                 <Skeleton className='h-[36px] w-[100px]' />

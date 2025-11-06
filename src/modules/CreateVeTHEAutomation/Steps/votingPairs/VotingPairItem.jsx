@@ -7,10 +7,14 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Input from '@/components/input'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
-import { ChevronDownIcon, LockIcon, TrashIcon, UnlockIcon } from '@/svgs'
+
+import LockIcon from '~/svgs/lock.svg'
+import TrashIcon from '~/svgs/trash.svg'
+import UnlockIcon from '~/svgs/unlock.svg'
 
 function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
   const t = useTranslations()
@@ -138,9 +142,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon
-          className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', isOpen ? 'rotate-180' : 'rotate-0')}
-        />
+        <ChevronDownIcon isRevert={isOpen} />
       </div>
       <div className={cn('float-right flex flex-row items-center', width < 450 ? 'mt-3 justify-between' : '')}>
         <div className='mr-3'>

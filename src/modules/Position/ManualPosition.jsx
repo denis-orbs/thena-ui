@@ -23,13 +23,15 @@ import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
-import { InfoIcon, RefreshIcon } from '@/svgs'
+
+import RefreshIcon from '~/svgs/refresh.svg'
 
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
@@ -267,7 +269,7 @@ export default function ManualPosition({ position }) {
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
+            {feesInUsd.gt(0) && <InfoIcon data-tooltip-id={`net-${tokenId}`} />}
             <CustomTooltip id={`net-${tokenId}`}>
               {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>}
               {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>}

@@ -2,7 +2,10 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { cn, formatPrice } from '@/lib/utils'
-import { HalfPolygonIcon, InfoCircleSmall, PolygonIcon } from '@/svgs'
+
+import HalfPolygonIcon from '~/svgs/half-polygon.svg'
+import InfoCircleSmall from '~/svgs/info-circle-small.svg'
+import PolygonIcon from '~/svgs/polygon.svg'
 
 function Range({ currentPrice, maxPrice, minPrice, liquidity, isFullRange = false }) {
   const t = useTranslations()

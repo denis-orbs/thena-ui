@@ -5,13 +5,14 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
+import NextImage from '@/components/image/NextImage'
 import { SelectorPoolTypeLarge, SelectorPoolTypeMini } from '@/components/selector/SelectorMobile'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
+import InfoIcon from '@/icons/InfoIcon'
 import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
-import { InfoNeutralIcon, PoolGroupIcon } from '@/svgs'
 
 function ContentTypeOptionMini({ heading, desc, active }) {
   const t = useTranslations()
@@ -57,7 +58,7 @@ function ContentTypeOptionMini({ heading, desc, active }) {
             setShow(prev => !prev)
           }}
         >
-          <InfoNeutralIcon className={cn('size-4', show ? 'stroke-neutral-200' : 'stroke-neutral-400')} />
+          <InfoIcon className={cn(show ? 'stroke-neutral-200' : 'stroke-neutral-400')} />
         </EmphasisButton>
       </div>
     </>
@@ -159,7 +160,7 @@ export default function Step1() {
   return (
     <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 xl:gap-8'>
-        <PoolGroupIcon className='h-9 w-9 lg:h-12 lg:w-20' />
+        <NextImage src='/svgs/pool-group.svg' className='h-9 w-9 lg:h-12 lg:w-20' />
         <NewTextHeading className='max-lg:text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 

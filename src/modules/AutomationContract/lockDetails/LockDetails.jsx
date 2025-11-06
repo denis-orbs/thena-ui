@@ -10,9 +10,9 @@ import { THE_LOGO } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
+import InfoIcon from '@/icons/InfoIcon'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount } from '@/lib/utils'
-import { InfoNeutralIcon } from '@/svgs'
 
 import AutomationStatus from '../AutomationStatus'
 
@@ -73,7 +73,7 @@ function LockDetails({ contractData, veTHE }) {
           {found?.minBalanceAuto ? (
             <div className='flex items-center gap-1'>
               <TextHeading className='text-2xl'>{formatAmount(found?.minBalanceAuto)}</TextHeading>
-              <InfoNeutralIcon className='h-4 w-4' data-tooltip-id='minimum-link-balance-required' />
+              <InfoIcon data-tooltip-id='minimum-link-balance-required' />
               <CustomTooltip id='minimum-link-balance-required' className='max-w-[350px]'>
                 {t('Minimum LINK balance required desc')}
               </CustomTooltip>

@@ -17,13 +17,13 @@ import { usePairs } from '@/context/pairsContext'
 import { useTokens } from '@/context/tokensContext'
 import { useAnalyticsChartData } from '@/hooks/useGraph'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import InfoIcon from '@/icons/InfoIcon'
 import { fetchStats } from '@/lib/api'
 import { fetchStats as fetchStatsRevenue } from '@/lib/subgraph'
 import { cn, formatAmount } from '@/lib/utils'
 import SummaryAnalyticsInfo from '@/modules/Analytics/SummaryAnalyticsInfo'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
 
 import PairsTable from './pairs/PairsTable'
 import TokensTable from './tokens/TokensTable'
@@ -483,7 +483,7 @@ export default function AnalyticsPage() {
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <div className='flex flex-col items-center gap-4'>
                   <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
+                    <InfoIcon className='stroke-neutral-50' />
                   </Highlight>
                   <Paragraph className='text-sm text-neutral-500'>{t('No tokens found')}</Paragraph>
                 </div>
@@ -511,7 +511,7 @@ export default function AnalyticsPage() {
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <div className='flex flex-col items-center gap-4'>
                   <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
+                    <InfoIcon className='stroke-neutral-50' />
                   </Highlight>
                   <Paragraph className='text-sm text-neutral-500'>{t('No tokens found')}</Paragraph>
                 </div>
@@ -541,7 +541,7 @@ export default function AnalyticsPage() {
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <div className='flex flex-col items-center gap-4'>
                   <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
+                    <InfoIcon className='stroke-neutral-50' />
                   </Highlight>
                   <Paragraph className='text-sm text-neutral-500'>{t('No pairs found')}</Paragraph>
                 </div>
@@ -569,7 +569,7 @@ export default function AnalyticsPage() {
               <div className='flex h-[538px] content-center items-center justify-center rounded-xl bg-neutral-900'>
                 <div className='flex flex-col items-center gap-4'>
                   <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
+                    <InfoIcon className='stroke-neutral-50' />
                   </Highlight>
                   <Paragraph className='text-sm text-neutral-500'>{t('No pairs found')}</Paragraph>
                 </div>

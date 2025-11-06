@@ -2,7 +2,6 @@
 
 import { gql } from 'graphql-request'
 import { compact, isNil } from 'lodash'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
@@ -10,7 +9,7 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import Box from '@/components/box'
-import { TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
@@ -24,7 +23,8 @@ import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { cn, sleep } from '@/lib/utils'
-import { ArrowLeftIcon, XIcon } from '@/svgs'
+
+import XIcon from '~/svgs/x-close.svg'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
@@ -296,11 +296,7 @@ function CompetitionDetailLayout({ children, params }) {
               <div className='grid grid-cols-12 gap-4 lg:gap-12'>
                 <div className='col-span-12 lg:col-span-7'>
                   <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-                    <Link href={`/arena${queryParams}`}>
-                      <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-                        {t('Back')}
-                      </TextButton>
-                    </Link>
+                    <BackButton href={`/arena${queryParams}`} />
                     <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
                   </div>
                   <CompetitionCard

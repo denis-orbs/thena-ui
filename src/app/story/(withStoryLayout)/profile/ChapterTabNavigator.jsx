@@ -1,7 +1,9 @@
 import { useTranslations } from 'use-intl'
 
+import NextImage from '@/components/image/NextImage'
 import { cn } from '@/lib/utils'
-import { Check2Icon, Lock2Icon } from '@/svgs'
+
+import Check2Icon from '~/svgs/check2.svg'
 
 export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   const t = useTranslations()
@@ -33,9 +35,9 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
         >
           <div className='flex flex-row items-center justify-center'>
             {!isAvailable(chapter) ? (
-              <Lock2Icon className='mr-1 h-5 w-5' />
+              <NextImage src='/svgs/lock-2.svg' alt='lock icon' className='mr-1 h-5 w-5' />
             ) : (
-              <>{/* <ChapterLogoIcon className='mr-1 h-5 w-5' /> */}</>
+              <></>
             )}
             <span className={!isAvailable(chapter) ? 'opacity-40' : ''}>
               {chapter.isCompleted && <Check2Icon className='mr-1 inline-block h-5 w-5' />}

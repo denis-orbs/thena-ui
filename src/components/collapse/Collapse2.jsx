@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownWhiteIcon } from '@/svgs'
 
 import Divider from '../divider'
 
@@ -155,12 +155,7 @@ function Collapsible({
             </p>
           )}
         </div>
-        <ChevronDownWhiteIcon
-          className={cn(
-            'absolute right-4 bottom-4 size-5 text-neutral-50 transition-all duration-300 ease-out',
-            !isOpen ? 'rotate-180' : 'rotate-0',
-          )}
-        />
+        <ChevronDownIcon isRevert={isOpen} className='absolute right-4 bottom-4 text-neutral-50 duration-300' />
       </div>
       {isOpen && (
         <div className='w-full px-2'>

@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
+import { erc20Abi } from 'viem'
 import { useBalance, useReadContract } from 'wagmi'
 
 import IconGroup from '@/components/icongroup'
@@ -8,7 +9,6 @@ import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { BNB_LOGO, BSC_LOGO, SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
@@ -46,7 +46,7 @@ export function TokenAmountInput({
   const { account } = useWallet()
 
   const { data: balanceOf } = useReadContract({
-    abi: ERC20Abi,
+    abi: erc20Abi,
     address: asset?.address,
     functionName: 'balanceOf',
     args: [account],

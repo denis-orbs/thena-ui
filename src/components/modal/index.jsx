@@ -4,8 +4,10 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import ReactModal from 'react-modal'
 
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { cn, isSmallScreen } from '@/lib/utils'
-import { ArrowLeftIcon, XIcon } from '@/svgs'
+
+import XIcon from '~/svgs/x-close.svg'
 
 import { TextIconButton } from '../buttons/IconButton'
 

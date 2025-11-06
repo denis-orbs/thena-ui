@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 import { cn, formatAmount } from '@/lib/utils'
-import { PolygonSmallIcon } from '@/svgs'
+
+import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 
 function WeightedRange({ weighted }) {
   const [hoveredToken, setHoveredToken] = useState(null)

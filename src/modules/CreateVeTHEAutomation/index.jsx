@@ -9,8 +9,8 @@ import { useSelector } from 'react-redux'
 import Box from '@/components/box'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAINLINK_ADDRESS } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { goToDoc } from '@/lib/utils'
-import { InfoNeutralIcon } from '@/svgs'
 
 import NavigationBottom from './NavigationBottom'
 import NavigationTop from './NavigationTop'
@@ -44,7 +44,7 @@ function CreateVeTHEAutomation() {
       <div className='flex flex-col gap-3'>
         {currentStep === 1 && (
           <div className='hidden gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:flex lg:p-8'>
-            <InfoNeutralIcon className='h-8 w-8' />
+            <InfoIcon className='size-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading className='text-xl'>{t('Information on creating veTHE automation')}</TextHeading>
               <div className='flex flex-col gap-4'>
@@ -115,7 +115,7 @@ function CreateVeTHEAutomation() {
             {currentStep === 1 && (
               <div className='mt-4 flex gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 lg:mt-0 lg:hidden lg:p-8'>
                 <div className='size-6'>
-                  <InfoNeutralIcon className='size-6' />
+                  <InfoIcon className='size-6' />
                 </div>
                 <div className='flex flex-col'>
                   <div className='flex flex-col'>

@@ -5,7 +5,8 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
-import { CheckGradientIcon } from '@/svgs'
+
+import CheckGradientIcon from '~/svgs/checkGradient.svg'
 
 function SuccessModal({ isOpen, onClose, heading, message, ref, buttonAction }) {
   const t = useTranslations()

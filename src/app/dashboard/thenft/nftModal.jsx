@@ -12,7 +12,8 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { useStakeNft, useTransferNft, useUnstakeNft } from '@/hooks/useTheNft'
-import { CheckCircleIcon } from '@/svgs'
+
+import CheckCircleIcon from '~/svgs/checkCircle.svg'
 
 const ManageTheNftTab = {
   Stake: 0,

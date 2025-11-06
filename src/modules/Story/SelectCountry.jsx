@@ -5,8 +5,8 @@ import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import { countries } from './Country'
 
@@ -37,11 +37,7 @@ export default function SelectCountry({ className, selected = '', setSelected })
         val={displaySelectedCountry}
         onClick={() => setOpen(!open)}
         placeholder='Choose'
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} />}
         readOnly
       />
 

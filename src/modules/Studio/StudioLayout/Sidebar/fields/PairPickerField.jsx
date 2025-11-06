@@ -12,7 +12,9 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { PATH_NAME } from '@/modules/Studio/lib/utils'
-import { ChevronDownIcon, TrashIcon } from '@/svgs'
+
+import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import TrashIcon from '~/svgs/trash.svg'
 
 import PairModal from './PairModal'
 import PairPopover from './PairPopover'
@@ -65,9 +67,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon
-          className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-        />
+        <ChevronDownIcon className={cn('size-4 transition-transform duration-200', open && 'rotate-180')} />
       </div>
       <EmphasisIconButton className='size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
 

@@ -24,13 +24,15 @@ import { useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
-import { InfoIcon, RefreshIcon } from '@/svgs'
+
+import RefreshIcon from '~/svgs/refresh.svg'
 
 import ClaimModal from './ClaimModal'
 import { WarningOutOfRange } from './ManualPosition'
@@ -284,7 +286,7 @@ export function FarmingPosition({ position }) {
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
+            <InfoIcon data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
               <p className={cn(farmRewardData && farmRewardData[0] === 0n && 'hidden')}>
                 {`${formatAmount(fromWei(farmRewardData?.[0] ?? 0n, 18))} THE`}

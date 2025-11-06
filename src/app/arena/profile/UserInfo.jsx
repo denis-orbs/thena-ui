@@ -2,7 +2,6 @@
 
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -16,12 +15,16 @@ import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
+import CheckIcon from '@/icons/CheckIcon'
+import InfoIcon from '@/icons/InfoIcon'
 import dayjs from '@/lib/arenaDayjs'
 import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
-import { CheckIcon, CopyArenaIcon, ExternalIcon, InfoIcon } from '@/svgs'
+
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
+import ExternalIcon from '~/svgs/external.svg'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -88,7 +91,7 @@ export function UserInfo({ userInfo, following, followers }) {
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
-              <Image
+              <NextImage
                 alt='avatar'
                 src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
@@ -155,7 +158,7 @@ export function UserInfo({ userInfo, following, followers }) {
             </div>
             {isOwnProfile && !userInfo.usernameNfts.length && (
               <Box className='border-primary-800 bg-primary-950 flex items-center justify-between gap-2 border p-2 pl-3 lg:p-2 lg:pl-3'>
-                <InfoIcon className='stroke-primary-600 h-4 w-4' />
+                <InfoIcon className='stroke-primary-600' />
                 <TextHeading className='text-base'>
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>

@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -7,8 +8,8 @@ import { TertiaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useTokenBalanceFn } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
+import WarningIcon from '@/icons/WarningIcon'
 import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
-import { ScalesPrimaryIcon, WarningTriangleIcon } from '@/svgs'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()
@@ -164,7 +165,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             />
             {item.isError && checkError && (
               <p className='text-error-500 mt-1 mb-2 flex gap-1'>
-                <WarningTriangleIcon className='h-5 w-5' />
+                <WarningIcon className='size-5' />
                 <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>
               </p>
             )}
@@ -174,7 +175,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
       <div className='border-primary-800 bg-primary-950 flex flex-col gap-2 rounded-xl border py-2 pr-2 pl-3 lg:p-8'>
         <div className='flex flex-row items-center justify-between'>
           <div className='flex items-center gap-2 lg:gap-4'>
-            <ScalesPrimaryIcon className='size-4 lg:size-8' />
+            <Image src='/svgs/scale-primary.svg' className='size-4 lg:size-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading className='max-lg:font-normal'>{t('Auto optimize liquidity')}</TextHeading>
               <span className='max-lg:font-normal'>

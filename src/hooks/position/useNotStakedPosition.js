@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import { pairAbi } from '@/constant/abi'
+import pairAbi from '@/constant/abi/pair.json'
 import { simulateCall } from '@/lib/contractActions'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 

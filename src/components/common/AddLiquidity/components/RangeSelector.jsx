@@ -9,7 +9,10 @@ import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useInitialTokenPrice, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { MinusIcon, PlusIcon, ReverseIcon } from '@/svgs'
+
+import MinusIcon from '~/svgs/minus.svg'
+import PlusIcon from '~/svgs/plus.svg'
+import ReverseIcon from '~/svgs/reverse.svg'
 
 const inputRegex = /^\d*(?:\\[.])?\d*$/ // match escaped "." characters via in a non-capturing group
 const percentageRegex = /^[+-]?\d+(?:[.]\d+)?%$/

@@ -6,6 +6,7 @@ import AssetDropdown from '@/components/dropdown/AssetDropdown'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import NextImage from '@/components/image/NextImage'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { BNB_LOGO, BSC_LOGO, FusionRangeType } from '@/constant'
@@ -14,7 +15,6 @@ import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useCurrencyLogo, useCurrencyPrice } from '@/hooks/fusion/useCurrencyLogo'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { LockIcon } from '@/svgs'
 
 /**
  * @param {Object} props
@@ -112,7 +112,7 @@ export function TokenAmountCard({
         showOutsideWarning && (
           <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
             <Highlight>
-              <LockIcon className='h-4 w-4' />
+              <NextImage src='/svgs/lock.svg' alt='lock icon' className='size-4' />
             </Highlight>
             <Paragraph>{t('The market price is outside')}</Paragraph>
             <Paragraph>{t('Single-asset deposit only')}</Paragraph>

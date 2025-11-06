@@ -4,7 +4,8 @@ import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
 import { ZERO_ADDRESS } from '@/constant'
-import { nonfungiblePositionManagerV2Abi, nonfungiblePositionManagerV3Abi } from '@/constant/abi'
+import nonfungiblePositionManagerV2Abi from '@/constant/abi/nonfungiblePositionManagerv2.json'
+import nonfungiblePositionManagerV3Abi from '@/constant/abi/nonfungiblePositionManagerv3.json'
 import Contracts from '@/constant/contracts'
 import { getPositionManagerContract } from '@/lib/contracts'
 

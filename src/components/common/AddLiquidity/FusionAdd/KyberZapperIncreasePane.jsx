@@ -40,6 +40,8 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5,
     slippage: slippage * 100,
   })
 
+  const isDisabled = useMemo(() => isFetching || !data, [data, isFetching])
+
   const tokens = useMemo(
     () => ({
       [asset0.address]: asset0,
@@ -158,11 +160,7 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5,
 
       <div className='mt-2 flex w-full flex-col items-center xl:flex-row'>
         {account ? (
-          <PrimaryButton
-            className='w-full'
-            onClick={handleKyberIncreaseLiquidity}
-            disabled={!data || isFetching || !amountIn}
-          >
+          <PrimaryButton className='w-full' onClick={handleKyberIncreaseLiquidity} disabled={isDisabled}>
             {t('Deposit')}
           </PrimaryButton>
         ) : (

@@ -4,8 +4,8 @@ import React from 'react'
 import { TextButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
 import { NewTextSubHeading } from '@/components/typography'
+import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { cn } from '@/lib/utils'
-import { ArrowLeftIcon } from '@/svgs'
 
 function NavigationTop({ steps, currentStep, onPrev }) {
   const t = useTranslations()

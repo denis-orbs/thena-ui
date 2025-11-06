@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SearchIcon } from '@/svgs'
+import SearchIcon from '~/svgs/search.svg'
 
 import Input from '.'
 

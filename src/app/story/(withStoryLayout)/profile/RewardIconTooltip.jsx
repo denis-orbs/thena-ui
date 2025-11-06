@@ -3,7 +3,9 @@ import { useMemo } from 'react'
 
 import CustomTooltip from '@/components/tooltip'
 import { cn } from '@/lib/utils'
-import { DiamondIcon, StarLineSmallIcon } from '@/svgs'
+
+import DiamondIcon from '~/svgs/diamond.svg'
+import StarLineSmallIcon from '~/svgs/star-line-small.svg'
 
 import { RewardType } from '../../constant'
 

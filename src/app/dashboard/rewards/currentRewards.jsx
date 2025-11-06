@@ -13,9 +13,9 @@ import { PAIR_TYPES, THE_LOGO } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import usePrices from '@/hooks/usePrices'
 import { useClaimBribes, useClaimBribesV2, useClaimRebase } from '@/hooks/useVeThe'
+import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { InfoIcon } from '@/svgs'
 
 import { NoRewards } from './NoRewards'
 
@@ -84,7 +84,7 @@ export default function CurrentRewards({ rewards, currentMutate, version = 3 }) 
             tokens: (
               <div className='flex items-center gap-1'>
                 <Paragraph>${formatAmount(pool.rebase_amount.times(prices.THE))}</Paragraph>
-                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`vethe-${pool.id}`} />
+                <InfoIcon data-tooltip-id={`vethe-${pool.id}`} />
                 <CustomTooltip className='min-w-[136px]' id={`vethe-${pool.id}`}>
                   {formatAmount(pool.rebase_amount)} THE
                 </CustomTooltip>

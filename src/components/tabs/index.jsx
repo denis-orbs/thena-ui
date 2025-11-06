@@ -4,8 +4,8 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { SizeTypes } from '@/constant/type'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()
@@ -82,12 +82,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName, itemsAct
               )}
             >
               <TabItem item={item} size={size} className={itemClassName} disabled={item.disabled || false} />
-              <ChevronDownIcon
-                className={cn(
-                  'h-5 w-5 transform transition-all duration-150 ease-out',
-                  hoveredIndex === index ? 'rotate-180' : 'rotate-0',
-                )}
-              />
+              <ChevronDownIcon isRevert={hoveredIndex === index} />
             </div>
             {hoveredIndex === index && (
               <ul

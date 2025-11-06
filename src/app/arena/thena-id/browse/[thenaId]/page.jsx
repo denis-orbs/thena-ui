@@ -7,14 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import ThenaIdModal from '@/app/arena/profile/ThenaIdModal'
 import Box from '@/components/box'
-import { EmphasisButton, TertiaryButton, TextButton } from '@/components/buttons/Button'
+import BackButton from '@/components/buttons/BackButton'
+import { EmphasisButton, TertiaryButton } from '@/components/buttons/Button'
 import ImageThenaId from '@/components/image/ImageThenaId'
+import NextImage from '@/components/image/NextImage'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
@@ -26,7 +27,6 @@ import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { formatAmount, fromWei } from '@/lib/utils'
-import { ArrowLeftIcon } from '@/svgs'
 
 import TransferModal from './TransferModal'
 
@@ -114,7 +114,6 @@ const fetchUsernameNft = async username => {
 }
 
 function ThenaIdPage() {
-  const router = useRouter()
   const t = useTranslations()
   const { thenaId } = useParams()
   const { costPerToken } = useUSDTCostPerToken()
@@ -235,9 +234,7 @@ function ThenaIdPage() {
   return (
     <div>
       <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916]/20 px-1 pt-4 pb-2 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-        <TextButton className='pl-0' onClick={() => router.back()} LeadingIcon={ArrowLeftIcon}>
-          {t('Back')}
-        </TextButton>
+        <BackButton />
       </div>
       <div className='flex flex-col gap-5 md:flex-row md:gap-10'>
         <div className='h-full w-full md:h-[300px] md:w-[300px] lg:h-[350px] lg:w-[350px] xl:h-[400px] xl:w-[400px]'>
@@ -306,7 +303,9 @@ function ThenaIdPage() {
                       target='_blank'
                     >
                       <EmphasisButton
-                        leading={<Image src='/images/icon-button-make-offer.png' width={30} height={30} />}
+                        leading={
+                          <NextImage src='/images/icon-button-make-offer.png' alt='offer icon' width={30} height={30} />
+                        }
                       >
                         {t('Make Offer on Element')}
                       </EmphasisButton>

@@ -12,7 +12,12 @@ import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
-import { EmailIcon, RedditIcon, ShareProfileIcon, TelegramIcon, TwitterIcon } from '@/svgs'
+
+import EmailIcon from '~/svgs/email.svg'
+import RedditIcon from '~/svgs/reddit.svg'
+import ShareIcon from '~/svgs/share-icon.svg'
+import TelegramIcon from '~/svgs/telegram.svg'
+import TwitterIcon from '~/svgs/twiiter.svg'
 
 export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
   const [uploading, setUploading] = useState(false)
@@ -117,7 +122,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
           </>
         ) : (
           <>
-            <ShareProfileIcon className='[&>path]:stroke-primary-100 h-4 w-4' />
+            <ShareIcon className='[&>path]:stroke-primary-100 h-4 w-4' />
             {t('Share')}
           </>
         )}

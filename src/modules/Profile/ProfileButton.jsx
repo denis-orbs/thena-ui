@@ -10,9 +10,12 @@ import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
+import CheckIcon from '@/icons/CheckIcon'
 import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
-import { CheckIcon, PublicIcon, ShareProfileIcon } from '@/svgs'
+
+import PublicIcon from '~/svgs/public.svg'
+import ShareProfileIcon from '~/svgs/share-icon.svg'
 
 const V4_USER_INFO = gql`
   query V4_USER_USERNAME($id: String!) {

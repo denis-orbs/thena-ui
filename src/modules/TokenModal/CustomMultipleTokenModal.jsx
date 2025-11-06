@@ -7,9 +7,11 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalFooter } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import CheckIcon from '@/icons/CheckIcon'
 import { cn, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { CheckIcon, ExternalIcon } from '@/svgs'
+
+import ExternalIcon from '~/svgs/external.svg'
 
 function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelectedAssets, assets, maxAssets }) {
   const [searchText, setSearchText] = useState('')

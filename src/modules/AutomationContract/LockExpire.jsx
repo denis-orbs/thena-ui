@@ -7,7 +7,8 @@ import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
-import { LinkExternalIcon } from '@/svgs'
+
+import LinkExternalIcon from '~/svgs/link-external.svg'
 
 function LockExpire({ veTHEData }) {
   const t = useTranslations()

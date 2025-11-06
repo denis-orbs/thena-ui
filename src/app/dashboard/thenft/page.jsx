@@ -16,9 +16,14 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import useWallet from '@/hooks/useWallet'
+import InfoIcon from '@/icons/InfoIcon'
 import { fetchNfts } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
-import { BankIcon, CoinsStackedIcon, InfoIcon, PiggyIcon, PiggySecondIcon, WalletIcon } from '@/svgs'
+
+import BankIcon from '~/svgs/bank.svg'
+import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import PiggySecondIcon from '~/svgs/piggy-second.svg'
+import WalletIcon from '~/svgs/wallet.svg'
 
 import NftModal from './nftModal'
 import NotConnected from '../NotConnected'
@@ -33,7 +38,7 @@ function InfoBox({ value, title, amount }) {
           <TextHeading className='text-2xl'>{value}</TextHeading>
           {amount && (
             <>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='thenft-rewards' />
+              <InfoIcon data-tooltip-id='thenft-rewards' />
               <CustomTooltip id='thenft-rewards'>{amount}</CustomTooltip>
             </>
           )}
@@ -84,7 +89,7 @@ export default function TheNftPage() {
           <h2>theNFT</h2>
           <Info className='justify-between lg:p-8'>
             <div className='flex items-center gap-4'>
-              <PiggyIcon className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+              <NextImage src='/svgs/piggy-bank.svg' className='size-4 min-w-4 lg:size-8 lg:min-w-8' />
               <div className='flex flex-col gap-2'>
                 <p className='hidden text-xl font-medium lg:block'>{t('Passive Income by Staking theNFT')}</p>
                 <p>{t('Stake Your theNFT for Trading Fees and Royalties')}</p>
@@ -178,7 +183,7 @@ export default function TheNftPage() {
                     <div className='flex items-center gap-2'>
                       <Paragraph>Claimable Fees:</Paragraph>
                       <TextHeading className='text-xl'>${formatAmount(claimableUSD)}</TextHeading>
-                      <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='vethe-claimable' />
+                      <InfoIcon data-tooltip-id='vethe-claimable' />
                       <CustomTooltip id='vethe-claimable'>{formatAmount(claimable)} WBNB</CustomTooltip>
                     </div>
                     <EmphasisButton

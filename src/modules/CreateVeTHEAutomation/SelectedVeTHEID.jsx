@@ -6,8 +6,8 @@ import React, { useState } from 'react'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import usePrices from '@/hooks/usePrices'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount } from '@/lib/utils'
-import { InfoIcon } from '@/svgs'
 
 function SelectedVeTHEID({ veTHESelected }) {
   const t = useTranslations()
@@ -34,7 +34,7 @@ function SelectedVeTHEID({ veTHESelected }) {
               show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoIcon className='size-4 stroke-neutral-400' />
+            <InfoIcon />
           </i>
         </div>
       </div>

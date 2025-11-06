@@ -1,12 +1,12 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
+import NextImage from '@/components/image/NextImage'
 import { Paragraph } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { ChevronSelectorVerticalIcon, InfinityIcon } from '@/svgs'
 
 const PresetProfits = {
   VERY_LOW: 'VERY_LOW',
@@ -94,11 +94,15 @@ export function PresetRanges({
               <Paragraph className={cn('text-xs lg:text-xs', isMiniItem && 'order-2')}>{t(range.title)}</Paragraph>
               {range.percent ? (
                 <div className={cn('flex items-center gap-1', isMiniItem && 'order-1')}>
-                  <ChevronSelectorVerticalIcon className='size-4' />
+                  <NextImage src='/svgs/chevron-selector-vertical.svg' alt='chevron icon' className='size-4' />
                   <Paragraph className='text-xs lg:text-xs'>{range.percent}</Paragraph>
                 </div>
               ) : (
-                <InfinityIcon className={cn('size-4', isMiniItem && 'order-1')} />
+                <NextImage
+                  src='/svgs/infinity.svg'
+                  alt='infinity icon'
+                  className={cn('size-4', isMiniItem && 'order-1')}
+                />
               )}
             </div>
           </div>

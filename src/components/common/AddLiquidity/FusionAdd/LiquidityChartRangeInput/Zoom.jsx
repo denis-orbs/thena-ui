@@ -2,7 +2,9 @@ import { select, zoom } from 'd3'
 import React, { useEffect, useMemo, useRef } from 'react'
 
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
+
+import ZoomInIcon from '~/svgs/zoom-in.svg'
+import ZoomOutIcon from '~/svgs/zoom-out.svg'
 
 export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }) {
   const zoomBehavior = useRef()

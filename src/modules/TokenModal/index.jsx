@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { formatUnits, getAddress, isAddress } from 'viem'
+import { erc20Abi, formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import CircleImage from '@/components/image/CircleImage'
@@ -11,7 +11,6 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { useTokens } from '@/context/tokensContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -111,22 +110,22 @@ function TokenModal({
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'name',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'symbol',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'decimals',
         address: search,
       },
       {
-        abi: ERC20Abi,
+        abi: erc20Abi,
         functionName: 'balanceOf',
         address: search,
         args: [account],

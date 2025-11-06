@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
 
 import CheckBox from '../checkbox'
 import Input from '../input'
@@ -44,11 +44,7 @@ function MultiSelect({ className, data, selected, setSelected, placeHolder }) {
         val={selected}
         onClick={() => setOpen(!open)}
         placeholder={placeHolder}
-        TrailingIcon={
-          <ChevronDownIcon
-            className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-          />
-        }
+        TrailingIcon={<ChevronDownIcon isRevert={open} />}
         readOnly
       />
       <div

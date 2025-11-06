@@ -12,7 +12,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
-import { gammaHypervisorAbi } from '@/constant/abi/fusion'
+import gammaHypervisorAbi from '@/constant/abi/fusion/gammaHypervisor.json'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
@@ -24,7 +24,8 @@ import PoolTitle from '@/modules/PoolTitle'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { SettingsIcon } from '@/svgs'
+
+import SettingsIcon from '~/svgs/settings.svg'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 

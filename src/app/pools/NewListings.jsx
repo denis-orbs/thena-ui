@@ -12,9 +12,12 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import InfoIcon from '@/icons/InfoIcon'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { BarChartIcon, CoinsStackedIcon, InfoIcon } from '@/svgs'
+
+import BarChartIcon from '~/svgs/bar-chart.svg'
+import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 
 function Title({ title, length, className }) {
   return (
@@ -286,7 +289,7 @@ function NewListings({
           {(pool.token0?.isWarning || pool.token1?.isWarning) && (
             <>
               <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
-                <InfoIcon className='stroke-warn-700 size-4' />
+                <InfoIcon className='stroke-warn-700' />
               </div>
               <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md py-2!' place='top'>
                 <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
