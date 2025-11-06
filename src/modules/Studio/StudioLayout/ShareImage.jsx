@@ -3,7 +3,7 @@
 import html2canvas from 'html2canvas-pro'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Textarea from '@/components/input/Textarea'
@@ -27,6 +27,12 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
   const t = useTranslations()
   const { account } = useWallet()
   const { createPresignedUrl } = useCreatePresignedUrl()
+
+  useEffect(() => {
+    if (openShareModal) {
+      setPostContent('')
+    }
+  }, [openShareModal])
 
   const handleUploading = async () => {
     if (uploading || !account) return
@@ -134,7 +140,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
             <Textarea
               className='h-[180px] md:h-[130px]'
               val={postContent}
-              placeholder={t('Write your description here...')}
+              placeholder={t('Write your description here')}
               onChange={e => {
                 setPostContent(e.target.value)
               }}
@@ -185,6 +191,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
               href={getShareSocialNetworkUrl({
                 network: SocialNetwork.Email,
                 content: postContent,
+                url: imageUrl,
               })}
               target='_blank'
               rel='noopener noreferrer'

@@ -34,7 +34,9 @@ export const getShareSocialNetworkUrl = ({ network, content = '', url = '' }) =>
       return `https://www.facebook.com/dialog/share?app_id=${facebookAppID}&display=popup&href=${encodeURL}`
     }
     case SocialNetwork.Email: {
-      return `mailto:?body=${encodeContent}`
+      return `mailto:?subject=${encodeURIComponent('Shared from THENA')}&body=${encodeURIComponent(
+        `${content}\n\n${url}`,
+      )}`
     }
     default:
       return ''
