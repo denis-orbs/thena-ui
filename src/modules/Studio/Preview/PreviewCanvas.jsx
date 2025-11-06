@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -5,7 +6,6 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 
 import LogoIcon from '~/logo.svg'
-import ThenaFiLinkIcon from '~/svgs/thena-fi-link.svg'
 
 export default function PreviewCanvas({ children, background, className }) {
   const parentRef = useRef(null)
@@ -168,7 +168,7 @@ export default function PreviewCanvas({ children, background, className }) {
               <div className='flex h-full items-center justify-center'>{children}</div>
               <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
                 <LogoIcon className='h-8 w-auto' />
-                <ThenaFiLinkIcon className='size-4' />
+                <Image src='/svgs/thena-fi-link.svg' alt='Image' width={114} height={14} />
               </div>
             </>
           )}
@@ -192,7 +192,7 @@ export default function PreviewCanvas({ children, background, className }) {
         <div className='flex items-center justify-center'>{children}</div>
         <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
           <LogoIcon className='h-8 w-auto' />
-          <ThenaFiLinkIcon className='size-4' />
+          <Image src='/svgs/thena-fi-link.svg' alt='Image' width={114} height={14} />
         </div>
       </div>
     </>

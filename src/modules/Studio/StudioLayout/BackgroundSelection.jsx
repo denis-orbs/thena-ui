@@ -19,7 +19,6 @@ import ImageUpIcon from '~/svgs/image-up.svg'
 
 import DownloadImage from './DownloadImage'
 import ShareImage from './ShareImage'
-import useCheckShouldUseS3Upload from '../hooks/useCheckShouldUseS3Upload'
 
 function BackgroundSelection({ state, setField, tpl }) {
   const t = useTranslations()
@@ -93,15 +92,15 @@ function BackgroundSelection({ state, setField, tpl }) {
         <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
           {t('Background Image')}
         </TextHeading>
-        <div className='grid w-full grid-cols-6 gap-4 max-md:grid-cols-2'>
+        <div className='grid w-full grid-cols-6 gap-3 max-md:grid-cols-2'>
           {imageOptions.map(option => (
             <div
               key={option.id}
               className={cn(
-                'flex cursor-pointer flex-col items-center gap-3 rounded-xl border p-3 transition-all duration-300',
+                'flex cursor-pointer flex-col items-center gap-3 rounded-xl border p-3 transition-all duration-150 ease-out',
                 background.id === option.id
                   ? 'border-primary-800 bg-[#230924]'
-                  : 'hover:border-primary-800 border-neutral-700 hover:bg-[#230924]',
+                  : 'border-neutral-700 hover:bg-neutral-800',
               )}
               onClick={() => setField('background', option)}
             >
@@ -225,7 +224,6 @@ function BackgroundSelection({ state, setField, tpl }) {
 function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
   const { Preview } = tpl
   const { account } = useWallet()
-  const shouldUseS3Upload = useCheckShouldUseS3Upload()
   const t = useTranslations()
 
   return (
@@ -239,18 +237,11 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
             <EmphasisButton className='w-1/2' onClick={() => setOpenPreview(false)}>
               <EditIcon className='size-4' /> {t('Edit')}
             </EmphasisButton>
-            {shouldUseS3Upload && !account ? (
-              <ConnectButton className='w-1/2' />
-            ) : (
-              <DownloadImage
-                scale={1920 / 1024}
-                fileName={tpl.title.replace(/ /g, '_')}
-                backgroundColor='transparent'
-                shouldUseS3Upload={shouldUseS3Upload}
-              />
-            )}
+            <DownloadImage scale={1920 / 1024} fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
           </div>
-          {account && (
+          {!account ? (
+            <ConnectButton className='w-1/2' />
+          ) : (
             <ShareImage
               className='w-full'
               scale={1920 / 1024}

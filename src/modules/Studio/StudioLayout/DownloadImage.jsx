@@ -1,11 +1,9 @@
 import html2canvas from 'html2canvas-pro'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
-import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
-import useWallet from '@/hooks/useWallet'
-import { cn, rewriteS3Host } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import DownloadIcon from '~/svgs/download.svg'
 
@@ -15,46 +13,9 @@ const delay = ms =>
     setTimeout(resolve, ms)
   })
 
-function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', shouldUseS3Upload, className }) {
+function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
   const t = useTranslations()
-  const { account } = useWallet()
-  const { createPresignedUrl } = useCreatePresignedUrl()
   const [isDownloading, setIsDownloading] = useState(false)
-
-  const handleDownloadS3Image = useCallback(
-    async imageUrl => {
-      try {
-        const tempLink = document.createElement('a')
-        tempLink.href = `/s3/download/${rewriteS3Host(imageUrl, 'cdn.thena.fi/')}`
-        tempLink.download = `${fileName}.png`
-        tempLink.click()
-
-        // Wait a bit to ensure download started
-        await delay(1000)
-      } catch (error) {
-        console.error('Error downloading S3 image:', error)
-        throw error
-      }
-    },
-    [fileName],
-  )
-
-  const uploadToS3AndDownload = useCallback(
-    async blob => {
-      if (!account) {
-        throw new Error('Account not available')
-      }
-
-      return new Promise((resolve, reject) => {
-        createPresignedUrl(blob, account.toLowerCase(), 'CONTENT_STUDIO', data => {
-          handleDownloadS3Image(data)
-            .then(() => resolve())
-            .catch(error => reject(error))
-        })
-      })
-    },
-    [account, createPresignedUrl, handleDownloadS3Image],
-  )
 
   const directDownload = useCallback(
     async blob => {
@@ -121,12 +82,7 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', shoul
         })
       })
 
-      if (shouldUseS3Upload) {
-        const file = new File([blob], `${fileName}.png`, { type: 'image/png' })
-        await uploadToS3AndDownload(file)
-      } else {
-        await directDownload(blob)
-      }
+      await directDownload(blob)
     } catch (error) {
       console.error('Error processing image download:', error)
     } finally {

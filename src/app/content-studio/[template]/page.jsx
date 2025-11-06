@@ -16,8 +16,8 @@ export default function TemplatePage({ params, searchParams }) {
   const { Preview } = tpl
 
   return (
-    <div className='flex w-full flex-col gap-4 overflow-hidden xl:flex-row xl:gap-8'>
-      <div className='w-full shrink-0 xl:w-[522px]'>
+    <div className='flex w-full flex-col gap-4 overflow-hidden xl:flex-row'>
+      <div className='w-full shrink-0 xl:w-[438px]'>
         <TemplateSidebar
           title={tpl.title}
           subTitle={tpl.subTitle}
