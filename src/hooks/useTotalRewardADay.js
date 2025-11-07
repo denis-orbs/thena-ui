@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { useCallback } from 'react'
 
+import { DibsRewarderABI } from '@/constant/abi/DibsRewarderABI'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { readCall } from '@/lib/contractActions'
-import { getDibsRewarderContract } from '@/lib/contracts'
 import { useChainSettings } from '@/state/settings/hooks'
 
 export const useTotalRewardADay = () => {
@@ -15,7 +16,10 @@ export const useTotalRewardADay = () => {
   const fetchTotalRewardADay = useCallback(
     async day => {
       const totalRewardADay = []
-      const dibsRewarderContract = getDibsRewarderContract(networkId)
+      const dibsRewarderContract = {
+        address: Contracts.dibsRewarder[networkId],
+        abi: DibsRewarderABI,
+      }
 
       if (Number(day) && rewardTokenList && rewardTokenList.length && dibsRewarderContract) {
         for (let i = 0; i < rewardTokenList.length; i++) {

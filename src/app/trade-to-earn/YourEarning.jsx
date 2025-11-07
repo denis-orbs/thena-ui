@@ -15,12 +15,13 @@ import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { trade2EarnStartTime } from '@/constant'
+import { DibsRewarderABI } from '@/constant/abi/DibsRewarderABI'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getDibsRewarderContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import {
   fetchDataEarnings,
@@ -121,7 +122,10 @@ function YourEarning({ setPending }) {
         if (!_.isEqual(earnings, earningsFetch) || !data.length) {
           setLoading(true)
         }
-        const dibsRewarder = getDibsRewarderContract(networkId)
+        const dibsRewarder = {
+          address: Contracts.dibsRewarder[networkId],
+          abi: DibsRewarderABI,
+        }
         const rs = await Promise.all(
           earnings.map(async item => {
             const totalRewardADay = await fetchTotalRewardADay(item.day)
