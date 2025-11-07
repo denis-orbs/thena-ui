@@ -1,7 +1,6 @@
 import { ChainId } from 'thena-sdk-core'
 
 import {
-  dibsRewarderAbi,
   emergencyRouterAbi,
   ERC20Abi,
   GaugeABI,
@@ -195,8 +194,6 @@ export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaI
 /** **************************************************************************************************
                                             DibsRewarder
   ************************************************************************************************** */
-
-export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, Contracts.dibsRewarder, chainId)
 
 export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)
 
