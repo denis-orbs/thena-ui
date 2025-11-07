@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
@@ -75,7 +74,7 @@ export const useGetZapInRoutePerRange = ({
             ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing)
             : tryParseTick(token0, token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
 
-        const params = {
+        const params = new URLSearchParams({
           dex: 'DEX_THENAALGEBRAINTEGRAL',
           'pool.id': getAddress(poolId),
           'position.tickLower': tickLower,
@@ -83,15 +82,16 @@ export const useGetZapInRoutePerRange = ({
           tokenIn: getAddress(wrappedAddress(tokenIn)),
           amountIn: amount,
           slippage,
-        }
+        })
 
-        const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-          params,
+        const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+          method: 'GET',
           headers: {
             'X-Client-Id': 'thenakyberid',
           },
         })
-        results[title] = response.data?.data
+        const res = await response.json()
+        results[title] = res.data
       }
       return results
     },
@@ -112,8 +112,7 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
         new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
         tokenIn.decimals,
       )
-
-      const params = {
+      const params = new URLSearchParams({
         dex: 'DEX_THENAALGEBRAINTEGRAL',
         'pool.id': getAddress(poolId),
         'position.tickLower': tickLower,
@@ -121,17 +120,16 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
         tokenIn: getAddress(wrappedAddress(tokenIn)),
         amountIn: amount,
         slippage,
-      }
+      })
 
-      const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-        params,
+      const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+        method: 'GET',
         headers: {
-          headers: {
-            'X-Client-Id': 'thenakyberid',
-          },
+          'X-Client-Id': 'thenakyberid',
         },
       })
-      return response.data?.data
+      const res = await response.json()
+      return res.data
     },
     enabled: Boolean(!!poolId && !!tickLower && !!tickUpper && !!tokenIn && !!amountIn),
   })
@@ -160,8 +158,7 @@ export const useGetZapInRouteForExisting = ({
         new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
         tokenIn.decimals,
       )
-
-      const params = {
+      const params = new URLSearchParams({
         dex: 'DEX_THENAALGEBRAINTEGRAL',
         'pool.id': getAddress(poolId),
         'position.id': tokenId,
@@ -170,15 +167,16 @@ export const useGetZapInRouteForExisting = ({
         tokenIn: getAddress(wrappedAddress(tokenIn)),
         amountIn: amount,
         slippage,
-      }
+      })
 
-      const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-        params,
+      const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+        method: 'GET',
         headers: {
           'X-Client-Id': 'thenakyberid',
         },
       })
-      return response.data?.data
+      const res = await response.json()
+      return res.data
     },
     enabled: Boolean(tokenId && poolId && tokenIn && amountIn > 0),
     staleTime: Infinity,
@@ -224,22 +222,23 @@ export const useKyberZapperAddLiquidity = () => {
         }
 
         try {
-          const response = await axios.post(
-            `${BASE_ZAPPER_URL}/in/route/build`,
-            {
-              sender: getAddress(account),
-              route,
-              deadline,
-              source: 'thenakyberid',
+          const assembleRequestBody = {
+            sender: getAddress(account),
+            route,
+            deadline,
+            source: 'thenakyberid',
+          }
+          const response = await fetch(`${BASE_ZAPPER_URL}/in/route/build`, {
+            method: 'POST',
+            headers: {
+              'x-client-id': 'thenakyberid',
             },
-            {
-              headers: {
-                'x-client-id': 'thenakyberid',
-              },
-            },
-          )
+            body: JSON.stringify(assembleRequestBody),
+          })
 
-          buildData = response.data.data
+          const res = await response.json()
+
+          buildData = res.data
         } catch (error) {
           return
         }
@@ -375,22 +374,23 @@ export const useKyberZapperAddLiquidity = () => {
         }
 
         try {
-          const response = await axios.post(
-            `${BASE_ZAPPER_URL}/in/route/build`,
-            {
-              sender: getAddress(account),
-              route,
-              deadline,
-              source: 'thenakyberid',
+          const assembleRequestBody = {
+            sender: getAddress(account),
+            route,
+            deadline,
+            source: 'thenakyberid',
+          }
+          const response = await fetch(`${BASE_ZAPPER_URL}/in/route/build`, {
+            method: 'POST',
+            headers: {
+              'x-client-id': 'thenakyberid',
             },
-            {
-              headers: {
-                'x-client-id': 'thenakyberid',
-              },
-            },
-          )
+            body: JSON.stringify(assembleRequestBody),
+          })
 
-          buildData = response.data.data
+          const res = await response.json()
+
+          buildData = res.data
         } catch (error) {
           return
         }
