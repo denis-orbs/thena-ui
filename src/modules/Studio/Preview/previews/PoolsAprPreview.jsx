@@ -33,8 +33,8 @@ function PairInfo({ pair, size = 'lg', type = 'normal', className }) {
           image: cn('outline-none', size === 'lg' ? '!size-[166px]' : size === 'md' ? '!size-[60px]' : '!size-[52px]'),
         }}
         className={cn('*:not-first:-ml-4', size === 'lg' && '*:not-first:-ml-[58px]')}
-        logo1={normalizeAssetUrl(pair.token0.logoURI ?? UNKNOWN_LOGO)}
-        logo2={normalizeAssetUrl(pair.token1.logoURI ?? UNKNOWN_LOGO)}
+        logo1={normalizeAssetUrl(pair.token0?.logoURI ?? UNKNOWN_LOGO)}
+        logo2={normalizeAssetUrl(pair.token1?.logoURI ?? UNKNOWN_LOGO)}
         width={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         height={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         style={{

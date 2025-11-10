@@ -9,7 +9,6 @@ import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { PATH_NAME } from '@/modules/Studio/lib/utils'
 
@@ -17,12 +16,10 @@ import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import TrashIcon from '~/svgs/trash.svg'
 
 import PairModal from './PairModal'
-import PairPopover from './PairPopover'
 
 export default function PairPickerField({ value, onChange, options = [], onRemove = () => {} }) {
   const [open, setOpen] = useState(false)
   const t = useTranslations()
-  const { isXlDown } = useMediaQuery()
   const wrapperRef = useRef(null)
 
   const pathname = usePathname()
@@ -71,25 +68,13 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
       </div>
       <EmphasisIconButton className='size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
 
-      {/* Use popover for large screens, modal for small screens */}
-      {isXlDown ? (
-        <PairModal
-          popup={open}
-          setPopup={setOpen}
-          pools={options}
-          setSelected={onChange}
-          field={pathname !== PATH_NAME.INCENTIVES ? 'apr' : 'incentives'}
-        />
-      ) : (
-        <PairPopover
-          popup={open}
-          setPopup={setOpen}
-          pools={options}
-          setSelected={onChange}
-          field={pathname !== PATH_NAME.INCENTIVES ? 'apr' : 'incentives'}
-          wrapperRef={wrapperRef}
-        />
-      )}
+      <PairModal
+        popup={open}
+        setPopup={setOpen}
+        pools={options}
+        setSelected={onChange}
+        field={pathname !== PATH_NAME.INCENTIVES ? 'apr' : 'incentives'}
+      />
     </div>
   )
 }
