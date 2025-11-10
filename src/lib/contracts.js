@@ -4,7 +4,6 @@ import {
   emergencyRouterAbi,
   ERC20Abi,
   GaugeABI,
-  pairAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -94,8 +93,6 @@ export const getVoterContract = (chainId, version = 3) => {
 export const getVotingIncentivesContract = (address, chainId) => getContract(votingIncentivesAbi, address, chainId)
 
 export const getGaugeContract = (address, chainId) => getContract(GaugeABI, address, chainId)
-
-export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 
 /** **************************************************************************************************
                                           theNFT (THENIANs)

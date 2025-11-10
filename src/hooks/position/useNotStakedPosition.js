@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import pairAbi from '@/constant/abi/pair.json'
+import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
 import { simulateCall } from '@/lib/contractActions'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
@@ -20,7 +20,7 @@ const getFeesOfPools = async (pools, chainId) => {
     }
 
     try {
-      const fees = await simulateCall({ abi: pairAbi, address: pool.address }, 'claimFees', [], chainId)
+      const fees = await simulateCall({ abi: SolidlyPairABI, address: pool.address }, 'claimFees', [], chainId)
 
       const _reward0 = isV1Pool ? fromWei(fees?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
       const _reward1 = isV1Pool ? fromWei(fees?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable

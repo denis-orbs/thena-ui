@@ -24,9 +24,9 @@ import { GaugeV3ABI } from '@/constant/abi/GaugeV3ABI'
 import { HypervisorMFDABI } from '@/constant/abi/HypervisorMFDABI'
 import { IchiMFDABI } from '@/constant/abi/IchiMFDABI'
 import { MFDFactoryABI } from '@/constant/abi/MFDFactoryABI'
-import pairAbi from '@/constant/abi/pair.json'
 import pairAPIAbi from '@/constant/abi/pairAPI.json'
 import { SolidlyFactoryABI } from '@/constant/abi/SolidlyFactoryABI'
+import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
 import voterAbi from '@/constant/abi/voter.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -40,7 +40,7 @@ import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 const pairABI = {
-  classic: pairAbi,
+  classic: SolidlyPairABI,
   hypervisor: gammaHypervisorAbiV3,
   ichi: ichiVaultV3,
 }
@@ -192,8 +192,8 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
         createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
         isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
-        createCallMulti(claimable0Calls, isClassicPair ? pairAbi : mfdABI[type]),
-        createCallMulti(claimable1Calls, isClassicPair ? pairAbi : mfdABI[type]),
+        createCallMulti(claimable0Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
+        createCallMulti(claimable1Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
       ])
 
       let gaugeIndex = 0
