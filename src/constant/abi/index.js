@@ -7,8 +7,6 @@ import emojiClubAbi from './mint/emojiClub.json'
 import emojiNumeralAbi from './mint/emojiNumeral.json'
 import hindiNumeralAbi from './mint/hindiNumeral.json'
 import numeralAbi from './mint/numeral.json'
-import nonfungiblePositionManagerV2Abi from './nonfungiblePositionManagerv2.json'
-import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
 import pluginFactoryAbi from './pluginFactoryAbi.json'
@@ -44,8 +42,6 @@ export {
   GaugeABI,
   hindiNumeralAbi,
   ichiVaultV3,
-  nonfungiblePositionManagerV2Abi,
-  nonfungiblePositionManagerV3Abi,
   numeralAbi,
   pairAbi,
   pairAPIAbi,

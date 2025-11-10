@@ -94,11 +94,11 @@ const Contracts = {
   tcPerpetualManager: {
     [CHAIN_ID.BSC]: '0xc90992b9aE19ec04b9AA9878A510c2ae3203aEe7',
   },
-  nonfungiblePositionManagerV2: {
+  NPMFusion: {
     ...NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
     [CHAIN_ID.TEST_BSC]: '0xF1E919e24159b14aC32790dD4828B671E2158982',
   },
-  nonfungiblePositionManagerV3: {
+  NPMIntegral: {
     [CHAIN_ID.BSC]: '0x643B68Bf3f855B8475C0A700b6D1020bfc21d02e',
     [CHAIN_ID.TEST_BSC]: '0x723E22B19528B86a94C3933b7d6096B145a85Df2',
   },

@@ -4,8 +4,6 @@ import {
   emergencyRouterAbi,
   ERC20Abi,
   GaugeABI,
-  nonfungiblePositionManagerV2Abi,
-  nonfungiblePositionManagerV3Abi,
   pairAbi,
   routerAbi,
   royaltyAbi,
@@ -202,13 +200,6 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
 /** ******************************************************************************************************
                                           NONFUNGIBLE_POSITION_MANAGER
 ******************************************************************************************************* */
-
-export const getPositionManagerContract = (chainId = 56, version = 3) => {
-  if (version === 2) {
-    return getContract(nonfungiblePositionManagerV2Abi, Contracts.nonfungiblePositionManagerV2, chainId)
-  }
-  return getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
-}
 
 export const getFarmingCenterContract = chainId => ({
   abi: FarmCenterABI,
