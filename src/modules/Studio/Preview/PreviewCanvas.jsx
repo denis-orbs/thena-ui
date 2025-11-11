@@ -3,24 +3,20 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 
 import LogoIcon from '~/logo.svg'
 
-export default function PreviewCanvas({ children, background, className }) {
+export default function PreviewCanvas({ children, background, setField, className }) {
   const parentRef = useRef(null)
   const childRef = useRef(null)
   const [scale, setScale] = useState(1)
   const t = useTranslations()
-  const [customImage, setCustomImage] = useState(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const imgInputRef = useRef(null)
-  const backgroundImage = useMemo(() => {
-    if (background.isCustom) {
-      return customImage ? `url(${URL.createObjectURL(customImage)})` : background.value ?? 'none'
-    }
-    return background.value ? `url(${background.value})` : 'none'
-  }, [background.isCustom, background.value, customImage])
+
+  const backgroundImage = useMemo(() => (background.value ? `url(${background.value})` : 'none'), [background.value])
 
   // useFixViewport(parentRef, childRef)
   useEffect(() => {
@@ -47,15 +43,22 @@ export default function PreviewCanvas({ children, background, className }) {
     return () => window.removeEventListener('resize', calculateScale)
   }, [])
 
-  useEffect(() => {
-    if (!background.isCustom) {
-      setCustomImage(null)
-    }
-  }, [background.isCustom])
+  const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB in bytes
 
   const handleFileDrop = file => {
     if (file && file.type.startsWith('image/')) {
-      setCustomImage(file)
+      if (file.size > MAX_FILE_SIZE) {
+        errorToast('Error', 'Image size must not exceed 20 MB')
+        return
+      }
+      // Update background.value with the blob URL - this persists across route changes
+      const blobUrl = URL.createObjectURL(file)
+      setField('background', {
+        ...background,
+        isCustom: true,
+        value: blobUrl,
+        image: blobUrl,
+      })
     }
   }
 
@@ -113,6 +116,7 @@ export default function PreviewCanvas({ children, background, className }) {
           className={cn(
             'relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat',
             background.isCustom && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
+            background.isCustom && 'cursor-pointer',
           )}
           style={{
             width: '1024px',
@@ -128,38 +132,32 @@ export default function PreviewCanvas({ children, background, className }) {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          onClick={() => {
+            if (background.isCustom) {
+              imgInputRef.current?.click()
+            }
+          }}
         >
-          {background.isCustom && !customImage && !background.value ? (
+          <input
+            type='file'
+            onChange={e => {
+              const file = e.target.files[0]
+              if (file) {
+                handleFileDrop(file)
+              }
+              // Reset input value to allow selecting the same file again
+              e.target.value = ''
+            }}
+            accept='image/*'
+            className='hidden'
+            ref={imgInputRef}
+          />
+          {background.isCustom && !background.value ? (
             <div className='flex size-full items-center justify-center bg-[url("/images/content-studio/empty_pair.png")] bg-auto bg-center bg-no-repeat'>
               <div className='flex flex-col items-center justify-center gap-3'>
                 <TextHeading className='font-archia text-center text-3xl font-semibold'>
-                  {t.rich('Upload image title', {
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    link: chunks => (
-                      <span
-                        className='cursor-pointer text-[#DC00D4] underline'
-                        onClick={() => imgInputRef.current?.click()}
-                      >
-                        {chunks}
-                      </span>
-                    ),
-                  })}
+                  {t('Upload image title')}
                 </TextHeading>
-
-                <input
-                  type='file'
-                  onChange={e => {
-                    const file = e.target.files[0]
-                    if (file) {
-                      setCustomImage(file)
-                    }
-                    // Reset input value to allow selecting the same file again
-                    e.target.value = ''
-                  }}
-                  accept='image/*'
-                  className='hidden'
-                  ref={imgInputRef}
-                />
                 <TextSubHeading className='text-center text-neutral-300'>{t('Upload image subtitle')}</TextSubHeading>
               </div>
             </div>

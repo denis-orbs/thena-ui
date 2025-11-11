@@ -29,7 +29,7 @@ export default function TemplatePage({ params, searchParams }) {
         />
       </div>
       <div className='flex flex-col gap-6 xl:flex-1 xl:overflow-hidden'>
-        <PreviewCanvas background={state.background} className='hidden xl:flex'>
+        <PreviewCanvas background={state.background} setField={setField} className='hidden xl:flex'>
           <Preview state={state} setField={setField} />
         </PreviewCanvas>
         <BackgroundSelection state={state} setField={setField} tpl={tpl} />

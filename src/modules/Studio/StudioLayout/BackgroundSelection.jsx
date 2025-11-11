@@ -10,6 +10,7 @@ import Divider from '@/components/divider'
 import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
+import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import PreviewCanvas from '@/modules/Studio/Preview/PreviewCanvas'
 
@@ -187,11 +188,17 @@ function BackgroundSelection({ state, setField, tpl }) {
           onChange={e => {
             const file = e.target.files[0]
             if (file) {
+              const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB in bytes
+              if (file.size > MAX_FILE_SIZE) {
+                errorToast('Error', 'Image size must not exceed 20 MB')
+                e.target.value = ''
+                return
+              }
               setField('background', {
                 id: 6,
                 name: 'Custom image',
-                image: `url(${URL.createObjectURL(file)})`,
-                value: `url(${URL.createObjectURL(file)})`,
+                image: URL.createObjectURL(file),
+                value: URL.createObjectURL(file),
                 isCustom: true,
               })
             }
@@ -204,11 +211,7 @@ function BackgroundSelection({ state, setField, tpl }) {
         />
 
         {state.background.isCustom && state.background.value && (
-          <PreviewCanvas
-            background={state.background}
-            className={cn('flex', state.background.id !== 6 && 'hidden')}
-            watermark='THENA'
-          >
+          <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
             <Preview state={state} setField={setField} />
           </PreviewCanvas>
         )}
