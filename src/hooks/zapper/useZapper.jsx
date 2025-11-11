@@ -9,6 +9,7 @@ import { getAddress, maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { GammaZapABI } from '@/constant/abi/GammaZapABI'
+import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
 import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -17,7 +18,6 @@ import {
   getFarmingCenterContract,
   getGaugeContract,
   getIncentiveContract,
-  getPositionManagerContract,
   getWBNBContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
@@ -310,7 +310,10 @@ export const useKyberZapperAddLiquidity = () => {
         if (isFarming) {
           const farmingCenter = getFarmingCenterContract(chainId)
           const incentiveMaker = getIncentiveContract(chainId)
-          const positionManger = getPositionManagerContract(chainId, 3)
+          const positionManger = {
+            address: Contracts.NPMIntegral[chainId],
+            abi: NPMIntegralABI,
+          }
 
           // MARK: APPROVE LP TOKEN FOR FARMING
           const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)

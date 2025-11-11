@@ -7,16 +7,13 @@ import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
 import { TXN_STATUS } from '@/constant'
+import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
 import pluginFactoryAbi from '@/constant/abi/pluginFactoryAbi.json'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
-import {
-  getERC20Contract,
-  getFarmingCenterContract,
-  getIncentiveContract,
-  getPositionManagerContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { errorToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
@@ -24,6 +21,11 @@ import { useFarmRewards } from '@/state/farmReward/store'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+
+const getNPMContract = (chainId, version) => ({
+  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
+})
 
 export function collectAndClaimRewards({ positions, chainId, account }) {
   const farmingCenter = getFarmingCenterContract(chainId)
@@ -71,7 +73,7 @@ export const useAlgebraAdd = () => {
 
         const farmingCenter = getFarmingCenterContract(chainId)
         const incentiveMaker = getIncentiveContract(chainId)
-        const positionManger = getPositionManagerContract(chainId, version)
+        const positionManger = getNPMContract(chainId, version)
 
         const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
         const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
@@ -337,7 +339,7 @@ export const useAlgebraClaim = (version = 3) => {
           return
         }
       } else {
-        const positionManger = getPositionManagerContract(chainId, version)
+        const positionManger = getNPMContract(chainId, version)
         const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
           tokenId,
           expectedCurrencyOwed0: feeValue0,
@@ -380,7 +382,7 @@ export const useAlgebraEnterFarming = () => {
 
       const incentiveMaker = getIncentiveContract(chainId)
       const farmingCenter = getFarmingCenterContract(chainId)
-      const positionManger = getPositionManagerContract(chainId, 3)
+      const positionManger = getNPMContract(chainId, 3)
 
       const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
       const isNotAppproved = farmingApprovals !== farmingCenter.address
@@ -529,7 +531,7 @@ export const useAlgebraRemove = (version = 3) => {
       }
 
       setPending(true)
-      const positionManger = getPositionManagerContract(chainId, version)
+      const positionManger = getNPMContract(chainId, version)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -582,7 +584,7 @@ export const useAlgebraBurn = (version = 3) => {
         },
       })
       setPending(true)
-      const positionManger = getPositionManagerContract(chainId, version)
+      const positionManger = getNPMContract(chainId, version)
 
       const { calldata, value } = NonfungiblePositionManager.burnCallParameters(tokenId)
 
@@ -611,7 +613,7 @@ export const useAlgebraIncrease = (version = 3) => {
 
   const onAlgebraIncrease = useCallback(
     async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
-      const positionManger = getPositionManagerContract(chainId, version)
+      const positionManger = getNPMContract(chainId, version)
       const algebraAddress = positionManger.address
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
@@ -745,11 +747,11 @@ export const useAlgebraMigration = () => {
       const approveNft = uuidv4()
       const stakeId = uuidv4()
 
-      const nftPositionV3 = Contracts.nonfungiblePositionManagerV3[chainId]
-      const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
+      const nftPositionV3 = Contracts.NPMIntegral[chainId]
+      const nftPositionV2 = Contracts.NPMFusion[chainId]
       const farmingCenter = getFarmingCenterContract(chainId)
       const incentiveMaker = getIncentiveContract(chainId)
-      const positionManger = getPositionManagerContract(chainId, 3)
+      const positionManger = getNPMContract(chainId, 3)
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { positionV3, isPoolExist } = mintInfo
@@ -942,7 +944,7 @@ export const useAlgebraRemoveAll = () => {
       const removeId = uuidv4()
       const redirectId = uuidv4()
 
-      const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
+      const nftPositionV2 = Contracts.NPMFusion[chainId]
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
 
       const transactions = {

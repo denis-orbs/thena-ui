@@ -12,7 +12,7 @@ import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
-import pairAbi from '@/constant/abi/pair.json'
+import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGaugeStake } from '@/hooks/useGauge'
@@ -79,20 +79,24 @@ export default function NotStaked({ pool }) {
     return token0InUsd.div(walletUsd).times(100).toFixed(2)
   }, [walletUsd, token0Amount, pool])
 
-  const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
+  const isSolidlyPool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
 
   const { data: fees } = useSimulateContract({
-    abi: pairAbi,
+    abi: SolidlyPairABI,
     address: pool.address,
     functionName: 'claimFees',
     query: {
-      enable: isV1Pool && isAddress(pool.address),
+      enable: isSolidlyPool && isAddress(pool.address),
     },
   })
 
   const { feesInUsd, reward0, reward1 } = useMemo(() => {
-    const _reward0 = isV1Pool ? fromWei(fees?.result?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
-    const _reward1 = isV1Pool ? fromWei(fees?.result?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
+    const _reward0 = isSolidlyPool
+      ? fromWei(fees?.result?.[0] ?? 0n, pool.token0.decimals)
+      : pool.account.token0claimable
+    const _reward1 = isSolidlyPool
+      ? fromWei(fees?.result?.[1] ?? 0n, pool.token1.decimals)
+      : pool.account.token1claimable
 
     const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
     const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
@@ -102,7 +106,7 @@ export default function NotStaked({ pool }) {
       reward0: _reward0,
       reward1: _reward1,
     }
-  }, [fees?.result, isV1Pool, pool])
+  }, [fees?.result, isSolidlyPool, pool])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -159,7 +163,7 @@ export default function NotStaked({ pool }) {
           </div>
         </div>
 
-        {isV1Pool && (
+        {isSolidlyPool && (
           <div className='flex items-center justify-between'>
             <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
             <div className='flex items-center gap-1'>
@@ -180,7 +184,7 @@ export default function NotStaked({ pool }) {
           </PrimaryButton>
         )}
 
-        {isV1Pool ? (
+        {isSolidlyPool ? (
           <>
             <OutlinedButton
               className='w-full'

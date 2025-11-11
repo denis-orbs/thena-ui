@@ -5,6 +5,8 @@ import { encodeFunctionData } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { ClaimerABI } from '@/constant/abi/ClaimerABI'
+import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import {
@@ -14,7 +16,6 @@ import {
   getIchiVaultContract,
   getMultiFeeDistributionContract,
   getPairContract,
-  getPositionManagerContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { useFarmRewards } from '@/state/farmReward/store'
@@ -258,7 +259,6 @@ export const useRewardPosition = () => {
     if (manualFeesV2.size > 0) {
       const manualFeesArr = [...manualFeesV2]
       const callDatas = []
-      const positionManger = getPositionManagerContract(chainId, 2)
 
       for (let i = 0; i < manualFeesArr.length; i++) {
         const pair = manualFeesArr[i][1]
@@ -276,12 +276,12 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: positionManger.abi,
+        abi: NPMFusionABI,
         functionName: 'multicall',
         args: [callDatas],
       })
 
-      if (!(await sendTxn(key, claimFeesV2Id, positionManger.address, encoded))) {
+      if (!(await sendTxn(key, claimFeesV2Id, Contracts.NPMFusion[chainId], encoded))) {
         setPending(false)
         return
       }
@@ -290,7 +290,6 @@ export const useRewardPosition = () => {
     if (manualFeesV3.size > 0) {
       const manualFeesArr = [...manualFeesV3]
       const callDatas = []
-      const positionManger = getPositionManagerContract(chainId, 3)
 
       for (let i = 0; i < manualFeesArr.length; i++) {
         const pair = manualFeesArr[i][1]
@@ -308,12 +307,12 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: positionManger.abi,
+        abi: NPMIntegralABI,
         functionName: 'multicall',
         args: [callDatas],
       })
 
-      if (!(await sendTxn(key, claimFeesV3Id, positionManger.address, encoded))) {
+      if (!(await sendTxn(key, claimFeesV3Id, Contracts.NPMIntegral[chainId], encoded))) {
         setPending(false)
         return
       }

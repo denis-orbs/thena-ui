@@ -5,7 +5,6 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
-import { maxUint128 } from 'viem'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
@@ -17,8 +16,6 @@ import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import usePrevious from '@/hooks/usePrevious'
 import InfoIcon from '@/icons/InfoIcon'
-import { simulateCall } from '@/lib/contractActions'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, fromWei, getLiquidityRangeType, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
@@ -28,24 +25,6 @@ import { usePools } from '@/state/pools/hooks'
 
 import APR from './APR'
 import Range from './Range'
-
-export const fetchManualInfo = async (account, tokenId, chainId, version) => {
-  const algebraContract = getPositionManagerContract(chainId, version)
-  const balance = await simulateCall(
-    algebraContract,
-    'collect',
-    [
-      {
-        tokenId,
-        recipient: account, // some tokens might fail if transferred to address(0)
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    chainId,
-  )
-  return balance
-}
 
 function ManualItem({ position, isXlDown }) {
   const t = useTranslations()

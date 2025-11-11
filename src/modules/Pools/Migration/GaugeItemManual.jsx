@@ -3,36 +3,15 @@
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
-import { maxUint128 } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { simulateCall } from '@/lib/contractActions'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 
 import RefreshIcon from '~/svgs/refresh.svg'
-
-export const fetchManualInfo = async (account, tokenId, chainId) => {
-  const algebraContract = getPositionManagerContract(chainId, 2)
-  const balance = await simulateCall(
-    algebraContract,
-    'collect',
-    [
-      {
-        tokenId,
-        recipient: account, // some tokens might fail if transferred to address(0)
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    chainId,
-  )
-  return balance
-}
 
 export function GaugeItemManual({ existingPosition, position, fusion, version = 2, tickSpacing }) {
   const t = useTranslations()
