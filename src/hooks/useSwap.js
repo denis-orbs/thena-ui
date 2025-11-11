@@ -300,13 +300,13 @@ export const useTaxTokenSwap = (autoClose = false) => {
   return { handleTaxTokenSwap, pending }
 }
 
-export const useThenaFusionSwap = (autoClose = false) => {
+export const useSolidlySwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn2, closeTxnModal } = useTxn()
   const t = useTranslations()
 
-  const handleThenaFusionSwap = useCallback(
+  const handleSolidlySwap = useCallback(
     async (fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
@@ -422,7 +422,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
     [chainId, startTxn, t, account, endTxn, autoClose, writeTxn2, closeTxnModal],
   )
 
-  return { handleThenaFusionSwap, pending }
+  return { handleSolidlySwap, pending }
 }
 
 export const useBestQuoteSwap = (fromAddress, toAddress, fromAmount, slippage, networkId) =>

@@ -59,7 +59,7 @@ export default function SwapBest({
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
-  // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
+  // const { handleSolidlySwap, pending: solidlySwapPending } = useSolidlySwap()
 
   const isEnabledTradeLH = useMemo(() => {
     if (!liquidityHubEnabled) return false
@@ -361,7 +361,7 @@ export default function SwapBest({
               swapLoadingLH ||
               comparingTrade ||
               wrapPending ||
-              // thenaSwapPending ||
+              // solidlySwapPending ||
               // isLoadingThenaQuote ||
               btnMsg.isError
             }

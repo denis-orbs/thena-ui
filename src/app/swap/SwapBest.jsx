@@ -17,7 +17,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
+import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap, useSolidlySwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
@@ -28,7 +28,7 @@ import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
 import Spinner from '@/components/spinner'
-import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
+import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
 import InfoIcon from '@/icons/InfoIcon'
 
 import RefreshIcon from '~/svgs/refresh.svg'
@@ -81,24 +81,22 @@ export default function SwapBest({
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
-  const isThenaQuoteAndSwap = useMemo(
-    () =>
-      // if (
-      //   ['WBNB', 'BNB', 'USDT'].includes(fromAsset?.symbol) &&
-      //   toAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7' // BAD AI Token
-      // ) {
-      //   return true
-      // }
-      // if (
-      //   ['WBNB', 'BNB', 'USDT'].includes(toAsset?.symbol) &&
-      //   fromAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7'
-      // ) {
-      //   return true
-      // }
+  const isSolidlySwap = useMemo(() => {
+    if (
+      ['USDC'].includes(fromAsset?.symbol) &&
+      toAsset?.address.toLowerCase() === '0xa44d43648daa980011e1c370b6af88a5cd3c854f' // tmTBILL Token
+    ) {
+      return true
+    }
+    if (
+      ['USDC'].includes(toAsset?.symbol) &&
+      fromAsset?.address.toLowerCase() === '0xa44d43648daa980011e1c370b6af88a5cd3c854f'
+    ) {
+      return true
+    }
 
-      false,
-    [],
-  )
+    return false
+  }, [fromAsset?.address, fromAsset?.symbol, toAsset?.address, toAsset?.symbol])
 
   const {
     data: bestTrade,
@@ -108,7 +106,7 @@ export default function SwapBest({
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
-  // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
+  const { handleSolidlySwap, pending: solidlySwapPending } = useSolidlySwap()
 
   const isEnabledTradeLH = useMemo(() => {
     if (isTwap) return false
@@ -147,9 +145,24 @@ export default function SwapBest({
     liquidityHubFailed,
   )
 
+  const { data: solidlyQuoteData, isLoading: solidlyQuotePending } = useSolidlyQuote(
+    fromAsset,
+    toAsset,
+    fromAmount,
+    networkId,
+    isSolidlySwap,
+  )
+
   const quotePending = useMemo(
-    () => (isFallbackLH ? quotePendingLH : isEnabledTradeLH ? quotePendingLH || bestTradePending : bestTradePending),
-    [isFallbackLH, quotePendingLH, isEnabledTradeLH, bestTradePending],
+    () =>
+      isSolidlySwap
+        ? solidlyQuotePending
+        : isFallbackLH
+          ? quotePendingLH
+          : isEnabledTradeLH
+            ? quotePendingLH || bestTradePending
+            : bestTradePending,
+    [isFallbackLH, quotePendingLH, isEnabledTradeLH, bestTradePending, isSolidlySwap, solidlyQuotePending],
   )
 
   const onRefreshQuotes = useCallback(() => {
@@ -160,18 +173,16 @@ export default function SwapBest({
     }
   }, [refetchTradeLH, mutate, isFallbackLH])
 
-  // const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
-  const { data: thenaQuoteData } = useThenaQuote(fromAsset, toAsset, fromAmount, networkId, isThenaQuoteAndSwap)
   // NOTE: For the above function, please check if the token pool is CL or Classic
 
   const outAmount = useMemo(() => {
-    if (isThenaQuoteAndSwap) {
-      const outAmountThenaQuote = thenaQuoteData ? Number(thenaQuoteData?.result[0]) : ''
+    if (isSolidlySwap) {
+      const outAmountThenaQuote = solidlyQuoteData ? Number(solidlyQuoteData[0]) : ''
       return outAmountThenaQuote
     }
 
     return isFallbackLH ? tradeLH?.outAmount : bestTrade?.outAmounts[0] || ''
-  }, [isThenaQuoteAndSwap, tradeLH?.outAmount, bestTrade?.outAmounts, thenaQuoteData, isFallbackLH])
+  }, [isSolidlySwap, tradeLH?.outAmount, bestTrade?.outAmounts, solidlyQuoteData, isFallbackLH])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -247,12 +258,12 @@ export default function SwapBest({
       })
     }
 
-    // if (isThenaQuoteAndSwap) {
-    //   return handleThenaFusionSwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
-    //     setFromAmount('')
-    //     mutateAssets()
-    //   })
-    // }
+    if (isSolidlySwap) {
+      return handleSolidlySwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
+        setFromAmount('')
+        mutateAssets()
+      })
+    }
 
     const onSuccess = (quote, isTradeLH) => {
       onTradeSuccess({ quote, bestTrade, isTradeLH, fromAmount })
@@ -290,6 +301,9 @@ export default function SwapBest({
     deadline,
     mutateAssets,
     onOdosSwap,
+    isSolidlySwap,
+    outAmount,
+    handleSolidlySwap,
     toAmount,
     compareWithLHCallback,
     onSwapLH,
@@ -475,10 +489,11 @@ export default function SwapBest({
                     quotePending ||
                     swapPending ||
                     taxTokenSwapPending ||
+                    solidlySwapPending ||
                     swapLoadingLH ||
                     comparingTrade ||
                     wrapPending ||
-                    // thenaSwapPending ||
+                    // solidlySwapPending ||
                     // isLoadingThenaQuote ||
                     btnMsg.isError
                   }
