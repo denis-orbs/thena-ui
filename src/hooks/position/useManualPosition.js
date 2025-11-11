@@ -6,8 +6,10 @@ import { CurrencyAmount } from 'thena-sdk-core'
 import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 
+import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
+import Contracts from '@/constant/contracts'
 import { simulateCall } from '@/lib/contractActions'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { getFusionFarmingData, getFusionFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
@@ -18,24 +20,40 @@ import { useCachedSWR } from '../useCachedSWR'
 import usePrevious from '../usePrevious'
 import useWallet from '../useWallet'
 
+const getNPMContract = (chainId, version) => ({
+  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
+})
+
 const REFRESH_INTERVAL = 60000 // every 1 minute
 
-const fetchManualInfo = async (positions, account, chainId) => {
+export const fetchManualInfo = async (account, tokenId, chainId, version) => {
+  const algebraContract = getNPMContract(chainId, version)
+  const balance = await simulateCall(
+    algebraContract,
+    'collect',
+    [
+      {
+        tokenId,
+        recipient: account, // some tokens might fail if transferred to address(0)
+        amount0Max: maxUint128,
+        amount1Max: maxUint128,
+      },
+    ],
+    chainId,
+  )
+  return balance
+}
+
+const fetchMPositionInfo = async (positions, account, chainId) => {
   const manualBalances = []
-  const algebraContracts = { 2: getPositionManagerContract(chainId, 2), 3: getPositionManagerContract(chainId, 3) }
 
   for (let i = 0; i < positions.length; i++) {
     const pos = positions[i]
     const version = pos.version ?? 3
-    const algebraContract = algebraContracts[version]
 
     try {
-      const balance = await simulateCall(
-        algebraContract,
-        'collect',
-        [[pos.tokenId, account, maxUint128, maxUint128]],
-        chainId,
-      )
+      const balance = await fetchManualInfo(account, pos.tokenId, chainId, version)
       manualBalances.push(balance)
     } catch (error) {
       manualBalances.push(null)
@@ -55,7 +73,7 @@ export const useManualPositions = positions => {
     [account, positions, chainId],
   )
 
-  const { data: feesList } = useCachedSWR(feesListKey, () => fetchManualInfo(positions, account, chainId), {
+  const { data: feesList } = useCachedSWR(feesListKey, () => fetchMPositionInfo(positions, account, chainId), {
     refreshInterval: REFRESH_INTERVAL,
   })
 

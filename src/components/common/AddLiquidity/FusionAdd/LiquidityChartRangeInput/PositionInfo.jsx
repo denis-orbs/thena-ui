@@ -8,7 +8,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
-import pairAbi from '@/constant/abi/pair.json'
+import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
@@ -245,21 +245,24 @@ function PositionInfo({ position }) {
     position?.reward2?.logoURI,
   ])
 
-  const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title), [position.title])
+  const isSolidlyPool = useMemo(
+    () => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title),
+    [position.title],
+  )
   const { data: fees } = useSimulateContract({
-    abi: pairAbi,
+    abi: SolidlyPairABI,
     address: position.address,
     functionName: 'claimFees',
     query: {
-      enable: isV1Pool && isAddress(position.address),
+      enable: isSolidlyPool && isAddress(position.address),
     },
   })
   const rewardsNotstaked = useMemo(() => {
     if (position.staked) return null
-    const _reward0 = isV1Pool
+    const _reward0 = isSolidlyPool
       ? fromWei(fees?.result?.[0] ?? 0n, position.token0.decimals)
       : position.account.token0claimable
-    const _reward1 = isV1Pool
+    const _reward1 = isSolidlyPool
       ? fromWei(fees?.result?.[1] ?? 0n, position.token1.decimals)
       : position.account.token1claimable
 
@@ -281,7 +284,7 @@ function PositionInfo({ position }) {
     )
   }, [
     fees?.result,
-    isV1Pool,
+    isSolidlyPool,
     position.account.token0claimable,
     position.account.token1claimable,
     position.staked,

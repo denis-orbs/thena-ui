@@ -4,9 +4,6 @@ import {
   emergencyRouterAbi,
   ERC20Abi,
   GaugeABI,
-  nonfungiblePositionManagerV2Abi,
-  nonfungiblePositionManagerV3Abi,
-  pairAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -96,8 +93,6 @@ export const getVoterContract = (chainId, version = 3) => {
 export const getVotingIncentivesContract = (address, chainId) => getContract(votingIncentivesAbi, address, chainId)
 
 export const getGaugeContract = (address, chainId) => getContract(GaugeABI, address, chainId)
-
-export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 
 /** **************************************************************************************************
                                           theNFT (THENIANs)
@@ -202,13 +197,6 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
 /** ******************************************************************************************************
                                           NONFUNGIBLE_POSITION_MANAGER
 ******************************************************************************************************* */
-
-export const getPositionManagerContract = (chainId = 56, version = 3) => {
-  if (version === 2) {
-    return getContract(nonfungiblePositionManagerV2Abi, Contracts.nonfungiblePositionManagerV2, chainId)
-  }
-  return getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
-}
 
 export const getFarmingCenterContract = chainId => ({
   abi: FarmCenterABI,

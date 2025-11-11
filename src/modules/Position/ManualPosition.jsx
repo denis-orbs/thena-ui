@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
-import { maxUint128, zeroAddress } from 'viem'
+import { zeroAddress } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -21,11 +21,10 @@ import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
+import { fetchManualInfo } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
-import { simulateCall } from '@/lib/contractActions'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
@@ -35,24 +34,6 @@ import RefreshIcon from '~/svgs/refresh.svg'
 
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
-
-export const fetchManualInfo = async (account, tokenId, chainId, version) => {
-  const algebraContract = getPositionManagerContract(chainId, version)
-  const balance = await simulateCall(
-    algebraContract,
-    'collect',
-    [
-      {
-        tokenId,
-        recipient: account, // some tokens might fail if transferred to address(0)
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    chainId,
-  )
-  return balance
-}
 
 export default function ManualPosition({ position }) {
   const t = useTranslations()
