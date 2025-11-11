@@ -53,7 +53,7 @@ export const useLocalTokens = () => {
   const { data: tokenPrices = [] } = useQuery({
     queryKey: ['tokenPrices', localTokens.map(t => t.address).join(',')],
     queryFn: async () => {
-      const prices = await Promise.all(localTokens.map(token => getTokenCurrentUSDPrice(token, token.chainId)))
+      const prices = await Promise.all(localTokens.map(token => getTokenCurrentUSDPrice(token.address, token.chainId)))
       return prices // array of numbers
     },
     enabled: localTokens.length > 0,
