@@ -17,7 +17,7 @@ import TrashIcon from '~/svgs/trash.svg'
 
 import PairModal from './PairModal'
 
-export default function PairPickerField({ value, onChange, options = [], onRemove = () => {} }) {
+export default function PairPickerField({ value, onChange, options = [], onRemove = () => {}, pairIndex }) {
   const [open, setOpen] = useState(false)
   const t = useTranslations()
   const wrapperRef = useRef(null)
@@ -27,6 +27,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
   return (
     <div ref={wrapperRef} className='relative flex items-center gap-2'>
       <div
+        data-pair-index={pairIndex}
         className='flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-3 py-3'
         onClick={() => setOpen(!open)}
       >
@@ -74,6 +75,7 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
         pools={options}
         setSelected={onChange}
         field={pathname !== PATH_NAME.INCENTIVES ? 'apr' : 'incentives'}
+        selected={value}
       />
     </div>
   )

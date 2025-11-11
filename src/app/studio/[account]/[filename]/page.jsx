@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   const siteBase = 'https://thena.fi'
   const pageUrl = `${siteBase}/studio/${account}/${encodeURIComponent(filename)}`
 
-  const title = `Content Studio • ${filename}`
+  const title = 'THENA • Content Studio'
   const description = ''
 
   return {

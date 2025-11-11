@@ -190,8 +190,9 @@ function BackgroundSelection({ state, setField, tpl }) {
               setField('background', {
                 id: 6,
                 name: 'Custom image',
-                image: URL.createObjectURL(file),
-                value: URL.createObjectURL(file),
+                image: `url(${URL.createObjectURL(file)})`,
+                value: `url(${URL.createObjectURL(file)})`,
+                isCustom: true,
               })
             }
             // Reset input value to allow selecting the same file again
@@ -201,13 +202,16 @@ function BackgroundSelection({ state, setField, tpl }) {
           className='hidden'
           ref={imgInputRef}
         />
-        <PreviewCanvas
-          background={state.background}
-          className={cn('flex', state.background.id !== 6 && 'hidden')}
-          watermark='THENA'
-        >
-          <Preview state={state} setField={setField} />
-        </PreviewCanvas>
+
+        {state.background.isCustom && state.background.value && (
+          <PreviewCanvas
+            background={state.background}
+            className={cn('flex', state.background.id !== 6 && 'hidden')}
+            watermark='THENA'
+          >
+            <Preview state={state} setField={setField} />
+          </PreviewCanvas>
+        )}
         <div className='flex items-center justify-center gap-2'>
           <Divider className='w-full bg-[#422D4C]' />
           <span className='text-md text-[#8E8194]'>or</span>
@@ -245,7 +249,7 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
     <Modal
       showHeadModal={false}
       isOpen={openPreview}
-      onClose={() => setOpenPreview(false)}
+      closeModal={() => setOpenPreview(false)}
       className='center-modal'
       width='90%'
     >

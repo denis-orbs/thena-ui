@@ -10,7 +10,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 
-function PairModal({ popup, setPopup, setSelected, pools, field = 'apr' }) {
+function PairModal({ popup, setPopup, setSelected, pools, field = 'apr', selected }) {
   const [searchText, setSearchText] = useState('')
   const t = useTranslations()
 
@@ -110,6 +110,37 @@ function PairModal({ popup, setPopup, setSelected, pools, field = 'apr' }) {
         <>
           <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
             <SearchInput className='w-full' val={searchText} setVal={setSearchText} autoFocus />
+            {!!selected && (
+              <div className='hidden flex-col gap-2 px-3 xl:flex'>
+                <Paragraph>{t('Selected Pair')}</Paragraph>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <GroupIconTokens
+                      classNames={{
+                        image: 'outline-2 w-7 h-7',
+                        rows: '*:not-first:-ml-2',
+                        toolTip: 'hidden',
+                      }}
+                      width={32}
+                      height={32}
+                      tokens={[selected.token0, selected.token1]}
+                      showToolTip={false}
+                    />
+                    <TextHeading>{selected.symbol}</TextHeading>
+                  </div>
+
+                  <span
+                    className='text-primary-400 cursor-pointer'
+                    onClick={() => {
+                      setSelected(null)
+                      setPopup(false)
+                    }}
+                  >
+                    {t('Clear Selected')}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           <div className='h-px w-full border border-neutral-700' />
           <div className='flex flex-col gap-2 p-3'>
@@ -117,30 +148,6 @@ function PairModal({ popup, setPopup, setSelected, pools, field = 'apr' }) {
               <Paragraph className='px-3'>{t('Pairs')}</Paragraph>
               {field === 'apr' && <Paragraph className='px-3'>{t('APR')}</Paragraph>}
               {field === 'incentives' && <Paragraph className='px-3'>{t('Voting Incentives')}</Paragraph>}
-            </div>
-            <div
-              className='flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-800'
-              onClick={() => {
-                setSelected(null)
-                setPopup(false)
-              }}
-            >
-              <div className='flex items-center gap-3'>
-                <GroupIconTokens
-                  classNames={{
-                    image: 'outline-2 w-7 h-7',
-                    rows: '*:not-first:-ml-2',
-                    toolTip: 'hidden',
-                  }}
-                  width={32}
-                  height={32}
-                  tokens={[null, null]}
-                  showToolTip={false}
-                />
-                <div className='flex flex-col'>
-                  <TextHeading>{t('No select')}</TextHeading>
-                </div>
-              </div>
             </div>
             <div className='max-h-[340px] overflow-auto'>
               {(displayedPools || []).map((pool, index) => (

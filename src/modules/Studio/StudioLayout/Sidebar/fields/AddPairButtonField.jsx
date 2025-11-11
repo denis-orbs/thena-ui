@@ -15,8 +15,25 @@ function AddPairButtonField({ label, value, onChange, max }) {
 
   if (value >= max || !isXlDown) return null
 
+  const handleClick = () => {
+    const newValue = value + 1
+    onChange(newValue)
+    // On mobile, after adding a pair, click the latest pair picker dropdown
+    if (isXlDown) {
+      setTimeout(() => {
+        // The latest pair index is always newValue - 1 (0-indexed)
+        const latestIndex = newValue - 1
+        const latestElement = document.querySelector(`[data-pair-index="${latestIndex}"]`)
+        // Click the latest pair picker dropdown
+        if (latestElement) {
+          latestElement.click()
+        }
+      }, 200) // Small delay to ensure DOM is updated
+    }
+  }
+
   return (
-    <OutlinedButton className='w-full' onClick={() => onChange(value + 1)}>
+    <OutlinedButton className='w-full' onClick={handleClick}>
       {t(label)}
     </OutlinedButton>
   )

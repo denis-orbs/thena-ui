@@ -132,7 +132,7 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
         {uploading ? (
           <>
             <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
-            {t('Share...')}
+            {`${t('Share')}...`}
           </>
         ) : (
           <>

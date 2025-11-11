@@ -223,6 +223,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
                   value={getValue(f)}
                   onChange={v => handleChange(f, v)}
                   onRemove={() => f.type === 'pair' && onRemove(f)}
+                  pairIndex={f.type === 'pair' && typeof f.__index === 'number' ? f.__index : undefined}
                 />
               </div>
             )

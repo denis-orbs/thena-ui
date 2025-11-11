@@ -17,7 +17,7 @@ export default function PreviewCanvas({ children, background, className }) {
   const imgInputRef = useRef(null)
   const backgroundImage = useMemo(() => {
     if (background.isCustom) {
-      return customImage ? `url(${URL.createObjectURL(customImage)})` : 'none'
+      return customImage ? `url(${URL.createObjectURL(customImage)})` : background.value ?? 'none'
     }
     return background.value ? `url(${background.value})` : 'none'
   }, [background.isCustom, background.value, customImage])
@@ -129,9 +129,9 @@ export default function PreviewCanvas({ children, background, className }) {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          {background.isCustom && !customImage ? (
+          {background.isCustom && !customImage && !background.value ? (
             <div className='flex size-full items-center justify-center bg-[url("/images/content-studio/empty_pair.png")] bg-auto bg-center bg-no-repeat'>
-              <div className='flex flex-col gap-3'>
+              <div className='flex flex-col items-center justify-center gap-3'>
                 <TextHeading className='font-archia text-center text-3xl font-semibold'>
                   {t.rich('Upload image title', {
                     // eslint-disable-next-line react/no-unstable-nested-components
@@ -160,7 +160,7 @@ export default function PreviewCanvas({ children, background, className }) {
                   className='hidden'
                   ref={imgInputRef}
                 />
-                <TextSubHeading className='text-neutral-300'>{t('Upload image subtitle')}</TextSubHeading>
+                <TextSubHeading className='text-center text-neutral-300'>{t('Upload image subtitle')}</TextSubHeading>
               </div>
             </div>
           ) : (
