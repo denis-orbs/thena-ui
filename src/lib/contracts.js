@@ -24,10 +24,6 @@ import {
 import {
   defiedgeStrategyAbi,
   fusionRouterAbi,
-  gammaClearingAbi,
-  gammaHypervisorAbi,
-  gammaHypervisorAbiV3,
-  gammaUniProxyAbi,
   gaugeSimpleAbi,
   ichiFarmingAbi,
   ichiVaultAbi,
@@ -100,30 +96,8 @@ export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, C
                                             Gamma
  ************************************************************************************************** */
 
-export const getGammaUNIProxyContract = ({ chainId, version = 3, isFarming = true }) => {
-  if (version === 3) {
-    const addressList = isFarming ? Contracts.gammaUniProxyFarmV3 : Contracts.gammaUniProxyFeeV3
-    return {
-      abi: gammaUniProxyAbi,
-      address: addressList[chainId],
-    }
-  }
-
-  return getContract(gammaUniProxyAbi, Contracts.gammaUniProxy, chainId)
-}
-
 export const getMultiFeeDistributionContract = (address, chainId) =>
   getContract(MultiFeeDistributionABI, address, chainId)
-
-export const getGammaClearingContract = (address, chainId) => getContract(gammaClearingAbi, address, chainId)
-
-export const getGammaHyperVisorContract = (address, chainId, version) => {
-  if (version === 3) {
-    return getContract(gammaHypervisorAbiV3, address, chainId)
-  }
-
-  return getContract(gammaHypervisorAbi, address, chainId)
-}
 
 export const getDefiedgeStrategyContract = (address, chainId) => getContract(defiedgeStrategyAbi, address, chainId)
 

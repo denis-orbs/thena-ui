@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
 import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
@@ -11,7 +12,6 @@ import { callMulti, readCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
-  getGammaHyperVisorContract,
   getGaugeContract,
   getIchiVaultContract,
   getMultiFeeDistributionContract,
@@ -280,8 +280,9 @@ export const useGaugeAllHarvest = () => {
       gamma.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getGammaHyperVisorContract(add, chainId, 3),
+        poolAddresses.map(poolAddress => ({
+          address: poolAddress,
+          abi: HypervisorV3ABI,
           functionName: 'receiver',
         })),
       )

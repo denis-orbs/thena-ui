@@ -15,11 +15,12 @@ import {
 import { formatUnits, parseUnits } from 'viem'
 
 import { FusionRangeType } from '@/constant'
+import { GammaUniProxyABI } from '@/constant/abi/gamma/GammaUniProxyABI'
+import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
-import { getGammaUNIProxyContract } from '@/lib/contracts'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { toDecimalString, toWei } from '@/lib/utils'
 
@@ -117,7 +118,15 @@ export const useV3MintActionHandlers = noLiquidity => {
 }
 
 const fetchGammaDepositAmounts = async (address, currencies, chainId, version, isFarming) => {
-  const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId, version, isFarming })
+  const gammaUNIProxyContract = {
+    address:
+      version === 2
+        ? Contracts.gammaUniProxy
+        : isFarming
+          ? Contracts.gammaUniProxyFarmV3[chainId]
+          : Contracts.gammaUniProxyFeeV3[chainId],
+    abi: GammaUniProxyABI,
+  }
   const depositAmounts = await callMulti(
     currencies.map(currency => ({
       ...gammaUNIProxyContract,

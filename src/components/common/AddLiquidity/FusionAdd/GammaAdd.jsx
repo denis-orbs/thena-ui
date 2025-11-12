@@ -12,7 +12,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
-import gammaHypervisorAbi from '@/constant/abi/fusion/gammaHypervisor.json'
+import { HypervisorV2ABI } from '@/constant/abi/gamma/HypervisorV2ABI'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
@@ -35,21 +35,21 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'baseLower',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'baseUpper',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'currentTick',
       args: [],
       chainId,

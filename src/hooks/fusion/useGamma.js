@@ -5,18 +5,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, erc20Abi } from 'viem'
 
 import { GAMMA_TYPES, HASH, TXN_STATUS } from '@/constant'
+import { GammaUniProxyABI } from '@/constant/abi/gamma/GammaUniProxyABI'
+import { HypervisorV2ABI } from '@/constant/abi/gamma/HypervisorV2ABI'
+import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
+import { MultiFeeDistributionABI } from '@/constant/abi/ve/MultiFeeDistributionABI'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
-import {
-  getERC20Contract,
-  getGammaHyperVisorContract,
-  getGammaUNIProxyContract,
-  getGaugeContract,
-  getMultiFeeDistributionContract,
-  getWBNBContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -43,7 +40,10 @@ export const useAddGamma = () => {
       const gammaPairAddress = gammaPair?.address
 
       if (!amountA || !amountB || !gammaPairAddress) return
-      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming })
+      const gammaUNIProxyContract = {
+        address: isFarming ? Contracts.gammaUniProxyFarmV3[networkId] : Contracts.gammaUniProxyFeeV3[networkId],
+        abi: GammaUniProxyABI,
+      }
 
       const key = uuidv4()
       const wrapuuid = uuidv4()
@@ -206,10 +206,13 @@ export const useGammaRemove = () => {
         },
       })
       setPending(true)
-      const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, networkId, version)
+      const hypervisorContract = {
+        address: pool.address,
+        abi: version === 3 ? HypervisorV3ABI : HypervisorV2ABI,
+      }
 
       if (version === 3) {
-        const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
+        const receiver = await readCall(hypervisorContract, 'receiver', [], networkId)
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
         if (isStaked) {
           if (
@@ -228,7 +231,7 @@ export const useGammaRemove = () => {
       }
 
       if (
-        !(await writeTxn(key, removeuuid, gammaUNIProxyContract, 'withdraw', [
+        !(await writeTxn(key, removeuuid, hypervisorContract, 'withdraw', [
           toWei(amount).toFixed(0),
           account,
           account,
@@ -276,8 +279,11 @@ export const useGammaClaim = () => {
         },
       })
       setPending(true)
-      const gammaFarming = getGammaHyperVisorContract(pool.address, networkId, pool.account?.version)
-      const receiver = await readCall(gammaFarming, 'receiver', [], networkId)
+      const hypervisorContract = {
+        address: pool.address,
+        abi: HypervisorV3ABI,
+      }
+      const receiver = await readCall(hypervisorContract, 'receiver', [], networkId)
       const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
 
       if (!(await writeTxn(key, claimId, multiFeeDistributionContract, 'getAllRewards', []))) {
@@ -301,9 +307,15 @@ export const useGetGammaReward = pool => {
 
   const getClaimableRewards = useCallback(async () => {
     if (pool.version === 3 && GAMMA_TYPES.includes(pool.title) && pool.title.includes('Farming')) {
-      const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, chainId, 3)
-      const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], chainId)
-      const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
+      const hypervisorV3Contract = {
+        address: pool.address,
+        abi: HypervisorV3ABI,
+      }
+      const receiver = await readCall(hypervisorV3Contract, 'receiver', [], chainId)
+      const multiFeeDistributionContract = {
+        address: receiver,
+        abi: MultiFeeDistributionABI,
+      }
       const [tokens, amounts] = await readCall(multiFeeDistributionContract, 'claimableRewards', [account])
       let totalUsd = 0
       const rewards = tokens.map((token, index) => {
@@ -350,7 +362,10 @@ export const useGammaMigration = () => {
       const approve2Id = uuidv4()
       const depositId = uuidv4()
 
-      const gammaV2 = getGammaHyperVisorContract(gammaAddressV2, networkId, 2)
+      const hypervisorV2Contract = {
+        address: gammaAddressV2,
+        abi: HypervisorV2ABI,
+      }
       const firstContract = getERC20Contract(token0.address, networkId)
       const secondContract = getERC20Contract(token1.address, networkId)
 
@@ -413,7 +428,7 @@ export const useGammaMigration = () => {
       }
 
       setPending(true)
-      const withdrawTx = await writeTxn(key, removeId, gammaV2, 'withdraw', [
+      const withdrawTx = await writeTxn(key, removeId, hypervisorV2Contract, 'withdraw', [
         toWei(amount).toFixed(0),
         account,
         account,
@@ -447,7 +462,10 @@ export const useGammaMigration = () => {
 
       // MARK: RE-BALANCE
       setPending(true)
-      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming })
+      const gammaUNIProxyContract = {
+        address: isFarming ? Contracts.gammaUniProxyFarmV3[networkId] : Contracts.gammaUniProxyFeeV3[networkId],
+        abi: GammaUniProxyABI,
+      }
       const rangeAmountOfToken1 = await readCall(
         gammaUNIProxyContract,
         'getDepositAmount',
@@ -618,7 +636,10 @@ export const useGammaWithdraw = () => {
       const unstakedId = uuidv4()
       const removeId = uuidv4()
 
-      const gammaV2 = getGammaHyperVisorContract(gammaAddressV2, networkId, 2)
+      const hypervisorV2Contract = {
+        address: gammaAddressV2,
+        abi: HypervisorV2ABI,
+      }
 
       const transactions = {}
 
@@ -648,7 +669,7 @@ export const useGammaWithdraw = () => {
       }
 
       setPending(true)
-      const withdrawTx = await writeTxn(key, removeId, gammaV2, 'withdraw', [
+      const withdrawTx = await writeTxn(key, removeId, hypervisorV2Contract, 'withdraw', [
         toWei(amount).toFixed(0),
         account,
         account,
@@ -685,8 +706,12 @@ export const useStakeGamma = () => {
       const lpContract = getERC20Contract(position.address, networkId)
 
       setPending(true)
-      const gammaUNIProxyContract = getGammaHyperVisorContract(position.address, networkId, 3)
-      const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
+
+      const hypervisorV3Contract = {
+        address: position.address,
+        abi: HypervisorV3ABI,
+      }
+      const receiver = await readCall(hypervisorV3Contract, 'receiver', [], networkId)
       const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
 
       const amount = toWei(position?.account?.walletBalance ?? 0, 18)

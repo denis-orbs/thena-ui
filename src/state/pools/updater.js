@@ -17,9 +17,9 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
 import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
+import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
 import { HypervisorMFDABI } from '@/constant/abi/integral/HypervisorMFDABI'
 import { IchiMFDABI } from '@/constant/abi/integral/IchiMFDABI'
 import { MFDFactoryABI } from '@/constant/abi/integral/MFDFactoryABI'
@@ -41,7 +41,7 @@ import { useChainSettings } from '../settings/hooks'
 
 const pairABI = {
   classic: SolidlyPairABI,
-  hypervisor: gammaHypervisorAbiV3,
+  hypervisor: HypervisorV3ABI,
   ichi: ichiVaultV3,
 }
 
@@ -114,7 +114,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
         createCallMulti(isPairCalls, SolidlyFactoryABI),
         createCallMulti(accountLpBalanceCalls, pairABI[type]),
         !isClassicPair && receiverCalls.length
-          ? createCallMulti(receiverCalls, isHypervisorPair ? gammaHypervisorAbiV3 : MFDFactoryABI)
+          ? createCallMulti(receiverCalls, isHypervisorPair ? HypervisorV3ABI : MFDFactoryABI)
           : [],
       ])
 
