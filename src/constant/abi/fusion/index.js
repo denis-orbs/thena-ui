@@ -7,13 +7,11 @@ import gammaHypervisorAbi from './gammaHypervisor.json'
 import gammaHypervisorAbiV3 from './gammaHypervisorV3.json'
 import gammaUniProxyAbi from './gammaUniProxy.json'
 import gaugeSimpleAbi from './gaugeSimple.json'
-import gaugev2Abi from './gaugev2.json'
 import ichiFarmingAbi from './ichiFarming.json'
 import ichiVaultAbi from './ichiVault.json'
 import ichiVaultAbiV3 from './ichiVaultV3.json'
 import selfPermitAbi from './ISelfPermit.json'
 import multicallV3Abi from './multicallv3.json'
-import newPoolAbi from './newPool.json'
 import poolAbi from './pool.json'
 import vaultDepositGaurdAbi from './vaultDepositGaurd.json'
 
@@ -27,12 +25,10 @@ export {
   gammaHypervisorAbiV3,
   gammaUniProxyAbi,
   gaugeSimpleAbi,
-  gaugev2Abi,
   ichiFarmingAbi,
   ichiVaultAbi,
   ichiVaultAbiV3,
   multicallV3Abi,
-  newPoolAbi,
   poolAbi,
   selfPermitAbi,
   vaultDepositGaurdAbi,

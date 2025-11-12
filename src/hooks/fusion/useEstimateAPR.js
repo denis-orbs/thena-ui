@@ -10,7 +10,7 @@ import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import eternalVirtualPoolAbi from '@/constant/abi/fusion/eternalVirtualPool.json'
-import newPoolAbi from '@/constant/abi/fusion/newPool.json'
+import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
@@ -163,7 +163,7 @@ export const useEstimateAPR = ({
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
@@ -391,7 +391,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
@@ -447,7 +447,7 @@ export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl,
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
@@ -494,7 +494,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'globalState',
       address,
-      abi: newPoolAbi,
+      abi: IntegralPairABI,
     })),
   )
 
