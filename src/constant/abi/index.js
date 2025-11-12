@@ -7,7 +7,6 @@ import emojiClubAbi from './mint/emojiClub.json'
 import emojiNumeralAbi from './mint/emojiNumeral.json'
 import hindiNumeralAbi from './mint/hindiNumeral.json'
 import numeralAbi from './mint/numeral.json'
-import pairAPIAbi from './pairAPI.json'
 import pluginFactoryAbi from './pluginFactoryAbi.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import routerAbi from './router.json'
@@ -42,7 +41,6 @@ export {
   hindiNumeralAbi,
   ichiVaultV3,
   numeralAbi,
-  pairAPIAbi,
   pluginFactoryAbi,
   rewardEarnedAbi,
   routerAbi,

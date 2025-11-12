@@ -24,7 +24,7 @@ import { GaugeV3ABI } from '@/constant/abi/GaugeV3ABI'
 import { HypervisorMFDABI } from '@/constant/abi/HypervisorMFDABI'
 import { IchiMFDABI } from '@/constant/abi/IchiMFDABI'
 import { MFDFactoryABI } from '@/constant/abi/MFDFactoryABI'
-import pairAPIAbi from '@/constant/abi/pairAPI.json'
+import { PairAPIABI } from '@/constant/abi/PairAPIABI'
 import { SolidlyFactoryABI } from '@/constant/abi/SolidlyFactoryABI'
 import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
 import voterAbi from '@/constant/abi/voter.json'
@@ -287,7 +287,7 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
     const pairInfos = await callMulti(
       pools.map(pool => ({
         address: Contracts.pairAPI[chainId],
-        abi: pairAPIAbi,
+        abi: PairAPIABI,
         functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
         args: [pool.address, account],
         chainId,
