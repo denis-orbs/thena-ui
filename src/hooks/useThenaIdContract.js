@@ -7,21 +7,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import arabicAbi from '@/constant/abi/mint/arabicNumeral.json'
-import characterSetAbi from '@/constant/abi/mint/characterSet.json'
-import emojiClubAbi from '@/constant/abi/mint/emojiClub.json'
-import emojiNumeralAbi from '@/constant/abi/mint/emojiNumeral.json'
-import hindiNumeralAbi from '@/constant/abi/mint/hindiNumeral.json'
-import numeralAbi from '@/constant/abi/mint/numeral.json'
+import { ThenaIdTraitABI } from '@/constant/abi/core/ThenaIdTraitABI'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
-import { getContract, getERC20Contract, getThenaIDContract } from '@/lib/contracts'
+import { callMulti, readCall } from '@/lib/contractActions'
+import { getERC20Contract, getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 const NORMAL_TRAITS = ['ARABIC_NUMERALS', 'CHARACTER_SET', 'EMOJI_CLUB', 'EMOJI_NUMERALS', 'HINDI_NUMERALS', 'NUMERALS']
-const NORMAL_TRAIT_ABIS = [arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi]
 const NORMAL_TRAIT_ADDRESS = [
   '0x104ea02fe5CCc7545385D56eb98162b84e50987E',
   '0x4032c9817DAD65AbfD695c5962Ae1A5935F986B6',
@@ -137,15 +131,17 @@ export const useTraitsAndProofs = () => {
       const traits = []
       const proofs = []
 
-      const getTraits = await Promise.all(
-        NORMAL_TRAIT_ABIS.map((abi, index) => {
-          const traitContract = getContract(abi, NORMAL_TRAIT_ADDRESS[index], ChainId.BSC)
-
-          return readCall(traitContract, 'getTrait', [username])
-        }),
+      const traitList = await callMulti(
+        NORMAL_TRAIT_ADDRESS.map(address => ({
+          address,
+          abi: ThenaIdTraitABI,
+          functionName: 'getTrait',
+          args: [username],
+          chainId: ChainId.BSC,
+        })),
       )
 
-      getTraits.forEach((trait, index) => {
+      traitList.forEach((trait, index) => {
         if (trait.length > 0 && trait[0] && trait[1]) {
           traits.push(NORMAL_TRAITS[index])
           proofs.push([])
