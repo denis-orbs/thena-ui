@@ -14,7 +14,7 @@ export const CHAIN_ID = {
 }
 
 const Contracts = {
-  solidlyRouter: V1_ROUTER_ADDRESSES,
+  SolidlyRouter: V1_ROUTER_ADDRESSES,
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
   theNFT: '0x2Af749593978CB79Ed11B9959cD82FD128BA4f8d',

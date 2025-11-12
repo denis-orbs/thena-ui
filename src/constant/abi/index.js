@@ -6,10 +6,6 @@ import emojiClubAbi from './mint/emojiClub.json'
 import emojiNumeralAbi from './mint/emojiNumeral.json'
 import hindiNumeralAbi from './mint/hindiNumeral.json'
 import numeralAbi from './mint/numeral.json'
-import routerAbi from './router.json'
-import royaltyAbi from './royalty.json'
-import stakingAbi from './staking.json'
-import ThenianAbi from './thenian.json'
 import vammZapAbi from './vammZap.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
@@ -37,10 +33,6 @@ export {
   hindiNumeralAbi,
   ichiVaultV3,
   numeralAbi,
-  routerAbi,
-  royaltyAbi,
-  stakingAbi,
-  ThenianAbi,
   vammZapAbi,
   veDistAbi,
   veTHEAbi,
