@@ -1,5 +1,4 @@
 import ERC20Abi from './erc20.json'
-import ichiVaultV3 from './fusion/ichiVaultV3.json'
 import emergencyRouterAbi from './weighted-pool/emergencyRouter.json'
 import weightedGaugeAbi from './weighted-pool/gauge.json'
 import weightedPoolRouterAbi from './weighted-pool/router.json'
@@ -12,7 +11,6 @@ import weightedPoolFeesAbi from './weighted-pool/weightedPoolFees.json'
 export {
   emergencyRouterAbi,
   ERC20Abi,
-  ichiVaultV3,
   weightedGaugeAbi,
   weightedPoolAbi,
   weightedPoolFactoryAbi,

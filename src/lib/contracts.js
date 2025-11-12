@@ -21,15 +21,7 @@ import {
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
-import {
-  defiedgeStrategyAbi,
-  fusionRouterAbi,
-  gaugeSimpleAbi,
-  ichiFarmingAbi,
-  ichiVaultAbi,
-  ichiVaultAbiV3,
-  vaultDepositGaurdAbi,
-} from '@/constant/abi/fusion'
+import { defiedgeStrategyAbi, fusionRouterAbi, gaugeSimpleAbi } from '@/constant/abi/fusion'
 import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
 import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
 import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
@@ -104,27 +96,6 @@ export const getDefiedgeStrategyContract = (address, chainId) => getContract(def
 /** **************************************************************************************************
                                             ICHI
 *************************************************************************************************** */
-
-export const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
-  if (version === 3) {
-    const address = isFarming
-      ? Contracts.vaultDepositGuardV3Farming[chainId]
-      : Contracts.vaultDepositGuardV3Fee[chainId]
-
-    return {
-      address,
-      abi: vaultDepositGaurdAbi,
-    }
-  }
-
-  return getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
-}
-export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
-
-export const getIchiVaultContract = (address, chainId, version = 2) => {
-  if (version === 3) return getContract(ichiVaultAbiV3, address, chainId)
-  return getContract(ichiVaultAbi, address, chainId)
-}
 
 /** **************************************************************************************************
                                             TC (Trading Competition)

@@ -5,6 +5,7 @@ import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
 import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
@@ -13,7 +14,6 @@ import {
   getERC20Contract,
   getFarmingCenterContract,
   getGaugeContract,
-  getIchiVaultContract,
   getMultiFeeDistributionContract,
 } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
@@ -311,8 +311,9 @@ export const useGaugeAllHarvest = () => {
       ichi.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getIchiVaultContract(add, chainId, 3),
+        poolAddresses.map(addr => ({
+          address: addr,
+          abi: IchiVaultV3ABI,
           functionName: 'farmingContract',
         })),
       )

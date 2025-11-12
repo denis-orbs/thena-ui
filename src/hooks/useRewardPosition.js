@@ -6,6 +6,7 @@ import { encodeFunctionData } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
 import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
 import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
 import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
@@ -13,7 +14,6 @@ import { callMulti } from '@/lib/contractActions'
 import {
   getFarmingCenterContract,
   getGaugeContract,
-  getIchiVaultContract,
   getMultiFeeDistributionContract,
   getPairContract,
 } from '@/lib/contracts'
@@ -197,8 +197,9 @@ export const useRewardPosition = () => {
       ichi.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getIchiVaultContract(add, chainId, 3),
+        poolAddresses.map(addr => ({
+          address: addr,
+          abi: IchiVaultV3ABI,
           functionName: 'farmingContract',
         })),
       )

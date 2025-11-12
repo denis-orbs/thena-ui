@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { ichiVaultAbiV3 } from '@/constant/abi/fusion'
 import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
 import { MultiFeeDistributionABI } from '@/constant/abi/ve/MultiFeeDistributionABI'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
@@ -54,7 +54,7 @@ const useGetPositionClaimableRewards = (pools, type) => {
     const farmContractAddresses = await batchCallMulti(
       pools.map(pool => ({
         address: pool.address,
-        abi: type === 'ichi' ? ichiVaultAbiV3 : HypervisorV3ABI,
+        abi: type === 'ichi' ? IchiVaultV3ABI : HypervisorV3ABI,
         functionName: type === 'ichi' ? 'farmingContract' : 'receiver',
       })),
     )

@@ -17,9 +17,9 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
-import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
 import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
+import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
+import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
 import { HypervisorMFDABI } from '@/constant/abi/integral/HypervisorMFDABI'
 import { IchiMFDABI } from '@/constant/abi/integral/IchiMFDABI'
 import { MFDFactoryABI } from '@/constant/abi/integral/MFDFactoryABI'
@@ -42,7 +42,7 @@ import { useChainSettings } from '../settings/hooks'
 const pairABI = {
   classic: SolidlyPairABI,
   hypervisor: HypervisorV3ABI,
-  ichi: ichiVaultV3,
+  ichi: IchiVaultV3ABI,
 }
 
 const mfdABI = {
@@ -339,7 +339,7 @@ const fetchIchiAllowed = async (pools, chainId) => {
   const allowed0 = await callMulti(
     ichi.map(pool => ({
       address: pool.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'allowToken0',
       args: [],
       chainId,

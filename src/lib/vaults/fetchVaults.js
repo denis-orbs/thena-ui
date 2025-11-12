@@ -1,5 +1,5 @@
 import gaugeSimpleAbi from '@/constant/abi/fusion/gaugeSimple.json'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
 import { callMulti } from '../contractActions'
@@ -9,7 +9,7 @@ const fetchTotalSupply = async chainId => {
   const rawRes = await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'totalSupply',
       args: [],
       chainId,
@@ -22,7 +22,7 @@ const fetchTotalAmounts = async chainId =>
   await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'getTotalAmounts',
       args: [],
       chainId,
@@ -77,7 +77,7 @@ const fetchGaugeSupply = async chainId => {
   const rawRes = await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'balanceOf',
       args: [vault.gaugeAddress],
       chainId,

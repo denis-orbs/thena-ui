@@ -1,5 +1,5 @@
 import gaugeSimpleAbi from '@/constant/abi/fusion/gaugeSimple.json'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
 import { callMulti } from '../contractActions'
@@ -9,7 +9,7 @@ const fetchUserWalletBalance = async (account, chainId) => {
   const rawRes = await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'balanceOf',
       args: [account],
       chainId,

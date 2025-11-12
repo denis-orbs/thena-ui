@@ -12,7 +12,7 @@ import Selection from '@/components/selection'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
+import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
@@ -31,21 +31,21 @@ const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseLower',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseUpper',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'currentTick',
       args: [],
       chainId,
