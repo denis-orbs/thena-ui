@@ -6,19 +6,14 @@ import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
 import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import { IchiFarmingABI } from '@/constant/abi/ichi/IchiFarmingABI'
+import { IchiGaugeABI } from '@/constant/abi/ichi/IchiGaugeABI'
 import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
 import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
 import { VaultDepositGaurdABI } from '@/constant/abi/ichi/VaultDepositGaurdABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
-import {
-  getERC20Contract,
-  getGaugeContract,
-  getGaugeSimpleContract,
-  getMultiFeeDistributionContract,
-  getWBNBContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -299,7 +294,10 @@ export const useIchiManage = () => {
       }
 
       // Stake LP
-      const gaugeContract = getGaugeSimpleContract(vault.gauge.address, networkId)
+      const gaugeContract = {
+        address: vault.gauge.address,
+        abi: IchiGaugeABI,
+      }
       if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', [lpBalance]))) {
         setPending(false)
         return

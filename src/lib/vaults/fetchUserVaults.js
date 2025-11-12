@@ -1,4 +1,4 @@
-import gaugeSimpleAbi from '@/constant/abi/fusion/gaugeSimple.json'
+import { IchiGaugeABI } from '@/constant/abi/ichi/IchiGaugeABI'
 import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
@@ -22,7 +22,7 @@ const fetchUserGaugeBalance = async (account, chainId) => {
   const rawRes = await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.gaugeAddress,
-      abi: gaugeSimpleAbi,
+      abi: IchiGaugeABI,
       functionName: 'balanceOf',
       args: [account],
       chainId,
@@ -35,7 +35,7 @@ const fetchUserEarned0 = async (account, chainId) =>
   await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.gaugeAddress,
-      abi: gaugeSimpleAbi,
+      abi: IchiGaugeABI,
       functionName: 'earned',
       args: [account, vault.token0Address],
       chainId,
@@ -46,7 +46,7 @@ const fetchUserEarned1 = async (account, chainId) =>
   await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.gaugeAddress,
-      abi: gaugeSimpleAbi,
+      abi: IchiGaugeABI,
       functionName: 'earned',
       args: [account, vault.token1Address],
       chainId,
@@ -57,7 +57,7 @@ const fetchUserEarned2 = async (account, chainId) =>
   await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
       address: vault.gaugeAddress,
-      abi: gaugeSimpleAbi,
+      abi: IchiGaugeABI,
       functionName: 'earned',
       args: [account, vault.rewardAddress],
       chainId,

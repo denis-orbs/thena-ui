@@ -21,7 +21,7 @@ import {
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
-import { defiedgeStrategyAbi, fusionRouterAbi, gaugeSimpleAbi } from '@/constant/abi/fusion'
+import { defiedgeStrategyAbi, fusionRouterAbi } from '@/constant/abi/fusion'
 import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
 import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
 import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
@@ -52,8 +52,6 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
 export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
 
 export const getWBNBContract = chainId => getContract(WbnbABI, Contracts.WBNB, chainId)
-
-export const getGaugeSimpleContract = (address, chainId) => getContract(gaugeSimpleAbi, address, chainId)
 
 /** **************************************************************************************************
                                             Solidly
