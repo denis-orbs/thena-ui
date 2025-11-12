@@ -6,7 +6,7 @@ import { encodeFunctionData } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
 import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
-import { ClaimerABI } from '@/constant/abi/solidly/ClaimerABI'
+import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import {

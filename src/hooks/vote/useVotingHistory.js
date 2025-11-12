@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { batchCallMulti } from '@/lib/contractActions'
-import { getVoterContract } from '@/lib/contracts'
+import { getVoterV3Contract } from '@/lib/contracts'
 import { voterSubgraph } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 
@@ -153,7 +153,7 @@ const getPoolVotePerEpochData = async (chainId, epochStartTimestamps) => {
 
     const poolVoteKeys = Array.from(new Set(results.map(p => p.id)))
 
-    const contract = getVoterContract(chainId)
+    const contract = getVoterV3Contract(chainId)
 
     const poolVoteResults = await batchCallMulti(
       poolVoteKeys.map(key => {

@@ -10,7 +10,7 @@ import { getAddress, maxUint256 } from 'viem'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { GammaZapABI } from '@/constant/abi/integral/GammaZapABI'
 import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
-import vammZapAbi from '@/constant/abi/vammZap.json'
+import { SolidlyZapABI } from '@/constant/abi/solidly/SolidlyZapABI'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
@@ -571,7 +571,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapInOdos',
             [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
@@ -582,7 +582,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapIn',
             [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],

@@ -23,11 +23,11 @@ import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
 import { HypervisorMFDABI } from '@/constant/abi/integral/HypervisorMFDABI'
 import { IchiMFDABI } from '@/constant/abi/integral/IchiMFDABI'
 import { MFDFactoryABI } from '@/constant/abi/integral/MFDFactoryABI'
-import { GaugeV3ABI } from '@/constant/abi/solidly/GaugeV3ABI'
-import { PairAPIABI } from '@/constant/abi/solidly/PairAPIABI'
 import { SolidlyFactoryABI } from '@/constant/abi/solidly/SolidlyFactoryABI'
 import { SolidlyPairABI } from '@/constant/abi/solidly/SolidlyPairABI'
-import voterAbi from '@/constant/abi/voter.json'
+import { GaugeV3ABI } from '@/constant/abi/ve/GaugeV3ABI'
+import { PairAPIABI } from '@/constant/abi/ve/PairAPIABI'
+import { VoterV3ABI } from '@/constant/abi/ve/VoterV3ABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'
@@ -86,7 +86,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       const pairsList = chunks[index]
 
       const gaugeForPoolCalls = pairsList.map(pair => ({
-        address: Contracts.voter[chainId],
+        address: Contracts.VoterV3[chainId],
         name: 'gaugeForPool',
         params: [pair.address],
       }))
@@ -110,7 +110,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       }))
 
       const [gaugeForPools, isPairs, accountLpBalances, receivers] = await Promise.all([
-        createCallMulti(gaugeForPoolCalls, voterAbi),
+        createCallMulti(gaugeForPoolCalls, VoterV3ABI),
         createCallMulti(isPairCalls, SolidlyFactoryABI),
         createCallMulti(accountLpBalanceCalls, pairABI[type]),
         !isClassicPair && receiverCalls.length

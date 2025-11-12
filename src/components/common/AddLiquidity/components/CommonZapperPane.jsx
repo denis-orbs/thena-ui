@@ -14,7 +14,7 @@ import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
-import vammZapAbi from '@/constant/abi/vammZap.json'
+import { SolidlyZapABI } from '@/constant/abi/solidly/SolidlyZapABI'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
@@ -122,13 +122,13 @@ export function CommonZapperPane({
   const { data } = useReadContracts({
     contracts: [
       {
-        abi: vammZapAbi,
+        abi: SolidlyZapABI,
         address: zapAddress,
         functionName: 'getSwapAmount',
         args,
       },
       {
-        abi: vammZapAbi,
+        abi: SolidlyZapABI,
         address: zapAddress,
         functionName: 'getEstimatedZapIn',
         args,
