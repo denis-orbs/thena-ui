@@ -1,8 +1,8 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
-import { AlgebraFactoryABI } from '@/constant/abi/integral/AlgebraFactoryABI'
-import { BasePluginABI } from '@/constant/abi/integral/BasePluginABI'
+import { AlgebraFactoryABI } from '@/abis/integral/AlgebraFactoryABI'
+import { BasePluginABI } from '@/abis/integral/BasePluginABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -55,7 +55,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
 
   const { data: pluginAddress } = useReadContract({
     address: poolAddress,
-    abi: AlgebraPoolV3ABI,
+    abi: IntegralPairABI,
     functionName: 'plugin',
     query: {
       enabled: !!poolAddress,

@@ -5,10 +5,9 @@ import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
+import { BasePluginABI } from '@/abis/integral/BasePluginABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, PAIR_TYPES, SCAN_URLS } from '@/constant'
-import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
-import newPoolAbi from '@/constant/abi/fusion/newPool.json'
-import { BasePluginABI } from '@/constant/abi/integral/BasePluginABI'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useCopyText } from '@/hooks/useCopyText'
@@ -31,7 +30,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { data: plugInAddress } = useReadContract({
     address: strategy?.address,
-    abi: AlgebraPoolV3ABI,
+    abi: IntegralPairABI,
     functionName: 'plugin',
     query: {
       enabled: MANUAL_TYPES.includes(strategy?.title),
@@ -49,7 +48,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   })
   const { data: feeStrategyInfo } = useReadContract({
     address: strategy?.address,
-    abi: newPoolAbi,
+    abi: IntegralPairABI,
     functionName: 'globalState',
     query: {
       enabled: Boolean(strategy?.address) && strategy?.title === 'CL_SwapFee',

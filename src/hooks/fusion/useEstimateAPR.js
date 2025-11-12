@@ -9,8 +9,8 @@ import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fus
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import eternalVirtualPoolAbi from '@/constant/abi/fusion/eternalVirtualPool.json'
-import newPoolAbi from '@/constant/abi/fusion/newPool.json'
+import { EternalVirtualPoolABI } from '@/abis/integral/EternalVirtualPoolABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
@@ -163,17 +163,17 @@ export const useEstimateAPR = ({
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
       {
         functionName: 'rewardReserves',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ],
     query: {
@@ -391,12 +391,12 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ],
     query: {
@@ -447,12 +447,12 @@ export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl,
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: newPoolAbi,
+        abi: IntegralPairABI,
       },
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ])
   }
@@ -494,7 +494,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'globalState',
       address,
-      abi: newPoolAbi,
+      abi: IntegralPairABI,
     })),
   )
 
@@ -502,7 +502,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'currentLiquidity',
       address: getAddress(farmDatas, address),
-      abi: eternalVirtualPoolAbi,
+      abi: EternalVirtualPoolABI,
     })),
   )
 
@@ -510,7 +510,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'rewardReserves',
       address: getAddress(farmDatas, address),
-      abi: eternalVirtualPoolAbi,
+      abi: EternalVirtualPoolABI,
     })),
   )
 

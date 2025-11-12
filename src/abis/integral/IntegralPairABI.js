@@ -1,4 +1,25 @@
-export const AlgebraPoolV3ABI = [
+export const IntegralPairABI = [
+  {
+    inputs: [],
+    name: 'plugin',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'globalState',
+    outputs: [
+      { internalType: 'uint160', name: 'price', type: 'uint160' },
+      { internalType: 'int24', name: 'tick', type: 'int24' },
+      { internalType: 'uint16', name: 'lastFee', type: 'uint16' },
+      { internalType: 'uint8', name: 'pluginConfig', type: 'uint8' },
+      { internalType: 'uint16', name: 'communityFee', type: 'uint16' },
+      { internalType: 'bool', name: 'unlocked', type: 'bool' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
   { inputs: [], name: 'alreadyInitialized', type: 'error' },
   { inputs: [], name: 'arithmeticError', type: 'error' },
   { inputs: [], name: 'bottomTickLowerThanMIN', type: 'error' },
@@ -264,20 +285,6 @@ export const AlgebraPoolV3ABI = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'globalState',
-    outputs: [
-      { internalType: 'uint160', name: 'price', type: 'uint160' },
-      { internalType: 'int24', name: 'tick', type: 'int24' },
-      { internalType: 'uint16', name: 'lastFee', type: 'uint16' },
-      { internalType: 'uint8', name: 'pluginConfig', type: 'uint8' },
-      { internalType: 'uint16', name: 'communityFee', type: 'uint16' },
-      { internalType: 'bool', name: 'unlocked', type: 'bool' },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [{ internalType: 'uint160', name: 'initialPrice', type: 'uint160' }],
     name: 'initialize',
     outputs: [],
@@ -334,13 +341,6 @@ export const AlgebraPoolV3ABI = [
     inputs: [],
     name: 'nextTickGlobal',
     outputs: [{ internalType: 'int24', name: '', type: 'int24' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'plugin',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },

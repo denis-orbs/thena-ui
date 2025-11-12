@@ -4,13 +4,13 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextHeading } from '@/components/typography'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
@@ -25,21 +25,21 @@ export const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseLower',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseUpper',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'currentTick',
       args: [],
       chainId,

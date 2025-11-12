@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { PluginFactoryABI } from '@/abis/integral/PluginFactoryABI'
 import { TXN_STATUS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
-import { PluginFactoryABI } from '@/constant/abi/integral/PluginFactoryABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -23,7 +23,7 @@ import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 const getNPMContract = (chainId, version) => ({
-  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
   address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
 })
 

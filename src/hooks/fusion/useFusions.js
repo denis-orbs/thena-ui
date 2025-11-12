@@ -5,9 +5,9 @@ import { computePoolAddress, Pool } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import newPoolAbi from '@/constant/abi/fusion/newPool.json'
-import poolAbi from '@/constant/abi/fusion/pool.json'
-import { AlgebraFactoryABI } from '@/constant/abi/integral/AlgebraFactoryABI'
+import { FusionPairABI } from '@/abis/fusion/FusionPairABI'
+import { AlgebraFactoryABI } from '@/abis/integral/AlgebraFactoryABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
@@ -142,7 +142,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
     },
   })
 
-  const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : newPoolAbi }
+  const poolContract = { address: poolAddress, abi: version === 2 ? FusionPairABI : IntegralPairABI }
   const { data: poolInfo } = useReadContracts({
     contracts: [
       { ...poolContract, functionName: 'liquidity' },
@@ -221,7 +221,7 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
   //   },
   // })
 
-  const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : newPoolAbi }
+  const poolContract = { address: poolAddress, abi: version === 2 ? FusionPairABI : IntegralPairABI }
   // const { data: poolInfo } = useReadContracts({
   //   contracts: [
   //     { ...poolContract, functionName: 'liquidity' },
@@ -307,7 +307,7 @@ export const useGetMultipleFusionState = (pools, poolAddressList) => {
   const contracts = (pools || []).map((pool, index) => {
     const { version } = pool
     const poolAddress = poolAddressList[index]
-    const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : newPoolAbi }
+    const poolContract = { address: poolAddress, abi: version === 2 ? FusionPairABI : IntegralPairABI }
     return poolContract
   })
 

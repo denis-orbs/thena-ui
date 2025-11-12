@@ -6,13 +6,13 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 
+import { HypervisorV2ABI } from '@/abis/gamma/HypervisorV2ABI'
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
-import gammaHypervisorAbi from '@/constant/abi/fusion/gammaHypervisor.json'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
@@ -35,21 +35,21 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'baseLower',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'baseUpper',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: gammaHypervisorAbi,
+      abi: HypervisorV2ABI,
       functionName: 'currentTick',
       args: [],
       chainId,

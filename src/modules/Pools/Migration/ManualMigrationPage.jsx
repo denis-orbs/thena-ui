@@ -9,6 +9,7 @@ import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -16,7 +17,6 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, POSITION_EARNED_TYPES } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
 import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -178,7 +178,7 @@ export function ManualMigrationPage({ tokenId }) {
 
   const { data: fees } = useSimulateContract({
     address: Contracts.NPMFusion[chainId],
-    abi: NPMFusionABI,
+    abi: FusionNPMABI,
     functionName: 'collect',
     args: [
       {

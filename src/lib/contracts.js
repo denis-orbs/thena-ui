@@ -10,7 +10,7 @@ import {
   weightedPoolRouterAbi,
   weightedPoolRouterSimulatorAbi,
   weightedPoolVaultAbi,
-} from '@/constant/abi'
+} from '@/abis'
 import {
   multiAccountAbi,
   oldTcSpotAbi,
@@ -20,33 +20,19 @@ import {
   tcPerpRewarderAbi,
   tcSpotAbi,
   thenaIdAbi,
-} from '@/constant/abi/core'
-import {
-  defiedgeStrategyAbi,
-  fusionQuoterAbi,
-  fusionRouterAbi,
-  gammaClearingAbi,
-  gammaHypervisorAbi,
-  gammaHypervisorAbiV3,
-  gammaUniProxyAbi,
-  gaugeSimpleAbi,
-  ichiFarmingAbi,
-  ichiVaultAbi,
-  ichiVaultAbiV3,
-  vaultDepositGaurdAbi,
-} from '@/constant/abi/fusion'
-import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
-import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
-import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
-import { NFTStakingABI } from '@/constant/abi/thenft/NFTStakingABI'
-import { RoyaltyABI } from '@/constant/abi/thenft/RoyaltyABI'
-import { TheNFTABI } from '@/constant/abi/thenft/TheNFTABI'
-import { GaugeABI } from '@/constant/abi/ve/GaugeABI'
-import { MultiFeeDistributionABI } from '@/constant/abi/ve/MultiFeeDistributionABI'
-import { VeDistABI } from '@/constant/abi/ve/VeDistABI'
-import { VeTHEABI } from '@/constant/abi/ve/VeTHEABI'
-import { VoterV3ABI } from '@/constant/abi/ve/VoterV3ABI'
-import { WbnbABI } from '@/constant/abi/WbnbABI'
+} from '@/abis/core'
+import { FarmingCenterABI } from '@/abis/integral/FarmingCenterABI'
+import { IncentiveMakerABI } from '@/abis/integral/IncentiveMakerABI'
+import { SolidlyRouterABI } from '@/abis/solidly/SolidlyRouterABI'
+import { NFTStakingABI } from '@/abis/thenft/NFTStakingABI'
+import { RoyaltyABI } from '@/abis/thenft/RoyaltyABI'
+import { TheNFTABI } from '@/abis/thenft/TheNFTABI'
+import { GaugeABI } from '@/abis/ve/GaugeABI'
+import { MultiFeeDistributionABI } from '@/abis/ve/MultiFeeDistributionABI'
+import { VeDistABI } from '@/abis/ve/VeDistABI'
+import { VeTHEABI } from '@/abis/ve/VeTHEABI'
+import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
+import { WbnbABI } from '@/abis/WbnbABI'
 import Contracts from '@/constant/contracts'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
@@ -65,8 +51,6 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
 export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
 
 export const getWBNBContract = chainId => getContract(WbnbABI, Contracts.WBNB, chainId)
-
-export const getGaugeSimpleContract = (address, chainId) => getContract(gaugeSimpleAbi, address, chainId)
 
 /** **************************************************************************************************
                                             Solidly
@@ -92,68 +76,15 @@ export const getNftStakingContract = () => getContract(NFTStakingABI, Contracts.
 export const getRoyaltyContract = () => getContract(RoyaltyABI, Contracts.royalty, ChainId.BSC)
 
 /** **************************************************************************************************
-                                          FUSION (Algebra)
- ************************************************************************************************** */
-
-export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, Contracts.fusionRouter, chainId)
-
-export const getFusionQuoterContract = chainId => getContract(fusionQuoterAbi, Contracts.fusionQuoter, chainId)
-
-/** **************************************************************************************************
                                             Gamma
  ************************************************************************************************** */
-
-export const getGammaUNIProxyContract = ({ chainId, version = 3, isFarming = true }) => {
-  if (version === 3) {
-    const addressList = isFarming ? Contracts.gammaUniProxyFarmV3 : Contracts.gammaUniProxyFeeV3
-    return {
-      abi: gammaUniProxyAbi,
-      address: addressList[chainId],
-    }
-  }
-
-  return getContract(gammaUniProxyAbi, Contracts.gammaUniProxy, chainId)
-}
 
 export const getMultiFeeDistributionContract = (address, chainId) =>
   getContract(MultiFeeDistributionABI, address, chainId)
 
-export const getGammaClearingContract = (address, chainId) => getContract(gammaClearingAbi, address, chainId)
-
-export const getGammaHyperVisorContract = (address, chainId, version) => {
-  if (version === 3) {
-    return getContract(gammaHypervisorAbiV3, address, chainId)
-  }
-
-  return getContract(gammaHypervisorAbi, address, chainId)
-}
-
-export const getDefiedgeStrategyContract = (address, chainId) => getContract(defiedgeStrategyAbi, address, chainId)
-
 /** **************************************************************************************************
                                             ICHI
 *************************************************************************************************** */
-
-export const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
-  if (version === 3) {
-    const address = isFarming
-      ? Contracts.vaultDepositGuardV3Farming[chainId]
-      : Contracts.vaultDepositGuardV3Fee[chainId]
-
-    return {
-      address,
-      abi: vaultDepositGaurdAbi,
-    }
-  }
-
-  return getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
-}
-export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
-
-export const getIchiVaultContract = (address, chainId, version = 2) => {
-  if (version === 3) return getContract(ichiVaultAbiV3, address, chainId)
-  return getContract(ichiVaultAbi, address, chainId)
-}
 
 /** **************************************************************************************************
                                             TC (Trading Competition)

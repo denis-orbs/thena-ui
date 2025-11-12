@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import { VeTHEAPIABI } from '@/constant/abi/ve/VeTHEAPIABI'
+import { VeTHEAPIABI } from '@/abis/ve/VeTHEAPIABI'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
