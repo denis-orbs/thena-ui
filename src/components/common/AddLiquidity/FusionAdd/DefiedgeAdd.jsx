@@ -10,12 +10,12 @@ import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Spinner from '@/components/spinner'
 import { FusionRangeType } from '@/constant'
+import { DefiedgeStrategyABI } from '@/constant/abi/fusion/DefiedgeStrategyABI'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useDefiedgeAdd, useDefiedgeAddAndStake } from '@/hooks/fusion/useDefiedge'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall } from '@/lib/contractActions'
-import { getDefiedgeStrategyContract } from '@/lib/contracts'
 import { maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { warnToast } from '@/lib/notify'
 import { cn, fromWei } from '@/lib/utils'
@@ -30,7 +30,10 @@ import { TokenAmountCard } from './containers/TokenAmountCard'
 const feeAmount = 3000
 
 export const fetchDefiedgeInfo = async (chainId, strategy) => {
-  const contract = getDefiedgeStrategyContract(strategy.address, chainId)
+  const contract = {
+    address: strategy.address,
+    abi: DefiedgeStrategyABI,
+  }
   const factory = await readCall(contract, 'factory', [], chainId)
   const isTwap = factory.toLowerCase() === '0x657761b0040ea03ce668c3a392da6a1751c43331'
   let token0Price = 0

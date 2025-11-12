@@ -21,7 +21,6 @@ import {
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
-import { defiedgeStrategyAbi, fusionRouterAbi } from '@/constant/abi/fusion'
 import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
 import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
 import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
@@ -77,19 +76,11 @@ export const getNftStakingContract = () => getContract(NFTStakingABI, Contracts.
 export const getRoyaltyContract = () => getContract(RoyaltyABI, Contracts.royalty, ChainId.BSC)
 
 /** **************************************************************************************************
-                                          FUSION (Algebra)
- ************************************************************************************************** */
-
-export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, Contracts.fusionRouter, chainId)
-
-/** **************************************************************************************************
                                             Gamma
  ************************************************************************************************** */
 
 export const getMultiFeeDistributionContract = (address, chainId) =>
   getContract(MultiFeeDistributionABI, address, chainId)
-
-export const getDefiedgeStrategyContract = (address, chainId) => getContract(defiedgeStrategyAbi, address, chainId)
 
 /** **************************************************************************************************
                                             ICHI

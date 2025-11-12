@@ -295,20 +295,28 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
       true,
     )
 
-    return pairInfos.map(pool => {
-      const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
-        pool
-      return {
-        version: 2,
-        address: pair_address, // pair contract address
-        walletBalance: account_lp_balance, // account LP tokens balance
-        gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
-        totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
-        gaugeEarned: account_gauge_earned, // account earned emissions for this pair
-        token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
-        token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
-      }
-    })
+    return pairInfos
+      .filter(pool => !!pool)
+      .map(pool => {
+        const {
+          pair_address,
+          claimable0,
+          claimable1,
+          account_lp_balance,
+          account_gauge_earned,
+          account_gauge_balance,
+        } = pool
+        return {
+          version: 2,
+          address: pair_address, // pair contract address
+          walletBalance: account_lp_balance, // account LP tokens balance
+          gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
+          totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
+          gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+          token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
+          token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
+        }
+      })
   } catch (error) {
     console.error(error)
     return []
@@ -370,7 +378,7 @@ function Updater() {
   const prices = usePrices()
   const { networkId } = useChainSettings()
 
-  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(
+  const { data: [v3Pools = [], v2Pools = []] = [] } = useSWR(
     ['fusions api', networkId],
     () =>
       Promise.all([
@@ -389,23 +397,21 @@ function Updater() {
   )
 
   const { data: userInfos } = useSWRImmutable(
-    account && (fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0)
-      ? ['pools user api', account, fusionPoolsV2.length, fusionPoolsV3.length, networkId]
+    account && (v2Pools.length > 0 || v3Pools.length > 0)
+      ? ['pools user api', account, v2Pools.length, v3Pools.length, networkId]
       : null,
     async () => {
       const [userFusionsV2, userFusionsV3] = await Promise.all([
-        fetchUserFusionsV2(account, fusionPoolsV2, networkId),
-        fetchUserFusionsV3(account, fusionPoolsV3, networkId),
+        fetchUserFusionsV2(account, v2Pools, networkId),
+        fetchUserFusionsV3(account, v3Pools, networkId),
       ])
       return [...userFusionsV2, ...userFusionsV3]
     },
   )
 
   const { data: poolsWithAllowed } = useSWR(
-    fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0
-      ? ['vaults/allowed', networkId, fusionPoolsV2.length, fusionPoolsV3.length]
-      : null,
-    () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),
+    v2Pools.length > 0 || v3Pools.length > 0 ? ['vaults/allowed', networkId, v2Pools.length, v3Pools.length] : null,
+    () => fetchIchiAllowed([...v2Pools, ...v3Pools], networkId),
   )
 
   const fetchInfo = useCallback(async () => {
