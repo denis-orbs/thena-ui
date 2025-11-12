@@ -99,7 +99,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   }, [strategy.title])
 
   const poolDeployer = useMemo(
-    () => (strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId]),
+    () => (strategy.title.includes('Farming') ? zeroAddress : Contracts.PluginFactory[networkId]),
     [networkId, strategy.title],
   )
 

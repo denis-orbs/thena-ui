@@ -41,7 +41,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
       {
         ...algebraFactory,
         functionName: 'computeCustomPoolAddress',
-        args: [Contracts.pluginFactory[networkId], baseCurrency?.address, quoteCurrency?.address],
+        args: [Contracts.PluginFactory[networkId], baseCurrency?.address, quoteCurrency?.address],
       },
     ],
     query: {

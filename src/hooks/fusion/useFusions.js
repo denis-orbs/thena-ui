@@ -128,7 +128,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
 
     args = isFarmingPool
       ? [token0?.address, token1?.address]
-      : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
+      : [Contracts.PluginFactory[chainId], token0?.address, token1?.address]
   }
 
   const { data: poolAddress } = useReadContract({
@@ -199,7 +199,7 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
 
     args = isFarmingPool
       ? [token0?.address, token1?.address]
-      : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
+      : [Contracts.PluginFactory[chainId], token0?.address, token1?.address]
   }
 
   const algebraContract = {
@@ -353,7 +353,7 @@ export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
               ? [token0?.address, token1?.address]
               : isFarmingPool
                 ? [token0?.address, token1?.address]
-                : [Contracts.pluginFactory[chainId], token0?.address, token1?.address],
+                : [Contracts.PluginFactory[chainId], token0?.address, token1?.address],
           chainId,
         }
       }),

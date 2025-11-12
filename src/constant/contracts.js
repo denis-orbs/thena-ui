@@ -192,7 +192,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x80ad2f2Ed4F00b152D7cA5E74920c944BFEF0701',
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
-  pluginFactory: {
+  PluginFactory: {
     [CHAIN_ID.BSC]: '0xF807462b5ce54A89e2F5B847D8281030eAfE241B',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
