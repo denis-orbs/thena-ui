@@ -1,12 +1,17 @@
-import Image from 'next/image'
 import { useState } from 'react'
+
+import NextImage from '../image/NextImage'
 
 export function InstagramIcon({ className, ...props }) {
   const [isHover, setHover] = useState(false)
 
   return (
     <div className={className} {...props} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      {isHover ? <Image src='/svgs/instagram-color.svg' /> : <Image src='/svgs/instagram-no-color.svg' />}
+      {isHover ? (
+        <NextImage src='/svgs/instagram-color.svg' alt='instagram icon' />
+      ) : (
+        <NextImage src='/svgs/instagram-no-color.svg' alt='instagram icon' />
+      )}
     </div>
   )
 }

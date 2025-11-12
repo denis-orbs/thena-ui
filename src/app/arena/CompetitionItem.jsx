@@ -1,12 +1,12 @@
 'use client'
 
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Banner from 'public/images/arena/tc_cover_image.png'
 import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
+import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
@@ -114,7 +114,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             />
             {!showCheckedHidden ? (
               <NeutralBadge className='absolute top-4 right-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
-                <Image src='/svgs/user-icon.svg' className='h-3 w-3' />
+                <NextImage src='/svgs/user-icon.svg' className='h-3 w-3' />
                 {`${competition.participantCount}/${competition.maxParticipants}`}
               </NeutralBadge>
             ) : (
@@ -187,14 +187,14 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           </h3>
           <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
             <Paragraph className='flex items-center text-nowrap'>
-              <Image src='/svgs/cup.svg' className='mr-2 h-5 w-5' />
+              <NextImage src='/svgs/cup.svg' alt='cup' className='mr-2 h-5 w-5' />
               <span className='mr-1'>${formatAmount(parseToUSD)}</span>
 
               <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
             </Paragraph>
 
             <Paragraph className='flex items-center text-nowrap'>
-              <Image src='/svgs/stack-coin.svg' className='mr-1 h-5 w-5' />
+              <NextImage src='/svgs/stack-coin.svg' alt='stack coin' className='mr-1 h-5 w-5' />
               <span>{entryFee}</span>
             </Paragraph>
           </div>

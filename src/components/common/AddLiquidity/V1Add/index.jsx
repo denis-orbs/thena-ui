@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
@@ -8,6 +7,7 @@ import React, { useMemo, useState } from 'react'
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import NextImage from '@/components/image/NextImage'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -49,7 +49,7 @@ export default function V1Add({
       {
         label: (
           <div className='flex items-center justify-center gap-1'>
-            <Image src='/svgs/zapper.svg' className='size-5' />
+            <NextImage src='/svgs/zapper.svg' alt='zapper icon' className='size-5' />
             <span>{t('Zapper Deposit')}</span>
           </div>
         ),

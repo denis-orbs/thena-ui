@@ -2,7 +2,6 @@
 
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -92,7 +91,7 @@ export function UserInfo({ userInfo, following, followers }) {
         <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
-              <Image
+              <NextImage
                 alt='avatar'
                 src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'

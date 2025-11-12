@@ -1,9 +1,9 @@
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import NextImage from '@/components/image/NextImage'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
@@ -50,7 +50,7 @@ export default function ManualAddPanel({
       {
         label: (
           <div className='flex items-center justify-center gap-1'>
-            <Image src='/svgs/zapper.svg' className='size-4' />
+            <NextImage src='/svgs/zapper.svg' alt='zapper icon' className='size-4' />
             <span>{t('Zapper Deposit')}</span>
           </div>
         ),

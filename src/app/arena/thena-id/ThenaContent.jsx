@@ -1,7 +1,6 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -212,7 +211,7 @@ function ThenaContent() {
               disabled={thenaIds.length === 1}
               className='bg-red-600 p-2 hover:bg-red-600'
             >
-              <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
+              <NextImage src='/svgs/minus-v2.svg' alt='minus icon' width={20} height={20} />
             </PrimaryButton>
             <PrimaryButton
               onClick={() => {
@@ -229,7 +228,7 @@ function ThenaContent() {
               className='bg-green-600 p-2 hover:bg-green-600'
               disabled={thenaIds.length >= 10}
             >
-              <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
+              <NextImage src='/svgs/plus-v2.svg' alt='plus icon' width={20} height={20} />
             </PrimaryButton>
           </div>
           {type === 'gift' && (
