@@ -9,7 +9,7 @@ import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fus
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import eternalVirtualPoolAbi from '@/constant/abi/fusion/eternalVirtualPool.json'
+import { EternalVirtualPoolABI } from '@/constant/abi/integral/EternalVirtualPoolABI'
 import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
@@ -168,12 +168,12 @@ export const useEstimateAPR = ({
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
       {
         functionName: 'rewardReserves',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ],
     query: {
@@ -396,7 +396,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ],
     query: {
@@ -452,7 +452,7 @@ export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl,
       {
         functionName: 'currentLiquidity',
         address: virtualPool ?? zeroAddress,
-        abi: eternalVirtualPoolAbi,
+        abi: EternalVirtualPoolABI,
       },
     ])
   }
@@ -502,7 +502,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'currentLiquidity',
       address: getAddress(farmDatas, address),
-      abi: eternalVirtualPoolAbi,
+      abi: EternalVirtualPoolABI,
     })),
   )
 
@@ -510,7 +510,7 @@ export const getFarmInfoList = async (poolAddressList, farmDatas) => {
     poolAddressList.map(address => ({
       functionName: 'rewardReserves',
       address: getAddress(farmDatas, address),
-      abi: eternalVirtualPoolAbi,
+      abi: EternalVirtualPoolABI,
     })),
   )
 

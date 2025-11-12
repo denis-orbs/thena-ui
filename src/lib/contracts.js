@@ -23,7 +23,6 @@ import {
 } from '@/constant/abi/core'
 import {
   defiedgeStrategyAbi,
-  fusionQuoterAbi,
   fusionRouterAbi,
   gammaClearingAbi,
   gammaHypervisorAbi,
@@ -96,8 +95,6 @@ export const getRoyaltyContract = () => getContract(RoyaltyABI, Contracts.royalt
  ************************************************************************************************** */
 
 export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, Contracts.fusionRouter, chainId)
-
-export const getFusionQuoterContract = chainId => getContract(fusionQuoterAbi, Contracts.fusionQuoter, chainId)
 
 /** **************************************************************************************************
                                             Gamma

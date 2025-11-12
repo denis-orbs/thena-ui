@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import poolAbi from '@/constant/abi/fusion/pool.json'
+import { FusionPairABI } from '@/constant/abi/fusion/FusionPairABI'
 import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -16,7 +16,7 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const liquidities = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: pool.version === 2 ? poolAbi : IntegralPairABI,
+      abi: pool.version === 2 ? FusionPairABI : IntegralPairABI,
       functionName: 'liquidity',
       args: [],
       chainId: _chainId,
@@ -25,7 +25,7 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const globalStates = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: pool.version === 2 ? poolAbi : IntegralPairABI,
+      abi: pool.version === 2 ? FusionPairABI : IntegralPairABI,
       functionName: 'globalState',
       args: [],
       chainId: _chainId,
@@ -35,7 +35,7 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const tickSpacings = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: pool.version === 2 ? poolAbi : IntegralPairABI,
+      abi: pool.version === 2 ? FusionPairABI : IntegralPairABI,
       functionName: 'tickSpacing',
       args: [],
       chainId: _chainId,

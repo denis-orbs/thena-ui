@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { CurrencyAmount, TradeType } from 'thena-sdk-core'
 import { encodeRouteToPath, Trade } from 'thenafi-fusion-sdk'
 
-import fusionQuoterAbi from '@/constant/abi/fusion/fusionQuoter.json'
+import { FusionQuoterABI } from '@/constant/abi/fusion/FusionQuoterABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -43,8 +43,8 @@ export const useBestV3TradeExactIn = (amountIn, currencyOut) => {
     async () => {
       const res = await callMulti(
         quoteExactInInputs.map(params => ({
-          address: Contracts.fusionQuoter[networkId],
-          abi: fusionQuoterAbi,
+          address: Contracts.FusionQuoter[networkId],
+          abi: FusionQuoterABI,
           functionName: 'quoteExactInput',
           args: params,
           chainId: networkId,
@@ -137,8 +137,8 @@ export const useBestV3TradeExactOut = (currencyIn, amountOut) => {
     async () => {
       const res = await callMulti(
         quoteExactOutInputs.map(params => ({
-          address: Contracts.fusionQuoter[networkId],
-          abi: fusionQuoterAbi,
+          address: Contracts.FusionQuoter[networkId],
+          abi: FusionQuoterABI,
           functionName: 'quoteExactOutput',
           args: params,
           chainId: networkId,
