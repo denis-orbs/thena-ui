@@ -3,7 +3,6 @@ import { ChainId } from 'thena-sdk-core'
 import {
   emergencyRouterAbi,
   ERC20Abi,
-  GaugeABI,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -32,7 +31,6 @@ import {
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
-import { FarmCenterABI } from '@/constant/abi/FarmCenterABI'
 import {
   defiedgeStrategyAbi,
   fusionQuoterAbi,
@@ -47,8 +45,10 @@ import {
   ichiVaultAbiV3,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
-import { IncentiveMakerABI } from '@/constant/abi/IncentiveMakerABI'
-import { MultiFeeDistributionABI } from '@/constant/abi/MultiFeeDistributionABI'
+import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
+import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
+import { GaugeABI } from '@/constant/abi/solidly/GaugeABI'
+import { MultiFeeDistributionABI } from '@/constant/abi/solidly/MultiFeeDistributionABI'
 import Contracts from '@/constant/contracts'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
@@ -199,7 +199,7 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
 ******************************************************************************************************* */
 
 export const getFarmingCenterContract = chainId => ({
-  abi: FarmCenterABI,
+  abi: FarmingCenterABI,
   address: Contracts.FarmingCenter[chainId],
 })
 

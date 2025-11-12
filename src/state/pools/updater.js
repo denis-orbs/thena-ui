@@ -20,13 +20,13 @@ import {
 import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
 import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
-import { GaugeV3ABI } from '@/constant/abi/GaugeV3ABI'
-import { HypervisorMFDABI } from '@/constant/abi/HypervisorMFDABI'
-import { IchiMFDABI } from '@/constant/abi/IchiMFDABI'
-import { MFDFactoryABI } from '@/constant/abi/MFDFactoryABI'
-import { PairAPIABI } from '@/constant/abi/PairAPIABI'
-import { SolidlyFactoryABI } from '@/constant/abi/SolidlyFactoryABI'
-import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
+import { HypervisorMFDABI } from '@/constant/abi/integral/HypervisorMFDABI'
+import { IchiMFDABI } from '@/constant/abi/integral/IchiMFDABI'
+import { MFDFactoryABI } from '@/constant/abi/integral/MFDFactoryABI'
+import { GaugeV3ABI } from '@/constant/abi/solidly/GaugeV3ABI'
+import { PairAPIABI } from '@/constant/abi/solidly/PairAPIABI'
+import { SolidlyFactoryABI } from '@/constant/abi/solidly/SolidlyFactoryABI'
+import { SolidlyPairABI } from '@/constant/abi/solidly/SolidlyPairABI'
 import voterAbi from '@/constant/abi/voter.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -104,7 +104,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       }))
 
       const receiverCalls = pairsList.map(pair => ({
-        address: isHypervisorPair ? pair.address : Contracts.mfdFactoryAddress[chainId],
+        address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
         name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
         params: isHypervisorPair ? [] : [pair.address],
       }))

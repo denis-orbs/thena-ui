@@ -1,8 +1,8 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AlgebraFactoryABI } from '@/constant/abi/AlgebraFactoryABI'
-import { BasePluginABI } from '@/constant/abi/BasePluginABI'
 import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
+import { AlgebraFactoryABI } from '@/constant/abi/integral/AlgebraFactoryABI'
+import { BasePluginABI } from '@/constant/abi/integral/BasePluginABI'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -27,7 +27,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
     : [currency1?.wrapped, currency0?.wrapped]
 
   const algebraFactory = {
-    address: Contracts.algebraFactoryV3[networkId],
+    address: Contracts.IntegralFactory[networkId],
     abi: AlgebraFactoryABI,
   }
 
@@ -83,7 +83,7 @@ export const useGetAdministrator = () => {
   const { networkId } = useChainSettings()
 
   const algebraFactory = {
-    address: Contracts.algebraFactoryV3[networkId],
+    address: Contracts.IntegralFactory[networkId],
     abi: AlgebraFactoryABI,
   }
 

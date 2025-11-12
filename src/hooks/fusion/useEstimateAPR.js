@@ -12,7 +12,7 @@ import { useReadContracts } from 'wagmi'
 import eternalVirtualPoolAbi from '@/constant/abi/fusion/eternalVirtualPool.json'
 import newPoolAbi from '@/constant/abi/fusion/newPool.json'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
-import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
+import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
 import { Field } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
@@ -23,10 +23,10 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { useGetAsset } from './Tokens'
 import { useGetZapInRoutePerRange } from '../zapper/useZapper'
 
-const getFusionFeesData = async ({ chainId, pool }) => {
+const getIntegralFeesData = async ({ chainId, pool }) => {
   try {
     // get 30 days pool fees data
-    const { poolDayDatas = [] } = await fusionClient[3][chainId].request(
+    const { poolDayDatas = [] } = await AlgebraClient[3][chainId].request(
       gql`
         query pools($pool: String!, $date: Int!) {
           poolDayDatas(first: 1000, where: { pool: $pool, date_gt: $date }, orderBy: date) {
@@ -49,9 +49,9 @@ const getFusionFeesData = async ({ chainId, pool }) => {
   }
 }
 
-const getFusionFarmingData = async ({ chainId, pool }) => {
+const getIntegralFarmingData = async ({ chainId, pool }) => {
   try {
-    const { eternalFarmings = [] } = await fusionFarmingClient[chainId].request(
+    const { eternalFarmings = [] } = await IntegralFarmingClient[chainId].request(
       gql`
         query ($pool: String!) {
           eternalFarmings(
@@ -137,14 +137,14 @@ export const useEstimateAPR = ({
   // pool fees in USD
   const { data: annualPoolFees = 0 } = useQuery({
     queryKey: ['fusionFeesData', poolAddress],
-    queryFn: () => getFusionFeesData({ chainId, pool: poolAddress }),
+    queryFn: () => getIntegralFeesData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress,
     staleTime: Infinity,
   })
 
   const { data: farmingData = {} } = useQuery({
-    queryKey: ['getFusionFarmingData', poolAddress],
-    queryFn: () => getFusionFarmingData({ chainId, pool: poolAddress }),
+    queryKey: ['getIntegralFarmingData', poolAddress],
+    queryFn: () => getIntegralFarmingData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress && isFarming,
     staleTime: Infinity,
   })
@@ -369,14 +369,14 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
   // pool fees in USD
   const { data: annualPoolFees = 0 } = useQuery({
     queryKey: ['fusionFeesData', poolAddress],
-    queryFn: () => getFusionFeesData({ chainId, pool: poolAddress }),
+    queryFn: () => getIntegralFeesData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress,
     staleTime: Infinity,
   })
 
   const { data: farmingData = {} } = useQuery({
-    queryKey: ['getFusionFarmingData', poolAddress],
-    queryFn: () => getFusionFarmingData({ chainId, pool: poolAddress }),
+    queryKey: ['getIntegralFarmingData', poolAddress],
+    queryFn: () => getIntegralFarmingData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress && position?.isFarming,
     staleTime: Infinity,
   })
@@ -431,12 +431,12 @@ export const calculateAPR = async ({ position, poolAddress, totalLiquidity, tvl,
 
   let annualPoolFees
   if (poolAddress) {
-    annualPoolFees = await getFusionFeesData({ chainId, pool: poolAddress })
+    annualPoolFees = await getIntegralFeesData({ chainId, pool: poolAddress })
   }
 
   let farmingData
   if (!!poolAddress && position?.isFarming) {
-    farmingData = await getFusionFarmingData({ chainId, pool: poolAddress })
+    farmingData = await getIntegralFarmingData({ chainId, pool: poolAddress })
   }
 
   const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import { SolidlyPairABI } from '@/constant/abi/SolidlyPairABI'
+import { SolidlyPairABI } from '@/constant/abi/solidly/SolidlyPairABI'
 import { simulateCall } from '@/lib/contractActions'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 

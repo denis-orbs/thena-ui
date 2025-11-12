@@ -50,7 +50,7 @@ export const vetheClient = {
   ),
 }
 
-export const fusionClient = {
+export const AlgebraClient = {
   3: {
     [CHAIN_ID.BSC]: new GraphQLClient(
       `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/BoHp9H2rGzVFPiqc56PJ1Gw7EPDaiHMcupsUuksMGp2K`,
@@ -70,7 +70,7 @@ export const fusionClient = {
   ),
 }
 
-export const fusionFarmingClient = {
+export const IntegralFarmingClient = {
   56: new GraphQLClient(
     `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/eTT8C92PwJiquV8S7oCkAzXToG3XJkkZnm4pBFtrSmc`,
   ),

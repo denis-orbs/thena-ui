@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
-import { DibsRewarderABI } from '@/constant/abi/DibsRewarderABI'
+import { DibsRewarderABI } from '@/constant/abi/t2e/DibsRewarderABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'

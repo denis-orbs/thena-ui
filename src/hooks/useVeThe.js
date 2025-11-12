@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { erc20Abi } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import { ClaimerABI } from '@/constant/abi/ClaimerABI'
-import rewardEarnedAbi from '@/constant/abi/rewardEarned.json'
+import { ClaimerABI } from '@/constant/abi/solidly/ClaimerABI'
+import { RewardEarnedABI } from '@/constant/abi/solidly/RewardEarnedABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
@@ -739,7 +739,7 @@ export const useClaimBribes = () => {
         setPending(true)
         const key = uuidv4()
         const claimContract = {
-          address: Contracts.claimer[chainId],
+          address: Contracts.Claimer[chainId],
           abi: ClaimerABI,
         }
         const claimuuid = uuidv4()
@@ -940,18 +940,18 @@ export const useClaimBribesV2 = () => {
       try {
         const key = uuidv4()
 
-        const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
-        // fees claim
+        const RewardEarnedContract = {
+          abi: RewardEarnedABI,
+          address: Contracts.RewardEarned[chainId],
+        }
         const callsFees = pool.rewards.map(reward => ({
-          address: rewardEarnedContract,
-          abi: rewardEarnedAbi,
+          ...RewardEarnedContract,
           functionName: 'earned',
           args: [pool.gauge.fee, reward.address, account],
           chainId,
         }))
         const callsBribes = pool.rewards.map(reward => ({
-          address: rewardEarnedContract,
-          abi: rewardEarnedAbi,
+          ...RewardEarnedContract,
           functionName: 'earned',
           args: [pool.gauge.bribe, reward.address, account],
           chainId,
@@ -1058,7 +1058,7 @@ export const useClaimAll = () => {
         // Claim bribes
         if (veRewards.length > 0) {
           const claimContract = {
-            address: Contracts.claimer[chainId],
+            address: Contracts.Claimer[chainId],
             abi: ClaimerABI,
           }
           const votingIncentives = []

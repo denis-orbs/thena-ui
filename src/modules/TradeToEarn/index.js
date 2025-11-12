@@ -7,7 +7,7 @@ import { useTranslations } from 'use-intl'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
-import { DibsRewarderABI } from '@/constant/abi/DibsRewarderABI'
+import { DibsRewarderABI } from '@/constant/abi/t2e/DibsRewarderABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { v4Client, v4ClientSubGraphT2E } from '@/lib/graphql'

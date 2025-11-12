@@ -9,7 +9,7 @@ import { zeroAddress } from 'viem'
 import Contracts from '@/constant/contracts'
 import { batchCallMulti, simulateCall } from '@/lib/contractActions'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
-import { getCollectedRewards, getFusionFarmingData, getFusionFeesData } from '@/lib/subgraph'
+import { getCollectedRewards, getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
 import { useGetAssetFn } from '../fusion/Tokens'
@@ -79,27 +79,27 @@ export const useFarmPositions = positions => {
   const fusionFarmingKey = useMemo(
     () =>
       farmAddresses?.length > 0 && account && chainId
-        ? ['getFusionFarmingData', chainId, account, farmAddresses]
+        ? ['getIntegralFarmingData', chainId, account, farmAddresses]
         : null,
     [farmAddresses, chainId, account],
   )
 
   const { data: fusionFarmings } = useCachedSWR(
     fusionFarmingKey,
-    () => getFusionFarmingData({ poolIds: farmAddresses, chainId }),
+    () => getIntegralFarmingData({ poolIds: farmAddresses, chainId }),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
   // Annual pool fees
   const annualPoolKey = useMemo(
     () =>
-      farmAddresses?.length > 0 && account && chainId ? ['getFusionFeesData', chainId, account, farmAddresses] : null,
+      farmAddresses?.length > 0 && account && chainId ? ['getIntegralFeesData', chainId, account, farmAddresses] : null,
     [farmAddresses, chainId, account],
   )
 
   const { data: annualPoolFeesPools } = useCachedSWR(
     annualPoolKey,
-    () => getFusionFeesData({ chainId, poolIds: farmAddresses, date: moment().subtract(7, 'days').unix() }),
+    () => getIntegralFeesData({ chainId, poolIds: farmAddresses, date: moment().subtract(7, 'days').unix() }),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
