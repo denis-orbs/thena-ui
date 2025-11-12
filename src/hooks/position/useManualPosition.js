@@ -6,8 +6,8 @@ import { CurrencyAmount } from 'thena-sdk-core'
 import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 
-import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { simulateCall } from '@/lib/contractActions'
 import { getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
@@ -21,7 +21,7 @@ import usePrevious from '../usePrevious'
 import useWallet from '../useWallet'
 
 const getNPMContract = (chainId, version) => ({
-  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
   address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
 })
 

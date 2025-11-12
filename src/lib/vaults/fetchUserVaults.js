@@ -1,5 +1,5 @@
-import { IchiGaugeABI } from '@/constant/abi/ichi/IchiGaugeABI'
-import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
+import { IchiGaugeABI } from '@/abis/ichi/IchiGaugeABI'
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
 import { callMulti } from '../contractActions'

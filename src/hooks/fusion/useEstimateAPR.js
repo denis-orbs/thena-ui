@@ -9,8 +9,8 @@ import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fus
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import { EternalVirtualPoolABI } from '@/constant/abi/integral/EternalVirtualPoolABI'
-import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
+import { EternalVirtualPoolABI } from '@/abis/integral/EternalVirtualPoolABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'

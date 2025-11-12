@@ -14,8 +14,8 @@ import {
 } from 'thenafi-fusion-sdk'
 import { formatUnits, parseUnits } from 'viem'
 
+import { GammaUniProxyABI } from '@/abis/gamma/GammaUniProxyABI'
 import { FusionRangeType } from '@/constant'
-import { GammaUniProxyABI } from '@/constant/abi/gamma/GammaUniProxyABI'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'

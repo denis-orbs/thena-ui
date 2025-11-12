@@ -1,4 +1,4 @@
-export const NPMIntegralABI = [
+export const IntegralNPMABI = [
   {
     inputs: [
       { internalType: 'address', name: '_factory', type: 'address' },

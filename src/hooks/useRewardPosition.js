@@ -3,20 +3,16 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData } from 'viem'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
+import { ClaimerABI } from '@/abis/ve/ClaimerABI'
 import { TXN_STATUS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
-import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
-import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
-import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
-import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
-import {
-  getFarmingCenterContract,
-  getGaugeContract,
-  getMultiFeeDistributionContract,
-  getPairContract,
-} from '@/lib/contracts'
+import { getFarmingCenterContract, getGaugeContract, getMultiFeeDistributionContract } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
@@ -236,7 +232,10 @@ export const useRewardPosition = () => {
 
       for (let i = 0; i < poolAddresses.length; i++) {
         const pairAddress = poolAddresses[i]
-        const pairContract = getPairContract(pairAddress, chainId)
+        const pairContract = {
+          address: pairAddress,
+          abi: SolidlyPairABI,
+        }
         if (!(await writeTxn(key, `classic-fees-${pairAddress}`, pairContract, 'claimFees', []))) {
           setPending(false)
           return
@@ -250,7 +249,10 @@ export const useRewardPosition = () => {
 
       for (let i = 0; i < poolAddresses.length; i++) {
         const pairAddress = poolAddresses[i]
-        const pairContract = getPairContract(pairAddress, chainId)
+        const pairContract = {
+          address: pairAddress,
+          abi: SolidlyPairABI,
+        }
         if (!(await writeTxn(key, `stable-fees-${pairAddress}`, pairContract, 'claimFees', []))) {
           setPending(false)
           return
@@ -278,7 +280,7 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: NPMFusionABI,
+        abi: FusionNPMABI,
         functionName: 'multicall',
         args: [callDatas],
       })
@@ -309,7 +311,7 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: NPMIntegralABI,
+        abi: IntegralNPMABI,
         functionName: 'multicall',
         args: [callDatas],
       })

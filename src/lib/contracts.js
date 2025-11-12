@@ -10,7 +10,7 @@ import {
   weightedPoolRouterAbi,
   weightedPoolRouterSimulatorAbi,
   weightedPoolVaultAbi,
-} from '@/constant/abi'
+} from '@/abis'
 import {
   multiAccountAbi,
   oldTcSpotAbi,
@@ -20,19 +20,19 @@ import {
   tcPerpRewarderAbi,
   tcSpotAbi,
   thenaIdAbi,
-} from '@/constant/abi/core'
-import { FarmingCenterABI } from '@/constant/abi/integral/FarmingCenterABI'
-import { IncentiveMakerABI } from '@/constant/abi/integral/IncentiveMakerABI'
-import { SolidlyRouterABI } from '@/constant/abi/solidly/SolidlyRouterABI'
-import { NFTStakingABI } from '@/constant/abi/thenft/NFTStakingABI'
-import { RoyaltyABI } from '@/constant/abi/thenft/RoyaltyABI'
-import { TheNFTABI } from '@/constant/abi/thenft/TheNFTABI'
-import { GaugeABI } from '@/constant/abi/ve/GaugeABI'
-import { MultiFeeDistributionABI } from '@/constant/abi/ve/MultiFeeDistributionABI'
-import { VeDistABI } from '@/constant/abi/ve/VeDistABI'
-import { VeTHEABI } from '@/constant/abi/ve/VeTHEABI'
-import { VoterV3ABI } from '@/constant/abi/ve/VoterV3ABI'
-import { WbnbABI } from '@/constant/abi/WbnbABI'
+} from '@/abis/core'
+import { FarmingCenterABI } from '@/abis/integral/FarmingCenterABI'
+import { IncentiveMakerABI } from '@/abis/integral/IncentiveMakerABI'
+import { SolidlyRouterABI } from '@/abis/solidly/SolidlyRouterABI'
+import { NFTStakingABI } from '@/abis/thenft/NFTStakingABI'
+import { RoyaltyABI } from '@/abis/thenft/RoyaltyABI'
+import { TheNFTABI } from '@/abis/thenft/TheNFTABI'
+import { GaugeABI } from '@/abis/ve/GaugeABI'
+import { MultiFeeDistributionABI } from '@/abis/ve/MultiFeeDistributionABI'
+import { VeDistABI } from '@/abis/ve/VeDistABI'
+import { VeTHEABI } from '@/abis/ve/VeTHEABI'
+import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
+import { WbnbABI } from '@/abis/WbnbABI'
 import Contracts from '@/constant/contracts'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {

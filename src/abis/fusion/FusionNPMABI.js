@@ -1,4 +1,4 @@
-export const NPMFusionABI = [
+export const FusionNPMABI = [
   {
     inputs: [
       { internalType: 'address', name: '_factory', type: 'address' },

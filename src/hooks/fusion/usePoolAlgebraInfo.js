@@ -1,8 +1,8 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AlgebraFactoryABI } from '@/constant/abi/integral/AlgebraFactoryABI'
-import { BasePluginABI } from '@/constant/abi/integral/BasePluginABI'
-import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
+import { AlgebraFactoryABI } from '@/abis/integral/AlgebraFactoryABI'
+import { BasePluginABI } from '@/abis/integral/BasePluginABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useChainSettings } from '@/state/settings/hooks'

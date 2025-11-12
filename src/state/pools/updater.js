@@ -7,6 +7,17 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
+import { HypervisorMFDABI } from '@/abis/gamma/HypervisorMFDABI'
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiMFDABI } from '@/abis/ichi/IchiMFDABI'
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { MFDFactoryABI } from '@/abis/integral/MFDFactoryABI'
+import { SolidlyFactoryABI } from '@/abis/solidly/SolidlyFactoryABI'
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
+import { GaugeV3ABI } from '@/abis/ve/GaugeV3ABI'
+import { PairAPIABI } from '@/abis/ve/PairAPIABI'
+import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
 import {
   GAMMA_TYPES,
   ICHI_SwapFee,
@@ -17,17 +28,6 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
-import { IchiVaultV2ABI } from '@/constant/abi/ichi/IchiVaultV2ABI'
-import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
-import { HypervisorMFDABI } from '@/constant/abi/integral/HypervisorMFDABI'
-import { IchiMFDABI } from '@/constant/abi/integral/IchiMFDABI'
-import { MFDFactoryABI } from '@/constant/abi/integral/MFDFactoryABI'
-import { SolidlyFactoryABI } from '@/constant/abi/solidly/SolidlyFactoryABI'
-import { SolidlyPairABI } from '@/constant/abi/solidly/SolidlyPairABI'
-import { GaugeV3ABI } from '@/constant/abi/ve/GaugeV3ABI'
-import { PairAPIABI } from '@/constant/abi/ve/PairAPIABI'
-import { VoterV3ABI } from '@/constant/abi/ve/VoterV3ABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'

@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { MultiFeeDistributionABI } from '@/abis/ve/MultiFeeDistributionABI'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { HypervisorV3ABI } from '@/constant/abi/gamma/HypervisorV3ABI'
-import { IchiVaultV3ABI } from '@/constant/abi/ichi/IchiVaultV3ABI'
-import { MultiFeeDistributionABI } from '@/constant/abi/ve/MultiFeeDistributionABI'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { useVaults } from '@/context/vaultsContext'

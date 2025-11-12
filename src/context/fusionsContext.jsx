@@ -2,8 +2,8 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { FusionPairABI } from '@/constant/abi/fusion/FusionPairABI'
-import { IntegralPairABI } from '@/constant/abi/integral/IntegralPairABI'
+import { FusionPairABI } from '@/abis/fusion/FusionPairABI'
+import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 

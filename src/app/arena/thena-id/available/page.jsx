@@ -11,7 +11,6 @@ import AvailableDropdown from '@/components/dropdown/AvailableDropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph } from '@/components/typography'
-import { LIST_CATEGORY } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
@@ -37,6 +36,41 @@ const V4_AVAILABLE = gql`
     thenaIdAvailableTotalCount(where: $q)
   }
 `
+
+const LIST_CATEGORY = {
+  ALL: 'All',
+  '1_LETTER_WORDS': '1 Letter Words',
+  '2_LETTER_WORDS': '2 Letter Words',
+  '3_LETTER_WORDS': '3 Letter Words',
+  '4_LETTER_WORDS': '4 Letter Words',
+  '5_LETTER_WORDS': '5 Letter Words',
+  '6_LETTER_WORDS': '6 Letter Words',
+  '7_LETTER_WORDS': '7 Letter Words',
+  '8_LETTER_WORDS': '8 Letter Words',
+  '9_LETTER_WORDS': '9 Letter Words',
+  '10_LETTER_WORDS': '10 Letter Words',
+  '11_LETTER_WORDS': '11 Letter Words',
+  '12_LETTER_WORDS': '12 Letter Words',
+  '13_LETTER_WORDS': '13 Letter Words',
+  '14_LETTER_WORDS': '14 Letter Words',
+  '15_LETTER_WORDS': '15 Letter Words',
+  ADJECTIVES: 'Adjectives',
+  CAPITALS: 'Capitals',
+  CITIES: 'Cities',
+  COMPANIES: 'Companies',
+  CONTINENTS: 'Continents',
+  COUNTRIES: 'Countries',
+  COUNTRY_CODES: 'Country Codes',
+  FEMALE_NAMES: 'Female Names',
+  FIRST_NAMES: ' First Names',
+  FRUITS: 'Fruits',
+  GREEK_GODS: 'Greek Gods',
+  LAST_NAMES: 'Last Names',
+  MALE_NAMES: ' Male Names',
+  NOUNS: 'Nouns',
+  VEGETABLES: 'Vegetables',
+  VERBS: 'Verbs',
+}
 
 const fetchAvailable = async (sort, currentPage, whereQuery = {}, whereTotal = {}) => {
   const offset = (currentPage - 1) * 100

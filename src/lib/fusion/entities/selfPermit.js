@@ -1,7 +1,7 @@
 import { toHex } from 'thenafi-fusion-sdk'
 import { encodeFunctionData } from 'viem'
 
-import { SelfPermitABI } from '@/constant/abi/fusion/SelfPermitABI'
+import { SelfPermitABI } from '@/abis/fusion/SelfPermitABI'
 
 function isAllowedPermit(permitOptions) {
   return 'nonce' in permitOptions

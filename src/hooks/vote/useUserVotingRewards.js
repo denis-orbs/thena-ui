@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import useSWRImmutable from 'swr/immutable'
 
-import { VotingIncentiveABI } from '@/constant/abi/ve/VotingIncentiveABI'
+import { VotingIncentiveABI } from '@/abis/ve/VotingIncentiveABI'
 import { batchCallMulti, readCall } from '@/lib/contractActions'
 import { voterSubgraph } from '@/lib/graphql'
 

@@ -3,7 +3,7 @@ import { encodeRouteToPath, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { encodeFunctionData, zeroAddress } from 'viem'
 
-import { FusionRouterABI } from '@/constant/abi/fusion/FusionRouterABI'
+import { FusionRouterABI } from '@/abis/fusion/FusionRouterABI'
 
 import { SelfPermit } from './selfPermit'
 

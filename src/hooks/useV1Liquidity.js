@@ -6,11 +6,12 @@ import { WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
 import { TAX_ASSETS, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall } from '@/lib/contractActions'
-import { getERC20Contract, getGaugeContract, getPairContract, getSolidlyRouterContract } from '@/lib/contracts'
+import { getERC20Contract, getGaugeContract, getSolidlyRouterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -340,7 +341,6 @@ export const useV1AddAndStake = () => {
 
 export const useClaimFees = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
@@ -362,7 +362,10 @@ export const useClaimFees = () => {
           },
         },
       })
-      const pairContract = getPairContract(pair.address, chainId)
+      const pairContract = {
+        address: pair.address,
+        abi: SolidlyPairABI,
+      }
       if (!(await writeTxn(key, claimuuid, pairContract, 'claimFees', []))) {
         setPending(false)
         return
@@ -374,7 +377,7 @@ export const useClaimFees = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn, t],
+    [startTxn, writeTxn, endTxn, t],
   )
 
   return { onClaimFees, pending }
@@ -407,7 +410,10 @@ export const useV1Remove = () => {
         shouldClaim = (pair.reward0.gt(0) || pair.reward1.gt(0)) && pair.account.walletBalance.eq(withdrawAmount)
       }
 
-      const pairContract = getPairContract(pair.address, chainId)
+      const pairContract = {
+        address: pair.address,
+        abi: SolidlyPairABI,
+      }
       const estimatedFees = await simulateCall(pairContract, 'claimFees', [], chainId)
       const shouldClaimFees =
         estimatedFees &&
@@ -677,7 +683,10 @@ export const useV1Stake = () => {
       const gaugeContractV3 = getGaugeContract(pool.gauge.address, chainId)
 
       if (shouldClaim) {
-        const pairContract = getPairContract(pool.address, chainId)
+        const pairContract = {
+          address: pool.address,
+          abi: SolidlyPairABI,
+        }
         if (!(await writeTxn(key, claimuuid, pairContract, 'claimFees', []))) {
           setPending(false)
           return
