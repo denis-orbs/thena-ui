@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import { ClaimerABI } from '@/constant/abi/ClaimerABI'
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
+import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
+import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
 import {
@@ -135,7 +135,7 @@ export const useRewardPosition = () => {
       const params = []
       newGauge.forEach(pair => params.push(pair.args))
       const claimer = {
-        address: Contracts.claimer[chainId],
+        address: Contracts.Claimer[chainId],
         abi: ClaimerABI,
       }
       if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {

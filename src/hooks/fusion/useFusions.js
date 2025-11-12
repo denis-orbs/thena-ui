@@ -5,9 +5,9 @@ import { computePoolAddress, Pool } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AlgebraFactoryABI } from '@/constant/abi/AlgebraFactoryABI'
 import newPoolAbi from '@/constant/abi/fusion/newPool.json'
 import poolAbi from '@/constant/abi/fusion/pool.json'
+import { AlgebraFactoryABI } from '@/constant/abi/integral/AlgebraFactoryABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
@@ -37,7 +37,7 @@ const fetchPoolAddress = async (transformed, version = 3) => {
     transformed
       .filter(value => !!value)
       .map(value => ({
-        address: version === 2 ? Contracts.algebraFactoryV2[_networkId] : Contracts.algebraFactoryV3[_networkId],
+        address: version === 2 ? Contracts.FusionFactory[_networkId] : Contracts.IntegralFactory[_networkId],
         abi: AlgebraFactoryABI,
         functionName: 'computePoolAddress',
         args: [value[0]?.address, value[1]?.address],
@@ -128,11 +128,11 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
 
     args = isFarmingPool
       ? [token0?.address, token1?.address]
-      : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
+      : [Contracts.PluginFactory[chainId], token0?.address, token1?.address]
   }
 
   const { data: poolAddress } = useReadContract({
-    address: version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+    address: version === 3 ? Contracts.IntegralFactory[chainId] : Contracts.FusionFactory[chainId],
     abi: AlgebraFactoryABI,
     functionName,
     args,
@@ -199,11 +199,11 @@ export const getFusionState = async ({ currencyA, currencyB, version = 3, isFarm
 
     args = isFarmingPool
       ? [token0?.address, token1?.address]
-      : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
+      : [Contracts.PluginFactory[chainId], token0?.address, token1?.address]
   }
 
   const algebraContract = {
-    address: version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+    address: version === 3 ? Contracts.IntegralFactory[chainId] : Contracts.FusionFactory[chainId],
     abi: AlgebraFactoryABI,
   }
   let poolAddress
@@ -340,7 +340,7 @@ export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
         const isFarmingPool = pool.deployer === zeroAddress
 
         return {
-          address: pool.version === 3 ? Contracts.algebraFactoryV3[chainId] : Contracts.algebraFactoryV2[chainId],
+          address: pool.version === 3 ? Contracts.IntegralFactory[chainId] : Contracts.FusionFactory[chainId],
           abi: AlgebraFactoryABI,
           functionName:
             pool.version === 2
@@ -353,7 +353,7 @@ export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
               ? [token0?.address, token1?.address]
               : isFarmingPool
                 ? [token0?.address, token1?.address]
-                : [Contracts.pluginFactory[chainId], token0?.address, token1?.address],
+                : [Contracts.PluginFactory[chainId], token0?.address, token1?.address],
           chainId,
         }
       }),

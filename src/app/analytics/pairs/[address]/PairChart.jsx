@@ -15,7 +15,7 @@ import {
 } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
 import { fetchHistoricalTokensPrice } from '@/lib/api'
-import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
+import { AlgebraClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
@@ -114,7 +114,7 @@ export const getHistoricalTokenPrice = async ({ chainId, tokenAddresses, startTi
 
 // export const checkFusionTokensData = async tokenAddresses => {
 //   try {
-//     const { tokens } = await fusionClient[version][chainId].request(FUSION_TOKEN_DATAS, {
+//     const { tokens } = await AlgebraClient[version][chainId].request(FUSION_TOKEN_DATAS, {
 //       tokens: tokenAddresses,
 //     })
 //     return tokens.some(token => Number(token.derivedETH ?? 0) === 0)
@@ -197,7 +197,7 @@ export const getFusionChartData = async ({
   startTime,
 }) => {
   try {
-    const { poolDayDatas } = await fusionClient[version][chainId].request(FUSION_DAY_DATAS, {
+    const { poolDayDatas } = await AlgebraClient[version][chainId].request(FUSION_DAY_DATAS, {
       address,
       startTime: startTime || FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,

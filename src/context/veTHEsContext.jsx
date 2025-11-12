@@ -5,13 +5,13 @@ import { omit } from 'lodash'
 import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import veDistAbi from '@/constant/abi/veDist.json'
-import veTHEAbi from '@/constant/abi/veTHE.json'
-import voterAbi from '@/constant/abi/voter.json'
+import { VeDistABI } from '@/constant/abi/ve/VeDistABI'
+import { VeTHEABI } from '@/constant/abi/ve/VeTHEABI'
+import { VoterV3ABI } from '@/constant/abi/ve/VoterV3ABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getVoterContract } from '@/lib/contracts'
+import { getVoterV3Contract } from '@/lib/contracts'
 import { vetheClient } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 
@@ -33,7 +33,7 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
 
   vethes.forEach(ve => {
     tokenIdVotesCalls.push({
-      address: Contracts.voter[chainId],
+      address: Contracts.VoterV3[chainId],
       name: 'tokenIdVotes',
       params: [ve.tokenId, epochTimestamp],
     })
@@ -58,10 +58,10 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
   })
 
   const [tokenIdVotesRes, rebaseAmountRes, votingAmountRes, votedRes] = await Promise.all([
-    createCallMulti(tokenIdVotesCalls, voterAbi),
-    createCallMulti(claimableCalls, veDistAbi),
-    createCallMulti(votingAmountCalls, veTHEAbi),
-    createCallMulti(votedCalls, veTHEAbi),
+    createCallMulti(tokenIdVotesCalls, VoterV3ABI),
+    createCallMulti(claimableCalls, VeDistABI),
+    createCallMulti(votingAmountCalls, VeTHEABI),
+    createCallMulti(votedCalls, VeTHEABI),
   ])
 
   const results = []
@@ -126,7 +126,7 @@ const getVethesData = async (chainId, address) => {
 }
 
 const getEpochTimestamp = async chainId => {
-  const voterContract = getVoterContract(chainId)
+  const voterContract = getVoterV3Contract(chainId)
   return await readCall(voterContract, 'epochTimestamp', [], chainId)
 }
 

@@ -5,12 +5,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { erc20Abi } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import { ClaimerABI } from '@/constant/abi/ClaimerABI'
-import rewardEarnedAbi from '@/constant/abi/rewardEarned.json'
+import { ClaimerABI } from '@/constant/abi/ve/ClaimerABI'
+import { RewardEarnedABI } from '@/constant/abi/ve/RewardEarnedABI'
+import { VoterV2ABI } from '@/constant/abi/ve/VoterV2ABI'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
+import { getVeDistContract, getVeTHEContract, getVoterV3Contract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -313,7 +314,7 @@ export const useMerge = () => {
         setPending(true)
 
         if (from.voted) {
-          const voterContract = getVoterContract(chainId)
+          const voterContract = getVoterV3Contract(chainId)
           if (!(await writeTxn(key, resetuuid, voterContract, 'reset', [from.id]))) {
             setPending(false)
             return
@@ -396,7 +397,7 @@ export const useSplit = () => {
         setPending(true)
 
         if (from.voted) {
-          const voterContract = getVoterContract(chainId)
+          const voterContract = getVoterV3Contract(chainId)
           if (!(await writeTxn(key, resetuuid, voterContract, 'reset', [from.id]))) {
             setPending(false)
             return
@@ -470,7 +471,7 @@ export const useTransfer = () => {
         setPending(true)
 
         if (from.voted) {
-          const voterContract = getVoterContract(chainId)
+          const voterContract = getVoterV3Contract(chainId)
           if (!(await writeTxn(key, resetuuid, voterContract, 'reset', [from.id]))) {
             setPending(false)
             return
@@ -537,7 +538,7 @@ export const useWithdrawLock = () => {
 
         const params = [veThe.id]
         if (veThe.voted) {
-          const voterContract = getVoterContract(chainId)
+          const voterContract = getVoterV3Contract(chainId)
           if (!(await writeTxn(key, resetuuid, voterContract, 'reset', params))) {
             setPending(false)
             return
@@ -601,7 +602,7 @@ export const useVote = () => {
         }
         const tokens = Object.keys(votes)
         const voteCounts = Object.values(votes)
-        const voterContract = getVoterContract(chainId)
+        const voterContract = getVoterV3Contract(chainId)
 
         setPending(true)
         const params = [Number(veTheId), tokens, voteCounts]
@@ -651,7 +652,7 @@ export const useReset = () => {
             },
           },
         })
-        const voterContract = getVoterContract(chainId)
+        const voterContract = getVoterV3Contract(chainId)
 
         setPending(true)
         const isSuccess = await writeTxn(key, resetuuid, voterContract, 'reset', [veTheId])
@@ -700,7 +701,7 @@ export const usePoke = () => {
             },
           },
         })
-        const voterContract = getVoterContract(chainId)
+        const voterContract = getVoterV3Contract(chainId)
 
         setPending(true)
         const isSuccess = await writeTxn(key, pokeuuid, voterContract, 'poke', [veTheId])
@@ -739,7 +740,7 @@ export const useClaimBribes = () => {
         setPending(true)
         const key = uuidv4()
         const claimContract = {
-          address: Contracts.claimer[chainId],
+          address: Contracts.Claimer[chainId],
           abi: ClaimerABI,
         }
         const claimuuid = uuidv4()
@@ -878,7 +879,10 @@ export const useClaimAllV2 = () => {
         })
 
         setPending(true)
-        const voterContract = getVoterContract(chainId, 2)
+        const voterv2Contract = {
+          address: Contracts.VoterV2[chainId],
+          abi: VoterV2ABI,
+        }
         const veDistContract = getVeDistContract(chainId, 2)
 
         // claim bribes
@@ -886,7 +890,7 @@ export const useClaimAllV2 = () => {
           const bribes = bribeRewards.map(item => item.gauge.bribe)
           const bribeTokens = bribeRewards.map(item => item.rewards.map(token => token.address))
           const bribeParams = [bribes, bribeTokens]
-          const isSuccess = await writeTxn(key, bribesuuid, voterContract, 'claimBribes', bribeParams)
+          const isSuccess = await writeTxn(key, bribesuuid, voterv2Contract, 'claimBribes', bribeParams)
           if (!isSuccess) {
             setPending(false)
             return
@@ -898,7 +902,7 @@ export const useClaimAllV2 = () => {
           const fees = feeRewards.map(item => item.gauge.fee)
           const feeTokens = feeRewards.map(item => item.rewards.map(token => token.address))
           const feeParams = [fees, feeTokens]
-          const isSuccess = await writeTxn(key, feeuuid, voterContract, 'claimFees', feeParams)
+          const isSuccess = await writeTxn(key, feeuuid, voterv2Contract, 'claimFees', feeParams)
           if (!isSuccess) {
             setPending(false)
             return
@@ -940,18 +944,18 @@ export const useClaimBribesV2 = () => {
       try {
         const key = uuidv4()
 
-        const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
-        // fees claim
+        const RewardEarnedContract = {
+          abi: RewardEarnedABI,
+          address: Contracts.RewardEarned[chainId],
+        }
         const callsFees = pool.rewards.map(reward => ({
-          address: rewardEarnedContract,
-          abi: rewardEarnedAbi,
+          ...RewardEarnedContract,
           functionName: 'earned',
           args: [pool.gauge.fee, reward.address, account],
           chainId,
         }))
         const callsBribes = pool.rewards.map(reward => ({
-          address: rewardEarnedContract,
-          abi: rewardEarnedAbi,
+          ...RewardEarnedContract,
           functionName: 'earned',
           args: [pool.gauge.bribe, reward.address, account],
           chainId,
@@ -986,10 +990,13 @@ export const useClaimBribesV2 = () => {
         }
         startTxn({ key, title: 'Claim Incentives + Fees', transactions: result })
         setPending(true)
-        const voterContract = getVoterContract(chainId, 2)
+        const voterv2Contract = {
+          address: Contracts.VoterV2[chainId],
+          abi: VoterV2ABI,
+        }
         if (bribeTokens.length > 0) {
           const params = [[pool.gauge.bribe], [bribeTokens]]
-          const isSuccess = await writeTxn(key, bribesuuid, voterContract, 'claimBribes', params)
+          const isSuccess = await writeTxn(key, bribesuuid, voterv2Contract, 'claimBribes', params)
           if (!isSuccess) {
             setPending(false)
             return
@@ -997,7 +1004,7 @@ export const useClaimBribesV2 = () => {
         }
         if (feeTokens.length > 0) {
           const params = [[pool.gauge.fee], [feeTokens]]
-          const isSuccess = await writeTxn(key, feeuuid, voterContract, 'claimFees', params)
+          const isSuccess = await writeTxn(key, feeuuid, voterv2Contract, 'claimFees', params)
           if (!isSuccess) {
             setPending(false)
             return
@@ -1058,7 +1065,7 @@ export const useClaimAll = () => {
         // Claim bribes
         if (veRewards.length > 0) {
           const claimContract = {
-            address: Contracts.claimer[chainId],
+            address: Contracts.Claimer[chainId],
             abi: ClaimerABI,
           }
           const votingIncentives = []

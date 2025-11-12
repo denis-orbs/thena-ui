@@ -1,4 +1,4 @@
-export const FarmCenterABI = [
+export const FarmingCenterABI = [
   {
     inputs: [
       { internalType: 'contract IAlgebraEternalFarming', name: '_eternalFarming', type: 'address' },

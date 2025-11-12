@@ -4,8 +4,8 @@ import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
 import { ZERO_ADDRESS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
+import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
 import Contracts from '@/constant/contracts'
 
 import { SelfPermit } from './selfPermit'
@@ -114,7 +114,7 @@ export class NonfungiblePositionManager extends SelfPermit {
       } else if (options.isFarming) {
         paramMin = { ...baseParams, deployer: zeroAddress }
       } else {
-        paramMin = { ...baseParams, deployer: Contracts.pluginFactory[options.chainId] }
+        paramMin = { ...baseParams, deployer: Contracts.PluginFactory[options.chainId] }
       }
 
       calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))

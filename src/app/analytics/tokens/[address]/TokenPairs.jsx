@@ -7,7 +7,7 @@ import useSWR from 'swr'
 
 import { TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { AlgebraClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import PairsTable from '../../pairs/PairsTable'
@@ -53,7 +53,7 @@ const FUSION_PAIRS = gql`
 
 const getFusionPairData = async (chainId, address, version = 2) => {
   try {
-    const { pools } = await fusionClient[version][chainId].request(FUSION_PAIRS, {
+    const { pools } = await AlgebraClient[version][chainId].request(FUSION_PAIRS, {
       address,
     })
     const data = pools.map(ele => ele.id)

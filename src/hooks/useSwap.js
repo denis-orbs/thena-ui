@@ -12,7 +12,7 @@ import Contracts from '@/constant/contracts'
 import { oneInchApiKey } from '@/constant/env'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getSolidlyRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -202,8 +202,8 @@ export const useTaxTokenSwap = (autoClose = false) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
-      const thenaRouterV2 = getRouterContract(chainId)
-      const routerAddress = thenaRouterV2?.address
+      const SolidlyRouterContract = getSolidlyRouterContract(chainId)
+      const routerAddress = SolidlyRouterContract?.address
       let isApproved = true
       let tokenContract
 
@@ -250,7 +250,11 @@ export const useTaxTokenSwap = (autoClose = false) => {
         fromAsset.decimals,
       )
 
-      let [minAmountOut = 0n] = await readCall(thenaRouterV2, 'getAmountOut', [amountIn, token0Address, token1Address])
+      let [minAmountOut = 0n] = await readCall(SolidlyRouterContract, 'getAmountOut', [
+        amountIn,
+        token0Address,
+        token1Address,
+      ])
 
       minAmountOut = Math.floor(Number(minAmountOut) * ((100 - slippage) / 100))
 
@@ -258,7 +262,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
         await writeTxn(
           key,
           swapuuid,
-          thenaRouterV2,
+          SolidlyRouterContract,
           'swapExactETHForTokensSupportingFeeOnTransferTokens',
           [
             minAmountOut,
@@ -269,7 +273,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
           amountIn,
         )
       } else if (toAsset.address === 'BNB') {
-        await writeTxn(key, swapuuid, thenaRouterV2, 'swapExactTokensForETHSupportingFeeOnTransferTokens', [
+        await writeTxn(key, swapuuid, SolidlyRouterContract, 'swapExactTokensForETHSupportingFeeOnTransferTokens', [
           amountIn,
           minAmountOut,
           [[token0Address, token1Address, false]],
@@ -277,7 +281,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
           currentTimestamp + deadline * 60,
         ])
       } else {
-        await writeTxn(key, swapuuid, thenaRouterV2, 'swapExactTokensForTokensSupportingFeeOnTransferTokens', [
+        await writeTxn(key, swapuuid, SolidlyRouterContract, 'swapExactTokensForTokensSupportingFeeOnTransferTokens', [
           amountIn,
           minAmountOut,
           [[token0Address, token1Address, false]],
@@ -312,8 +316,8 @@ export const useThenaFusionSwap = (autoClose = false) => {
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
       // NOTE: If token use Fusion pool => Fusion router, Classic pool => SwapRouterV2
-      const thenaRouterV2 = getRouterContract(chainId)
-      const routerAddress = thenaRouterV2?.address
+      const SolidlyRouterContract = getSolidlyRouterContract(chainId)
+      const routerAddress = SolidlyRouterContract?.address
       let isApproved = true
       let tokenContract
 
@@ -368,7 +372,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
       // case USDT <-> Token
       let txnReceipt = null
       if (fromAsset.symbol === 'USDT' || toAsset.symbol === 'USDT') {
-        txnReceipt = await writeTxn2(key, swapuuid, thenaRouterV2, 'swapExactTokensForTokens', [
+        txnReceipt = await writeTxn2(key, swapuuid, SolidlyRouterContract, 'swapExactTokensForTokens', [
           amountIn,
           minAmountOut,
           [
@@ -399,7 +403,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
         txnReceipt = await writeTxn2(
           key,
           swapuuid,
-          thenaRouterV2,
+          SolidlyRouterContract,
           swapFuncionName,
           swapParams,
           fromAsset.address === 'BNB' ? amountIn : 0n,

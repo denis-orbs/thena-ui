@@ -5,7 +5,7 @@ import { JSBI } from 'thena-sdk-core'
 import { TICK_SPACING, tickToPrice } from 'thenafi-fusion-sdk'
 
 import computeSurroundingTicks from '@/lib/fusion/computeSurroundingTicks'
-import { fusionClient } from '@/lib/graphql'
+import { AlgebraClient } from '@/lib/graphql'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -20,7 +20,7 @@ const getActiveTick = (tickCurrent, feeAmount, tickSpacing) =>
 
 const fetchTicksData = async ({ networkId, version, poolAddress, skip = 0 }) => {
   try {
-    const { ticks } = await fusionClient[version][networkId].request(
+    const { ticks } = await AlgebraClient[version][networkId].request(
       gql`
         query allV3Ticks($poolAddress: String!, $skip: Int!) {
           ticks(first: 1000, skip: $skip, where: { poolAddress: $poolAddress }, orderBy: tickIdx) {

@@ -7,9 +7,9 @@ import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
 import { TXN_STATUS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
-import pluginFactoryAbi from '@/constant/abi/pluginFactoryAbi.json'
+import { NPMFusionABI } from '@/constant/abi/fusion/NPMFusionABI'
+import { NPMIntegralABI } from '@/constant/abi/integral/NPMIntegralABI'
+import { PluginFactoryABI } from '@/constant/abi/integral/PluginFactoryABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -175,7 +175,7 @@ export const useAlgebraAdd = () => {
           const txHash = await writeTxn(
             key,
             createPoolId,
-            { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+            { abi: PluginFactoryABI, address: Contracts.PluginFactory[chainId] },
             'createCustomPoolAndInitialize',
             [position.pool.sqrtRatioX96, position.pool.token0.address, position.pool.token1.address],
           )
@@ -868,7 +868,7 @@ export const useAlgebraMigration = () => {
         const txHash = await writeTxn(
           key,
           createPoolId,
-          { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+          { abi: PluginFactoryABI, address: Contracts.PluginFactory[chainId] },
           'createCustomPoolAndInitialize',
           [positionV3.pool.sqrtRatioX96, positionV3.pool.token0.address, positionV3.pool.token1.address],
         )

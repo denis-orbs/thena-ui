@@ -6,9 +6,9 @@ import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, PAIR_TYPES, SCAN_URLS } from '@/constant'
-import { BasePluginABI } from '@/constant/abi/BasePluginABI'
 import { AlgebraPoolV3ABI } from '@/constant/abi/fusion/AlgebraPoolV3ABI'
 import newPoolAbi from '@/constant/abi/fusion/newPool.json'
+import { BasePluginABI } from '@/constant/abi/integral/BasePluginABI'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useCopyText } from '@/hooks/useCopyText'
@@ -99,7 +99,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   }, [strategy.title])
 
   const poolDeployer = useMemo(
-    () => (strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId]),
+    () => (strategy.title.includes('Farming') ? zeroAddress : Contracts.PluginFactory[networkId]),
     [networkId, strategy.title],
   )
 
