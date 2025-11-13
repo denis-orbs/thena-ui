@@ -1,4 +1,5 @@
 import {
+  estimateGas,
   multicall,
   readContract,
   sendTransaction,
@@ -35,14 +36,24 @@ export const readCall = async (contract, functionName, args = [], chainId = Chai
     chainId,
   })
 
-export const writeCall = async (contract, functionName, args = [], value = 0n, chainId = ChainId.BSC) =>
-  await writeContract(wagmiConfig, {
+export const writeCall = async (contract, functionName, args = [], value = 0n, chainId = ChainId.BSC) => {
+  const gasEstimate = await estimateGas(wagmiConfig, {
     ...contract,
     functionName,
     args,
     value,
     chainId,
   })
+
+  return await writeContract(wagmiConfig, {
+    ...contract,
+    functionName,
+    args,
+    value,
+    chainId,
+    gas: gasEstimate + 20000n, // small buffer
+  })
+}
 
 export const sendCall = async (to, data, value = 0n, chainId = ChainId.BSC) =>
   await sendTransaction(wagmiConfig, {
