@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import veTHEApiAbi from '@/constant/abi/veTHEAPI.json'
+import { VeTHEAPIABI } from '@/abis/ve/VeTHEAPIABI'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
@@ -118,7 +118,7 @@ export const useGetVeRewardV2 = () => {
   } = useReadContracts({
     contracts: poolsV2.map(pool => ({
       address: Contracts.veTHEAPI[chainId],
-      abi: veTHEApiAbi,
+      abi: VeTHEAPIABI,
       functionName: 'singlePairRewardAddress',
       args: [account, pool.address],
       chainId,

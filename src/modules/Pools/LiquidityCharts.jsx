@@ -5,6 +5,7 @@ import React, { useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
 import { fetchDefiedgeInfo } from '@/components/common/AddLiquidity/FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from '@/components/common/AddLiquidity/FusionAdd/GammaAdd'
 import Highlight from '@/components/highlight'
@@ -12,7 +13,6 @@ import Selection from '@/components/selection'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
@@ -31,21 +31,21 @@ const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseLower',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'baseUpper',
       args: [],
       chainId,
     },
     {
       address: strategy.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'currentTick',
       args: [],
       chainId,

@@ -4,26 +4,53 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
+import { IchiFarmingABI } from '@/abis/ichi/IchiFarmingABI'
+import { IchiGaugeABI } from '@/abis/ichi/IchiGaugeABI'
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { VaultDepositGaurdABI } from '@/abis/ichi/VaultDepositGaurdABI'
 import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
-import {
-  getERC20Contract,
-  getGaugeContract,
-  getGaugeSimpleContract,
-  getIchiFarmingContract,
-  getIchiVaultContract,
-  getMultiFeeDistributionContract,
-  getVaultDepositContract,
-  getWBNBContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
+
+const getIchiVaultContract = (address, version = 2) => {
+  if (version === 3) {
+    return {
+      address,
+      abi: IchiVaultV3ABI,
+    }
+  }
+  return {
+    address,
+    abi: IchiVaultV2ABI,
+  }
+}
+
+const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
+  if (version === 3) {
+    const address = isFarming
+      ? Contracts.vaultDepositGuardV3Farming[chainId]
+      : Contracts.vaultDepositGuardV3Fee[chainId]
+
+    return {
+      address,
+      abi: VaultDepositGaurdABI,
+    }
+  }
+
+  return {
+    address: Contracts.vaultDepositGuard[chainId],
+    abi: VaultDepositGaurdABI,
+  }
+}
 
 export const useIchiManage = () => {
   const [pending, setPending] = useState(false)
@@ -34,7 +61,7 @@ export const useIchiManage = () => {
 
   const onIchiAdd = useCallback(
     async (vault, amount, slippage) => {
-      const vaultContract = getIchiVaultContract(vault.address, networkId)
+      const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
       if (token0.allowed) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
@@ -132,7 +159,7 @@ export const useIchiManage = () => {
 
   const onIchiAddAndStake = useCallback(
     async ({ vault, amount, amountToWrap, slippage }, callback) => {
-      const vaultContract = getIchiVaultContract(vault.address, networkId)
+      const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
       if (token0.address === vault.allowed.address) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
@@ -267,7 +294,10 @@ export const useIchiManage = () => {
       }
 
       // Stake LP
-      const gaugeContract = getGaugeSimpleContract(vault.gauge.address, networkId)
+      const gaugeContract = {
+        address: vault.gauge.address,
+        abi: IchiGaugeABI,
+      }
       if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', [lpBalance]))) {
         setPending(false)
         return
@@ -335,10 +365,13 @@ export const useIchiRemove = () => {
       })
       setPending(true)
 
-      const vaultContract = getIchiVaultContract(pool.address, networkId, version)
+      const vaultContract = getIchiVaultContract(pool.address, version)
       if (isFarming) {
         const farmContractAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
-        const farmingContract = getIchiFarmingContract(farmContractAddress, networkId)
+        const farmingContract = {
+          address: farmContractAddress,
+          abi: IchiFarmingABI,
+        }
         const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
         if (isStaked) {
           if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
@@ -386,7 +419,7 @@ export const useIchiManageV3 = () => {
   const addIchiPool = useCallback(
     async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const { token0, token1, address: vaultAddress, isFarming = false } = vault
-      const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
+      const vaultContract = getIchiVaultContract(vaultAddress, 3)
 
       if (token0.address === vault.allowed.address) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
@@ -526,7 +559,10 @@ export const useIchiManageV3 = () => {
         }
 
         // Stake LP
-        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+        const farmingContract = {
+          address: farmingAddress,
+          abi: IchiFarmingABI,
+        }
         if (!(await writeTxn(key, stakeuuid, farmingContract, 'stake', [lpBalance, account]))) {
           setPending(false)
           return
@@ -561,7 +597,7 @@ export const useIchiManageV3 = () => {
       startTxn({ key, transactions, title: 'Stake' })
       setPending(true)
 
-      const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
+      const vaultContract = getIchiVaultContract(vaultAddress, 3)
       const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
       const allowance = await readCall(vaultContract, 'allowance', [account, farmingAddress], networkId)
       const lpBalance = await readCall(vaultContract, 'balanceOf', [account], networkId)
@@ -584,7 +620,10 @@ export const useIchiManageV3 = () => {
       }
 
       // Stake LP
-      const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+      const farmingContract = {
+        address: farmingAddress,
+        abi: IchiFarmingABI,
+      }
       if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [toWei(amount).toFixed(0), account]))) {
         setPending(false)
         return
@@ -616,8 +655,8 @@ export const useMigrationIchi = () => {
       const { address: vaultAddressV3, allowed: depositToken, isFarming } = strategy
       const gaugeContract = getGaugeContract(gauge.address, networkId)
       const depositGuardContract = getVaultDepositContract(networkId, 3, isFarming)
-      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, networkId, 2)
-      const vaultContractV3 = getIchiVaultContract(vaultAddressV3, networkId, 3)
+      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, 2)
+      const vaultContractV3 = getIchiVaultContract(vaultAddressV3, 3)
 
       const key = uuidv4()
       const unstakedId = uuidv4()
@@ -843,7 +882,10 @@ export const useMigrationIchi = () => {
         }
 
         // Stake LP
-        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+        const farmingContract = {
+          address: farmingAddress,
+          abi: IchiFarmingABI,
+        }
         if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [lpBalance, account]))) {
           setPending(false)
           return
@@ -874,7 +916,7 @@ export const useIchiWithdraw = () => {
 
       const { address: vaultAddressV2, gauge } = positionV2
       const gaugeContract = getGaugeContract(gauge.address, networkId)
-      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, networkId, 2)
+      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, 2)
 
       const key = uuidv4()
       const unstakedId = uuidv4()
@@ -951,7 +993,7 @@ export const useIchiClaim = () => {
       })
 
       setPending(true)
-      const ichiVault = getIchiVaultContract(pool.address, networkId, pool.account?.version)
+      const ichiVault = getIchiVaultContract(pool.address, pool.account?.version)
       const farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
       const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
       if (!(await writeTxn(key, claimId, multiFeeDistributionContract, 'getAllRewards', []))) {

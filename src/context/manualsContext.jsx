@@ -2,22 +2,24 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import nonfungiblePositionManagerV2Abi from '@/constant/abi/nonfungiblePositionManagerv2.json'
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []
 
 const fetchManualV2Info = async (account, chainId) => {
-  const npmContract = getPositionManagerContract(chainId, 2)
-  const balance = await readCall(npmContract, 'balanceOf', [account], chainId)
-  const address = Contracts.nonfungiblePositionManagerV2[chainId]
+  const NPMFusionContract = {
+    address: Contracts.NPMFusion[chainId],
+    abi: FusionNPMABI,
+  }
+  const balance = await readCall(NPMFusionContract, 'balanceOf', [account], chainId)
 
   if (!balance) return []
   const tokenRequests = []
@@ -26,8 +28,7 @@ const fetchManualV2Info = async (account, chainId) => {
   }
   const tokenIds = await callMulti(
     tokenRequests.map(id => ({
-      address,
-      abi: nonfungiblePositionManagerV2Abi,
+      ...NPMFusionContract,
       functionName: 'tokenOfOwnerByIndex',
       args: [account, id],
       chainId,
@@ -35,8 +36,7 @@ const fetchManualV2Info = async (account, chainId) => {
   )
   const positions = await callMulti(
     tokenIds.map(id => ({
-      address,
-      abi: nonfungiblePositionManagerV2Abi,
+      ...NPMFusionContract,
       functionName: 'positions',
       args: [id],
       chainId,
@@ -55,9 +55,12 @@ const fetchManualV2Info = async (account, chainId) => {
 }
 
 const fetchManualV3Info = async (account, chainId) => {
-  const positionManagerContract = getPositionManagerContract(chainId, 3)
+  const NPMIntegralContract = {
+    address: Contracts.NPMIntegral[chainId],
+    abi: IntegralNPMABI,
+  }
 
-  const balance = await readCall(positionManagerContract, 'balanceOf', [account], chainId)
+  const balance = await readCall(NPMIntegralContract, 'balanceOf', [account], chainId)
   if (!balance) return []
 
   const tokenRequests = []
@@ -67,30 +70,31 @@ const fetchManualV3Info = async (account, chainId) => {
 
   const tokenIds = await callMulti(
     tokenRequests.map(id => ({
-      ...positionManagerContract,
+      ...NPMIntegralContract,
       functionName: 'tokenOfOwnerByIndex',
       args: [account, id],
       chainId,
     })),
   )
 
-  const farmingAddresses = await callMulti(
-    tokenIds.map(id => ({
-      ...positionManagerContract,
-      functionName: 'tokenFarmedIn',
-      args: [id],
-      chainId,
-    })),
-  )
-
-  const positions = await callMulti(
-    tokenIds.map(id => ({
-      ...positionManagerContract,
-      functionName: 'positions',
-      args: [id],
-      chainId,
-    })),
-  )
+  const [farmingAddresses, positions] = await Promise.all([
+    callMulti(
+      tokenIds.map(id => ({
+        ...NPMIntegralContract,
+        functionName: 'tokenFarmedIn',
+        args: [id],
+        chainId,
+      })),
+    ),
+    callMulti(
+      tokenIds.map(id => ({
+        ...NPMIntegralContract,
+        functionName: 'positions',
+        args: [id],
+        chainId,
+      })),
+    ),
+  ])
 
   /**
    * @property {uint88} nonce

@@ -9,6 +9,7 @@ import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -16,6 +17,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, POSITION_EARNED_TYPES } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useGetAsset, useToken } from '@/hooks/fusion/Tokens'
@@ -25,7 +27,6 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { getPositionManagerContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
 import { GaugeItemManual } from '@/modules/Pools/Migration'
@@ -175,10 +176,9 @@ export function ManualMigrationPage({ tokenId }) {
     return undefined
   }, [amountA, amountB, currencyA?.decimals, currencyB?.decimals, poolV3, tickLower, tickUpper])
 
-  const algebraContract = getPositionManagerContract(chainId, 2)
   const { data: fees } = useSimulateContract({
-    address: algebraContract.address,
-    abi: algebraContract.abi,
+    address: Contracts.NPMFusion[chainId],
+    abi: FusionNPMABI,
     functionName: 'collect',
     args: [
       {

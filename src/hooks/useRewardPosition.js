@@ -3,19 +3,16 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData } from 'viem'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
+import { ClaimerABI } from '@/abis/ve/ClaimerABI'
 import { TXN_STATUS } from '@/constant'
-import { ClaimerABI } from '@/constant/abi/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import { callMulti } from '@/lib/contractActions'
-import {
-  getFarmingCenterContract,
-  getGammaHyperVisorContract,
-  getGaugeContract,
-  getIchiVaultContract,
-  getMultiFeeDistributionContract,
-  getPairContract,
-  getPositionManagerContract,
-} from '@/lib/contracts'
+import { getFarmingCenterContract, getGaugeContract, getMultiFeeDistributionContract } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
@@ -134,7 +131,7 @@ export const useRewardPosition = () => {
       const params = []
       newGauge.forEach(pair => params.push(pair.args))
       const claimer = {
-        address: Contracts.claimer[chainId],
+        address: Contracts.Claimer[chainId],
         abi: ClaimerABI,
       }
       if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {
@@ -172,8 +169,9 @@ export const useRewardPosition = () => {
       gamma.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getGammaHyperVisorContract(add, chainId, 3),
+        poolAddresses.map(poolAddress => ({
+          address: poolAddress,
+          abi: HypervisorV3ABI,
           functionName: 'receiver',
         })),
       )
@@ -195,8 +193,9 @@ export const useRewardPosition = () => {
       ichi.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getIchiVaultContract(add, chainId, 3),
+        poolAddresses.map(addr => ({
+          address: addr,
+          abi: IchiVaultV3ABI,
           functionName: 'farmingContract',
         })),
       )
@@ -233,7 +232,10 @@ export const useRewardPosition = () => {
 
       for (let i = 0; i < poolAddresses.length; i++) {
         const pairAddress = poolAddresses[i]
-        const pairContract = getPairContract(pairAddress, chainId)
+        const pairContract = {
+          address: pairAddress,
+          abi: SolidlyPairABI,
+        }
         if (!(await writeTxn(key, `classic-fees-${pairAddress}`, pairContract, 'claimFees', []))) {
           setPending(false)
           return
@@ -247,7 +249,10 @@ export const useRewardPosition = () => {
 
       for (let i = 0; i < poolAddresses.length; i++) {
         const pairAddress = poolAddresses[i]
-        const pairContract = getPairContract(pairAddress, chainId)
+        const pairContract = {
+          address: pairAddress,
+          abi: SolidlyPairABI,
+        }
         if (!(await writeTxn(key, `stable-fees-${pairAddress}`, pairContract, 'claimFees', []))) {
           setPending(false)
           return
@@ -258,7 +263,6 @@ export const useRewardPosition = () => {
     if (manualFeesV2.size > 0) {
       const manualFeesArr = [...manualFeesV2]
       const callDatas = []
-      const positionManger = getPositionManagerContract(chainId, 2)
 
       for (let i = 0; i < manualFeesArr.length; i++) {
         const pair = manualFeesArr[i][1]
@@ -276,12 +280,12 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: positionManger.abi,
+        abi: FusionNPMABI,
         functionName: 'multicall',
         args: [callDatas],
       })
 
-      if (!(await sendTxn(key, claimFeesV2Id, positionManger.address, encoded))) {
+      if (!(await sendTxn(key, claimFeesV2Id, Contracts.NPMFusion[chainId], encoded))) {
         setPending(false)
         return
       }
@@ -290,7 +294,6 @@ export const useRewardPosition = () => {
     if (manualFeesV3.size > 0) {
       const manualFeesArr = [...manualFeesV3]
       const callDatas = []
-      const positionManger = getPositionManagerContract(chainId, 3)
 
       for (let i = 0; i < manualFeesArr.length; i++) {
         const pair = manualFeesArr[i][1]
@@ -308,12 +311,12 @@ export const useRewardPosition = () => {
       }
 
       const encoded = encodeFunctionData({
-        abi: positionManger.abi,
+        abi: IntegralNPMABI,
         functionName: 'multicall',
         args: [callDatas],
       })
 
-      if (!(await sendTxn(key, claimFeesV3Id, positionManger.address, encoded))) {
+      if (!(await sendTxn(key, claimFeesV3Id, Contracts.NPMIntegral[chainId], encoded))) {
         setPending(false)
         return
       }

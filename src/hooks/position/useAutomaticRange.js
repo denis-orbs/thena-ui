@@ -1,21 +1,21 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
+import { HypervisorV2ABI } from '@/abis/gamma/HypervisorV2ABI'
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
 import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import gammaHypervisorAbi from '@/constant/abi/fusion/gammaHypervisor.json'
-import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
-import ichiVaultAbiV3 from '@/constant/abi/fusion/ichiVaultV3.json'
 import { callMulti } from '@/lib/contractActions'
 
 const strategyAbi = {
   2: {
-    ichi: ichiVaultAbi,
-    gamma: gammaHypervisorAbi,
+    ichi: IchiVaultV2ABI,
+    gamma: HypervisorV2ABI,
   },
   3: {
-    ichi: ichiVaultAbiV3,
-    gamma: gammaHypervisorAbiV3,
+    ichi: IchiVaultV3ABI,
+    gamma: HypervisorV3ABI,
   },
 }
 

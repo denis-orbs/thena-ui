@@ -3,11 +3,10 @@ import { ADDRESS_ZERO, Position, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import { ZERO_ADDRESS } from '@/constant'
-import nonfungiblePositionManagerV2Abi from '@/constant/abi/nonfungiblePositionManagerv2.json'
-import nonfungiblePositionManagerV3Abi from '@/constant/abi/nonfungiblePositionManagerv3.json'
 import Contracts from '@/constant/contracts'
-import { getPositionManagerContract } from '@/lib/contracts'
 
 import { SelfPermit } from './selfPermit'
 
@@ -31,7 +30,7 @@ export class NonfungiblePositionManager extends SelfPermit {
 
   static getCalldata(func, args, version = 2) {
     return encodeFunctionData({
-      abi: version === 2 ? nonfungiblePositionManagerV2Abi : nonfungiblePositionManagerV3Abi,
+      abi: version === 2 ? FusionNPMABI : IntegralNPMABI,
       functionName: func,
       args,
     })
@@ -45,16 +44,19 @@ export class NonfungiblePositionManager extends SelfPermit {
   }
 
   static getMintedPosition(addTxRecieve, chainId) {
-    const PM_CONTRACT = getPositionManagerContract(chainId, 3)
+    const NPMIntegralContract = {
+      address: Contracts.NPMIntegral[chainId],
+      abi: IntegralNPMABI,
+    }
     const functionSignature = 'IncreaseLiquidity(uint256,uint128,uint128,uint256,uint256,address)'
     const targetTopic = keccak256(new TextEncoder().encode(functionSignature))
 
     const mintedEvent = addTxRecieve.logs?.find(
-      e => getAddress(e.address) === getAddress(PM_CONTRACT.address) && e.topics[0] === targetTopic,
+      e => getAddress(e.address) === getAddress(NPMIntegralContract.address) && e.topics[0] === targetTopic,
     )
 
     return decodeEventLog({
-      abi: PM_CONTRACT.abi,
+      abi: NPMIntegralContract.abi,
       data: mintedEvent.data,
       topics: mintedEvent.topics,
     })
@@ -112,7 +114,7 @@ export class NonfungiblePositionManager extends SelfPermit {
       } else if (options.isFarming) {
         paramMin = { ...baseParams, deployer: zeroAddress }
       } else {
-        paramMin = { ...baseParams, deployer: Contracts.pluginFactory[options.chainId] }
+        paramMin = { ...baseParams, deployer: Contracts.PluginFactory[options.chainId] }
       }
 
       calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))

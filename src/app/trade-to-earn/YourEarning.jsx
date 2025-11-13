@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
 import Box from '@/components/box'
 import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -15,12 +16,12 @@ import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { trade2EarnStartTime } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getDibsRewarderContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import {
   fetchDataEarnings,
@@ -121,7 +122,10 @@ function YourEarning({ setPending }) {
         if (!_.isEqual(earnings, earningsFetch) || !data.length) {
           setLoading(true)
         }
-        const dibsRewarder = getDibsRewarderContract(networkId)
+        const dibsRewarder = {
+          address: Contracts.dibsRewarder[networkId],
+          abi: DibsRewarderABI,
+        }
         const rs = await Promise.all(
           earnings.map(async item => {
             const totalRewardADay = await fetchTotalRewardADay(item.day)

@@ -5,6 +5,8 @@ import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
+import { SolidlyRouterABI } from '@/abis/solidly/SolidlyRouterABI'
+import { SolidlyZapABI } from '@/abis/solidly/SolidlyZapABI'
 import { Alert } from '@/components/alert'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -13,8 +15,6 @@ import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
-import routerAbi from '@/constant/abi/router.json'
-import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
@@ -29,10 +29,10 @@ import WarningZapper from './WarningZapper'
 const getZapAddress = (strategy, chainId) => {
   if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.GammaZap[chainId], isV1: false }
   if (strategy.type === PAIR_TYPES.CLASSIC) {
-    return { address: Contracts.classicZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
+    return { address: Contracts.classicZap[chainId], routerAddress: Contracts.SolidlyRouter[chainId], isV1: true }
   }
   if (strategy.type === PAIR_TYPES.STABLE) {
-    return { address: Contracts.stableZap[chainId], routerAddress: Contracts.solidlyRouter[chainId], isV1: true }
+    return { address: Contracts.stableZap[chainId], routerAddress: Contracts.SolidlyRouter[chainId], isV1: true }
   }
 }
 
@@ -122,13 +122,13 @@ export function CommonZapperPane({
   const { data } = useReadContracts({
     contracts: [
       {
-        abi: vammZapAbi,
+        abi: SolidlyZapABI,
         address: zapAddress,
         functionName: 'getSwapAmount',
         args,
       },
       {
-        abi: vammZapAbi,
+        abi: SolidlyZapABI,
         address: zapAddress,
         functionName: 'getEstimatedZapIn',
         args,
@@ -149,7 +149,7 @@ export function CommonZapperPane({
   }, [data])
 
   const { data: amounts } = useReadContract({
-    abi: routerAbi,
+    abi: SolidlyRouterABI,
     address: routerAddress,
     functionName: 'quoteRemoveLiquidity',
     args: [asset0.address, asset1.address, strategy.type === PAIR_TYPES.STABLE, toWei(liquidityAdded)],

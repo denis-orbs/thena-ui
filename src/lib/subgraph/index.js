@@ -3,7 +3,7 @@ import { gql, GraphQLClient } from 'graphql-request'
 import orderBy from 'lodash/orderBy'
 
 import { fetchRevenue } from '../api'
-import { blockGraphUrl, fusionClient, fusionFarmingClient } from '../graphql'
+import { AlgebraClient, blockGraphUrl, IntegralFarmingClient } from '../graphql'
 
 const requestWithTimeout = (graphQLClient, request, variables, timeout = 30000) =>
   Promise.race([
@@ -122,7 +122,7 @@ const FARMING_LIST_QUERY = gql`
   }
 `
 
-export const getFusionFarmingData = async ({ chainId, poolIds }) => {
+export const getIntegralFarmingData = async ({ chainId, poolIds }) => {
   if (!poolIds?.length) return []
 
   try {
@@ -130,7 +130,7 @@ export const getFusionFarmingData = async ({ chainId, poolIds }) => {
     let i = 0
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const { eternalFarmings = [] } = await fusionFarmingClient[chainId].request(FARMING_LIST_QUERY, {
+      const { eternalFarmings = [] } = await IntegralFarmingClient[chainId].request(FARMING_LIST_QUERY, {
         poolIds,
         skip: i * 1000,
       })
@@ -166,9 +166,9 @@ const FEES_DATA_QUERY = gql`
   }
 `
 
-export const getFusionFeesData = async ({ chainId, poolIds, date }) => {
+export const getIntegralFeesData = async ({ chainId, poolIds, date }) => {
   try {
-    const { poolDayDatas = [] } = await fusionClient[3][chainId].request(FEES_DATA_QUERY, {
+    const { poolDayDatas = [] } = await AlgebraClient[3][chainId].request(FEES_DATA_QUERY, {
       poolIds,
       date,
     })
@@ -226,8 +226,8 @@ export const getFusionFeesData = async ({ chainId, poolIds, date }) => {
 export const fetchStats = async () => {
   // const chainId = ChainId.BSC
   // const [fusionData, fusionV3Data, v1Data] = await Promise.all([
-  //   fusionClient[2][chainId].request(FUSION_STATS),
-  //   fusionClient[3][chainId].request(FUSION_STATS),
+  //   AlgebraClient[2][chainId].request(FUSION_STATS),
+  //   AlgebraClient[3][chainId].request(FUSION_STATS),
   //   v1Client[chainId].request(V1_STATS),
   // ])
   let stats = null
@@ -261,7 +261,7 @@ export const fetchStats = async () => {
  * @returns {Promise<Record<position_id, Record<token_address, amount>>>}
  */
 export const getCollectedRewards = async (owner, chainId) => {
-  const { rewards = [] } = await fusionFarmingClient[chainId].request(
+  const { rewards = [] } = await IntegralFarmingClient[chainId].request(
     gql`
       query rewards($owner: String!) {
         rewards(where: { owner: $owner }) {

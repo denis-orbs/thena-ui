@@ -6,9 +6,10 @@ import { toast } from 'react-toastify'
 import { useTranslations } from 'use-intl'
 import { v4 as uuidv4 } from 'uuid'
 
+import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
 import { TXN_STATUS } from '@/constant'
+import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { getDibsRewarderContract } from '@/lib/contracts'
 import { v4Client, v4ClientSubGraphT2E } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -167,7 +168,10 @@ export const useClaimRewardMutation = () => {
       const key = uuidv4()
       const claimuuid = uuidv4()
 
-      const dibsRewarderContract = getDibsRewarderContract(chainId)
+      const dibsRewarderContract = {
+        address: Contracts.dibsRewarder[chainId],
+        abi: DibsRewarderABI,
+      }
 
       startTxn({
         key,

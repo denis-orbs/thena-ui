@@ -173,8 +173,6 @@ export const usePairInfo = ({
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const { v2Pairs } = useGetV2SolidlyPairs(type || PAIR_TYPES.CLASSIC)
-  console.log('pairs', pairs)
-  console.log('v2Pairs', v2Pairs)
 
   return useMemo(() => {
     if (type === PAIR_TYPES.WEIGHTED) {

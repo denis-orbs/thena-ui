@@ -7,6 +7,17 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
+import { HypervisorMFDABI } from '@/abis/gamma/HypervisorMFDABI'
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiMFDABI } from '@/abis/ichi/IchiMFDABI'
+import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { MFDFactoryABI } from '@/abis/integral/MFDFactoryABI'
+import { SolidlyFactoryABI } from '@/abis/solidly/SolidlyFactoryABI'
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
+import { GaugeV3ABI } from '@/abis/ve/GaugeV3ABI'
+import { PairAPIABI } from '@/abis/ve/PairAPIABI'
+import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
 import {
   GAMMA_TYPES,
   ICHI_SwapFee,
@@ -17,17 +28,6 @@ import {
   V1_POOL_TYPES,
   ZERO_ADDRESS,
 } from '@/constant'
-import gammaHypervisorAbiV3 from '@/constant/abi/fusion/gammaHypervisorV3.json'
-import ichiVaultAbi from '@/constant/abi/fusion/ichiVault.json'
-import ichiVaultV3 from '@/constant/abi/fusion/ichiVaultV3.json'
-import { GaugeV3ABI } from '@/constant/abi/GaugeV3ABI'
-import { HypervisorMFDABI } from '@/constant/abi/HypervisorMFDABI'
-import { IchiMFDABI } from '@/constant/abi/IchiMFDABI'
-import { MFDFactoryABI } from '@/constant/abi/MFDFactoryABI'
-import pairAbi from '@/constant/abi/pair.json'
-import pairAPIAbi from '@/constant/abi/pairAPI.json'
-import { SolidlyFactoryABI } from '@/constant/abi/SolidlyFactoryABI'
-import voterAbi from '@/constant/abi/voter.json'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import usePrices from '@/hooks/usePrices'
@@ -40,9 +40,9 @@ import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 const pairABI = {
-  classic: pairAbi,
-  hypervisor: gammaHypervisorAbiV3,
-  ichi: ichiVaultV3,
+  classic: SolidlyPairABI,
+  hypervisor: HypervisorV3ABI,
+  ichi: IchiVaultV3ABI,
 }
 
 const mfdABI = {
@@ -86,7 +86,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       const pairsList = chunks[index]
 
       const gaugeForPoolCalls = pairsList.map(pair => ({
-        address: Contracts.voter[chainId],
+        address: Contracts.VoterV3[chainId],
         name: 'gaugeForPool',
         params: [pair.address],
       }))
@@ -104,17 +104,17 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       }))
 
       const receiverCalls = pairsList.map(pair => ({
-        address: isHypervisorPair ? pair.address : Contracts.mfdFactoryAddress[chainId],
+        address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
         name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
         params: isHypervisorPair ? [] : [pair.address],
       }))
 
       const [gaugeForPools, isPairs, accountLpBalances, receivers] = await Promise.all([
-        createCallMulti(gaugeForPoolCalls, voterAbi),
+        createCallMulti(gaugeForPoolCalls, VoterV3ABI),
         createCallMulti(isPairCalls, SolidlyFactoryABI),
         createCallMulti(accountLpBalanceCalls, pairABI[type]),
         !isClassicPair && receiverCalls.length
-          ? createCallMulti(receiverCalls, isHypervisorPair ? gammaHypervisorAbiV3 : MFDFactoryABI)
+          ? createCallMulti(receiverCalls, isHypervisorPair ? HypervisorV3ABI : MFDFactoryABI)
           : [],
       ])
 
@@ -192,8 +192,8 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
         createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
         isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
-        createCallMulti(claimable0Calls, isClassicPair ? pairAbi : mfdABI[type]),
-        createCallMulti(claimable1Calls, isClassicPair ? pairAbi : mfdABI[type]),
+        createCallMulti(claimable0Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
+        createCallMulti(claimable1Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
       ])
 
       let gaugeIndex = 0
@@ -287,7 +287,7 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
     const pairInfos = await callMulti(
       pools.map(pool => ({
         address: Contracts.pairAPI[chainId],
-        abi: pairAPIAbi,
+        abi: PairAPIABI,
         functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
         args: [pool.address, account],
         chainId,
@@ -295,20 +295,28 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
       true,
     )
 
-    return pairInfos.map(pool => {
-      const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
-        pool
-      return {
-        version: 2,
-        address: pair_address, // pair contract address
-        walletBalance: account_lp_balance, // account LP tokens balance
-        gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
-        totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
-        gaugeEarned: account_gauge_earned, // account earned emissions for this pair
-        token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
-        token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
-      }
-    })
+    return pairInfos
+      .filter(pool => !!pool)
+      .map(pool => {
+        const {
+          pair_address,
+          claimable0,
+          claimable1,
+          account_lp_balance,
+          account_gauge_earned,
+          account_gauge_balance,
+        } = pool
+        return {
+          version: 2,
+          address: pair_address, // pair contract address
+          walletBalance: account_lp_balance, // account LP tokens balance
+          gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
+          totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
+          gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+          token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
+          token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
+        }
+      })
   } catch (error) {
     console.error(error)
     return []
@@ -339,7 +347,7 @@ const fetchIchiAllowed = async (pools, chainId) => {
   const allowed0 = await callMulti(
     ichi.map(pool => ({
       address: pool.address,
-      abi: ichiVaultAbi,
+      abi: IchiVaultV2ABI,
       functionName: 'allowToken0',
       args: [],
       chainId,
@@ -370,7 +378,7 @@ function Updater() {
   const prices = usePrices()
   const { networkId } = useChainSettings()
 
-  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(
+  const { data: [v3Pools = [], v2Pools = []] = [] } = useSWR(
     ['fusions api', networkId],
     () =>
       Promise.all([
@@ -389,23 +397,21 @@ function Updater() {
   )
 
   const { data: userInfos } = useSWRImmutable(
-    account && (fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0)
-      ? ['pools user api', account, fusionPoolsV2.length, fusionPoolsV3.length, networkId]
+    account && (v2Pools.length > 0 || v3Pools.length > 0)
+      ? ['pools user api', account, v2Pools.length, v3Pools.length, networkId]
       : null,
     async () => {
       const [userFusionsV2, userFusionsV3] = await Promise.all([
-        fetchUserFusionsV2(account, fusionPoolsV2, networkId),
-        fetchUserFusionsV3(account, fusionPoolsV3, networkId),
+        fetchUserFusionsV2(account, v2Pools, networkId),
+        fetchUserFusionsV3(account, v3Pools, networkId),
       ])
       return [...userFusionsV2, ...userFusionsV3]
     },
   )
 
   const { data: poolsWithAllowed } = useSWR(
-    fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0
-      ? ['vaults/allowed', networkId, fusionPoolsV2.length, fusionPoolsV3.length]
-      : null,
-    () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),
+    v2Pools.length > 0 || v3Pools.length > 0 ? ['vaults/allowed', networkId, v2Pools.length, v3Pools.length] : null,
+    () => fetchIchiAllowed([...v2Pools, ...v3Pools], networkId),
   )
 
   const fetchInfo = useCallback(async () => {

@@ -9,7 +9,7 @@ import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
 import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { AlgebraClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
@@ -143,7 +143,7 @@ const FUSION_DAY_DATAS = gql`
 
 const getFusionChartData = async (chainId, address, skip = 0, version = null) => {
   try {
-    const client = fusionClient[version]?.[chainId] ?? fusionClient[chainId]
+    const client = AlgebraClient[version]?.[chainId] ?? AlgebraClient[chainId]
 
     const { tokenDayDatas } = await client.request(FUSION_DAY_DATAS, {
       address,

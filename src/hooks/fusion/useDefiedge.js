@@ -3,10 +3,11 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
+import { DefiedgeStrategyABI } from '@/abis/fusion/DefiedgeStrategyABI'
 import { TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getDefiedgeStrategyContract, getERC20Contract, getGaugeContract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getGaugeContract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -101,7 +102,10 @@ export const useDefiedgeAdd = () => {
         baseCurrencyAddress === strategy.token0.address.toLowerCase() ? amountB : amountA
       ).numerator.toString()
 
-      const defiedgeStrategyContract = getDefiedgeStrategyContract(strategyAddress, networkId)
+      const defiedgeStrategyContract = {
+        address: strategyAddress,
+        abi: DefiedgeStrategyABI,
+      }
       if (
         !(await writeTxn(key, supplyuuid, defiedgeStrategyContract, 'mint', [firstParam, secondParam, '0', '0', '0']))
       ) {
@@ -223,7 +227,10 @@ export const useDefiedgeAddAndStake = () => {
         baseCurrencyAddress === strategy.token0.address.toLowerCase() ? amountB : amountA
       ).numerator.toString()
 
-      const defiedgeStrategyContract = getDefiedgeStrategyContract(strategyAddress, networkId)
+      const defiedgeStrategyContract = {
+        address: strategyAddress,
+        abi: DefiedgeStrategyABI,
+      }
       if (
         !(await writeTxn(key, supplyuuid, defiedgeStrategyContract, 'mint', [firstParam, secondParam, '0', '0', '0']))
       ) {
@@ -271,7 +278,6 @@ export const useDefiedgeAddAndStake = () => {
 
 export const useDefiedgeRemove = () => {
   const [pending, setPending] = useState(false)
-  const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
   const t = useTranslations()
@@ -292,7 +298,10 @@ export const useDefiedgeRemove = () => {
         },
       })
       setPending(true)
-      const contract = getDefiedgeStrategyContract(pool.address, networkId)
+      const contract = {
+        address: pool.address,
+        abi: DefiedgeStrategyABI,
+      }
 
       if (!(await writeTxn(key, removeuuid, contract, 'burn', [toWei(amount).toFixed(0), '0', '0']))) {
         setPending(false)
@@ -307,8 +316,74 @@ export const useDefiedgeRemove = () => {
       callback()
       setPending(false)
     },
-    [startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
+    [startTxn, writeTxn, endTxn, onFieldAInput, onFieldBInput, t],
   )
 
   return { onDefiedgeRemove, pending }
+}
+
+export const useDefiedgeWithdraw = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { networkId } = useChainSettings()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const withdrawDefiedge = useCallback(
+    async ({ positionV2, callback }) => {
+      if (!positionV2) return
+
+      const isStaked = positionV2.account.gaugeBalance > 0
+      const amount = positionV2.account.totalLp
+
+      const key = uuidv4()
+      const unstakedId = uuidv4()
+      const removeId = uuidv4()
+
+      const transactions = {}
+
+      if (isStaked) {
+        transactions[unstakedId] = {
+          desc: t('Unstake'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[removeId] = {
+        desc: t('Remove Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      startTxn({ key, title: 'Withdraw', transactions })
+      setPending(true)
+
+      if (isStaked) {
+        const gaugeContract = getGaugeContract(positionV2.gauge.address, networkId)
+        if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
+          setPending(false)
+          return
+        }
+      }
+
+      setPending(true)
+      const contract = {
+        address: positionV2.address,
+        abi: DefiedgeStrategyABI,
+      }
+
+      if (!(await writeTxn(key, removeId, contract, 'burn', [toWei(amount).toFixed(0), '0', '0']))) {
+        setPending(false)
+        return
+      }
+
+      callback()
+      endTxn({ key, final: 'Withdraw Successfully' })
+      setPending(false)
+    },
+    [networkId, t, startTxn, writeTxn, endTxn],
+  )
+
+  return { withdrawDefiedge, pending }
 }

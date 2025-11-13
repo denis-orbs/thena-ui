@@ -10,7 +10,7 @@ import {
   WEIGHTED_MULTI_CHAIN_START_TIME,
 } from '@/constant'
 import { getAnalyticsData } from '@/lib/api'
-import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
+import { AlgebraClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 export const fetchChartData = async (getEntityDayDatas, params = [], isFusion = false) => {
@@ -119,7 +119,7 @@ const getV1OverviewChartData = async (chainId, skip) => {
  */
 const getFusionOverviewChartData = async (params, skip) => {
   try {
-    const res = await fusionClient[params.version][params.chainId].request(FUSION_DAY_DATAS, {
+    const res = await AlgebraClient[params.version][params.chainId].request(FUSION_DAY_DATAS, {
       startTime: FUSION_MULTI_CHAIN_START_TIME[params.chainId],
       skip,
     })

@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
@@ -8,9 +7,10 @@ import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
+import { GammaZapABI } from '@/abis/integral/GammaZapABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { SolidlyZapABI } from '@/abis/solidly/SolidlyZapABI'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { GammaZapABI } from '@/constant/abi/GammaZapABI'
-import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
@@ -18,7 +18,6 @@ import {
   getFarmingCenterContract,
   getGaugeContract,
   getIncentiveContract,
-  getPositionManagerContract,
   getWBNBContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
@@ -75,7 +74,7 @@ export const useGetZapInRoutePerRange = ({
             ? nearestUsableTick(TickMath.MAX_TICK, _tickSpacing)
             : tryParseTick(token0, token1, 3000, (Number(poolPrice) * max).toString(), _tickSpacing)
 
-        const params = {
+        const params = new URLSearchParams({
           dex: 'DEX_THENAALGEBRAINTEGRAL',
           'pool.id': getAddress(poolId),
           'position.tickLower': tickLower,
@@ -83,15 +82,16 @@ export const useGetZapInRoutePerRange = ({
           tokenIn: getAddress(wrappedAddress(tokenIn)),
           amountIn: amount,
           slippage,
-        }
+        })
 
-        const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-          params,
+        const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+          method: 'GET',
           headers: {
             'X-Client-Id': 'thenakyberid',
           },
         })
-        results[title] = response.data?.data
+        const res = await response.json()
+        results[title] = res.data
       }
       return results
     },
@@ -112,8 +112,7 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
         new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
         tokenIn.decimals,
       )
-
-      const params = {
+      const params = new URLSearchParams({
         dex: 'DEX_THENAALGEBRAINTEGRAL',
         'pool.id': getAddress(poolId),
         'position.tickLower': tickLower,
@@ -121,17 +120,16 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
         tokenIn: getAddress(wrappedAddress(tokenIn)),
         amountIn: amount,
         slippage,
-      }
+      })
 
-      const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-        params,
+      const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+        method: 'GET',
         headers: {
-          headers: {
-            'X-Client-Id': 'thenakyberid',
-          },
+          'X-Client-Id': 'thenakyberid',
         },
       })
-      return response.data?.data
+      const res = await response.json()
+      return res.data
     },
     enabled: Boolean(!!poolId && !!tickLower && !!tickUpper && !!tokenIn && !!amountIn),
   })
@@ -160,8 +158,7 @@ export const useGetZapInRouteForExisting = ({
         new BigNumber(amountIn).decimalPlaces(tokenIn.decimals, BigNumber.ROUND_DOWN).toString(),
         tokenIn.decimals,
       )
-
-      const params = {
+      const params = new URLSearchParams({
         dex: 'DEX_THENAALGEBRAINTEGRAL',
         'pool.id': getAddress(poolId),
         'position.id': tokenId,
@@ -170,15 +167,16 @@ export const useGetZapInRouteForExisting = ({
         tokenIn: getAddress(wrappedAddress(tokenIn)),
         amountIn: amount,
         slippage,
-      }
+      })
 
-      const response = await axios.get(`${BASE_ZAPPER_URL}/in/route`, {
-        params,
+      const response = await fetch(`${BASE_ZAPPER_URL}/in/route?${params}`, {
+        method: 'GET',
         headers: {
           'X-Client-Id': 'thenakyberid',
         },
       })
-      return response.data?.data
+      const res = await response.json()
+      return res.data
     },
     enabled: Boolean(tokenId && poolId && tokenIn && amountIn > 0),
     staleTime: Infinity,
@@ -224,22 +222,23 @@ export const useKyberZapperAddLiquidity = () => {
         }
 
         try {
-          const response = await axios.post(
-            `${BASE_ZAPPER_URL}/in/route/build`,
-            {
-              sender: getAddress(account),
-              route,
-              deadline,
-              source: 'thenakyberid',
+          const assembleRequestBody = {
+            sender: getAddress(account),
+            route,
+            deadline,
+            source: 'thenakyberid',
+          }
+          const response = await fetch(`${BASE_ZAPPER_URL}/in/route/build`, {
+            method: 'POST',
+            headers: {
+              'x-client-id': 'thenakyberid',
             },
-            {
-              headers: {
-                'x-client-id': 'thenakyberid',
-              },
-            },
-          )
+            body: JSON.stringify(assembleRequestBody),
+          })
 
-          buildData = response.data.data
+          const res = await response.json()
+
+          buildData = res.data
         } catch (error) {
           return
         }
@@ -311,7 +310,10 @@ export const useKyberZapperAddLiquidity = () => {
         if (isFarming) {
           const farmingCenter = getFarmingCenterContract(chainId)
           const incentiveMaker = getIncentiveContract(chainId)
-          const positionManger = getPositionManagerContract(chainId, 3)
+          const positionManger = {
+            address: Contracts.NPMIntegral[chainId],
+            abi: IntegralNPMABI,
+          }
 
           // MARK: APPROVE LP TOKEN FOR FARMING
           const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
@@ -375,22 +377,23 @@ export const useKyberZapperAddLiquidity = () => {
         }
 
         try {
-          const response = await axios.post(
-            `${BASE_ZAPPER_URL}/in/route/build`,
-            {
-              sender: getAddress(account),
-              route,
-              deadline,
-              source: 'thenakyberid',
+          const assembleRequestBody = {
+            sender: getAddress(account),
+            route,
+            deadline,
+            source: 'thenakyberid',
+          }
+          const response = await fetch(`${BASE_ZAPPER_URL}/in/route/build`, {
+            method: 'POST',
+            headers: {
+              'x-client-id': 'thenakyberid',
             },
-            {
-              headers: {
-                'x-client-id': 'thenakyberid',
-              },
-            },
-          )
+            body: JSON.stringify(assembleRequestBody),
+          })
 
-          buildData = response.data.data
+          const res = await response.json()
+
+          buildData = res.data
         } catch (error) {
           return
         }
@@ -568,7 +571,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapInOdos',
             [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
@@ -579,7 +582,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapIn',
             [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],

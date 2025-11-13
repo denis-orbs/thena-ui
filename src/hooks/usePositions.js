@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { MultiFeeDistributionABI } from '@/abis/ve/MultiFeeDistributionABI'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { batchCallMulti } from '@/lib/contractActions'
-import { getGammaHyperVisorContract, getIchiVaultContract, getMultiFeeDistributionContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 
@@ -49,23 +51,17 @@ const useGetPositionClaimableRewards = (pools, type) => {
     [account, chainId, pools, type],
   )
   const { data } = useCachedSWR(queryKey, async () => {
-    const vaultContracts = pools.map(pool =>
-      type === 'ichi'
-        ? getIchiVaultContract(pool.address, chainId, 3)
-        : getGammaHyperVisorContract(pool.address, chainId, 3),
-    )
     const farmContractAddresses = await batchCallMulti(
-      vaultContracts.map(contract => ({
-        ...contract,
+      pools.map(pool => ({
+        address: pool.address,
+        abi: type === 'ichi' ? IchiVaultV3ABI : HypervisorV3ABI,
         functionName: type === 'ichi' ? 'farmingContract' : 'receiver',
       })),
     )
-    const multiFeeDistributionContracts = farmContractAddresses.map(contract =>
-      getMultiFeeDistributionContract(contract, chainId),
-    )
     const results = await batchCallMulti(
-      multiFeeDistributionContracts.map(contract => ({
-        ...contract,
+      farmContractAddresses.map(address => ({
+        address,
+        abi: MultiFeeDistributionABI,
         functionName: 'claimableRewards',
         args: [account],
       })),

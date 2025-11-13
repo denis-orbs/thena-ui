@@ -7,12 +7,12 @@ import { useDispatch } from 'react-redux'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
+import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
-import pairAbi from '@/constant/abi/pair.json'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -88,22 +88,25 @@ function NotStakedItem({ position, isXlDown }) {
     [version, position, stakeGamma, onV1Stake, stakeIchiPool, onGaugeStake],
   )
 
-  const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title), [position.title])
+  const isSolidlyPool = useMemo(
+    () => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title),
+    [position.title],
+  )
 
   const { data: fees } = useSimulateContract({
-    abi: pairAbi,
+    abi: SolidlyPairABI,
     address: position.address,
     functionName: 'claimFees',
     query: {
-      enable: isV1Pool && isAddress(position.address),
+      enable: isSolidlyPool && isAddress(position.address),
     },
   })
 
   const { feesInUsd, reward0, reward1 } = useMemo(() => {
-    const _reward0 = isV1Pool
+    const _reward0 = isSolidlyPool
       ? fromWei(fees?.result?.[0] ?? 0n, position.token0.decimals)
       : position.account.token0claimable
-    const _reward1 = isV1Pool
+    const _reward1 = isSolidlyPool
       ? fromWei(fees?.result?.[1] ?? 0n, position.token1.decimals)
       : position.account.token1claimable
 
@@ -117,7 +120,7 @@ function NotStakedItem({ position, isXlDown }) {
     }
   }, [
     fees?.result,
-    isV1Pool,
+    isSolidlyPool,
     position.account.token0claimable,
     position.account.token1claimable,
     position.token0.decimals,
@@ -420,7 +423,7 @@ function NotStakedItem({ position, isXlDown }) {
           !(version === 3 && isSingleSided) && 'grid-cols-1',
         )}
       >
-        {isV1Pool ? (
+        {isSolidlyPool ? (
           <>
             <EmphasisButton
               className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
@@ -474,7 +477,18 @@ function NotStakedItem({ position, isXlDown }) {
         )}
       </div>
     ),
-    [feesInUsd, feesPending, handleAdd, isSingleSided, isV1Pool, migrationOptions, onClaimFees, position, t, version],
+    [
+      feesInUsd,
+      feesPending,
+      handleAdd,
+      isSingleSided,
+      isSolidlyPool,
+      migrationOptions,
+      onClaimFees,
+      position,
+      t,
+      version,
+    ],
   )
 
   return (
