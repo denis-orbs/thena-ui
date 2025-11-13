@@ -1,16 +1,6 @@
 import { ChainId } from 'thena-sdk-core'
 
-import {
-  emergencyRouterAbi,
-  ERC20Abi,
-  weightedGaugeAbi,
-  weightedPoolAbi,
-  weightedPoolFactoryAbi,
-  weightedPoolFeesAbi,
-  weightedPoolRouterAbi,
-  weightedPoolRouterSimulatorAbi,
-  weightedPoolVaultAbi,
-} from '@/abis'
+import { ERC20Abi } from '@/abis'
 import {
   multiAccountAbi,
   oldTcSpotAbi,
@@ -126,25 +116,3 @@ export const getIncentiveContract = chainId => ({
   abi: IncentiveMakerABI,
   address: Contracts.IncentiveMaker[chainId],
 })
-
-/** ******************************************************************************************************
-                                          Weighted Pool
-******************************************************************************************************* */
-export const getWeightedPoolFactoryContract = chainId =>
-  getContract(weightedPoolFactoryAbi, Contracts.weightedPoolFactory, chainId)
-
-export const getWeightedPoolContract = (address, chainId) => getContract(weightedPoolAbi, address, chainId)
-
-export const getWeightedPoolVaultContract = chainId =>
-  getContract(weightedPoolVaultAbi, Contracts.weightedPoolVault, chainId)
-
-export const getWeightedPoolRouterContract = chainId =>
-  getContract(weightedPoolRouterAbi, Contracts.weightedPoolRouter, chainId)
-export const getWeightedPoolRouterSimulatorContract = chainId =>
-  getContract(weightedPoolRouterSimulatorAbi, Contracts.weightedPoolRouterSimulator, chainId)
-
-export const getWeightedPoolFeesContract = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
-
-export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)
-
-export const getEmergencyRouterContract = chainId => getContract(emergencyRouterAbi, Contracts.emergencyRouter, chainId)
