@@ -14,9 +14,9 @@ export const CHAIN_ID = {
 }
 
 const Contracts = {
-  solidlyRouter: V1_ROUTER_ADDRESSES,
+  SolidlyRouter: V1_ROUTER_ADDRESSES,
   fusionRouter: FUSION_ROUTER_ADDRESSES,
-  fusionQuoter: FUSION_QUOTER_ADDRESSES,
+  FusionQuoter: FUSION_QUOTER_ADDRESSES,
   theNFT: '0x2Af749593978CB79Ed11B9959cD82FD128BA4f8d',
   THE: {
     [CHAIN_ID.BSC]: '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11',
@@ -43,7 +43,11 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xA6e0e731Cb1E99AedE0f9C9128d04F948E18727D',
     [CHAIN_ID.TEST_BSC]: '0xad85026986d1c887ba715901a45239fece88604c',
   },
-  voter: {
+  VoterV2: {
+    [CHAIN_ID.BSC]: '0x3A1D0952809F4948d15EBCe8d345962A282C4fCb',
+    [CHAIN_ID.TEST_BSC]: '',
+  },
+  VoterV3: {
     [CHAIN_ID.BSC]: '0x8FBB1ECEbb9E9839bC0dE00b9c4C585CabDD0462',
     [CHAIN_ID.TEST_BSC]: '0x2e974a81F68eAFA2A197A3A6eb6e75949504524E',
   },
@@ -61,7 +65,7 @@ const Contracts = {
   rewardsAPI: {
     [CHAIN_ID.BSC]: '0xDb65C1C922632B8B62134d49785316818ade413c',
   },
-  mfdFactoryAddress: {
+  MFDFactoryAddress: {
     [CHAIN_ID.BSC]: '0xe7cb9d7e77f973e5341de62255be4bc06e2e9e6d',
   },
   staking: {
@@ -148,9 +152,13 @@ const Contracts = {
   tcPerpRewarder: {
     [CHAIN_ID.BSC]: '0xA2Bc09C290a260CDc6B63a5434ed81614A9624DE',
   },
-  claimer: {
+  Claimer: {
     [CHAIN_ID.BSC]: '0xd2D64e094D37dD7D7759603fB9ed6b2306D1e5b2',
     [CHAIN_ID.TEST_BSC]: '0x02308f4455CD6d2109092c7903D1ed843440e1F7',
+  },
+  RewardEarned: {
+    [CHAIN_ID.BSC]: '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692',
+    [CHAIN_ID.TEST_BSC]: '',
   },
   GlobalFactory: {
     [CHAIN_ID.BSC]: '0x247009C6F39bC08d5d39ac38c9D5a0D316947D9C',
@@ -172,15 +180,15 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x0dd6121b8a37164d653ab6049db099a18be87b0d',
     [CHAIN_ID.TEST_BSC]: '0x216e64ac3d286794b3725477dd524836621456c7',
   },
-  algebraFactoryV2: {
+  FusionFactory: {
     [CHAIN_ID.BSC]: '0x306F06C147f064A010530292A1EB6737c3e378e4',
     [CHAIN_ID.TEST_BSC]: '0xFBFB64eD1C70bb8d4c8bFCc338C10a5120809538',
   },
-  algebraFactoryV3: {
+  IntegralFactory: {
     [CHAIN_ID.BSC]: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
     [CHAIN_ID.TEST_BSC]: '0x670e7Ef4D34a0FBBAf2d4f997FE73302Ba9ce98f',
   },
-  eternalFarming: {
+  EternalFarming: {
     [CHAIN_ID.BSC]: '0x6F866dFb4eC07864807217c48E4Ff58b137C15a7',
     [CHAIN_ID.TEST_BSC]: '0xbBEA218F6E61f36a2a98eC342100b1E73D60CBb6',
   },
@@ -192,7 +200,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x80ad2f2Ed4F00b152D7cA5E74920c944BFEF0701',
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
-  pluginFactory: {
+  PluginFactory: {
     [CHAIN_ID.BSC]: '0xF807462b5ce54A89e2F5B847D8281030eAfE241B',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },

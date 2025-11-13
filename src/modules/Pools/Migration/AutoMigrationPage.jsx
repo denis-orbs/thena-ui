@@ -12,6 +12,7 @@ import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
+import { useDefiedgeWithdraw } from '@/hooks/fusion/useDefiedge'
 import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { useV1Migrate } from '@/hooks/useV1Liquidity'
@@ -34,6 +35,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
   const { migrateV1 } = useV1Migrate()
   const { withdrawIchi } = useIchiWithdraw()
   const { withdrawGamma } = useGammaWithdraw()
+  const { withdrawDefiedge } = useDefiedgeWithdraw()
   const [popup, setPopup] = useState(false)
 
   const pools = usePools()
@@ -59,6 +61,10 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
     if (GAMMA_TYPES.includes(positionV2?.title)) {
       return 'Gamma'
+    }
+
+    if (positionV2?.title === 'DefiEdge') {
+      return 'DefiEdge'
     }
 
     return 'V1'
@@ -166,13 +172,18 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
         positionV2,
         callback: () => push(callbackLink),
       })
+    } else if (positionV2?.title === 'DefiEdge') {
+      withdrawDefiedge({
+        positionV2,
+        callback: () => push(callbackLink),
+      })
     } else {
       withdrawGamma({
         positionV2,
         callback: () => push(callbackLink),
       })
     }
-  }, [pairV3, positionV2, push, withdrawGamma, withdrawIchi])
+  }, [pairV3, positionV2, push, withdrawGamma, withdrawIchi, withdrawDefiedge])
 
   if (!positionV2) {
     return <Loading />

@@ -2,8 +2,8 @@ import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import useSWRImmutable from 'swr/immutable'
 
+import { VotingIncentiveABI } from '@/abis/ve/VotingIncentiveABI'
 import { batchCallMulti, readCall } from '@/lib/contractActions'
-import { getVotingIncentivesContract } from '@/lib/contracts'
 import { voterSubgraph } from '@/lib/graphql'
 
 import useWallet from '../useWallet'
@@ -55,7 +55,10 @@ const getUserPoolVotes = async (chainId, userId) => {
 }
 
 async function getRewardsList(chainId, votingIncentive) {
-  const viContract = getVotingIncentivesContract(votingIncentive, chainId)
+  const viContract = {
+    address: votingIncentive,
+    abi: VotingIncentiveABI,
+  }
   const rewardsListLength = await readCall(viContract, 'rewardsListLength', [], chainId)
 
   const rewardTokens = await batchCallMulti(
@@ -80,11 +83,11 @@ const getUserVotingRewards = async (chainId, user) => {
     for (const vote of userPoolVotes) {
       const { pool, votingIncentive } = vote
       const rewardTokens = await getRewardsList(chainId, votingIncentive)
-      const viContract = getVotingIncentivesContract(votingIncentive, chainId)
 
       const earnedRewards = await batchCallMulti(
         rewardTokens.map(token => ({
-          ...viContract,
+          address: votingIncentive,
+          abi: VotingIncentiveABI,
           functionName: 'earned',
           args: [user, token.toLowerCase()],
         })),

@@ -12,7 +12,7 @@ import RoundedTabs from '@/components/tabs/RoundedTab'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { AlgebraClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -303,7 +303,7 @@ const getV1Transactions = async (chainId, pairs, tokens) => {
 const getFusionTransactions = async (chainId, version, pairs) => {
   try {
     const newTxns = []
-    const result = await fusionClient[version][chainId].request(FUSION_TRANSACTIONS, {
+    const result = await AlgebraClient[version][chainId].request(FUSION_TRANSACTIONS, {
       pairs,
     })
 

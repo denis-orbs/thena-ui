@@ -3,7 +3,7 @@ import { encodeRouteToPath, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { encodeFunctionData, zeroAddress } from 'viem'
 
-import fusionRouterAbi from '@/constant/abi/fusion/fusionRouter.json'
+import { FusionRouterABI } from '@/abis/fusion/FusionRouterABI'
 
 import { SelfPermit } from './selfPermit'
 
@@ -13,7 +13,7 @@ import { SelfPermit } from './selfPermit'
 export class SwapRouter extends SelfPermit {
   static getCalldata(func, args) {
     return encodeFunctionData({
-      abi: fusionRouterAbi,
+      abi: FusionRouterABI,
       functionName: func,
       args,
     })

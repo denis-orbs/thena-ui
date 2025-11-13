@@ -2,11 +2,12 @@ import BigNumber from 'bignumber.js'
 import { WBNB } from 'thena-sdk-core'
 import { useReadContract } from 'wagmi'
 
-import { getRouterContract } from '@/lib/contracts'
+import { getSolidlyRouterContract } from '@/lib/contracts'
 import { toWei } from '@/lib/utils'
 
 export const useSolidlyQuote = (fromAsset, toAsset, fromAmount, networkId, enabled) => {
-  const SolidlyRouterContract = getRouterContract(networkId)
+  // NOTE: If CL pool, use fusionQuoter contract
+  const SolidlyRouterContract = getSolidlyRouterContract(networkId)
 
   const amount = toWei(
     new BigNumber(fromAmount).decimalPlaces(fromAsset?.decimals ?? 18, BigNumber.ROUND_DOWN).toString(),

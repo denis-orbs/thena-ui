@@ -3,17 +3,17 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
+import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
+import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
+import { ClaimerABI } from '@/abis/ve/ClaimerABI'
 import { TXN_STATUS } from '@/constant'
-import { ClaimerABI } from '@/constant/abi/ClaimerABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
-  getGammaHyperVisorContract,
   getGaugeContract,
-  getIchiVaultContract,
   getMultiFeeDistributionContract,
 } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
@@ -243,7 +243,7 @@ export const useGaugeAllHarvest = () => {
       const params = []
       newGauge.forEach(pair => params.push(pair.args))
       const claimer = {
-        address: Contracts.claimer[chainId],
+        address: Contracts.Claimer[chainId],
         abi: ClaimerABI,
       }
       if (!(await writeTxn(key, harvestNewGaugeId, claimer, 'claimRewards', [params]))) {
@@ -280,8 +280,9 @@ export const useGaugeAllHarvest = () => {
       gamma.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getGammaHyperVisorContract(add, chainId, 3),
+        poolAddresses.map(poolAddress => ({
+          address: poolAddress,
+          abi: HypervisorV3ABI,
           functionName: 'receiver',
         })),
       )
@@ -310,8 +311,9 @@ export const useGaugeAllHarvest = () => {
       ichi.forEach(pair => poolAddresses.push(pair.args))
 
       const receivers = await callMulti(
-        poolAddresses.map(add => ({
-          ...getIchiVaultContract(add, chainId, 3),
+        poolAddresses.map(addr => ({
+          address: addr,
+          abi: IchiVaultV3ABI,
           functionName: 'farmingContract',
         })),
       )

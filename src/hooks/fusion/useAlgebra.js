@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256, parseUnits } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { PluginFactoryABI } from '@/abis/integral/PluginFactoryABI'
 import { TXN_STATUS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
-import pluginFactoryAbi from '@/constant/abi/pluginFactoryAbi.json'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -23,7 +23,7 @@ import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 const getNPMContract = (chainId, version) => ({
-  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
   address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
 })
 
@@ -175,7 +175,7 @@ export const useAlgebraAdd = () => {
           const txHash = await writeTxn(
             key,
             createPoolId,
-            { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+            { abi: PluginFactoryABI, address: Contracts.PluginFactory[chainId] },
             'createCustomPoolAndInitialize',
             [position.pool.sqrtRatioX96, position.pool.token0.address, position.pool.token1.address],
           )
@@ -868,7 +868,7 @@ export const useAlgebraMigration = () => {
         const txHash = await writeTxn(
           key,
           createPoolId,
-          { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+          { abi: PluginFactoryABI, address: Contracts.PluginFactory[chainId] },
           'createCustomPoolAndInitialize',
           [positionV3.pool.sqrtRatioX96, positionV3.pool.token0.address, positionV3.pool.token1.address],
         )

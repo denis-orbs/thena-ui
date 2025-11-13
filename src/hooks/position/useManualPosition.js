@@ -6,11 +6,11 @@ import { CurrencyAmount } from 'thena-sdk-core'
 import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { simulateCall } from '@/lib/contractActions'
-import { getFusionFarmingData, getFusionFeesData } from '@/lib/subgraph'
+import { getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
 import { getToken, useGetAssetFn } from '../fusion/Tokens'
@@ -21,7 +21,7 @@ import usePrevious from '../usePrevious'
 import useWallet from '../useWallet'
 
 const getNPMContract = (chainId, version) => ({
-  abi: version === 3 ? NPMIntegralABI : NPMFusionABI,
+  abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
   address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
 })
 
@@ -104,7 +104,7 @@ export const useManualPositions = positions => {
   const farmingListKey = useMemo(
     () =>
       addressList?.length > 0 && chainId && account
-        ? ['getFusionFarmingDataList manual', chainId, account, addressList]
+        ? ['getIntegralFarmingDataList manual', chainId, account, addressList]
         : null,
     [addressList, chainId, account],
   )
@@ -112,7 +112,7 @@ export const useManualPositions = positions => {
   const { data: farmingList } = useCachedSWR(
     farmingListKey,
     () =>
-      getFusionFarmingData({
+      getIntegralFarmingData({
         poolIds: addressList,
         chainId,
       }),
@@ -121,13 +121,14 @@ export const useManualPositions = positions => {
 
   // Annual pool fees
   const annualPoolKey = useMemo(
-    () => (addressList?.length > 0 && chainId && account ? ['getFusionFeesData', chainId, account, addressList] : null),
+    () =>
+      addressList?.length > 0 && chainId && account ? ['getIntegralFeesData', chainId, account, addressList] : null,
     [addressList, chainId, account],
   )
 
   const { data: annualPoolFeesPools } = useCachedSWR(
     annualPoolKey,
-    () => getFusionFeesData({ chainId, poolIds: addressList, date: moment().subtract(7, 'days').unix() }),
+    () => getIntegralFeesData({ chainId, poolIds: addressList, date: moment().subtract(7, 'days').unix() }),
     { refreshInterval: REFRESH_INTERVAL },
   )
 

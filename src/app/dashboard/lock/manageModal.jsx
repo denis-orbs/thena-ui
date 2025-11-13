@@ -86,7 +86,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         content: (
           <div className='flex items-start gap-4 lg:items-center'>
             <Highlight>
-              <NextImage src='svgs/switch-horizontal.svg' alt='horizontal icon' className='size-4' />
+              <NextImage src='/svgs/switch-horizontal.svg' alt='horizontal icon' className='size-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
               <TextHeading>{t('Transfer')}</TextHeading>

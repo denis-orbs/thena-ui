@@ -7,10 +7,10 @@ import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
+import { GammaZapABI } from '@/abis/integral/GammaZapABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
+import { SolidlyZapABI } from '@/abis/solidly/SolidlyZapABI'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { GammaZapABI } from '@/constant/abi/GammaZapABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
-import vammZapAbi from '@/constant/abi/vammZap.json'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
@@ -312,7 +312,7 @@ export const useKyberZapperAddLiquidity = () => {
           const incentiveMaker = getIncentiveContract(chainId)
           const positionManger = {
             address: Contracts.NPMIntegral[chainId],
-            abi: NPMIntegralABI,
+            abi: IntegralNPMABI,
           }
 
           // MARK: APPROVE LP TOKEN FOR FARMING
@@ -571,7 +571,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapInOdos',
             [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
@@ -582,7 +582,7 @@ export const useV1Zapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: SolidlyZapABI,
             },
             'zapIn',
             [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],

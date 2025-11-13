@@ -2,8 +2,8 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -17,7 +17,7 @@ const initialState = []
 const fetchManualV2Info = async (account, chainId) => {
   const NPMFusionContract = {
     address: Contracts.NPMFusion[chainId],
-    abi: NPMFusionABI,
+    abi: FusionNPMABI,
   }
   const balance = await readCall(NPMFusionContract, 'balanceOf', [account], chainId)
 
@@ -57,7 +57,7 @@ const fetchManualV2Info = async (account, chainId) => {
 const fetchManualV3Info = async (account, chainId) => {
   const NPMIntegralContract = {
     address: Contracts.NPMIntegral[chainId],
-    abi: NPMIntegralABI,
+    abi: IntegralNPMABI,
   }
 
   const balance = await readCall(NPMIntegralContract, 'balanceOf', [account], chainId)

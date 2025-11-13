@@ -3,9 +3,9 @@ import { ADDRESS_ZERO, Position, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
+import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
+import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import { ZERO_ADDRESS } from '@/constant'
-import { NPMFusionABI } from '@/constant/abi/NPMFusionABI'
-import { NPMIntegralABI } from '@/constant/abi/NPMIntegralABI'
 import Contracts from '@/constant/contracts'
 
 import { SelfPermit } from './selfPermit'
@@ -30,7 +30,7 @@ export class NonfungiblePositionManager extends SelfPermit {
 
   static getCalldata(func, args, version = 2) {
     return encodeFunctionData({
-      abi: version === 2 ? NPMFusionABI : NPMIntegralABI,
+      abi: version === 2 ? FusionNPMABI : IntegralNPMABI,
       functionName: func,
       args,
     })
@@ -46,7 +46,7 @@ export class NonfungiblePositionManager extends SelfPermit {
   static getMintedPosition(addTxRecieve, chainId) {
     const NPMIntegralContract = {
       address: Contracts.NPMIntegral[chainId],
-      abi: NPMIntegralABI,
+      abi: IntegralNPMABI,
     }
     const functionSignature = 'IncreaseLiquidity(uint256,uint128,uint128,uint256,uint256,address)'
     const targetTopic = keccak256(new TextEncoder().encode(functionSignature))
@@ -114,7 +114,7 @@ export class NonfungiblePositionManager extends SelfPermit {
       } else if (options.isFarming) {
         paramMin = { ...baseParams, deployer: zeroAddress }
       } else {
-        paramMin = { ...baseParams, deployer: Contracts.pluginFactory[options.chainId] }
+        paramMin = { ...baseParams, deployer: Contracts.PluginFactory[options.chainId] }
       }
 
       calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))
