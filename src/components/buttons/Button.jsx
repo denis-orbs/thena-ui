@@ -23,7 +23,7 @@ function Button({
       type='button'
       className={cn(
         'group inline-flex cursor-pointer items-center justify-center gap-2',
-        'outline-2 outline-offset-4 outline-transparent outline-solid',
+        'outline-2 outline-offset-2 outline-transparent outline-solid lg:outline-offset-4',
         'rounded-lg font-medium transition-all duration-150 ease-out',
         !disabled && 'active:outline-focus',
         responsive ? 'p-2 text-xs lg:px-4 lg:py-3 lg:text-base lg:leading-tight' : 'px-4 py-3 text-base leading-tight',

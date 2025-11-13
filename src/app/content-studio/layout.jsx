@@ -21,7 +21,7 @@ export default function ContentStudioLayout({ children }) {
           <TextHeading className='font-archia 3xl:text-[48px] 3xl:leading-[48px] text-2xl font-semibold text-neutral-50 xl:text-4xl xl:leading-10 2xl:text-[40px] 2xl:leading-[48px]'>
             {t('Content Studio')}
           </TextHeading>
-          <div className='relative mt-3 gap-8 overflow-y-auto rounded-xl xl:mt-8 xl:bg-neutral-900 xl:p-4'>
+          <div className='relative mt-3 gap-8 overflow-visible rounded-xl xl:mt-8 xl:bg-neutral-900 xl:p-4'>
             {children}
           </div>
         </LayoutWithBackButton>
