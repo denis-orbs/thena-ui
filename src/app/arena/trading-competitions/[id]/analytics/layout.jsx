@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import { compact } from 'lodash'
 
 import { siteConfig } from '@/constant/config'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
@@ -23,7 +23,7 @@ const V4_COMPETITION_DATA = gql`
 export async function generateMetadata({ params }) {
   const { id } = params
 
-  const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+  const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_DATA, { id })
 
   const metadata = {
     name: `Analytics of ${competition.name ?? 'competition'}`,

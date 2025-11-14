@@ -11,7 +11,7 @@ import { TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { useUpdateTCIsHidden } from '@/modules/Arena/hooks/competitions'
 
@@ -138,7 +138,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
 const fetchCompetition = async (tab, search) => {
   try {
     const isHidden = tab === 'All' ? undefined : tab === 'Hidden'
-    const { tradingCompetitions } = await v4Client.request(
+    const { tradingCompetitions } = await ArenaClient.request(
       isHidden === undefined ? V4_COMPETITION_DATA_WITHOUT_ISHIDDEN : V4_COMPETITION_DATA_WITH_ISHIDDEN,
       isHidden === undefined
         ? {

@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import useSWR from 'swr'
 
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 const V4_TC_TRADE_HISTORY = gql`
   query V4_TC_TRADE_HISTORY($id: String!, $account: String!) {
@@ -25,7 +25,7 @@ const V4_TC_TRADE_HISTORY = gql`
 
 const fetchTCTradeHistory = async (id, account) => {
   try {
-    const { tcTrades } = await v4Client.request(V4_TC_TRADE_HISTORY, { id, account })
+    const { tcTrades } = await ArenaClient.request(V4_TC_TRADE_HISTORY, { id, account })
 
     return tcTrades
   } catch (error) {

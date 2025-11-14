@@ -12,7 +12,7 @@ import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVoterV3Contract } from '@/lib/contracts'
-import { vetheClient } from '@/lib/graphql'
+import { VetheClient } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 
 const createCallMulti = (calls, abi) =>
@@ -118,7 +118,7 @@ const VETHE_GQL_QUERY = gql`
 `
 
 const getVethesData = async (chainId, address) => {
-  const data = await vetheClient[chainId].request(VETHE_GQL_QUERY, {
+  const data = await VetheClient[chainId].request(VETHE_GQL_QUERY, {
     address,
   })
 

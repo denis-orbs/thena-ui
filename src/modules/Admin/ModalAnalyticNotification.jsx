@@ -9,7 +9,7 @@ import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import { Paragraph } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { formatNumberDecimals } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
@@ -32,7 +32,7 @@ const V4_ADMIN_NOTIFICATIONS = gql`
 
 const fetchAdminNotifications = async () => {
   try {
-    const { adminNotifications } = await v4Client.request(V4_ADMIN_NOTIFICATIONS)
+    const { adminNotifications } = await ArenaClient.request(V4_ADMIN_NOTIFICATIONS)
     if (adminNotifications.length) {
       return adminNotifications.map(adminNotification => ({
         ...adminNotification,

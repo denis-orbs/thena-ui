@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 const V4_USERNAME_NFTS = gql`
   query V4_USERNAME_NFTS($username: String) {
@@ -27,14 +27,14 @@ export async function generateMetadata({ params }) {
 
   let thenaIdItem = {}
 
-  const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, {
+  const { usernameNfts } = await ArenaClient.request(V4_USERNAME_NFTS, {
     username: decodeURIComponent(thenaId).toLowerCase(),
   })
 
   if (usernameNfts && usernameNfts.length > 0) {
     thenaIdItem = usernameNfts?.[0]
   } else {
-    const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE, {
+    const { thenaIdAvailables } = await ArenaClient.request(V4_AVAILABLE, {
       username: decodeURIComponent(thenaId).toLowerCase(),
     })
     if (thenaIdAvailables && thenaIdAvailables.length) {

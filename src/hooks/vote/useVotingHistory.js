@@ -7,7 +7,7 @@ import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { batchCallMulti } from '@/lib/contractActions'
 import { getVoterV3Contract } from '@/lib/contracts'
-import { voterSubgraph } from '@/lib/graphql'
+import { VoterClient } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 
 import useWallet from '../useWallet'
@@ -32,7 +32,7 @@ const getVoteListData = async (chainId, voter) => {
     let hasMore = true
 
     while (hasMore) {
-      const res = await voterSubgraph[chainId].request(VOTE_LIST_QUERY, { voter, skip })
+      const res = await VoterClient[chainId].request(VOTE_LIST_QUERY, { voter, skip })
 
       const voteList = res?.voteList || []
       results = results.concat(voteList)
@@ -84,7 +84,7 @@ const getVotingRewardsData = async (chainId, epochStartTimestamps, poolAddresses
     let hasMore = true
 
     while (hasMore) {
-      const res = await voterSubgraph[chainId].request(VOTING_REWARDS_QUERY, {
+      const res = await VoterClient[chainId].request(VOTING_REWARDS_QUERY, {
         skip,
         epochStartTimestamps,
         poolAddresses,
@@ -136,7 +136,7 @@ const getPoolVotePerEpochData = async (chainId, epochStartTimestamps) => {
     let hasMore = true
 
     while (hasMore) {
-      const res = await voterSubgraph[chainId].request(POOL_VOTE_PER_EPOCH_QUERY, {
+      const res = await VoterClient[chainId].request(POOL_VOTE_PER_EPOCH_QUERY, {
         skip,
         epochStartTimestamps,
       })
@@ -215,7 +215,7 @@ const VOTE_HISTORIES_QUERY = tokenId => gql`
 
 const getVoteHistoriesData = async (chainId, voter, tokenId, limit = 10, skip = 0) => {
   try {
-    const res = await voterSubgraph[chainId].request(VOTE_HISTORIES_QUERY(tokenId), {
+    const res = await VoterClient[chainId].request(VOTE_HISTORIES_QUERY(tokenId), {
       voter,
       skip,
       limit,

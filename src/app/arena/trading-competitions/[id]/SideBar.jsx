@@ -23,7 +23,7 @@ import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/us
 import useWallet from '@/hooks/useWallet'
 import CheckIcon from '@/icons/CheckIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { errorToast, successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -49,7 +49,7 @@ const V4_DEPOSIT_OF_USER = gql`
 const getDepositOfUser = async (tcId, userId) => {
   try {
     if (tcId && userId) {
-      const { tcDeposits } = await v4Client.request(V4_DEPOSIT_OF_USER, { tcId, userId })
+      const { tcDeposits } = await ArenaClient.request(V4_DEPOSIT_OF_USER, { tcId, userId })
       if (tcDeposits && tcDeposits.length) {
         const deposit = tcDeposits.reduce((total, item) => Number(total) + Number(item.amount), 0)
         return String(deposit)

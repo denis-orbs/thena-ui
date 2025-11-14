@@ -17,7 +17,7 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
 
 import MenuTab from './MenuTab'
@@ -98,7 +98,7 @@ const fetchUsers = async (userId, sort, userFilter, period, offset = 0, limit = 
       default:
         break
     }
-    const { tcParticipantRank } = await v4Client.request(V4_TOP_USER, {
+    const { tcParticipantRank } = await ArenaClient.request(V4_TOP_USER, {
       userId,
       q: userFilter,
       orderBy,

@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 
@@ -49,7 +49,7 @@ export const useUpdateArenaProfile = account => {
 
   const updateProfileFn = useCallback(
     async ({ biography, avatar, nameColor, theme, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
-      const { updateUserProfile } = await v4Client.request(
+      const { updateUserProfile } = await ArenaClient.request(
         V4_UPDATE_ARENA_PROFILE,
         {
           biography,
@@ -105,7 +105,7 @@ export const useUpdateArenaAvatar = account => {
 
   const updateArenaAvatarFn = useCallback(
     async avatar => {
-      const { updateUserProfile } = await v4Client.request(
+      const { updateUserProfile } = await ArenaClient.request(
         V4_UPDATE_ARENA_AVATAR,
         {
           avatar,
@@ -147,7 +147,7 @@ export const useUpdateArenaCheckmarkIcon = () => {
   const { signWallet } = useSignWallet()
 
   const updateArenacheckMarkIconFn = useCallback(async ({ checkMarkIcon, userId }) => {
-    const res = await v4Client.request(
+    const res = await ArenaClient.request(
       V4_UPDATE_ARENA_CHECKMARK,
       {
         checkMarkIcon,
@@ -186,7 +186,7 @@ export const useUpdateUserIsAdmin = () => {
   const { signWallet } = useSignWallet()
 
   const updateIsAdminFn = useCallback(async ({ isAdmin, userId }) => {
-    const { data: res } = await v4Client.request(
+    const { data: res } = await ArenaClient.request(
       V4_UPDATE_USER_IS_ADMIN,
       {
         isAdmin,
@@ -220,7 +220,7 @@ export const useUpdateUserIsVerified = () => {
   const { signWallet } = useSignWallet()
 
   const updateIsVerifiedFn = useCallback(async ({ isVerified, userId }) => {
-    const { data: res } = await v4Client.request(
+    const { data: res } = await ArenaClient.request(
       V4_UPDATE_USER_IS_VERIFIED,
       {
         isVerified,
@@ -255,7 +255,7 @@ export const useCheckUserCreated = () => {
   const { signWallet } = useSignWallet()
 
   const checkUserCreatedFn = useCallback(async id => {
-    const { users } = await v4Client.request(V4_USER_BY_ID, {
+    const { users } = await ArenaClient.request(V4_USER_BY_ID, {
       id,
     })
 
@@ -296,7 +296,7 @@ export const useThenianNftsOwnedAndStaked = userId => {
 
   const getThenianNftsOwnedAndStakedFn = useCallback(async () => {
     if (!userId) return []
-    const { thenianNftsStakedAndOwned } = await v4Client.request(V4_THENIAN_NFTS_OWNED_AND_STAKED, { userId })
+    const { thenianNftsStakedAndOwned } = await ArenaClient.request(V4_THENIAN_NFTS_OWNED_AND_STAKED, { userId })
 
     if (thenianNftsStakedAndOwned && Array.isArray) {
       return thenianNftsStakedAndOwned.map(nft => ({

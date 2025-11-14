@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 
 const V4_CREATE_NOTIFICATION = gql`
@@ -12,7 +12,7 @@ const V4_CREATE_NOTIFICATION = gql`
   }
 `
 export const createNotification = async (recipients, content, redirectUrl) => {
-  const res = await v4Client.request(
+  const res = await ArenaClient.request(
     V4_CREATE_NOTIFICATION,
     { recipients, content, redirectUrl },
     {

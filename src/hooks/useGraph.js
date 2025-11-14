@@ -10,7 +10,7 @@ import {
   WEIGHTED_MULTI_CHAIN_START_TIME,
 } from '@/constant'
 import { getAnalyticsData } from '@/lib/api'
-import { AlgebraClient, v1Client, weightedClient } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient, WeightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 export const fetchChartData = async (getEntityDayDatas, params = [], isFusion = false) => {
@@ -97,7 +97,7 @@ const FUSION_DAY_DATAS = gql`
 
 const getV1OverviewChartData = async (chainId, skip) => {
   try {
-    const { dayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
+    const { dayDatas } = await SolidlyClient[chainId].request(V1_DAY_DATAS, {
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
@@ -157,7 +157,7 @@ const WEIGHTED_DAY_DATAS = gql`
  */
 const getWeightedOverviewChartData = async (chainId, skip) => {
   try {
-    const { balancerSnapshots } = await weightedClient[chainId].request(WEIGHTED_DAY_DATAS, {
+    const { balancerSnapshots } = await WeightedClient[chainId].request(WEIGHTED_DAY_DATAS, {
       startTime: WEIGHTED_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })

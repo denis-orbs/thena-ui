@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { useSignMessage } from 'wagmi'
 
 import { ThenaAuthToken } from '@/constant'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast } from '@/lib/notify'
 import { sleep } from '@/lib/utils'
@@ -32,7 +32,7 @@ export const useSignWallet = () => {
       if (data && address) {
         const {
           login: { accessToken },
-        } = await v4Client.request(V4_LOGIN, {
+        } = await ArenaClient.request(V4_LOGIN, {
           signedMessage,
           signature: data,
           address,

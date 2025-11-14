@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { formatAddress } from '@/lib/utils'
 
 const V4_USER_META_DATA = gql`
@@ -20,7 +20,7 @@ const V4_USER_META_DATA = gql`
 export async function generateMetadata({ params }) {
   const { address } = params
 
-  const { users } = await v4Client.request(V4_USER_META_DATA, { address: decodeURIComponent(address) })
+  const { users } = await ArenaClient.request(V4_USER_META_DATA, { address: decodeURIComponent(address) })
 
   const username = users?.[0] ? users[0]?.username || formatAddress(users[0]?.id) : 'username'
 

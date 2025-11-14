@@ -19,7 +19,7 @@ import {
   getTcPerpetualContract,
   getTCPerpRewarderContract,
 } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -34,7 +34,7 @@ const V4_TC_PARTICIPANTS_CLAIM = gql`
 
 const fetchTcParticipant = async (tcAddress, userId) => {
   try {
-    const { tcParticipants } = await v4Client.request(V4_TC_PARTICIPANTS_CLAIM, {
+    const { tcParticipants } = await ArenaClient.request(V4_TC_PARTICIPANTS_CLAIM, {
       tcAddress,
       userId,
     })

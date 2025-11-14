@@ -20,7 +20,7 @@ import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionC
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { cn, sleep } from '@/lib/utils'
 
@@ -98,7 +98,7 @@ const V4_TC_TEMPORARY = gql`
 
 const tcTemporary = async tcId => {
   try {
-    const { tcTemporaries } = await v4Client.request(V4_TC_TEMPORARY, { tcId })
+    const { tcTemporaries } = await ArenaClient.request(V4_TC_TEMPORARY, { tcId })
 
     return !!tcTemporaries?.length
   } catch (error) {
@@ -108,7 +108,7 @@ const tcTemporary = async tcId => {
 
 const fetchCompetition = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_DATA, { id })
     return competition
   } catch (error) {
     return { error: true }

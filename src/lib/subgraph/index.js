@@ -3,7 +3,7 @@ import { gql, GraphQLClient } from 'graphql-request'
 import orderBy from 'lodash/orderBy'
 
 import { fetchRevenue } from '../api'
-import { AlgebraClient, blockGraphUrl, IntegralFarmingClient } from '../graphql'
+import { AlgebraClient, BlockGraphUrl, IntegralFarmingClient } from '../graphql'
 
 const requestWithTimeout = (graphQLClient, request, variables, timeout = 30000) =>
   Promise.race([
@@ -81,7 +81,7 @@ export const getBlocksFromTimestamps = async (timestamps, sortDirection, skipCou
   const fetchedData = await multiQuery(
     blocksQueryConstructor,
     getBlockSubqueries(timestamps),
-    blockGraphUrl[chainId],
+    BlockGraphUrl[chainId],
     skipCount,
   )
 

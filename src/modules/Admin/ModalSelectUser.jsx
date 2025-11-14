@@ -8,7 +8,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { cn } from '@/lib/utils'
 
 const V4_USERS = gql`
@@ -33,7 +33,7 @@ const V4_USERS = gql`
 
 const fetchUser = async search => {
   try {
-    const { users } = await v4Client.request(V4_USERS, { search })
+    const { users } = await ArenaClient.request(V4_USERS, { search })
     return users
   } catch (error) {
     return []

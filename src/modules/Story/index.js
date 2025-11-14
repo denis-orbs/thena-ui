@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react'
 import { TaskType } from '@/app/story/constant'
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 
@@ -31,7 +31,7 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
 `
 
 export const fetchTHEStoryParticipant = async user => {
-  const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
+  const { campaignParticipants } = await ArenaClient.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
     id_eq: String(user).toLowerCase(),
   })
   if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length) {
@@ -52,7 +52,7 @@ const V4_CAMPAIGN_PARTICIPANT_REFERRALS = gql`
 
 export const fetchTHEStoryParticipantReferrals = async user => {
   try {
-    const { campaignParticipantReferrals } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_REFERRALS, {
+    const { campaignParticipantReferrals } = await ArenaClient.request(V4_CAMPAIGN_PARTICIPANT_REFERRALS, {
       id_eq: String(user).toLowerCase(),
     })
 
@@ -89,7 +89,7 @@ export const useUpdateParticipantProfile = () => {
   const { signWallet } = useSignWallet()
 
   const updateParticipantProfileFn = useCallback(async ({ avatarUrl, country, email, xProfileUsername }) => {
-    const { updateParticipantProfile } = await v4Client.request(
+    const { updateParticipantProfile } = await ArenaClient.request(
       V4_UPDATE_PARTICIPANT_PROFILE,
       {
         avatarUrl,
@@ -142,7 +142,7 @@ export const useUpdateParticipantAvatar = () => {
   const createPresignUrlFn = useCallback(async ({ file, userId }) => {
     const {
       generatePresignedUrl: { signedUrl, fields, url },
-    } = await v4Client.request(
+    } = await ArenaClient.request(
       V4_GENERATE_AVATAR_PROFILE_URL,
       {
         fileName: file.name,
@@ -183,7 +183,7 @@ export const useUpdateParticipantAvatar = () => {
   )
 
   const updateParticipantAvatarFn = useCallback(async avatarUrl => {
-    const { updateParticipantProfile } = await v4Client.request(
+    const { updateParticipantProfile } = await ArenaClient.request(
       V4_UPDATE_PARTICIPANT_AVATAR,
       {
         avatarUrl,
@@ -223,7 +223,7 @@ const V4_CAMPAIGN_CHAPTER = gql`
 
 export const fetchCampaignChapter = async index => {
   try {
-    const { campaignChapters } = await v4Client.request(V4_CAMPAIGN_CHAPTER, {
+    const { campaignChapters } = await ArenaClient.request(V4_CAMPAIGN_CHAPTER, {
       index,
     })
     if (campaignChapters && Array.isArray(campaignChapters) && campaignChapters.length > 0) {
@@ -253,7 +253,7 @@ const V4_GET_STORY_LEADERBOARD = gql`
 `
 export const fetchStoryLeaderboard = async limit => {
   try {
-    const { campaignParticipants } = await v4Client.request(V4_GET_STORY_LEADERBOARD, {
+    const { campaignParticipants } = await ArenaClient.request(V4_GET_STORY_LEADERBOARD, {
       limit,
     })
 
@@ -300,7 +300,7 @@ const V4_GET_STORY_LEADERBOARD_BY_CHAPTER = gql`
 
 export const fetchLeaderboardByChapter = async (limit, indexChapter, participantId, type) => {
   try {
-    const { campaignLeaderboard } = await v4Client.request(V4_GET_STORY_LEADERBOARD_BY_CHAPTER, {
+    const { campaignLeaderboard } = await ArenaClient.request(V4_GET_STORY_LEADERBOARD_BY_CHAPTER, {
       limit,
       indexChapter,
       participantId,
@@ -329,7 +329,7 @@ const V4_CHECK_WINNER = gql`
 `
 
 export const fetchCheckWinner = async (chapterIndex, accountId) => {
-  const { checkWinner } = await v4Client.request(V4_CHECK_WINNER, {
+  const { checkWinner } = await ArenaClient.request(V4_CHECK_WINNER, {
     chapterIndex,
     participantId: accountId,
   })
@@ -357,7 +357,7 @@ const V4_DAILY_SWAPS = gql`
 `
 const fetchDailySwaps = async id => {
   try {
-    const res = await v4Client.request(V4_DAILY_SWAPS, { id })
+    const res = await ArenaClient.request(V4_DAILY_SWAPS, { id })
 
     if (res) {
       return res
@@ -406,7 +406,7 @@ const fetchCampaignChaptersTasksAndCompletedTasks = async id => {
       campaignParticipantCompleteTasks = [],
       campaignChapters = [],
       campaignTasks = [],
-    } = await v4Client.request(V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED, { id })
+    } = await ArenaClient.request(V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED, { id })
 
     return {
       campaignChapters,
@@ -518,7 +518,7 @@ const V4_GET_CAMPAIGN_PARTICIPANT_BY_ID = gql`
 `
 export const fetchParticipantById = async id_eq => {
   try {
-    const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANT_BY_ID, {
+    const { campaignParticipants } = await ArenaClient.request(V4_GET_CAMPAIGN_PARTICIPANT_BY_ID, {
       id_eq,
     })
 
@@ -557,7 +557,7 @@ export const useRegisterToTHEStory = () => {
 
   const registerFn = useCallback(async ({ evmAddress, email, country, referralCode = '' }) => {
     try {
-      const { registerCampaign } = await v4Client.request(
+      const { registerCampaign } = await ArenaClient.request(
         V4_REGISTER_CAMPAIGN,
         {
           evmAddress,
@@ -625,7 +625,7 @@ const V4_STATS_CAMPAIGN_PARTICIPANT = gql`
 
 export const fetchStatsCampaignParticipant = async () => {
   try {
-    const { statsCampaignParticipant } = await v4Client.request(V4_STATS_CAMPAIGN_PARTICIPANT)
+    const { statsCampaignParticipant } = await ArenaClient.request(V4_STATS_CAMPAIGN_PARTICIPANT)
 
     if (statsCampaignParticipant) {
       return statsCampaignParticipant
@@ -651,7 +651,7 @@ const V4_CAMPAIGN_CHAPTER_REWARDS = gql`
 `
 export const fetchCampaignChapterRewards = async chapter_eq => {
   try {
-    const { campaignChapterRewards } = await v4Client.request(V4_CAMPAIGN_CHAPTER_REWARDS, {
+    const { campaignChapterRewards } = await ArenaClient.request(V4_CAMPAIGN_CHAPTER_REWARDS, {
       chapter_eq,
     })
 

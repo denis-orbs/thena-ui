@@ -15,7 +15,7 @@ import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
@@ -42,7 +42,7 @@ const fetchUser = async search => {
     const querySearch = { OR: [{ id_containsInsensitive: search }, { username_containsInsensitive: search }] }
     const where = { ...querySearch }
 
-    const { users } = await v4Client.request(V4_USERS, { where })
+    const { users } = await ArenaClient.request(V4_USERS, { where })
     return users
   } catch (error) {
     return { error: true }

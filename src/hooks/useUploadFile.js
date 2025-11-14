@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 
 const V4_GENERATE_PRESIGNED_URL = gql`
@@ -21,7 +21,7 @@ export const useCreatePresignedUrl = () => {
   const createPresignedUrlFn = useCallback(async ({ file, userId, type }) => {
     const {
       generatePresignedUrl: { signedUrl, fields, url },
-    } = await v4Client.request(
+    } = await ArenaClient.request(
       V4_GENERATE_PRESIGNED_URL,
       {
         fileName: file.name,

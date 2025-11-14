@@ -12,7 +12,7 @@ import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { customSort, formatNumberDecimals } from '@/lib/utils'
 
 const V4_TC_COMPETITION_DATA = gql`
@@ -40,7 +40,7 @@ const V4_TC_COMPETITION_DATA = gql`
 
 const getCompetitionParticipants = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_TC_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_TC_COMPETITION_DATA, { id })
     return competition
   } catch (error) {
     return { error: true }
@@ -59,7 +59,7 @@ const V4_TRADE_RANK_DATA = gql`
 
 const getTradeRank = async participantIds => {
   try {
-    const { userLeaderboards } = await v4Client.request(V4_TRADE_RANK_DATA, { participantIds })
+    const { userLeaderboards } = await ArenaClient.request(V4_TRADE_RANK_DATA, { participantIds })
     return userLeaderboards
   } catch (error) {
     return { error: true }
@@ -79,7 +79,7 @@ const V4_TC_TRADES_DATA = gql`
 
 const getTcTrades = async tcTradeId => {
   try {
-    const { tcTrades } = await v4Client.request(V4_TC_TRADES_DATA, { tcTradeId })
+    const { tcTrades } = await ArenaClient.request(V4_TC_TRADES_DATA, { tcTradeId })
     return tcTrades
   } catch (error) {
     return { error: true }

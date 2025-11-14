@@ -4,7 +4,7 @@ import { compact } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { formatAmount, fromWei } from '@/lib/utils'
 
 import CompetitionDetailLayout from './CompetitionDetailLayout'
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
     method: 'get',
   }).then(res => res.json())
 
-  const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+  const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_DATA, { id })
 
   const findAssets = (competition?.prizeUpdate?.token || []).map(token => {
     const asset = assets?.data.find(ele => ele.address.toLowerCase() === token.toLowerCase())

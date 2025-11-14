@@ -13,7 +13,7 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
@@ -42,7 +42,7 @@ const V4_ADMINS = gql`
 
 const fetchAdmin = async search => {
   try {
-    const { users: admins } = await v4Client.request(V4_ADMINS, { search })
+    const { users: admins } = await ArenaClient.request(V4_ADMINS, { search })
     return admins
   } catch (error) {
     return { error: true }

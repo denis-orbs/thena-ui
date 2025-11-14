@@ -14,7 +14,7 @@ import { INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useTC } from '@/context/tcContext'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { addOrReplaceURLParams, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { fromWei, objectDiff } from '@/lib/utils'
 import Create from '@/modules/CreateTradingCompetition/Create'
@@ -86,7 +86,7 @@ const V4_COMPETITION_DATAS = gql`
 
 const fetchCompetition = async () => {
   try {
-    const { tradingCompetitions } = await v4Client.request(V4_COMPETITION_DATAS)
+    const { tradingCompetitions } = await ArenaClient.request(V4_COMPETITION_DATAS)
     return tradingCompetitions
   } catch (error) {
     return { error: true }

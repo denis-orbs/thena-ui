@@ -4,7 +4,7 @@ import useSWRImmutable from 'swr/immutable'
 
 import { VotingIncentiveABI } from '@/abis/ve/VotingIncentiveABI'
 import { batchCallMulti, readCall } from '@/lib/contractActions'
-import { voterSubgraph } from '@/lib/graphql'
+import { VoterClient } from '@/lib/graphql'
 
 import useWallet from '../useWallet'
 
@@ -26,7 +26,7 @@ const getUserPoolVotes = async (chainId, userId) => {
 
   while (hasMore) {
     try {
-      const res = await voterSubgraph[chainId].request(USER_POOL_VOTES_QUERY, {
+      const res = await VoterClient[chainId].request(USER_POOL_VOTES_QUERY, {
         user: userId,
         first: PAGE_SIZE,
         skip,

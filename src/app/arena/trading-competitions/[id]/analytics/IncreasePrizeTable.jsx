@@ -12,7 +12,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { formatAmount, fromWei } from '@/lib/utils'
 
 dayjs.extend(localizedFormat)
@@ -44,7 +44,7 @@ const V4_TC_INCREASE_PRIZES = gql`
 
 const fetchTcInCreasedPrizes = async tcId => {
   try {
-    const { tcIncreasedPrizes } = await v4Client.request(V4_TC_INCREASE_PRIZES, { tcId })
+    const { tcIncreasedPrizes } = await ArenaClient.request(V4_TC_INCREASE_PRIZES, { tcId })
     return tcIncreasedPrizes
   } catch (error) {
     return { error: true }

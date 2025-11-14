@@ -11,7 +11,7 @@ import Tabs from '@/components/tabs'
 import Toggle from '@/components/toggle'
 import { TC_MARKET_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import Loading from '../loading'
 
@@ -36,7 +36,7 @@ const V4_TC_TAGS = gql`
 
 const fetchTCTags = async () => {
   try {
-    const { tcTags } = await v4Client.request(V4_TC_TAGS)
+    const { tcTags } = await ArenaClient.request(V4_TC_TAGS)
     return tcTags
   } catch (error) {
     return []

@@ -7,7 +7,7 @@ import { VE_AUTOMATION_HISTORY_TYPES } from '@/constant'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useAutomationContractDetail } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
-import { vetheClient } from '@/lib/graphql'
+import { VetheClient } from '@/lib/graphql'
 
 import AutomationDetails from './automationDetails/AutomationDetails'
 import Head from './head/Head'
@@ -33,7 +33,7 @@ const VE_AUTOMATION_HISTORIES = gql`
 
 const fetchAutomationHistory = async (chainId, tokenId) => {
   try {
-    const data = await vetheClient[chainId].request(VE_AUTOMATION_HISTORIES, {
+    const data = await VetheClient[chainId].request(VE_AUTOMATION_HISTORIES, {
       tokenId,
     })
     const automation = data?.veTheAutomations?.[0]

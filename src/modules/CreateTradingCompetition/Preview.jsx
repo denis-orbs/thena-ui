@@ -8,7 +8,7 @@ import { INIT_VALUES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { useCreateTC } from '@/hooks/useTCManager'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -28,7 +28,7 @@ const V4_ADD_TC_TEMPORARY = gql`
 
 const addTCTemporary = async (tcId, ownerId) => {
   try {
-    await v4Client.request(V4_ADD_TC_TEMPORARY, { tcId, ownerId: ownerId?.toLowerCase() })
+    await ArenaClient.request(V4_ADD_TC_TEMPORARY, { tcId, ownerId: ownerId?.toLowerCase() })
   } catch (error) {
     return undefined
   }

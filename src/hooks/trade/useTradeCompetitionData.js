@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import useSWR from 'swr'
 
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
@@ -37,7 +37,7 @@ const V4_TRADE_COMPETITION_DATA = gql`
 
 export const fetchCompetition = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_TRADE_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_TRADE_COMPETITION_DATA, { id })
 
     return competition
   } catch (error) {

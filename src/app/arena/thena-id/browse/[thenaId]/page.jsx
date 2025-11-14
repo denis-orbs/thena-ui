@@ -24,7 +24,7 @@ import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { formatAmount, fromWei } from '@/lib/utils'
 
@@ -96,11 +96,11 @@ const V4_USERNAME_NFT_IS_GIFT = gql`
 
 const fetchUsernameNft = async username => {
   try {
-    const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, { username: username.toLowerCase() })
+    const { usernameNfts } = await ArenaClient.request(V4_USERNAME_NFTS, { username: username.toLowerCase() })
     if (usernameNfts.length === 1) {
       const usernameNft = usernameNfts[0]
       if (usernameNft.isGift) {
-        const { usernameNftById } = await v4Client.request(V4_USERNAME_NFT_IS_GIFT, {
+        const { usernameNftById } = await ArenaClient.request(V4_USERNAME_NFT_IS_GIFT, {
           id: usernameNft.id.toLowerCase(),
         })
         return usernameNftById
@@ -129,7 +129,7 @@ function ThenaIdPage() {
     async function getUserRef() {
       try {
         if (account) {
-          const { userById } = await v4Client.request(V4_USER_INFO, { id: account.toLowerCase() })
+          const { userById } = await ArenaClient.request(V4_USER_INFO, { id: account.toLowerCase() })
           if (userById && userById.username) {
             setCurrentUserRef(userById.username)
           } else {
