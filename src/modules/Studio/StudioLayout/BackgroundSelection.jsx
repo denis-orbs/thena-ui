@@ -268,7 +268,7 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
             </EmphasisButton>
           </div>
           {!account ? (
-            <ConnectButton className='w-1/2' />
+            <ConnectButton className='w-full' />
           ) : (
             <ShareImage
               className='w-full'

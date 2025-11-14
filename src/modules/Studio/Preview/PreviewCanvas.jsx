@@ -156,7 +156,10 @@ export default function PreviewCanvas({ children, background, setField, classNam
             <div className='flex size-full items-center justify-center bg-[url("/images/content-studio/empty_pair.png")] bg-auto bg-center bg-no-repeat'>
               <div className='flex flex-col items-center justify-center gap-3'>
                 <TextHeading className='font-archia text-center text-3xl font-semibold'>
-                  {t('Upload image title')}
+                  {t.rich('Upload image title', {
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    link: chunks => <span className='text-primary-600 cursor-pointer underline'>{chunks}</span>,
+                  })}
                 </TextHeading>
                 <TextSubHeading className='text-center text-neutral-300'>{t('Upload image subtitle')}</TextSubHeading>
               </div>
