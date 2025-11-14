@@ -680,7 +680,7 @@ function Header() {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
-                    push('/trade-to-earn')
+                    push('/t2e')
                   },
                 },
                 {
@@ -723,7 +723,7 @@ function Header() {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
-                    push('/trade-to-earn')
+                    push('/t2e')
                   },
                 },
                 {
