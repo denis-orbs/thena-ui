@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Spinner from '@/components/spinner'
-import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
 

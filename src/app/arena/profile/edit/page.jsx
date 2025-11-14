@@ -3,8 +3,8 @@
 import { redirect } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import Loading from '@/app/loading'
-import { useUserInfo } from '@/context/userInfoContext'
 import { EditProfile } from '@/modules/Profile/EditProfile'
 
 function EditProfilePage() {

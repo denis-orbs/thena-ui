@@ -3,8 +3,8 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import useSWR from 'swr'
 
+import { usePairsContract } from '@/app/arena/PairsContractContext'
 import { Paragraph } from '@/components/typography'
-import { usePairsContract } from '@/context/pairsContractContext'
 import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
 

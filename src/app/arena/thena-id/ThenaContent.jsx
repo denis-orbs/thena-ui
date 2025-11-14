@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { Alert } from '@/components/alert'
 import { ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -17,7 +18,6 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useUserInfo } from '@/context/userInfoContext'
 import { useConfetti } from '@/hooks/useConfetti'
 import {
   useBatchGiftThenaId,

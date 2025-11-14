@@ -15,7 +15,6 @@ import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
 import { RewardsContextProvider } from '@/context/rewardsContext'
-import { TCContextProvider } from '@/context/tcContext'
 import { TitleNotiContextProvider } from '@/context/titleNotiContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
@@ -46,9 +45,7 @@ function ContextProviders({ children }) {
                 <TokensContextProvider>
                   <VeTHEsContextProvider>
                     <RewardsContextProvider>
-                      <TitleNotiContextProvider>
-                        <TCContextProvider>{children}</TCContextProvider>
-                      </TitleNotiContextProvider>
+                      <TitleNotiContextProvider>{children}</TitleNotiContextProvider>
                     </RewardsContextProvider>
                   </VeTHEsContextProvider>
                 </TokensContextProvider>

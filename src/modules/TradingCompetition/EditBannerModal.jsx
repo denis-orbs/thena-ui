@@ -9,11 +9,11 @@ import { mutate } from 'swr'
 
 import 'react-image-crop/dist/ReactCrop.css'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody } from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
-import { useUserInfo } from '@/context/userInfoContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useExportHtmlToImage } from '@/hooks/useExportHtmlToImage'
 import { useFixViewport } from '@/hooks/useFixViewPort'

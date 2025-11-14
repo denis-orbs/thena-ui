@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import { useUserInfo } from '@/context/userInfoContext'
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'

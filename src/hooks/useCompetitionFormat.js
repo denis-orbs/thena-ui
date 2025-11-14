@@ -2,8 +2,8 @@ import BigNumber from 'bignumber.js'
 import { cloneDeep } from 'lodash'
 import { useMemo } from 'react'
 
+import { useTC } from '@/app/arena/TCContext'
 import { useAssets } from '@/context/assetsContext'
-import { useTC } from '@/context/tcContext'
 
 export const useCompetitionFormat = (competition, isPreview = false) => {
   const assets = useAssets()
