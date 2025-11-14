@@ -14,7 +14,6 @@ import { CustomAssetsContextProvider } from '@/context/customAssetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
-import { RewardsContextProvider } from '@/context/rewardsContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
@@ -42,9 +41,7 @@ function ContextProviders({ children }) {
             <FusionsContextProvider>
               <ManualsContextProvider>
                 <TokensContextProvider>
-                  <VeTHEsContextProvider>
-                    <RewardsContextProvider>{children}</RewardsContextProvider>
-                  </VeTHEsContextProvider>
+                  <VeTHEsContextProvider>{children}</VeTHEsContextProvider>
                 </TokensContextProvider>
               </ManualsContextProvider>
             </FusionsContextProvider>

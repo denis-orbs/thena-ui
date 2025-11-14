@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 
+import { VeRewardsContextProvider } from './VeRewardsContext'
 import Loading from '../loading'
 
 export const metadata = {
@@ -10,7 +11,9 @@ export const metadata = {
 export default function DashboardLayout({ children }) {
   return (
     <main className='flex min-h-screen flex-col bg-neutral-950'>
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+      <VeRewardsContextProvider>
+        <Suspense fallback={<Loading />}>{children}</Suspense>
+      </VeRewardsContextProvider>
     </main>
   )
 }

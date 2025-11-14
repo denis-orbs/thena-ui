@@ -1,10 +1,10 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useEffect, useMemo } from 'react'
 
+import { VeRewardsContext } from '@/app/dashboard/VeRewardsContext'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading, Paragraph } from '@/components/typography'
-import { rewardsContext, useGetVeRewardV2 } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import usePrices from '@/hooks/usePrices'
@@ -18,10 +18,8 @@ import SectionDivider from '../SectionDivider'
 function ClaimableRewards({ setClaimableRewards }) {
   const t = useTranslations()
   const prices = usePrices()
-  const { current: currentRewardsV3 } = useContext(rewardsContext)
-  const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = currentRewardsV3
+  const { veRewardsV3, veRewardsV3Mutate, veRewardsV2, veRewardsV2Mutate } = useContext(VeRewardsContext)
   const { veTHEs } = useVeTHEsContext()
-  const { currentRewardsV2, refetchVetheRewardV2 } = useGetVeRewardV2()
   const { claimableUSD, pendingReward: royaltyRewards } = useTheNftAccountInfo()
   const { rewards } = useFarmRewards()
 
@@ -48,8 +46,8 @@ function ClaimableRewards({ setClaimableRewards }) {
   }, [prices.THE, rewards])
 
   const totalVotingV2Rewards = useMemo(
-    () => currentRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
-    [currentRewardsV2],
+    () => veRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
+    [veRewardsV2],
   )
 
   const totalVotingV3Rewards = useMemo(() => {
@@ -90,12 +88,12 @@ function ClaimableRewards({ setClaimableRewards }) {
 
     // Harvest voting V2 rewards
     if (!allPendingV2 && totalVotingV2Rewards.gt(0)) {
-      await handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
+      await handleClaimAllV2(veRewardsV2, [], () => veRewardsV2Mutate())
     }
 
     // Harvest voting V3 rewards
     if (!allPendingV3 && totalVotingV3Rewards.gt(0)) {
-      await handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
+      await handleClaimAll(veRewardsV3, filteredVeTHEs, () => veRewardsV3Mutate())
     }
 
     // Harvest theNft royalty rewards
@@ -112,12 +110,12 @@ function ClaimableRewards({ setClaimableRewards }) {
     onTheNftClaim,
     onGaugeAllHarvest,
     handleClaimAllV2,
-    currentRewardsV2,
-    refetchVetheRewardV2,
+    veRewardsV2,
+    veRewardsV2Mutate,
     handleClaimAll,
     veRewardsV3,
     filteredVeTHEs,
-    refreshVetheRewardV3,
+    veRewardsV3Mutate,
   ])
 
   useEffect(() => {
