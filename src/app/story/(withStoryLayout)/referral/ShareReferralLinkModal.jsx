@@ -5,7 +5,6 @@ import { useTranslations } from 'use-intl'
 import Textarea from '@/components/input/Textarea'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { errorToast, successToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 
@@ -17,6 +16,8 @@ import FacebookIcon from '~/svgs/facebook.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
+
+import { useTHEStory } from '../../provider'
 
 const PostContent = `I’ve just joined THE Story with @ThenaFi 💜🏛️
 

@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'

@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useMemo, useRef, useState } from 'react'
 
+import { useTHEStory } from '@/app/story/provider'
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
-import { useTHEStory } from '@/context/THEStoryContext'
+import NextImage from '@/components/image/NextImage'
 import useWallet from '@/hooks/useWallet'
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { isoDateToTimeStampSeconds } from '@/lib/utils'
@@ -111,7 +112,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
               <span className='inline-block align-bottom'>
-                <Image src='/svgs/logo.svg' className='mr-2 ml-1 h-[20px] w-[90px]' />
+                <NextImage src='/svgs/logo.svg' className='mr-2 ml-1 h-[20px] w-[90px]' />
               </span>
               <span className='lg:ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}

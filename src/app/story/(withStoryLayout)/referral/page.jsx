@@ -3,10 +3,10 @@
 import React from 'react'
 
 import Loading from '@/app/loading'
-import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
 
 import { Referral } from './Referral'
+import { useTHEStory } from '../../provider'
 
 function ReferralPage() {
   const { account } = useWallet()

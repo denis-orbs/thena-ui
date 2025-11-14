@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { ThenaAuthToken } from '@/constant'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 
 import { EditProfile } from './EditProfile'
+import { useTHEStory } from '../../provider'
 
 function EditProfilePage() {
   const { signWallet } = useSignWallet()

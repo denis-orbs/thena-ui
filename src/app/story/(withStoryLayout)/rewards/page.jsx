@@ -3,10 +3,10 @@
 import React from 'react'
 
 import Loading from '@/app/loading'
-import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
 
 import { Rewards } from './Rewards'
+import { useTHEStory } from '../../provider'
 
 function RewardPage() {
   const { account } = useWallet()

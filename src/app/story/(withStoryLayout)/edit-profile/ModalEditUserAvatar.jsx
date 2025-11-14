@@ -10,10 +10,11 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { centerAspectCrop, useCropImage } from '@/hooks/useCropImages'
 import { sliceAddress } from '@/lib/utils'
 import { useUpdateParticipantAvatar } from '@/modules/Story'
+
+import { useTHEStory } from '../../provider'
 
 const SelectedAvatarState = {
   custom: 'custom',

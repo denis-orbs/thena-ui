@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
+
+import { useTHEStory } from '../../provider'
 
 // FIXME remove mock data
 const minted = false

@@ -16,7 +16,6 @@ import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
 import { RewardsContextProvider } from '@/context/rewardsContext'
 import { TCContextProvider } from '@/context/tcContext'
-import { THEStoryContextProvider } from '@/context/THEStoryContext'
 import { TitleNotiContextProvider } from '@/context/titleNotiContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
@@ -48,9 +47,7 @@ function ContextProviders({ children }) {
                   <VeTHEsContextProvider>
                     <RewardsContextProvider>
                       <TitleNotiContextProvider>
-                        <TCContextProvider>
-                          <THEStoryContextProvider>{children}</THEStoryContextProvider>
-                        </TCContextProvider>
+                        <TCContextProvider>{children}</TCContextProvider>
                       </TitleNotiContextProvider>
                     </RewardsContextProvider>
                   </VeTHEsContextProvider>

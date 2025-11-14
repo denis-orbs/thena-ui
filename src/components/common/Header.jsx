@@ -19,8 +19,6 @@ import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { BNB_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
-import { SizeTypes } from '@/constant/type'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
@@ -504,7 +502,6 @@ function Header() {
   }, [connect, connectionStatus, disconnect])
   // end: fix social auth login
 
-  const { isUpcoming, isRegistered } = useTHEStory()
   const { signWallet } = useSignWallet()
 
   useEffect(() => {
@@ -872,79 +869,6 @@ function Header() {
     [account, pathname, userInfo],
   )
 
-  // isRegister, !isUpcoming
-  const storySubmenus1 = useMemo(
-    () =>
-      compact([
-        {
-          label: 'Chapters',
-          active: pathname === '/story',
-          onClickHandler: () => {
-            push('/story')
-          },
-        },
-        {
-          label: 'Profile',
-          active: pathname === '/story/profile',
-          onClickHandler: () => {
-            push('/story/profile')
-          },
-        },
-        {
-          label: 'Leaderboard',
-          active: pathname === '/story/leaderboard',
-          onClickHandler: () => {
-            push('/story/leaderboard')
-          },
-        },
-        {
-          label: 'Referral',
-          active: pathname === '/story/referral',
-          onClickHandler: () => {
-            push('/story/referral')
-          },
-        },
-        {
-          label: 'Rewards',
-          active: pathname === '/story/rewards',
-          onClickHandler: () => {
-            push('/story/rewards')
-          },
-        },
-        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
-          ? {
-              label: 'User Stats',
-              active: pathname === '/story/userstats',
-              isLink: true,
-              href: '/story/userstats',
-            }
-          : undefined,
-      ]),
-    [account, pathname, push, userInfo],
-  )
-
-  // isRegister && isUpcoming
-  const storySubmenus2 = useMemo(
-    () =>
-      compact([
-        {
-          label: 'Home',
-          active: pathname === '/story',
-          onClickHandler: () => {
-            push('/story')
-          },
-        },
-        {
-          label: 'Chapters',
-          active: pathname === '/story/chapters',
-          onClickHandler: () => {
-            push('/story/chapters')
-          },
-        },
-      ]),
-    [pathname, push],
-  )
-
   const onLogoClick = () => {
     push('/')
     setIsOpen(false)
@@ -1272,23 +1196,6 @@ function Header() {
                 <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
                 <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
               </>
-            )}
-          </div>
-        </div>
-      )}
-      {pathname.startsWith('/story') && isRegistered && (
-        <div
-          className={cn(
-            '2sm:top-[80px] fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll md:top-[92px] lg:py-5',
-            showBannerMigrate && '2sm:top-[188px] top-[180px] lg:top-[146px]',
-          )}
-        >
-          <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
-            {!isUpcoming && (
-              <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
-            )}
-            {isUpcoming && (
-              <Tabs data={storySubmenus2} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
             )}
           </div>
         </div>

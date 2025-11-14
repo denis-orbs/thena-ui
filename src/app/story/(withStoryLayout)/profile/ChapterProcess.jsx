@@ -5,7 +5,6 @@ import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { HyperLink, TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
-import { useTHEStory } from '@/context/THEStoryContext'
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
@@ -25,6 +24,7 @@ import {
   TaskTwitterRetweet,
   TaskType,
 } from '../../constant'
+import { useTHEStory } from '../../provider'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi 💜🏛️
 

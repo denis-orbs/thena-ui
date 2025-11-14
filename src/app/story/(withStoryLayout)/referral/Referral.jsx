@@ -4,7 +4,6 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { fetchTHEStoryParticipantReferrals } from '@/modules/Story'
 
 import { HowItWork } from './HowItWork'
@@ -12,6 +11,7 @@ import { ReferralHistory } from './ReferralHistory'
 import { ShareReferralLink } from './ShareReferralLink'
 import { RewardIconTooltip } from '../profile/RewardIconTooltip'
 import { REFERRAL_REWARD, RewardType } from '../../constant'
+import { useTHEStory } from '../../provider'
 
 export function Referral({ address }) {
   const t = useTranslations()
