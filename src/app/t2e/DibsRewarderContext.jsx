@@ -9,7 +9,7 @@ import { fromWei } from '@/lib/utils'
 import { fetchDataTotalClaimedRewards } from '@/modules/TradeToEarn'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { useAssets } from './assetsContext'
+import { useAssets } from '../../context/assetsContext'
 
 const DibsRewarderContext = createContext({
   currentDay: 0,

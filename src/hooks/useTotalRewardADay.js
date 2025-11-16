@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js'
 import { useCallback } from 'react'
 
 import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
+import { useDibsRewarder } from '@/app/t2e/DibsRewarderContext'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { readCall } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 

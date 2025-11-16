@@ -3,9 +3,9 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
+import { useDibsRewarder } from '@/app/t2e/DibsRewarderContext'
 import Box from '@/components/box'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/hooks/useWallet'
 import { formatAmount } from '@/lib/utils'
 
