@@ -8,7 +8,7 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextSubHeading } from '@/components/typography'
-import { MAX_ASSETS_PRIZE_TOKEN, TC_MARKET_TYPES } from '@/constant'
+import { MAX_ASSETS_PRIZE_TOKEN, TC_MARKET_TYPES } from '@/constant/arena'
 import { formatAmount, ordinals } from '@/lib/utils'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'

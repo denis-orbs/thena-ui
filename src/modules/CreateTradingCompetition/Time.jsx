@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
 import DateInput from '@/components/input/DateInput'
-import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
+import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant/arena'
 import { errorToast } from '@/lib/notify'
 
 import MinusIcon from '~/svgs/minus.svg'

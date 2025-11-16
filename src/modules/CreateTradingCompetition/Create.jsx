@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant/arena'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount } from '@/lib/utils'
 

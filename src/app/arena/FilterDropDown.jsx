@@ -9,7 +9,7 @@ import Dropdown from '@/components/dropdown'
 import Popover from '@/components/popover'
 import Tabs from '@/components/tabs'
 import Toggle from '@/components/toggle'
-import { TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { SizeTypes } from '@/constant/type'
 import { ArenaClient } from '@/lib/graphql'
 

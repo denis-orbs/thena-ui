@@ -1,6 +1,3 @@
-import dayjs from 'dayjs'
-import { WBNB } from 'thena-sdk-core'
-
 import { CHAIN_ID } from './contracts'
 
 export const CHAIN_LIST = {
@@ -104,95 +101,6 @@ export const BSC_LOGO = `${LOGO_PATH}/BSC.png`
 export const LINK_LOGO = `${LOGO_PATH}/LINK.png`
 export const UNKNOWN_LOGO = `${LOGO_PATH}/UNKNOWN.png`
 
-export const V1_ROUTE_ASSETS = {
-  [CHAIN_ID.BSC]: [
-    {
-      symbol: 'WBNB',
-      address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-      logoURI: BNB_LOGO,
-    },
-    {
-      symbol: 'BUSD',
-      address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      logoURI: `${LOGO_PATH}/BUSD.png`,
-    },
-    {
-      symbol: 'USDC',
-      address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-      logoURI: `${LOGO_PATH}/USDC.png`,
-    },
-    {
-      symbol: 'USDT',
-      address: '0x55d398326f99059fF775485246999027B3197955',
-      logoURI: `${LOGO_PATH}/USDT.png`,
-    },
-    {
-      symbol: 'FRAX',
-      address: '0x90c97f71e18723b0cf0dfa30ee176ab653e89f40',
-      logoURI: `${LOGO_PATH}/FRAX.png`,
-    },
-    {
-      symbol: 'BNBx',
-      address: '0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275',
-      logoURI: `${LOGO_PATH}/BNBx.png`,
-    },
-    {
-      symbol: 'CUSD',
-      address: '0xFa4BA88Cf97e282c505BEa095297786c16070129',
-      logoURI: `${LOGO_PATH}/CUSD.png`,
-    },
-    {
-      symbol: 'HAY',
-      address: '0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5',
-      logoURI: `${LOGO_PATH}/HAY.png`,
-    },
-    {
-      symbol: 'USD+',
-      address: '0xe80772eaf6e2e18b651f160bc9158b2a5cafca65',
-      logoURI: `${LOGO_PATH}/USD+.png`,
-    },
-    {
-      symbol: 'stkBNB',
-      address: '0xc2e9d07f66a89c44062459a47a0d2dc038e4fb16',
-      logoURI: `${LOGO_PATH}/stkBNB.png`,
-    },
-    {
-      symbol: 'ankrBNB',
-      address: '0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827',
-      logoURI: `${LOGO_PATH}/ankrBNB.png`,
-    },
-    {
-      symbol: 'THE',
-      address: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
-      logoURI: 'https://thena.fi/logo.png',
-    },
-  ],
-  [CHAIN_ID.OPBNB]: [
-    {
-      symbol: 'WBNB',
-      address: WBNB[CHAIN_ID.OPBNB].address,
-      logoURI: BNB_LOGO,
-    },
-    {
-      symbol: 'USDT',
-      address: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
-      logoURI: `${LOGO_PATH}/USDT.png`,
-    },
-    {
-      symbol: 'ETH',
-      address: '0xe7798f023fc62146e8aa1b36da45fb70855a77ea',
-      logoURI: `${LOGO_PATH}/ETH.png`,
-    },
-    {
-      symbol: 'BTCB',
-      address: '0x7c6b91d9be155a6db01f749217d76ff02a7227f2',
-      logoURI: `${LOGO_PATH}/BTCB.png`,
-    },
-  ],
-}
-
-export const NEXT_EPOCH_TIMESTAMP = 1696464000
-
 export const ONE_DAY_UNIX = 86400
 
 export const V1_MULTI_CHAIN_START_TIME = {
@@ -273,12 +181,6 @@ export const PAIR_TYPES = {
   WEIGHTED: 'Weighted',
 }
 
-export const DataQuality = {
-  VALID: 'valid',
-  INVALID: 'invalid',
-  STALE: 'stale',
-}
-
 export const POSITION_EARNED_TYPES = {
   EARN_THE: 'Earn $THE',
   EARN_FEE: 'Earn Fees',
@@ -337,12 +239,6 @@ export const CHAINLINK_TOKEN = {
       decimals: 18,
     },
   ],
-}
-
-export const EDIT_AUTOMATION_TYPE = {
-  OPERATIONS: 'operations',
-  POOL_AND_WEIGHT: 'poolAndWeight',
-  ALL: 'all',
 }
 
 export const FusionRangeType = {
@@ -424,102 +320,13 @@ export const ANALYTIC_CHART = {
   CHART_COUNT: 60, // limit analytics chart items not more than 60
 }
 
-export const TC_TIMESTAMP = {
-  MIN_REG: 3600 * 1000,
-  MAX_REG: 3600 * 24 * 7 * 1000,
-  MIN_TS: 3600 * 1000,
-  MAX_TS: 3600 * 24 * 7 * 1000 * 4,
-}
-
-export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AND PRIZES']
-
-export const TC_PARTICIPANTS = {
-  MIN: 2,
-  MAX: 1000,
-}
-
-export const MAX_ASSETS_PRIZE_TOKEN = 8
-
-export const TC_MARKET_TYPES = {
-  ALL: 'ALL',
-  SPOT: 'SPOT',
-  PERPETUAL: 'PERPETUALS',
-}
-
-export const DEPOSIT_TYPE = {
-  FREE: false,
-  FIXED: true,
-}
-
-export const WIN_TYPE = {
-  AMOUNT: false,
-  PNL: true,
-}
-
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-
-const { MIN_REG, MIN_TS } = TC_TIMESTAMP
-
-const roundupTime = () => {
-  const finalTS = dayjs()
-
-  let hours = finalTS.hour()
-  let minutes = finalTS.minute()
-
-  if (minutes < 30) {
-    minutes = 30
-  } else {
-    minutes = 0
-    hours = hours === 23 ? 0 : hours + 1
-  }
-
-  return dayjs().set('hour', hours).set('minute', minutes).valueOf()
-}
-
-export const INIT_VALUES = {
-  name: '',
-  description: '',
-  maxParticipants: 1000,
-  timestamp: {
-    registrationStart: roundupTime(), // start timestamp
-    registrationEnd: roundupTime() + MIN_REG, // end timestamp
-    startTimestamp: roundupTime() + MIN_REG * 1.5, // registration start timestamp
-    endTimestamp: roundupTime() + MIN_REG + MIN_TS, // registration end timestamp
-  },
-  market: TC_MARKET_TYPES.SPOT,
-  participantCount: 0,
-  participants: [],
-  prize: {
-    placements: 2, //  number of placements
-    ownerFee: 0, //  owner fee
-    totalPrize: [''], //  total prize amounts
-    token: [], //  prize tokens
-    weights: [0, 0], //  placement weights
-    // winType: false, //  win type
-  },
-  competitionRules: {
-    startingBalance: '', //  starting balance
-    winningToken: null, //  winning token
-    tradingTokens: [], //  trading tokens
-    pairIds: [],
-    minimumBalance: '', // minimum balance
-  },
-  entryFee: [], // entry fee of 0 prize token
-  owner: {
-    id: '',
-  }, // owner address
-  tcAddress: ZERO_ADDRESS, // trading competition contract address
-  depositType: DEPOSIT_TYPE.FREE,
-  winType: WIN_TYPE.PNL,
-}
 
 export const SWAP_TYPES = {
   SWAP: '1',
   TWAP: '2',
   LIMIT: '3',
 }
-
-export const trade2EarnStartTime = 1712534400
 
 export const ThenaAuthToken = 'thena-token'
 export const NotShowDiscoverArenaModal = 'not-show-discover-arena-modal'

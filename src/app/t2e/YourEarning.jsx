@@ -16,7 +16,6 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { trade2EarnStartTime } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
@@ -32,6 +31,8 @@ import {
 import { useChainSettings } from '@/state/settings/hooks'
 
 import Loading from '../loading'
+
+const trade2EarnStartTime = 1712534400
 
 dayjs.extend(utc)
 

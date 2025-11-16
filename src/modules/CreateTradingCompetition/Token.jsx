@@ -15,7 +15,7 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { DEPOSIT_TYPE, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, WIN_TYPE } from '@/constant/arena'
 import InfoIcon from '@/icons/InfoIcon'
 import { formatAmount } from '@/lib/utils'
 

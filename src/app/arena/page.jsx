@@ -11,7 +11,7 @@ import { useTC } from '@/app/arena/TCContext'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
-import { INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant'
+import { ARENA_INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant/arena'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient } from '@/lib/graphql'
@@ -167,7 +167,7 @@ export default function ArenaPage() {
 
   const [showModalCreateCompetition, setShowModalCreateCompetition] = useState(false)
   const [step, setStep] = useState(0)
-  const [data, setData] = useState(INIT_VALUES)
+  const [data, setData] = useState(ARENA_INIT_VALUES)
   const [showPreview, setShowPreview] = useState(true)
 
   const [filter, setFilter] = useState({

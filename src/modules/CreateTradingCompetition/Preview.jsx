@@ -5,7 +5,7 @@ import React, { useMemo } from 'react'
 
 import { useTC } from '@/app/arena/TCContext'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { INIT_VALUES } from '@/constant'
+import { ARENA_INIT_VALUES } from '@/constant/arena'
 import { useCreateTC } from '@/hooks/useTCManager'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient } from '@/lib/graphql'
@@ -119,7 +119,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           if (data?.tag?.id) {
             await assignTCTag({ tradingCompetitionId: tcId, tcTagId: data.tag.id }, () => {
               setShowModalCreateCompetition(false)
-              setData(INIT_VALUES)
+              setData(ARENA_INIT_VALUES)
               setStep(0)
               setShowPreview(false)
               closeTxnModal()
@@ -128,7 +128,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           }
         } else {
           setShowModalCreateCompetition(false)
-          setData(INIT_VALUES)
+          setData(ARENA_INIT_VALUES)
           setStep(0)
           setShowPreview(false)
           closeTxnModal()

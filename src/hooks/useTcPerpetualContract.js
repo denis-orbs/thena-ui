@@ -10,7 +10,8 @@ import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
-import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import {
