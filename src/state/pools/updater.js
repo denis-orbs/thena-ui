@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js'
-import { chunk } from 'lodash'
 import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -13,11 +12,9 @@ import { IchiMFDABI } from '@/abis/ichi/IchiMFDABI'
 import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
 import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
 import { MFDFactoryABI } from '@/abis/integral/MFDFactoryABI'
-import { SolidlyFactoryABI } from '@/abis/solidly/SolidlyFactoryABI'
 import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
 import { GaugeV3ABI } from '@/abis/ve/GaugeV3ABI'
 import { PairAPIABI } from '@/abis/ve/PairAPIABI'
-import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
 import {
   GAMMA_TYPES,
   ICHI_SwapFee,
@@ -75,179 +72,155 @@ const createCallMulti = (calls, abi) =>
 const pairAddressForAccount = async (chainId, pairs, account, type) => {
   if (!pairs?.length) return []
 
-  const isClassicPair = type === 'classic'
+  const isSolidlyPair = type === 'classic'
   const isHypervisorPair = type === 'hypervisor'
   const isICHIPair = type === 'ichi'
   const results = []
 
   try {
-    const chunks = chunk(pairs, 10)
-    for (let index = 0; index < chunks.length; index++) {
-      const pairsList = chunks[index]
+    const pairsList = pairs
 
-      const gaugeForPoolCalls = pairsList.map(pair => ({
-        address: Contracts.VoterV3[chainId],
-        name: 'gaugeForPool',
-        params: [pair.address],
-      }))
+    const accountLpBalanceCalls = pairsList.map(pair => ({
+      address: pair.address,
+      name: 'balanceOf',
+      params: [account],
+    }))
 
-      const isPairCalls = pairsList.map(pair => ({
-        address: Contracts.SolidlyFactory[chainId],
-        name: 'isPair',
-        params: [pair.address],
-      }))
+    const receiverCalls = pairsList.map(pair => ({
+      address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
+      name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
+      params: isHypervisorPair ? [] : [pair.address],
+    }))
 
-      const accountLpBalanceCalls = pairsList.map(pair => ({
-        address: pair.address,
-        name: 'balanceOf',
-        params: [account],
-      }))
+    const [accountLpBalances, receivers] = await Promise.all([
+      createCallMulti(accountLpBalanceCalls, pairABI[type]),
+      !isSolidlyPair && receiverCalls.length
+        ? createCallMulti(receiverCalls, isHypervisorPair ? HypervisorV3ABI : MFDFactoryABI)
+        : [],
+    ])
 
-      const receiverCalls = pairsList.map(pair => ({
-        address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
-        name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
-        params: isHypervisorPair ? [] : [pair.address],
-      }))
+    const accountGaugeLPAmountCalls = []
+    const earnedCalls = []
+    const claimable0Calls = []
+    const claimable1Calls = []
+    const ichisEarned = []
 
-      const [gaugeForPools, isPairs, accountLpBalances, receivers] = await Promise.all([
-        createCallMulti(gaugeForPoolCalls, VoterV3ABI),
-        createCallMulti(isPairCalls, SolidlyFactoryABI),
-        createCallMulti(accountLpBalanceCalls, pairABI[type]),
-        !isClassicPair && receiverCalls.length
-          ? createCallMulti(receiverCalls, isHypervisorPair ? HypervisorV3ABI : MFDFactoryABI)
-          : [],
-      ])
+    for (let i = 0; i < pairsList.length; i++) {
+      const pair = pairsList[i]
+      const gaugeAddress = pair.gauge.address
 
-      const accountGaugeLPAmountCalls = []
-      const earnedCalls = []
-      const claimable0Calls = []
-      const claimable1Calls = []
-      const ichisEarned = []
-
-      for (let i = 0; i < pairsList.length; i++) {
-        const gauge = gaugeForPools[i]
-        const isPair = isPairs[i]
-        const pair = pairsList[i]
-
-        if (isClassicPair) {
-          if (gauge !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
-            accountGaugeLPAmountCalls.push({
-              address: gauge,
-              name: 'balanceOf',
-              params: [account],
-            })
-
-            earnedCalls.push({
-              address: gauge,
-              name: 'earnedAll',
-              params: [account],
-            })
-          }
-
-          if (isPair) {
-            claimable0Calls.push({
-              address: pair.address,
-              name: 'claimable0',
-              params: [account],
-            })
-
-            claimable1Calls.push({
-              address: pair.address,
-              name: 'claimable1',
-              params: [account],
-            })
-          }
-        } else if (receivers[i] !== ZERO_ADDRESS) {
-          claimable0Calls.push({
-            address: receivers[i],
-            name: 'claimable',
-            params: [account, pair.token0?.address],
-          })
-
-          claimable1Calls.push({
-            address: receivers[i],
-            name: 'claimable',
-            params: [account, pair.token1?.address],
+      if (isSolidlyPair) {
+        if (gaugeAddress !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
+          accountGaugeLPAmountCalls.push({
+            address: gaugeAddress,
+            name: 'balanceOf',
+            params: [account],
           })
 
           earnedCalls.push({
-            address: receivers[i],
-            name: 'claimableRewards',
-            params: [account],
-          })
-
-          if (isICHIPair) {
-            const ichiEarned = await simulateICHIEarnedRewards(receivers[i], chainId)
-            ichisEarned.push([[Contracts.THE[chainId].toLowerCase()], [Number(ichiEarned[0])]])
-          }
-
-          accountGaugeLPAmountCalls.push({
-            address: receivers[i],
-            name: 'totalBalance',
+            address: gaugeAddress,
+            name: 'earnedAll',
             params: [account],
           })
         }
-      }
 
-      const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
-        createCallMulti(accountGaugeLPAmountCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
-        isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isClassicPair ? GaugeV3ABI : mfdABI[type]),
-        createCallMulti(claimable0Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
-        createCallMulti(claimable1Calls, isClassicPair ? SolidlyPairABI : mfdABI[type]),
-      ])
+        claimable0Calls.push({
+          address: pair.address,
+          name: 'claimable0',
+          params: [account],
+        })
 
-      let gaugeIndex = 0
-      let pairClaimIndex = 0
+        claimable1Calls.push({
+          address: pair.address,
+          name: 'claimable1',
+          params: [account],
+        })
+      } else if (receivers[i] !== ZERO_ADDRESS) {
+        claimable0Calls.push({
+          address: receivers[i],
+          name: 'claimable',
+          params: [account, pair.token0?.address],
+        })
 
-      for (let i = 0; i < pairsList.length; i++) {
-        const pair = pairsList[i]
-        const gauge = gaugeForPools[i]
-        const isPair = isPairs[i]
-        const accountLpBalance = accountLpBalances[i] ?? 0
-        let accountGaugeLPAmount = 0
-        let earned = 0
-        let claimable0 = 0
-        let claimable1 = 0
+        claimable1Calls.push({
+          address: receivers[i],
+          name: 'claimable',
+          params: [account, pair.token1?.address],
+        })
 
-        if (isClassicPair) {
-          if (gauge !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
-            accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
-            earned = earneds[gaugeIndex]
-            gaugeIndex++
-          }
+        earnedCalls.push({
+          address: receivers[i],
+          name: 'claimableRewards',
+          params: [account],
+        })
 
-          if (isPair) {
-            claimable0 = claimable0s[pairClaimIndex]
-            claimable1 = claimable1s[pairClaimIndex]
-
-            pairClaimIndex++
-          }
-        } else {
-          const [receiver] = receivers[i]
-          if (receiver !== ZERO_ADDRESS) {
-            claimable0 = claimable0s[pairClaimIndex]
-            claimable1 = claimable1s[pairClaimIndex]
-            const earnedTokens = earneds[gaugeIndex]?.[0] || []
-            const earnedRewards = earneds[gaugeIndex]?.[1] || []
-
-            const theAddressId = earnedTokens.findIndex(t => t.toLowerCase() === Contracts.THE[chainId].toLowerCase())
-            earned = earnedRewards[theAddressId] ?? 0
-            accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
-
-            pairClaimIndex++
-            gaugeIndex++
-          }
+        if (isICHIPair) {
+          const ichiEarned = await simulateICHIEarnedRewards(receivers[i], chainId)
+          ichisEarned.push([[Contracts.THE[chainId].toLowerCase()], [Number(ichiEarned[0])]])
         }
 
-        results.push({
-          pair_address: pair.address,
-          claimable0: new BigNumber(String(claimable0)),
-          claimable1: new BigNumber(String(claimable1)),
-          account_lp_balance: new BigNumber(accountLpBalance),
-          account_gauge_balance: new BigNumber(String(accountGaugeLPAmount)),
-          account_gauge_earned: new BigNumber(String(earned)),
+        accountGaugeLPAmountCalls.push({
+          address: receivers[i],
+          name: 'totalBalance',
+          params: [account],
         })
       }
+    }
+
+    const [accountGaugeLPAmounts, earneds, claimable0s, claimable1s] = await Promise.all([
+      createCallMulti(accountGaugeLPAmountCalls, isSolidlyPair ? GaugeV3ABI : mfdABI[type]),
+      isICHIPair ? ichisEarned : createCallMulti(earnedCalls, isSolidlyPair ? GaugeV3ABI : mfdABI[type]),
+      createCallMulti(claimable0Calls, isSolidlyPair ? SolidlyPairABI : mfdABI[type]),
+      createCallMulti(claimable1Calls, isSolidlyPair ? SolidlyPairABI : mfdABI[type]),
+    ])
+
+    let gaugeIndex = 0
+    let pairClaimIndex = 0
+
+    for (let i = 0; i < pairsList.length; i++) {
+      const pair = pairsList[i]
+      const gaugeAddress = pair.gauge.address
+      const accountLpBalance = accountLpBalances[i] ?? 0
+      let accountGaugeLPAmount = 0
+      let earned = 0
+      let claimable0 = 0
+      let claimable1 = 0
+
+      if (isSolidlyPair) {
+        if (gaugeAddress !== ZERO_ADDRESS && account !== ZERO_ADDRESS) {
+          accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
+          earned = earneds[gaugeIndex]
+          gaugeIndex++
+        }
+        claimable0 = claimable0s[pairClaimIndex]
+        claimable1 = claimable1s[pairClaimIndex]
+
+        pairClaimIndex++
+      } else {
+        const [receiver] = receivers[i]
+        if (receiver !== ZERO_ADDRESS) {
+          claimable0 = claimable0s[pairClaimIndex]
+          claimable1 = claimable1s[pairClaimIndex]
+          const earnedTokens = earneds[gaugeIndex]?.[0] || []
+          const earnedRewards = earneds[gaugeIndex]?.[1] || []
+
+          const theAddressId = earnedTokens.findIndex(t => t.toLowerCase() === Contracts.THE[chainId].toLowerCase())
+          earned = earnedRewards[theAddressId] ?? 0
+          accountGaugeLPAmount = accountGaugeLPAmounts[gaugeIndex]
+
+          pairClaimIndex++
+          gaugeIndex++
+        }
+      }
+
+      results.push({
+        pair_address: pair.address,
+        claimable0: new BigNumber(String(claimable0)),
+        claimable1: new BigNumber(String(claimable1)),
+        account_lp_balance: new BigNumber(accountLpBalance),
+        account_gauge_balance: new BigNumber(String(accountGaugeLPAmount)),
+        account_gauge_earned: new BigNumber(String(earned)),
+      })
     }
   } catch (error) {
     console.error('get pairs for account error', error)
