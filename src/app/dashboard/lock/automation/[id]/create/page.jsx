@@ -3,8 +3,8 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
 import CreateVeTHEAutomation from '@/modules/CreateVeTHEAutomation'
 import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
 import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'

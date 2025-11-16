@@ -16,7 +16,6 @@ import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
-import { VeTHEsContextProvider } from '@/context/veTHEsContext'
 import enMessage from '@/lang/en.json'
 import esMessage from '@/lang/es.json'
 import jaMessage from '@/lang/ja.json'
@@ -40,9 +39,7 @@ function ContextProviders({ children }) {
           <PairsContextProvider>
             <FusionsContextProvider>
               <ManualsContextProvider>
-                <TokensContextProvider>
-                  <VeTHEsContextProvider>{children}</VeTHEsContextProvider>
-                </TokensContextProvider>
+                <TokensContextProvider>{children}</TokensContextProvider>
               </ManualsContextProvider>
             </FusionsContextProvider>
           </PairsContextProvider>

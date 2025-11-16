@@ -1,7 +1,8 @@
+'use client'
+
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
-import { omit } from 'lodash'
 import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -107,11 +108,8 @@ const getAllVeThesData = async (vethes, chainId, epochTimestamp) => {
 const VETHE_GQL_QUERY = gql`
   query veTokens($address: String!) {
     veTokens(where: { account: $address }) {
-      id
-      account
       amount
       tokenId
-      lockedAt
       lockedEnd
     }
   }
@@ -136,7 +134,7 @@ const fetchVeTHETokens = async (chainId, address) => {
 
     const results = await getAllVeThesData(vethes, chainId, epochTimestamp)
 
-    return results.map(o => omit(o, ['id']))
+    return results
   } catch (err) {
     console.error('fetchVeTHETokens error :>> ', err)
     return []
@@ -160,8 +158,7 @@ function VeTHEsContextProvider({ children }) {
     }
 
     const finalData = (data || []).map(veTHE => {
-      const { amount, rebaseAmount, votingAmount, tokenId, lockedEnd, lockedAt, votes, voted, votedCurrentEpoch } =
-        veTHE
+      const { amount, rebaseAmount, votingAmount, tokenId, lockedEnd, votes, voted, votedCurrentEpoch } = veTHE
       const totalWeight = votes.reduce((sum, current) => sum + Number(current.weight), 0)
       const diff = dayjs.unix(Number(lockedEnd)).diff(dayjs(), 'days')
       return {
@@ -172,7 +169,6 @@ function VeTHEsContextProvider({ children }) {
         voting_amount: new BigNumber(votingAmount),
         rebase_amount: new BigNumber(rebaseAmount),
         lockedEnd: Number(lockedEnd),
-        lockedAt: Number(lockedAt),
         votes: votes.map(ele => ({
           address: ele.pair,
           weight: new BigNumber(ele.weight),
