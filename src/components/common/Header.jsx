@@ -42,7 +42,7 @@ import HamburgerIcon from '~/svgs/hamburger.svg'
 import LanguageIcon from '~/svgs/language.svg'
 import XIcon from '~/svgs/x-close.svg'
 
-import ConnectButton from '../buttons/ConnectButton'
+import HeaderConnectButton from '../buttons/HeaderConnectButton'
 import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
@@ -1017,13 +1017,12 @@ function Header() {
             {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://perps.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
-            <ConnectButton
+            <HeaderConnectButton
               className={cn(
                 'flex px-3 py-2 text-xs !leading-4 text-nowrap lg:px-4 lg:py-3 lg:text-base lg:!leading-5',
                 spaceIdName || userInfo?.username ? 'max-2sm:bg-transparent flex' : 'max-2sm:hidden',
                 !account && is2SmDown && 'max-2sm:flex size-8! p-2!',
               )}
-              isHeader
               isMini={!account && is2SmDown}
             />
             <div
@@ -1154,7 +1153,7 @@ function Header() {
                 )}
               </React.Fragment>
             ))}
-            <ConnectButton className='w-full' isHeader isMobile />
+            <HeaderConnectButton className='w-full' isMobile />
           </div>
         </Modal>
         <TxnModal />
