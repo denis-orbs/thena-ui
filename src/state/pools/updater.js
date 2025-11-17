@@ -253,7 +253,7 @@ const fetchFusionPoolsInfos = async ({ account, chainId, pools }) => {
   return [...classicData, ...gammaData, ...ichiData]
 }
 
-const fetchUserFusionsV2 = async (account, pools, chainId) => {
+const fetchUserPoolsV2 = async (account, pools, chainId) => {
   if (chainId === CHAIN_ID.TEST_BSC) return []
 
   try {
@@ -296,7 +296,7 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
   }
 }
 
-const fetchUserFusionsV3 = async (account, pools, chainId) => {
+const fetchUserPoolsV3 = async (account, pools, chainId) => {
   const fusionPoolsInfos = await fetchFusionPoolsInfos({ account: account?.toLowerCase(), chainId, pools })
 
   return fusionPoolsInfos.map(pool => {
@@ -374,11 +374,11 @@ function Updater() {
       ? ['pools user api', account, v2Pools.length, v3Pools.length, networkId]
       : null,
     async () => {
-      const [userFusionsV2, userFusionsV3] = await Promise.all([
-        fetchUserFusionsV2(account, v2Pools, networkId),
-        fetchUserFusionsV3(account, v3Pools, networkId),
+      const [userPoolsV2, userPoolsV3] = await Promise.all([
+        fetchUserPoolsV2(account, v2Pools, networkId),
+        fetchUserPoolsV3(account, v3Pools, networkId),
       ])
-      return [...userFusionsV2, ...userFusionsV3]
+      return [...userPoolsV2, ...userPoolsV3]
     },
   )
 
@@ -398,41 +398,35 @@ function Updater() {
     }
 
     if (poolsWithAllowed.length > 0 && assets.length > 0) {
-      const bnbTheNarrow = '0xed044cd5654ad208b1bc594fd108c132224e3f3c'
-      const bnbTheWide = '0xe8ec29b75d98d3cdc47db9797b00dcaabea2b15b'
-      const livetheThe = '0x3765476bffe43cf4c0656bf3a7529c54ae247056' // livethe/the
-      const theUsdtWide = '0xb420adb29afd0a4e771739f0a29a4e077eff1acb' // the/usdt wide
-      const ankrBnbTheNarrow = '0xd2f1045b4e5ba91ee725e8bf50740617a92e4a5f' // ankrbnb/the wide
-
       userInfo = poolsWithAllowed
-        .map(fusion => {
-          const { lpPrice, gauge } = fusion
+        .map(pool => {
+          const { lpPrice, gauge } = pool
           let kind
-          if ([...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES, 'DefiEdge'].includes(fusion.type)) {
+          if ([...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES, 'DefiEdge'].includes(pool.type)) {
             kind = PAIR_TYPES.LSD
           } else {
-            kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
+            kind = pool.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
           }
 
-          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0?.address?.toLowerCase())
-          const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion?.token1?.address?.toLowerCase())
-          const allowed = assets.find(ele => ele.address.toLowerCase() === fusion?.allowed?.address?.toLowerCase())
+          const asset0 = assets.find(ele => ele.address.toLowerCase() === pool?.token0?.address?.toLowerCase())
+          const asset1 = assets.find(ele => ele.address.toLowerCase() === pool?.token1?.address?.toLowerCase())
+          const allowed = assets.find(ele => ele.address.toLowerCase() === pool?.allowed?.address?.toLowerCase())
           const token0 = {
-            address: asset0?.address || fusion.token0.address,
+            address: asset0?.address || pool.token0.address,
             symbol: asset0?.symbol || 'UNKNOWN',
             decimals: asset0?.decimals || 18,
             logoURI: asset0?.logoURI || UNKNOWN_LOGO,
             price: asset0?.price || 0,
           }
           const token1 = {
-            address: asset1?.address || fusion.token1.address,
+            address: asset1?.address || pool.token1.address,
             symbol: asset1?.symbol || 'UNKNOWN',
             decimals: asset1?.decimals || 18,
             logoURI: asset1?.logoURI || UNKNOWN_LOGO,
             price: asset1?.price || 0,
           }
-          const token0Reserve = fusion.token0.reserve
-          const token1Reserve = fusion.token1.reserve
+          const token0Reserve = pool.token0.reserve
+          const token1Reserve = pool.token1.reserve
           let totalTvl
           if (token0.price > 0 && token1.price > 0) {
             totalTvl = token0Reserve * token0.price + token1Reserve * token1.price
@@ -443,7 +437,7 @@ function Updater() {
           } else {
             totalTvl = 0
           }
-          const gaugeTvl = fusion.tvl
+          const gaugeTvl = pool.tvl
           let bribeUsd = 0
           const poolBribes = gauge.bribes
           let finalBribes = { fee: null, bribe: null }
@@ -487,7 +481,7 @@ function Updater() {
             }
           }
           const found = (userInfos ?? []).find(
-            item => item.address.toLowerCase() === fusion.address.toLowerCase() && item.version === fusion.version,
+            item => item.address.toLowerCase() === pool.address.toLowerCase() && item.version === pool.version,
           )
           let user = {
             walletBalance: 0,
@@ -510,10 +504,7 @@ function Updater() {
             let gaugeBalance = formatEther(found.gaugeBalance)
 
             // ICHI Swap fees => make it Staked
-            if (
-              fusion.type === ICHI_SwapFee ||
-              (GAMMA_TYPES.includes(fusion.type) && fusion.type.includes('SwapFee'))
-            ) {
+            if (pool.type === ICHI_SwapFee || (GAMMA_TYPES.includes(pool.type) && pool.type.includes('SwapFee'))) {
               gaugeBalance = formatEther(found.walletBalance)
               walletBalance = '0'
             }
@@ -532,10 +523,10 @@ function Updater() {
             }
           }
 
-          if (fusion?.version === 3) {
-            if (ICHI_TYPES.includes(fusion.type)) {
+          if (pool?.version === 3) {
+            if (ICHI_TYPES.includes(pool.type)) {
               autoPoolV3.ichi.push({
-                ...fusion,
+                ...pool,
                 allowed: {
                   address: allowed?.address,
                   symbol: allowed?.symbol,
@@ -544,28 +535,28 @@ function Updater() {
                   price: allowed?.price,
                 },
               })
-            } else if (GAMMA_TYPES.includes(fusion.type)) {
-              autoPoolV3.gamma.push(fusion)
-            } else if (fusion.type === PAIR_TYPES.CLASSIC) {
-              autoPoolV3.classic.push(fusion)
-            } else if (fusion.type === PAIR_TYPES.STABLE) {
-              autoPoolV3.stable.push(fusion)
+            } else if (GAMMA_TYPES.includes(pool.type)) {
+              autoPoolV3.gamma.push(pool)
+            } else if (pool.type === PAIR_TYPES.CLASSIC) {
+              autoPoolV3.classic.push(pool)
+            } else if (pool.type === PAIR_TYPES.STABLE) {
+              autoPoolV3.stable.push(pool)
             }
           }
 
           return {
-            ...fusion,
-            stable: fusion.type === 'Stable',
+            ...pool,
+            stable: pool.type === 'Stable',
             type: kind,
-            title: fusion.type,
+            title: pool.type,
             tvl: totalTvl,
             token0: {
               ...token0,
-              reserve: fusion.token0.reserve,
+              reserve: pool.token0.reserve,
             },
             token1: {
               ...token1,
-              reserve: fusion.token1.reserve,
+              reserve: pool.token1.reserve,
             },
             allowed: {
               address: allowed?.address,
@@ -575,23 +566,18 @@ function Updater() {
               price: allowed?.price,
             },
             gauge: {
-              ...fusion.gauge,
+              ...pool.gauge,
               bribes: finalBribes,
               tvl: gaugeTvl,
-              apr: fusion.gauge.apr,
+              apr: pool.gauge.apr,
               bribeUsd,
-              pooled0: fusion.totalSupply ? (fusion.token0.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
-              pooled1: fusion.totalSupply ? (fusion.token1.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
+              pooled0: pool.totalSupply ? (pool.token0.reserve * pool.gauge.totalSupply) / pool.totalSupply : 0,
+              pooled1: pool.totalSupply ? (pool.token1.reserve * pool.gauge.totalSupply) / pool.totalSupply : 0,
             },
             account: user,
           }
         })
         .sort((a, b) => (a.gauge.tvl - b.gauge.tvl) * -1)
-        .sort((x, y) => (x.address === ankrBnbTheNarrow.toLowerCase() ? -1 : y.address === ankrBnbTheNarrow ? 1 : 0))
-        .sort((x, y) => (x.address === livetheThe.toLowerCase() ? -1 : y.address === livetheThe ? 1 : 0))
-        .sort((x, y) => (x.address === theUsdtWide.toLowerCase() ? -1 : y.address === theUsdtWide ? 1 : 0))
-        .sort((x, y) => (x.address === bnbTheWide.toLowerCase() ? -1 : y.address === bnbTheWide ? 1 : 0))
-        .sort((x, y) => (x.address === bnbTheNarrow.toLowerCase() ? -1 : y.address === bnbTheNarrow ? 1 : 0))
     }
 
     dispatch(

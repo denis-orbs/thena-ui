@@ -77,21 +77,6 @@ export const usePools = () => {
   )
 }
 
-export const useGammas = () => {
-  const pools = usePools()
-
-  return useMemo(
-    () => pools.filter(pool => pool.type === PAIR_TYPES.LSD && !['ICHI', 'DefiEdge'].includes(pool.title)),
-    [pools],
-  )
-}
-
-export const useDefiedges = () => {
-  const pools = usePools()
-
-  return useMemo(() => pools.filter(pool => pool.title === 'DefiEdge'), [pools])
-}
-
 export const useV3PoolsWithGauge = (isAlive = true) => {
   const pools = usePools()
   const weightedPools = useWeightedPools()
