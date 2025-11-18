@@ -11,6 +11,7 @@ import {
   updateDeadline,
   updateLiquidityHubEnabled,
   updateLocale,
+  updatePriceProtection,
   updateSlippage,
 } from './actions'
 
@@ -21,6 +22,7 @@ export const initialState = {
   deadline: 20,
   locale: LOCALES.en,
   liquidityHubEnabled: true,
+  priceProtection: 3,
 }
 
 export default createReducer(initialState, builder =>
@@ -48,6 +50,10 @@ export default createReducer(initialState, builder =>
     .addCase(updateLocale, (state, { payload }) => ({
       ...state,
       locale: payload,
+    }))
+    .addCase(updatePriceProtection, (state, { payload }) => ({
+      ...state,
+      priceProtection: payload,
     }))
     .addCase(updateLiquidityHubEnabled, (state, { payload }) => ({
       ...state,

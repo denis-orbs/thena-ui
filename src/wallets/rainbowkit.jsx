@@ -41,7 +41,7 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: 'THENA',
-    projectId: 'ef887b5d8b57dc20643189f60792dc3d',
+    projectId: 'c00c0bdae3ede8cf0073f900e6d17f09',
   },
 )
 

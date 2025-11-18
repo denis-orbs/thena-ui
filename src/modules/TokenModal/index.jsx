@@ -32,13 +32,18 @@ function TokenModal({
   hiddenTokens = [],
   isHideTrending = false,
   hiddenAssets = [],
+  showExtendedTokens = false,
 }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
   const rootRef = useRef(null)
   const { tokens } = useTokens()
 
-  const assets = useAssets()
+  const _assets = useAssets()
+  const assets = useMemo(
+    () => (showExtendedTokens ? _assets : _assets.filter(it => !it.extended)),
+    [_assets, showExtendedTokens],
+  )
 
   const baseAssets = useMemo(
     () =>

@@ -68,10 +68,7 @@ const isNative = address => {
   return address === NATIVE_TOKEN_SYMBOL
 }
 
-const getTokens = async liquidityHubEnabled => {
-  if (!liquidityHubEnabled) {
-    return []
-  }
+const getTokens = async () => {
   try {
     const data = await fetch(TOKEN_LIST).then(res => res.json())
     return data.tokens.map(it => ({ ...it, extended: true }))
