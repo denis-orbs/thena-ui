@@ -4,7 +4,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Divider from '@/components/divider'
 import { NewTextHeading, Paragraph } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
 const baseRadius = 60

@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
 import { PAIR_TYPES } from '@/constant'
 import { simulateCall } from '@/lib/contractActions'
-import { fromWei, ZERO_VALUE } from '@/lib/utils'
+import { fromWei, ZERO_VALUE } from '@/utils/utils'
 
 import { useCachedSWR } from '../useCachedSWR'
 import useWallet from '../useWallet'

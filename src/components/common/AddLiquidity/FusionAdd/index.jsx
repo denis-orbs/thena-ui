@@ -3,7 +3,7 @@
 import React from 'react'
 
 import { ICHI_TYPES } from '@/constant'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import GammaAdd from './GammaAdd'
 import IchiAdd from './IchiAdd'

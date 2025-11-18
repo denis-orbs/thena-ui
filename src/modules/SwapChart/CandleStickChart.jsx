@@ -5,8 +5,8 @@ import dayjs from 'dayjs'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { STABLE_TOKENS } from '@/constant'
-import { wrappedAddress } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { wrappedAddress } from '@/utils/utils'
 
 import { CandleStickChartBase } from './CandleStickChartBase'
 import { ChartTimeInterval } from './fetch'

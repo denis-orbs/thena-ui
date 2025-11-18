@@ -3,10 +3,11 @@ import React, { useMemo } from 'react'
 
 import NextImage from '@/components/image/NextImage'
 import { Paragraph } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 const PresetProfits = {
   VERY_LOW: 'VERY_LOW',

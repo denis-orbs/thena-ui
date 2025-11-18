@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { useRef } from 'react'
 
 import { useFixViewport } from '@/hooks/useFixViewPort'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import LogoIcon from '~/logo.svg'
 

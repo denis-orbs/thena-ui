@@ -26,7 +26,7 @@ import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
 import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import TransferModal from './TransferModal'
 

@@ -2,7 +2,7 @@ import { motion, useAnimate } from 'framer-motion'
 import { useEffect } from 'react'
 
 import { Paragraph } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { Algorand, Ape, Avalanche, BNB, Tezos, Thena, USDC } from '../CoinIcons'
 import { FeatureCard } from '../FeatureCard'

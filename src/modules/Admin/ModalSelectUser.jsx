@@ -9,7 +9,7 @@ import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { ArenaClient } from '@/lib/graphql'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 const V4_USERS = gql`
   query V4_USERS($search: String) {

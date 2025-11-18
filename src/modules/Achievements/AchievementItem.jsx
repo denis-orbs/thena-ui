@@ -5,7 +5,7 @@ import './style.css'
 
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAmount, formatNumberDecimals } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals } from '@/utils/utils'
 
 function AchievementItem({ item, onClick = () => {}, showTooltip = true }) {
   const percent = useMemo(() => Math.ceil((item.currentQuantity / item.achievement.quantityTarget) * 100), [item])

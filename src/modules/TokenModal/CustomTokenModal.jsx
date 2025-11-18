@@ -6,8 +6,8 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 

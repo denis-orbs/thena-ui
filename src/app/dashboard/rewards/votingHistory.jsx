@@ -15,8 +15,9 @@ import { useVotingHistory } from '@/hooks/vote/useVotingHistory'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn, formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import XIcon from '~/svgs/x-close.svg'
 

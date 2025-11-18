@@ -12,9 +12,9 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useSplit } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 const validNumber = val => (val === '' ? 0 : Number(val))
 

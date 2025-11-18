@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 
 import { UNKNOWN_LOGO } from '@/constant'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 /**
  *

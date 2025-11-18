@@ -14,9 +14,9 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useMerge } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount } from '@/lib/utils'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
+import { formatAmount } from '@/utils/utils'
 
 export default function MergeManage({ selected, status, contract, mutateAutomationData }) {
   const [veTHE, setVeTHE] = useState(null)

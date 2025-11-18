@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import { usePairsContract } from '@/app/arena/PairsContractContext'
 import { Paragraph } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 const COEFFICIENT = 3
 

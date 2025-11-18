@@ -12,8 +12,8 @@ import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
+import { isInvalidAmount, wrappedAddress } from '@/utils/utils'
 
 export function ManualPaneV1({
   strategy,

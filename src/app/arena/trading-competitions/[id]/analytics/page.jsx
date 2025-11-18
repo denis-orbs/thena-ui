@@ -9,7 +9,7 @@ import useSWR from 'swr'
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { ArenaClient } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import IncreasePrizeTable from './IncreasePrizeTable'
 

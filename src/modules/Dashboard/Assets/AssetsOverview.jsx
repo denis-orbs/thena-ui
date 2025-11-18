@@ -9,9 +9,10 @@ import usePrices from '@/hooks/usePrices'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
 import useWallet from '@/hooks/useWallet'
 import WarningIcon from '@/icons/WarningIcon'
-import { cn, formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { getStrategy } from '@/state/pools/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount, ZERO_VALUE } from '@/utils/utils'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 

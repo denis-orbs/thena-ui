@@ -1,7 +1,7 @@
 import { useTranslations } from 'use-intl'
 
 import NextImage from '@/components/image/NextImage'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import Check2Icon from '~/svgs/check2.svg'
 

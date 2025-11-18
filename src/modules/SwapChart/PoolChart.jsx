@@ -5,7 +5,7 @@ import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
 import Skeleton from '@/components/skeleton'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import { PairDataTimeWindow } from './fetch'
 

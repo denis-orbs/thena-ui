@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ArrowDownIcon from '@/icons/ArrowDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function PercentBadge({ value, isLarge = false }) {
   return (

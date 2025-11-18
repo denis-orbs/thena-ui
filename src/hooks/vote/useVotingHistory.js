@@ -8,7 +8,7 @@ import { useAssets } from '@/context/assetsContext'
 import { batchCallMulti } from '@/lib/contractActions'
 import { getVoterV3Contract } from '@/lib/contracts'
 import { VoterClient } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

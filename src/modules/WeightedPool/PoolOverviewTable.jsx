@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 
 import { Paragraph } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 function PoolOverviewTable({ tokens, colors }) {
   const data = useMemo(

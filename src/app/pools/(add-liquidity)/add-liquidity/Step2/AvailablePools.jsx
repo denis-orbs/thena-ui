@@ -7,8 +7,8 @@ import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
-import { wrappedAddress } from '@/lib/utils'
 import { usePairInfo } from '@/state/pools/hooks'
+import { wrappedAddress } from '@/utils/utils'
 
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 

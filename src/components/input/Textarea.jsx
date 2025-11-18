@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function Textarea({ className = '', val, placeholder = '0', isLocale = true, ...rest }) {
   const t = useTranslations()

@@ -9,7 +9,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { formatPriceForChart } from '@/lib/utils'
+import { formatPriceForChart } from '@/utils/utils'
 
 import { ChartTimeInterval } from './fetch'
 import { getClosePriceChange } from './utils'

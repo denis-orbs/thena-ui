@@ -19,7 +19,7 @@ import { useExportHtmlToImage } from '@/hooks/useExportHtmlToImage'
 import { useFixViewport } from '@/hooks/useFixViewPort'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import BannerPreview from './BannerPreview'
 import { canvasPreview } from './canvasPreview'

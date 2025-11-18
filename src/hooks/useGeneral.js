@@ -9,8 +9,8 @@ import { DoubleRewarders } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { fromWei } from '@/utils/utils'
 
 import usePrices from './usePrices'
 

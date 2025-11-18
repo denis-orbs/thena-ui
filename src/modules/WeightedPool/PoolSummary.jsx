@@ -8,7 +8,8 @@ import Divider from '@/components/divider'
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 function Attributes({ tokens, fees, isMobile }) {
   const t = useTranslations()

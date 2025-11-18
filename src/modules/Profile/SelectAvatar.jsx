@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { ModalEditUserAvatar } from './ModalEditUserAvatar'
 import { useThenianNftsOwnedAndStaked } from '../Arena/hooks/profile'

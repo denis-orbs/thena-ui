@@ -9,7 +9,7 @@ import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
 import DepositFundsModal from './Edits/DepositFundsModal'

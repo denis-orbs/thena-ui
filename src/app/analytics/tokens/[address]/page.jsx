@@ -14,8 +14,8 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { SCAN_URLS } from '@/constant'
 import { useTokens } from '@/context/tokensContext'
 import { useBackURL } from '@/hooks/useBackURL'
-import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 

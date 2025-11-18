@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import ReactQuill, { Quill } from 'react-quill'
 import quillEmoji from 'react-quill-emoji'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 Quill.register(
   {

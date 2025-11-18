@@ -16,8 +16,8 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { batchCallMulti, readCall } from '@/lib/contractActions'
 import { VoterClient } from '@/lib/graphql'
-import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { usePools, useV3PoolsWithGauge } from '@/state/pools/hooks'
+import { fromWei, isInvalidAmount } from '@/utils/utils'
 
 const VeRewardsContext = React.createContext({
   veRewardsV3: [],

@@ -16,9 +16,9 @@ import {
   getGaugeContract,
   getMultiFeeDistributionContract,
 } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 import { collectAndClaimRewards } from './fusion/useAlgebra'
 

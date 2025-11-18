@@ -16,7 +16,7 @@ import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/com
 import { UNKNOWN_LOGO } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
 import WarningIcon from '@/icons/WarningIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import LockIcon from '~/svgs/lock.svg'
 import UnlockIcon from '~/svgs/unlock.svg'

@@ -11,8 +11,8 @@ import { SCAN_URLS } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import CheckIcon from '@/icons/CheckIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAddress, formatAmount, fromWei } from '@/utils/utils'
 
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
 

@@ -6,8 +6,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import useWallet from '@/hooks/useWallet'
-import { fromWei } from '@/lib/utils'
 import { getTokenCurrentUSDPrice } from '@/modules/SwapChart/fetch'
+import { fromWei } from '@/utils/utils'
 
 export const useTokensState = create()(
   persist(

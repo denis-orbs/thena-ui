@@ -9,7 +9,7 @@ import { TC_MARKET_TYPES } from '@/constant/arena'
 import { useDepositToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useDepositToTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/utils/utils'
 
 import { WarningDeposit } from './WarningDeposit'
 

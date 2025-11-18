@@ -9,7 +9,7 @@ import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import LockManage from './lockManage'
 import MergeManage from './mergeManage'

@@ -15,7 +15,7 @@ import { useEventType } from '@/hooks/useEventType'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 function TopBar({ competition = {}, balance }) {
   const { id } = useParams()

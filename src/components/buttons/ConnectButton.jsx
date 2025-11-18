@@ -4,7 +4,7 @@ import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslations } from 'next-intl'
 
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { PrimaryButton, SecondaryButton } from './Button'
 

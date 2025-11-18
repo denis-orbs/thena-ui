@@ -6,7 +6,7 @@ import React, { useMemo } from 'react'
 import Box from '@/components/box'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { THENACOLORS } from '@/constant'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import PieChart from './PieChart'
 

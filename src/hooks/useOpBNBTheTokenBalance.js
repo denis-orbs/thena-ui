@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 import useWallet from './useWallet'
 

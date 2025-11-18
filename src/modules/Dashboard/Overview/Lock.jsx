@@ -9,7 +9,7 @@ import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextSubHeading } from '@/components/typography'
 import { useExtendMultipleLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, ZERO_VALUE } from '@/lib/utils'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
 

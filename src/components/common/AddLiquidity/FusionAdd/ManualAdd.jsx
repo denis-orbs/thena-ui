@@ -11,11 +11,11 @@ import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 

@@ -10,7 +10,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraClaim } from '@/hooks/fusion/useAlgebra'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { formatAmount, unwrappedSymbol } from '@/utils/utils'
 
 export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mutate, fee, outOfRange }) {
   const { tokenId, isFarming, key } = pool || {}

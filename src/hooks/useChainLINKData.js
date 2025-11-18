@@ -4,7 +4,7 @@ import { useReadContracts } from 'wagmi'
 
 import { CHAINLINK_TOKEN } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 import useWallet from './useWallet'
 

@@ -14,8 +14,8 @@ import { PAIR_TYPES, THE_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import { useClaimBribes, useClaimBribesV2, useClaimRebase } from '@/hooks/useVeThe'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { formatAmount } from '@/utils/utils'
 
 import { NoRewards } from './NoRewards'
 

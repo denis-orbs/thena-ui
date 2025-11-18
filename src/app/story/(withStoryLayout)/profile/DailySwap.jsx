@@ -6,7 +6,7 @@ import { useTranslations } from 'use-intl'
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'

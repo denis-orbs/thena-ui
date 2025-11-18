@@ -7,9 +7,10 @@ import CircleImage from '@/components/image/CircleImage'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
-import { addToken, cn, formatAmount, goScan } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 import MinusIcon from '~/svgs/minus.svg'
@@ -17,6 +18,35 @@ import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
 
 import WarningModal from './WarningModal'
+
+const addToken = async asset => {
+  const provider = window.stargate?.wallet?.ethereum?.signer?.provider?.provider ?? window.ethereum
+  if (provider) {
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error can be thrown.
+      const wasAdded = await provider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC-20 tokens, but eventually more!
+          options: {
+            address: asset.address, // The address of the token.
+            symbol: asset.symbol, // A ticker symbol or shorthand, up to 5 characters.
+            decimals: asset.decimals, // The number of decimals in the token.
+            image: asset.logoURI, // A string URL of the token logo.
+          },
+        },
+      })
+
+      if (wasAdded) {
+        console.log('Token Added!')
+      } else {
+        console.log('Your loss!')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 
 export function ItemToken({
   item,

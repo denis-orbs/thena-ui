@@ -6,7 +6,7 @@ import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import EmptyShow from './EmptyShow'
 import { calculateProfitPerDay, normalizeAssetUrl } from '../../lib/utils'

@@ -2,7 +2,7 @@ import './style.css'
 
 import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function AchievementBasicIcon({ item, showTooltip = true, className, classNames }) {
   return (

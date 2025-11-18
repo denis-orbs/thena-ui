@@ -19,7 +19,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useConfetti } from '@/hooks/useConfetti'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 function CompetitionDetail({ competition, isPreview = false }) {
   const [bodyRef, triggerConfetti] = useConfetti(2, {

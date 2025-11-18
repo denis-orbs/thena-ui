@@ -5,7 +5,7 @@ import { OutlinedButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 // TODO value 'reserve' incorrect, just for test UI, replace 'reserve' then
 function InitialLiquidityRow({ token }) {

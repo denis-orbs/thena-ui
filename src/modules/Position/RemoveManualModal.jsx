@@ -15,8 +15,8 @@ import { useAlgebraRemove } from '@/hooks/fusion/useAlgebra'
 import useDebounce from '@/hooks/useDebounce'
 import { warnToast } from '@/lib/notify'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
+import { formatAmount, unwrappedSymbol } from '@/utils/utils'
 
 import SettingSlippageDropDown from './SettingSlippageDropDown'
 

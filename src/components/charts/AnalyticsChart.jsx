@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import Toggle from '@/components/toggle'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import Expand06Icon from '~/svgs/expand-06.svg'
 

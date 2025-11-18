@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import IconGroup from '../icongroup'
 import Skeleton from '../skeleton'

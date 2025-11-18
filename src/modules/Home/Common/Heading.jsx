@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export function Heading({ title, heading, wrapperStyles, titleExtraStyles, headingExtraSytles }) {
   return (

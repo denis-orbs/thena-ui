@@ -13,9 +13,9 @@ import { AUTOMATION_STATUS, CHAINLINK_TOKEN, PAIR_TYPES, TXN_STATUS } from '@/co
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

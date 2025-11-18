@@ -3,7 +3,7 @@ import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 import './style.css'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { TextButton } from '../buttons/Button'
 

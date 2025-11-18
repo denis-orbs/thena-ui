@@ -8,8 +8,8 @@ import useSWR from 'swr'
 import Loading from '@/app/loading'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient } from '@/lib/graphql'
-import { sortAchievements } from '@/lib/utils'
 import { Completed } from '@/modules/Achievements/Completed'
+import { sortAchievements } from '@/utils/utils'
 
 import NoAchievement from '../NoAchievement'
 

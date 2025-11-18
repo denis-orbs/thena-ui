@@ -5,7 +5,7 @@ import React from 'react'
 
 import { siteConfig } from '@/constant/config'
 import { ArenaClient } from '@/lib/graphql'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import CompetitionDetailLayout from './CompetitionDetailLayout'
 

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 
 import './style.css'
 
-import { formatPrice } from '@/lib/utils'
+import { formatPrice } from '@/utils/utils'
 
 function Axis({ axisGenerator }) {
   const axisRef = axis => {

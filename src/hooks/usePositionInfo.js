@@ -14,8 +14,8 @@ import {
   createPositionFromAmount1,
   createPositionFromAmounts,
 } from '@/lib/position'
-import { formatAmount } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
+import { formatAmount } from '@/utils/utils'
 
 import { useCurrency } from './fusion/Tokens'
 import { useCurrencyBalances } from './fusion/useCurrencyBalances'

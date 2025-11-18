@@ -12,10 +12,11 @@ import { BNB_LOGO, BSC_LOGO, SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
 import TokenModal from '@/modules/TokenModal'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import AssetDropdown from '../dropdown/AssetDropdown'
 import Skeleton from '../skeleton'

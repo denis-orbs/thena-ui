@@ -8,10 +8,10 @@ import { TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getWBNBContract } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 export const useDefiedgeAdd = () => {
   const [pending, setPending] = useState(false)

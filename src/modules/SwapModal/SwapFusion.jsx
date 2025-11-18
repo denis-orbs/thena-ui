@@ -21,10 +21,10 @@ import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
-import { formatAmount } from '@/lib/utils'
 import TxnSettings from '@/modules/SettingsModal'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
+import { formatAmount } from '@/utils/utils'
 
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 

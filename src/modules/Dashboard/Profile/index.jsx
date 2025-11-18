@@ -17,8 +17,9 @@ import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
-import { cn, formatAddress, formatAmount, sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
+import cn from '@/utils/classes'
+import { formatAddress, formatAmount, sortAchievements } from '@/utils/utils'
 
 import SectionDivider from '../SectionDivider'
 

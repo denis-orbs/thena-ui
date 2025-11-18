@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { cn, formatPrice } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatPrice } from '@/utils/utils'
 
 import HalfPolygonIcon from '~/svgs/half-polygon.svg'
 import InfoCircleSmall from '~/svgs/info-circle-small.svg'

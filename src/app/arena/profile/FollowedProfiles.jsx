@@ -14,7 +14,7 @@ import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient } from '@/lib/graphql'
-import { sliceAddress } from '@/lib/utils'
+import { sliceAddress } from '@/utils/utils'
 
 import { FollowedProfileItem } from './FollowedProfileItem'
 

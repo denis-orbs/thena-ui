@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react'
 
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import UserAssets from './Assets'
 import HeaderRewards from './HeaderRewards'

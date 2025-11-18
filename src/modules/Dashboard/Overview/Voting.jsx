@@ -20,8 +20,9 @@ import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { fetchStats } from '@/lib/subgraph'
-import { cn, formatAmount } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 

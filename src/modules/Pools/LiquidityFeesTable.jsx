@@ -5,7 +5,8 @@ import CircleImage from '@/components/image/CircleImage'
 import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 function LiquidityFeeRow({ token, pairType }) {
   const t = useTranslations()

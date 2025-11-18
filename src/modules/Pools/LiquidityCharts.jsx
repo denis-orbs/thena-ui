@@ -18,10 +18,11 @@ import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import InfoIcon from '@/icons/InfoIcon'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, unwrappedSymbol, wrappedAddress } from '@/utils/utils'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 

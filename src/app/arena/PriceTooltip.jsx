@@ -2,7 +2,7 @@ import React from 'react'
 
 import CustomTooltip from '@/components/tooltip'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function PriceTooltip({ tooltip = [], id = '', className = '' }) {
   return (

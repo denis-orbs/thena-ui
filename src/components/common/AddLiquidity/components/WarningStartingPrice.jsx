@@ -6,7 +6,7 @@ import { Info } from '@/components/alert'
 import { TextHeading } from '@/components/typography'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function WarningStartingPrice() {
   const t = useTranslations()

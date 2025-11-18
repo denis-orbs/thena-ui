@@ -1,7 +1,4 @@
 import BigNumber from 'bignumber.js'
-import clsx from 'clsx'
-import { isNil } from 'lodash'
-import { twMerge } from 'tailwind-merge'
 
 import { FusionRangeType, GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -18,47 +15,9 @@ export const toWei = (number, decimals = 18) => new BigNumber(number).times(new 
 export const toWeiRound = (number, decimals = 18, round = BigNumber.ROUND_DOWN) =>
   new BigNumber(number).decimalPlaces(decimals, round).times(BigNumber(10).pow(decimals))
 
-export const addToken = async asset => {
-  const provider = window.stargate?.wallet?.ethereum?.signer?.provider?.provider ?? window.ethereum
-  if (provider) {
-    try {
-      // wasAdded is a boolean. Like any RPC method, an error can be thrown.
-      const wasAdded = await provider.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20', // Initially only supports ERC-20 tokens, but eventually more!
-          options: {
-            address: asset.address, // The address of the token.
-            symbol: asset.symbol, // A ticker symbol or shorthand, up to 5 characters.
-            decimals: asset.decimals, // The number of decimals in the token.
-            image: asset.logoURI, // A string URL of the token logo.
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log('Token Added!')
-      } else {
-        console.log('Your loss!')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-}
-
-/** Merge classes with tailwind-merge with clsx full feature */
-export function cn(...inputs) {
-  return twMerge(clsx(inputs))
-}
-
 export function formatAddress(string) {
   return `${string?.slice(0, 4)}...${string?.slice(-4)}`
 }
-
-// export function getRpcUrl(chainId) {
-//   return sample(RPC_PROVIDERS[chainId])
-// }
 
 export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNegative = true) => {
   if (!amount || new BigNumber(amount).isZero()) return '0'
@@ -213,14 +172,6 @@ export const retry = async (callback, breakCondition, maxRetries = 3) => {
   }
 }
 
-/** Sort if null or undefined become last */
-export const customSort = (a, b, isDesc) => {
-  if ((isNil(a) || isNaN(a)) && (isNil(b) || isNaN(b))) return 0
-  if (isNil(a) || isNaN(a)) return 1
-  if (isNil(b) || isNaN(b)) return -1
-  return (a - b) * (isDesc ? -1 : 1)
-}
-
 export const formatNumberDecimals = (value, precision) => {
   const multiplier = 10 ** (precision || 0)
   return Math.round(value * multiplier) / multiplier
@@ -373,33 +324,6 @@ export const convertHexToBooleans = hexValue => {
   const booleansArray = binaryString.split('').map(bit => bit === '1')
 
   return booleansArray
-}
-
-export const calculateNextWeek = startTime => {
-  const now = Date.now() + new Date().getTimezoneOffset() * 60 * 1000
-  if (startTime > now) {
-    return startTime
-  }
-  const oneWeekInMs = 86400 * 7 * 1000
-
-  const weeksElapsed = Math.floor((now - startTime) / oneWeekInMs)
-
-  const nextWeek = startTime + (weeksElapsed + 1) * oneWeekInMs
-
-  return nextWeek
-}
-
-export const shortenNumber = num => {
-  if (!num) return 0
-  const exponent = Math.floor(Math.log10(num))
-  const base = num / 10 ** exponent
-  const roundedBase = parseFloat(base.toFixed(1))
-  return roundedBase * 10 ** exponent
-}
-
-export const formatNumber = num => {
-  if (!num || Number.isNaN(num)) return 0
-  return Number(num)
 }
 
 export const rewriteS3Host = (host, rewrite = 'amazonaws.com/') => (host ? host.split(rewrite)[1] : null)

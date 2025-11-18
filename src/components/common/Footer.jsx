@@ -7,7 +7,7 @@ import { useRouter } from 'nextjs-toploader/app'
 import React from 'react'
 
 import { SOCIAL_LINKS } from '@/constant'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import Logo from '~/logo.svg'
 

@@ -4,7 +4,7 @@ import { forwardRef, useEffect } from 'react'
 
 import { Paragraph } from '@/components/typography'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { SwapIcon } from './SwapIcon'
 import { BNB, Thena } from '../CoinIcons'

@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux'
 import AvailablePools from '@/app/pools/(add-liquidity)/add-liquidity/Step2/AvailablePools'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { cn, wrappedAddress } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { wrappedAddress } from '@/utils/utils'
 
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 

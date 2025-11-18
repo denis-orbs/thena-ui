@@ -6,8 +6,8 @@ import Box from '@/components/box'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
+import cn from '@/utils/classes'
 
 export function PoolAttributesSection({ strategy, pair, className }) {
   const t = useTranslations()

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function SegmentedField({ label, options = [], value, onChange }) {
   const t = useTranslations()
