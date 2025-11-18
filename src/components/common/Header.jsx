@@ -1140,29 +1140,6 @@ function Header() {
           showLearnMore
         />
       )}
-
-      {/* {pathname === '/pools' && <MigrationV3Modal keyOpen={NotShowWarningMigrateV3Modal} />} */}
-
-      {/* {(pathname.startsWith('/pools') || pathname.startsWith('/analytics')) && (
-        <DiscoverModal
-          keyOpen={NotShowDiscoverPoolsAnalyticsModal}
-          text={
-            <>
-              <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
-                <div className='flex w-full'>
-                  <div className='mx-auto text-center  font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
-                    {t('Warning')}
-                  </div>
-                </div>
-              </div>
-              <TextSubHeading className='text-[16px] text-neutral-300 lg:text-[18px]'>
-                {t('Discover pools analytics description')}
-              </TextSubHeading>
-            </>
-          }
-          showLearnMore={false}
-        />
-      )} */}
       <Script
         id='widget-dom-id'
         crossOrigin='anonymous'
