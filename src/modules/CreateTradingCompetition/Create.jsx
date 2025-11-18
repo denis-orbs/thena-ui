@@ -1,12 +1,12 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useState } from 'react'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant'
-import { useUserInfo } from '@/context/userInfoContext'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant/arena'
 import { warnToast } from '@/lib/notify'
-import { isInvalidAmount } from '@/lib/utils'
+import { isInvalidAmount } from '@/utils/utils'
 
 import Detail from './Detail'
 import Prize from './Prize'

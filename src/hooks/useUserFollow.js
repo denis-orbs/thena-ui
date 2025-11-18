@@ -7,7 +7,7 @@ import { ChainId } from 'thena-sdk-core'
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 
@@ -66,7 +66,7 @@ const V4_FOLLOW = gql`
 `
 export const fetchFollowing = async id => {
   try {
-    const { userFollows } = await v4Client.request(V4_FOLLOWING, { followerId: id.toLowerCase() })
+    const { userFollows } = await ArenaClient.request(V4_FOLLOWING, { followerId: id.toLowerCase() })
 
     return userFollows
   } catch (error) {
@@ -76,7 +76,7 @@ export const fetchFollowing = async id => {
 
 export const fetchFollower = async id => {
   try {
-    const { userFollows } = await v4Client.request(V4_FOLLOWERS, { userId: id.toLowerCase() })
+    const { userFollows } = await ArenaClient.request(V4_FOLLOWERS, { userId: id.toLowerCase() })
 
     return userFollows
   } catch (error) {
@@ -100,7 +100,7 @@ export const useFollow = (userId, username = null, isFollowed = false) => {
   const t = useTranslations()
 
   const followFn = useCallback(async () => {
-    const { followUser } = await v4Client.request(
+    const { followUser } = await ArenaClient.request(
       V4_FOLLOW,
       {
         followerId: account.toLowerCase(),

@@ -12,8 +12,8 @@ import { readCall } from '@/lib/contractActions'
 import { getERC20Contract } from '@/lib/contracts'
 import { isZero } from '@/lib/fusion'
 import { SwapRouter } from '@/lib/fusion/entities/swapRouter'
-import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 /**
  * Returns the swap calls that can be used to make the trade

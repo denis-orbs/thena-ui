@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Box from '@/components/box'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function Stepper({ steps, currentStep, setCurrentStep, isEdit }) {
   const t = useTranslations()

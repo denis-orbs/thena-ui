@@ -9,11 +9,11 @@ import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
-import { fromWei } from '@/lib/utils'
 import SwapBest from '@/modules/SwapModal/SwapBest'
 import SwapFusion from '@/modules/SwapModal/SwapFusion'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
+import { fromWei } from '@/utils/utils'
 
 function SwapModal({
   inputCurrency: inputCurrencyParam,

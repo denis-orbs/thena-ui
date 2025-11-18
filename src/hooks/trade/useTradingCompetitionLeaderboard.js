@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import useSWR from 'swr'
 
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
@@ -51,7 +51,7 @@ const TC_WITH_LEADERBOARD = gql`
 
 const fetchCompetitionLeaderboard = async (id, searchText, orderBy) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(TC_WITH_LEADERBOARD, {
+    const { tradingCompetitionById: competition } = await ArenaClient.request(TC_WITH_LEADERBOARD, {
       id,
       searchText,
       orderBy,
@@ -110,7 +110,7 @@ const TC_CURRENT_USER_RANK_AND_PNL = gql`
 
 export const fetchUserRankAndPnLInTC = async (id, userId) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(TC_CURRENT_USER_RANK_AND_PNL, {
+    const { tradingCompetitionById: competition } = await ArenaClient.request(TC_CURRENT_USER_RANK_AND_PNL, {
       id,
       userId,
     })
@@ -165,7 +165,7 @@ const fetchCompetitionByAccount = async (competitionId, account) => {
     return false
   }
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_BY_ACCOUNT, {
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_BY_ACCOUNT, {
       competitionId,
       account,
     })

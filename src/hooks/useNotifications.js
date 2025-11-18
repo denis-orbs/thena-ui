@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
-import { v4Client, v4GraphWsUrl } from '@/lib/graphql'
+import { ArenaClient, ArenaGraphWssUrl } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 
 // follower of current user
@@ -52,7 +52,7 @@ const CLICK_NOTIFICATION = gql`
 
 export const fetchUserNotifcations = async id => {
   try {
-    const { notifications } = await v4Client.request(V4_NOTIFICATIONS, { userId: id.toLowerCase() })
+    const { notifications } = await ArenaClient.request(V4_NOTIFICATIONS, { userId: id.toLowerCase() })
 
     return notifications
   } catch (error) {
@@ -68,7 +68,7 @@ export function useNotificationsSubscription(callback) {
   const unSubscribeRef = useRef()
 
   useEffect(() => {
-    const newSocket = new WebSocket(v4GraphWsUrl, 'graphql-transport-ws')
+    const newSocket = new WebSocket(ArenaGraphWssUrl, 'graphql-transport-ws')
     setClient(new GraphQLWebSocketClient(newSocket, {}))
     newSocket.onopen = () => {
       setSocketState(WebSocket.OPEN)
@@ -112,7 +112,7 @@ export function useMarkNotificationRead() {
   const { signWallet } = useSignWallet()
   const markReadFn = useCallback(async ({ id, type }) => {
     if (type === 'general' && id) {
-      await v4Client.request(
+      await ArenaClient.request(
         CLICK_NOTIFICATION,
         { id },
         {
@@ -120,7 +120,7 @@ export function useMarkNotificationRead() {
         },
       )
     }
-    await v4Client.request(
+    await ArenaClient.request(
       MARK_AS_READ,
       { id },
       {

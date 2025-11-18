@@ -12,9 +12,9 @@ import Skeleton from '@/components/skeleton'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
-import { sliceAddress } from '@/lib/utils'
 import { ModalCreateNotification } from '@/modules/Admin/ModalCreateNotification'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
+import { sliceAddress } from '@/utils/utils'
 
 function TopBar({ userInfo, isLoading }) {
   const t = useTranslations()

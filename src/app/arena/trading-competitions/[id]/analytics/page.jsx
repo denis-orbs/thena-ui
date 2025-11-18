@@ -8,8 +8,8 @@ import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { v4Client } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import { formatAmount } from '@/utils/utils'
 
 import IncreasePrizeTable from './IncreasePrizeTable'
 
@@ -27,7 +27,7 @@ const V4_TC_ANALYTICS = gql`
 
 const fetchTCAnalytic = async id => {
   try {
-    const { tcTrades, tradingCompetitionById: competition } = await v4Client.request(V4_TC_ANALYTICS, { id })
+    const { tcTrades, tradingCompetitionById: competition } = await ArenaClient.request(V4_TC_ANALYTICS, { id })
     return { tcTrades, competition }
   } catch (error) {
     return { error: true }

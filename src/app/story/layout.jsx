@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 
 import { siteConfig } from '@/constant/config'
 
+import { THEStoryContextProvider } from './provider'
 import Loading from '../loading'
 
 export const metadata = {
@@ -23,5 +24,9 @@ export const metadata = {
 }
 
 export default function StoryLayout({ children }) {
-  return <Suspense fallback={<Loading />}>{children}</Suspense>
+  return (
+    <THEStoryContextProvider>
+      <Suspense fallback={<Loading />}>{children}</Suspense>
+    </THEStoryContextProvider>
+  )
 }

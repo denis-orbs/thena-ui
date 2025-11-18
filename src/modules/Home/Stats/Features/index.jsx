@@ -4,7 +4,8 @@ import { useRouter } from 'nextjs-toploader/app'
 import { useRef, useState } from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
-import { cn, goToDoc } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { goToDoc } from '@/utils/utils'
 
 import { FeatureIllustration } from './FeatureIllustration'
 import { IntroductionIllustration } from './IntroductionIllustration'

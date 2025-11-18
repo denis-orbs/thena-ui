@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Loading from '@/app/loading'
 import ArrowDownIcon from '@/icons/ArrowDownIcon'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 import XIcon from '~/svgs/x-close.svg'

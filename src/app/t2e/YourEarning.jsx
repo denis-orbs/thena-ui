@@ -9,20 +9,18 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
+import { useDibsRewarder } from '@/app/t2e/DibsRewarderContext'
 import Box from '@/components/box'
 import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { trade2EarnStartTime } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { formatAmount, fromWei } from '@/lib/utils'
 import {
   fetchDataEarnings,
   fetchDataTradeToEarnCount,
@@ -30,8 +28,11 @@ import {
   useGetMuonMutation,
 } from '@/modules/TradeToEarn'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import Loading from '../loading'
+
+const trade2EarnStartTime = 1712534400
 
 dayjs.extend(utc)
 

@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react'
 
 import { SizeTypes } from '@/constant/type'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()

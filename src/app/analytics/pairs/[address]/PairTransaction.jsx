@@ -12,9 +12,9 @@ import RoundedTabs from '@/components/tabs/RoundedTab'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { AlgebraClient, v1Client } from '@/lib/graphql'
-import { formatAmount, goScan } from '@/lib/utils'
+import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import { findNearestPrice, getHistoricalTokenPrice } from './PairChart'
 import TransactionMobile from './PairTransactionMobile'
@@ -193,7 +193,7 @@ const getV1Transactions = async (chainId, pairs, tokens) => {
   const transactions = {}
   const newTxns = []
   try {
-    const result = await v1Client[chainId].request(V1_TRANSATIONS, {
+    const result = await SolidlyClient[chainId].request(V1_TRANSATIONS, {
       pairs,
       tokens,
     })

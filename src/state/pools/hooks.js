@@ -10,7 +10,7 @@ import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
 import { fetchV2SolidlyPairs } from '@/lib/api'
-import { ZERO_VALUE } from '@/lib/utils'
+import { ZERO_VALUE } from '@/utils/utils'
 
 import { useChainSettings } from '../settings/hooks'
 
@@ -75,21 +75,6 @@ export const usePools = () => {
       }),
     [data, networkId],
   )
-}
-
-export const useGammas = () => {
-  const pools = usePools()
-
-  return useMemo(
-    () => pools.filter(pool => pool.type === PAIR_TYPES.LSD && !['ICHI', 'DefiEdge'].includes(pool.title)),
-    [pools],
-  )
-}
-
-export const useDefiedges = () => {
-  const pools = usePools()
-
-  return useMemo(() => pools.filter(pool => pool.title === 'DefiEdge'), [pools])
 }
 
 export const useV3PoolsWithGauge = (isAlive = true) => {

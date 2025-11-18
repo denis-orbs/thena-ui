@@ -9,7 +9,7 @@ import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
 import { warnToast } from '@/lib/notify'
-import { convertBooleansToHex, isInvalidAmount } from '@/lib/utils'
+import { convertBooleansToHex, isInvalidAmount } from '@/utils/utils'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 

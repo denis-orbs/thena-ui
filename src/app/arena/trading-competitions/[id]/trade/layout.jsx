@@ -3,7 +3,7 @@ import { compact } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import { WrapLayout } from './WrapLayout'
 
@@ -26,7 +26,7 @@ const V4_COMPETITION_DATA = gql`
 export async function generateMetadata({ params }) {
   const { id } = params
 
-  const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+  const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_DATA, { id })
 
   const metadata = {
     name: `Trading Page of ${competition?.name ?? 'competition'}`,

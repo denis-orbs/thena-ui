@@ -8,7 +8,7 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { AchievementSection } from '@/modules/Achievements/AchievementSection'
 
 import NoAchievement from './NoAchievement'
@@ -46,7 +46,7 @@ const V4_USER_ACHIEVEMENT = gql`
 
 const fetchAchievements = async userId => {
   try {
-    const { userAchievements, achievements } = await v4Client.request(V4_USER_ACHIEVEMENT, { userId })
+    const { userAchievements, achievements } = await ArenaClient.request(V4_USER_ACHIEVEMENT, { userId })
 
     const userAchievementMap = userAchievements.reduce((map, userAchievement) => {
       // eslint-disable-next-line max-len

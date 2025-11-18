@@ -4,7 +4,8 @@ import { Doughnut } from 'react-chartjs-2'
 
 import { TextHeading } from '@/components/typography'
 import { THENACOLORS } from '@/constant'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 const backgroundCenterPlugin = {
   id: 'backgroundCenter',

@@ -24,9 +24,10 @@ import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import { TokenModal } from './TokenModal'
 

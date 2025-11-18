@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import PolygonSmallIcon from '~/svgs/polygon-small.svg'
 

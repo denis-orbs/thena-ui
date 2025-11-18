@@ -21,20 +21,20 @@ import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import InfoIcon from '@/icons/InfoIcon'
 import WarningIcon from '@/icons/WarningIcon'
+import GaugeManageModal from '@/modules/Position/GaugeManageModal'
+import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
+import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
+import { useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
 import {
-  cn,
   formatAmount,
   fromWei,
   getDisplayedStrategy,
   getLiquidityRangeType,
   isInvalidAmount,
   ZERO_VALUE,
-} from '@/lib/utils'
-import GaugeManageModal from '@/modules/Position/GaugeManageModal'
-import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
-import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
-import { useGetAutoPoolMigration } from '@/state/pools/hooks'
-import { useChainSettings } from '@/state/settings/hooks'
+} from '@/utils/utils'
 
 import APR from './APR'
 import Range from './Range'

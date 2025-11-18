@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function StepCreate({ currentStep, setCurrentStep, disabled2, disabled3 }) {
   const steps = [1, 2, 3]

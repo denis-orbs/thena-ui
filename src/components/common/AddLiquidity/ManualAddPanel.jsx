@@ -6,7 +6,7 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

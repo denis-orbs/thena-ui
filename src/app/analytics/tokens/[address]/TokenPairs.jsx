@@ -7,7 +7,7 @@ import useSWR from 'swr'
 
 import { TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
-import { AlgebraClient, v1Client } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import PairsTable from '../../pairs/PairsTable'
@@ -27,7 +27,7 @@ const V1_PAIRS = gql`
 
 const getV1PairData = async (chainId, address) => {
   try {
-    const { pairs } = await v1Client[chainId].request(V1_PAIRS, {
+    const { pairs } = await SolidlyClient[chainId].request(V1_PAIRS, {
       address,
     })
     const data = pairs.map(ele => ele.id)

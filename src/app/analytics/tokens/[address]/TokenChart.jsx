@@ -9,7 +9,7 @@ import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
 import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
-import { AlgebraClient, v1Client } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { getHistoricalTokenPrice } from '../../pairs/[address]/PairChart'
@@ -63,7 +63,7 @@ const V1_DAY_DATAS = gql`
 
 const getV1ChartData = async (chainId, address, skip = 0) => {
   try {
-    const { tokenDayDatas, tokens } = await v1Client[chainId].request(V1_DAY_DATAS, {
+    const { tokenDayDatas, tokens } = await SolidlyClient[chainId].request(V1_DAY_DATAS, {
       address,
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,

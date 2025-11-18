@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import DateInput from '@/components/input/DateInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 const week = 86400 * 7 * 1000
 const HOUR = 3600 * 1000

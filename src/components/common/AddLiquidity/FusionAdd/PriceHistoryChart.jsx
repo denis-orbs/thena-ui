@@ -3,10 +3,10 @@ import { useMemo, useState } from 'react'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
-import { wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
+import { wrappedAddress } from '@/utils/utils'
 
 function PriceHistoryChart({ baseCurrency, quoteCurrency, currentPrice, position, chartDomain }) {
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)

@@ -11,9 +11,9 @@ import { TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getERC20Contract, getThenaIDContract } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 const NORMAL_TRAITS = ['ARABIC_NUMERALS', 'CHARACTER_SET', 'EMOJI_CLUB', 'EMOJI_NUMERALS', 'HINDI_NUMERALS', 'NUMERALS']
 const NORMAL_TRAIT_ADDRESS = [
@@ -55,7 +55,7 @@ const V4_AVAILABLE_THENA_ID_BY_OFFSET = gql`
 
 const getCountThenaIdAvailables = async () => {
   try {
-    const { thenaIdAvailableTotalCount } = await v4Client.request(V4_THENA_ID_COUNT_AVAILABLES)
+    const { thenaIdAvailableTotalCount } = await ArenaClient.request(V4_THENA_ID_COUNT_AVAILABLES)
     return thenaIdAvailableTotalCount
   } catch (error) {
     return 0
@@ -64,7 +64,7 @@ const getCountThenaIdAvailables = async () => {
 
 const getThenaIdByOffset = async offset => {
   try {
-    const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE_THENA_ID_BY_OFFSET, { offset })
+    const { thenaIdAvailables } = await ArenaClient.request(V4_AVAILABLE_THENA_ID_BY_OFFSET, { offset })
     return thenaIdAvailables?.[0]?.name ?? null
   } catch (error) {
     return null
@@ -93,7 +93,7 @@ export const useRandomThenaId = () => {
 
 const getThenaIdAvailables = async name => {
   try {
-    const { thenaIdAvailables } = await v4Client.request(V4_THENA_ID_AVAILABLES, { name })
+    const { thenaIdAvailables } = await ArenaClient.request(V4_THENA_ID_AVAILABLES, { name })
     return thenaIdAvailables
   } catch (error) {
     return []

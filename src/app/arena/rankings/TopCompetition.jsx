@@ -15,8 +15,8 @@ import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
-import { v4Client } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import { formatAmount } from '@/utils/utils'
 
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
@@ -67,7 +67,7 @@ const fetchTopCompetition = async (sort, marketEq, search) => {
         break
     }
 
-    const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
+    const { tradingCompetitions: topCompetition } = await ArenaClient.request(V4_TOP_COMPETITIONS, {
       orderBy,
       market_eq: marketEq,
       name_containsInsensitive: search,

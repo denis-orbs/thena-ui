@@ -2,7 +2,7 @@ import React from 'react'
 
 import Dropdown from '@/components/dropdown'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 

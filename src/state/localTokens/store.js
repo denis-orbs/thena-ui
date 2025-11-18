@@ -6,8 +6,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import useWallet from '@/hooks/useWallet'
-import { fromWei } from '@/lib/utils'
 import { getTokenCurrentUSDPrice } from '@/modules/SwapChart/fetch'
+import { fromWei } from '@/utils/utils'
 
 export const useTokensState = create()(
   persist(
@@ -53,7 +53,7 @@ export const useLocalTokens = () => {
   const { data: tokenPrices = [] } = useQuery({
     queryKey: ['tokenPrices', localTokens.map(t => t.address).join(',')],
     queryFn: async () => {
-      const prices = await Promise.all(localTokens.map(token => getTokenCurrentUSDPrice(token, token.chainId)))
+      const prices = await Promise.all(localTokens.map(token => getTokenCurrentUSDPrice(token.address, token.chainId)))
       return prices // array of numbers
     },
     enabled: localTokens.length > 0,

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function MenuTab({ menuData, className }) {
   return (

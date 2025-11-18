@@ -13,8 +13,8 @@ import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
-import { sliceAddress } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import { sliceAddress } from '@/utils/utils'
 
 import { FollowedProfileItem } from './FollowedProfileItem'
 
@@ -38,7 +38,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
 
 const fetchUserInfo = async idOrUserName => {
   try {
-    const { users } = await v4Client.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
+    const { users } = await ArenaClient.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
 
     if (users.length === 1) {
       const user = users[0]

@@ -12,8 +12,8 @@ import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVeDistContract, getVeTHEContract, getVoterV3Contract } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 export const useCreateLock = () => {
   const [pending, setPending] = useState(false)

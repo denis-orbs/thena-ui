@@ -8,7 +8,7 @@ import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { TYPE_SEE } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'

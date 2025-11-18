@@ -3,7 +3,7 @@ import { useRouter } from 'nextjs-toploader/app'
 import React from 'react'
 
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { TextButton } from './Button'
 

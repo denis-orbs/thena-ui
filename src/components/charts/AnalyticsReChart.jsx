@@ -5,8 +5,8 @@ import React, { useCallback } from 'react'
 import { Area, AreaChart, Bar, BarChart, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { formatAmount } from '@/utils/utils'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart'
 

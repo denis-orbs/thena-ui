@@ -13,12 +13,13 @@ import TruncateContent from '@/components/common/TruncateContent'
 import SuccessModal from '@/components/modal/SuccessModal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { LOGO_PATH, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
+import { LOGO_PATH } from '@/constant'
+import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant/arena'
 import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useConfetti } from '@/hooks/useConfetti'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 function CompetitionDetail({ competition, isPreview = false }) {
   const [bodyRef, triggerConfetti] = useConfetti(2, {

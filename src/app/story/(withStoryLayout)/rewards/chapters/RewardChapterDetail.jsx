@@ -4,9 +4,10 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 import { TextHeading } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
 import { fetchCampaignChapterRewards } from '@/modules/Story'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 function RewardChapterDetail({ chapter }) {
   const t = useTranslations()

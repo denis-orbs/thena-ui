@@ -8,7 +8,7 @@ import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function SetPoolFees({ fees, setFees }) {
   const [show, setShow] = useState(false)

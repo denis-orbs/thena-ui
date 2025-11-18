@@ -7,8 +7,8 @@ import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { formatAmount } from '@/utils/utils'
 
 function PairModal({ popup, setPopup, setSelected, pools, field = 'apr', selected }) {
   const [searchText, setSearchText] = useState('')

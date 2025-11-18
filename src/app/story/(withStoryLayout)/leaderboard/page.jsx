@@ -5,13 +5,13 @@ import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
 import { useFetchChaptersAndTasks } from '@/modules/Story'
 import { ChapterTabNavigator } from '@/modules/Story/ChapterTabNavigator'
 
 import HowItWorks from './HowItWorks'
 import LeaderboardTable from './LeaderboardTable'
+import { useTHEStory } from '../../provider'
 
 export default function LeaderboardPage() {
   const { account } = useWallet()

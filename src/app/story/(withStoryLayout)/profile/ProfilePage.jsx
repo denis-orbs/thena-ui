@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { fetchTHEStoryParticipantReferrals, useFetchChaptersAndTasks } from '@/modules/Story'
 
 import { ChaptersOverview } from './ChaptersOverview'
 import { DailySwap } from './DailySwap'
 import { UserInfo } from './UserInfo'
 import { WeeklyTasks } from './WeeklyTasks'
+import { useTHEStory } from '../../provider'
 
 export function ProfilePage({ address }) {
   const {

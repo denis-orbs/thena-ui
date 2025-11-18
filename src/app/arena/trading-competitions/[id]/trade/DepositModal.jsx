@@ -5,11 +5,11 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import BalanceInput from '@/components/input/BalanceInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { useDepositToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useDepositToTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/utils/utils'
 
 import { WarningDeposit } from './WarningDeposit'
 

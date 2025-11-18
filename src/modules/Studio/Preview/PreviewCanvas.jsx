@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { errorToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import LogoIcon from '~/logo.svg'
 

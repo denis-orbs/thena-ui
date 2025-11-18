@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { NewTextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
 import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'

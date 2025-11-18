@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function Divider({ type = 'horizontal', className }) {
   return type === 'vertical' ? (

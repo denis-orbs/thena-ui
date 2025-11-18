@@ -8,14 +8,15 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
-import { SOCIAL_LINKS, TC_MARKET_TYPES } from '@/constant'
+import { SOCIAL_LINKS } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { alphaThenaTradeTcLink } from '@/constant/env'
-import { useUserInfo } from '@/context/userInfoContext'
 import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawTCPerps } from '@/hooks/useTcPerpetualContract'
@@ -23,13 +24,13 @@ import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/us
 import useWallet from '@/hooks/useWallet'
 import CheckIcon from '@/icons/CheckIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { errorToast, successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
 import PublicIcon from '~/svgs/public.svg'
@@ -49,7 +50,7 @@ const V4_DEPOSIT_OF_USER = gql`
 const getDepositOfUser = async (tcId, userId) => {
   try {
     if (tcId && userId) {
-      const { tcDeposits } = await v4Client.request(V4_DEPOSIT_OF_USER, { tcId, userId })
+      const { tcDeposits } = await ArenaClient.request(V4_DEPOSIT_OF_USER, { tcId, userId })
       if (tcDeposits && tcDeposits.length) {
         const deposit = tcDeposits.reduce((total, item) => Number(total) + Number(item.amount), 0)
         return String(deposit)

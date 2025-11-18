@@ -7,9 +7,9 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
-import { sortAchievements } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
 import { Completed } from '@/modules/Achievements/Completed'
+import { sortAchievements } from '@/utils/utils'
 
 import NoAchievement from '../NoAchievement'
 
@@ -38,7 +38,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
 
 const fetchAchievements = async userId => {
   try {
-    const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
+    const { userAchievements } = await ArenaClient.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
     return userAchievements
   } catch (error) {
     return {}

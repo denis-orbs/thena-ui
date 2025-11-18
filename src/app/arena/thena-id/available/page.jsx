@@ -14,8 +14,8 @@ import { Paragraph } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import { formatAmount } from '@/utils/utils'
 
 import MenuTab from '../MenuTab'
 import ThenaIdModal from '../../profile/ThenaIdModal'
@@ -89,7 +89,7 @@ const fetchAvailable = async (sort, currentPage, whereQuery = {}, whereTotal = {
         break
     }
 
-    const { thenaIdAvailables, thenaIdAvailableTotalCount } = await v4Client.request(V4_AVAILABLE, {
+    const { thenaIdAvailables, thenaIdAvailableTotalCount } = await ArenaClient.request(V4_AVAILABLE, {
       offset,
       where: whereQuery,
       q: whereTotal,

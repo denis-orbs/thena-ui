@@ -10,9 +10,9 @@ import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { v4Client, v4ClientSubGraphT2E } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
+import { ArenaClient, T2EClient } from '@/lib/graphql'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 const V4_DAILY_VOLUME = gql`
   query V4_DAILY_VOLUME($user: String!, $day: String!, $pair: String!) {
@@ -27,7 +27,7 @@ const V4_DAILY_VOLUME = gql`
 
 export const fetchDataDailyVolume = async (user, day, pair) => {
   try {
-    const { dailyGeneratedVolumes } = await v4ClientSubGraphT2E.request(V4_DAILY_VOLUME, {
+    const { dailyGeneratedVolumes } = await T2EClient.request(V4_DAILY_VOLUME, {
       user,
       day,
       pair,
@@ -52,7 +52,7 @@ const V4_TOTAL_VOLUME = gql`
 
 export const fetchDataTotalVolume = async user => {
   try {
-    const { userTotalAmountVolumeAlpha } = await v4Client.request(V4_TOTAL_VOLUME, {
+    const { userTotalAmountVolumeAlpha } = await ArenaClient.request(V4_TOTAL_VOLUME, {
       user,
     })
     if (userTotalAmountVolumeAlpha && Array.isArray(userTotalAmountVolumeAlpha) && userTotalAmountVolumeAlpha.length) {
@@ -81,7 +81,7 @@ export const fetchDataEarnings = async (user, page) => {
   const offset = (page - 1) * 10
 
   try {
-    const { userTradeToEarns } = await v4Client.request(V4_EARNINGS, {
+    const { userTradeToEarns } = await ArenaClient.request(V4_EARNINGS, {
       user,
       offset,
     })
@@ -100,7 +100,7 @@ const V4_TRADE_TO_EARN_COUNT = gql`
 
 export const fetchDataTradeToEarnCount = async (user, day) => {
   try {
-    const { userTradeToEarnTotalCount } = await v4Client.request(V4_TRADE_TO_EARN_COUNT, {
+    const { userTradeToEarnTotalCount } = await ArenaClient.request(V4_TRADE_TO_EARN_COUNT, {
       day,
       user,
     })
@@ -214,7 +214,7 @@ const V4_TOTAL_CLAIMED_REWARDS = gql`
 
 export const fetchTotalClaimedRewards = async user => {
   try {
-    const { totalClaimedRewards } = await v4ClientSubGraphT2E.request(V4_TOTAL_CLAIMED_REWARDS, {
+    const { totalClaimedRewards } = await T2EClient.request(V4_TOTAL_CLAIMED_REWARDS, {
       user,
     })
     return totalClaimedRewards

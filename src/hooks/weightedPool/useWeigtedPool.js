@@ -6,34 +6,32 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import weightedPoolAbi from '@/abis/weighted-pool/weightedPool.json'
-import weightedPoolFactoryAbi from '@/abis/weighted-pool/weightedPoolFactory.json'
-import weightedPoolFeesAbi from '@/abis/weighted-pool/weightedPoolFees.json'
+import { GaugeV3ABI } from '@/abis/ve/GaugeV3ABI'
+import { EmergencyRouterABI } from '@/abis/weighted/EmergencyRouterABI'
+import { WeightedFactoryABI } from '@/abis/weighted/WeightedFactoryABI'
+import { WeightedPairABI } from '@/abis/weighted/WeightedPairABI'
+import { WeightedPairFeesABI } from '@/abis/weighted/WeightedPairFeesABI'
+import { WeightedRouterABI } from '@/abis/weighted/WeightedRouterABI'
+import { WeightedRouterSimulatorABI } from '@/abis/weighted/WeightedRouterSimulatorABI'
+import { WeightedVaultABI } from '@/abis/weighted/WeightedVaultABI'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { batchCallMulti, callMulti, readCall, waitCall } from '@/lib/contractActions'
-import {
-  getEmergencyRouterContract,
-  getERC20Contract,
-  getGaugeContract,
-  getWBNBContract,
-  getWeightedGaugeContract,
-  getWeightedPoolContract,
-  getWeightedPoolFactoryContract,
-  getWeightedPoolFeesContract,
-  getWeightedPoolRouterContract,
-  getWeightedPoolRouterSimulatorContract,
-  getWeightedPoolVaultContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, toWeiRound, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, toWeiRound, wrappedAddress } from '@/utils/utils'
 
 import useWallet from '../useWallet'
+
+const getWeightedPairContract = address => ({
+  address,
+  abi: WeightedPairABI,
+})
 
 const toBytes32 = hexString => {
   const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
@@ -49,7 +47,10 @@ const toBytes32 = hexString => {
 const getUserWithdrawStatus = async (account, chainId) => {
   try {
     if (!account) return false
-    const contract = getEmergencyRouterContract(chainId)
+    const contract = {
+      address: Contracts.emergencyRouter[chainId],
+      abi: EmergencyRouterABI,
+    }
     return await readCall(contract, 'hasWithdrawn', [account], chainId)
   } catch (error) {
     console.error('Failed to fetch user withdraw status:', error)
@@ -80,10 +81,10 @@ const getPoolOwner = async (contract, chainId) => {
 
 export const useWeightPoolData = poolAddress => {
   const { account, chainId } = useWallet()
-  const weightedPoolContract = useMemo(() => getWeightedPoolContract(poolAddress, chainId), [poolAddress, chainId])
 
   const getBalanceAndDecimals = useCallback(async () => {
     try {
+      const weightedPoolContract = getWeightedPairContract(poolAddress)
       const balance = await readCall(weightedPoolContract, 'balanceOf', [account], chainId)
       const decimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
 
@@ -91,7 +92,7 @@ export const useWeightPoolData = poolAddress => {
     } catch (error) {
       console.error('Failed to fetch balance or decimals:', error)
     }
-  }, [account, chainId, weightedPoolContract])
+  }, [account, chainId, poolAddress])
 
   const {
     data,
@@ -127,7 +128,10 @@ export const useGaugeBalance = gaugeAddress => {
   const getGaugeBalance = useCallback(async () => {
     if (!gaugeAddress || gaugeAddress === zeroAddress) return 0
     try {
-      const gaugeContract = getWeightedGaugeContract(gaugeAddress, chainId)
+      const gaugeContract = {
+        address: gaugeAddress,
+        abi: GaugeV3ABI,
+      }
       const gaugeBalance = await getBalance(gaugeContract, account, chainId)
       return gaugeBalance
     } catch (error) {
@@ -154,10 +158,7 @@ const handleStakeLP = async (
   stakeuuid,
   key,
 ) => {
-  const weightedPoolContract = {
-    address: pool.address,
-    abi: weightedPoolAbi,
-  }
+  const weightedPoolContract = getWeightedPairContract(pool.address)
   const balance = await getBalance(weightedPoolContract, account, chainId)
   let isApprovedLp = true
   const allowanceLp = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
@@ -169,7 +170,10 @@ const handleStakeLP = async (
       return
     }
   }
-  const gaugeContract = getGaugeContract(pool.gauge.address, chainId)
+  const gaugeContract = {
+    address: pool.gauge.address,
+    abi: GaugeV3ABI,
+  }
   const params = [toWei(balance, pool.decimals).toFixed(0)]
   if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', params))) {
     setPending(false)
@@ -183,15 +187,34 @@ export const useWeightedPool = () => {
   const t = useTranslations()
   const mutateAssets = useMutateAssets()
 
-  const poolFactoryContract = useMemo(() => getWeightedPoolFactoryContract(chainId), [chainId])
-  const routerContract = useMemo(() => getWeightedPoolRouterContract(chainId), [chainId])
-  const routerSimulatorContract = useMemo(() => getWeightedPoolRouterSimulatorContract(chainId), [chainId])
-  const vaultContract = useMemo(() => getWeightedPoolVaultContract(chainId), [chainId])
+  const routerContract = useMemo(
+    () => ({
+      address: Contracts.weightedPoolRouter[chainId],
+      abi: WeightedRouterABI,
+    }),
+    [chainId],
+  )
+
+  const routerSimulatorContract = useMemo(
+    () => ({
+      address: Contracts.weightedPoolRouterSimulator[chainId],
+      abi: WeightedRouterSimulatorABI,
+    }),
+    [chainId],
+  )
+
+  const vaultContract = useMemo(
+    () => ({
+      address: Contracts.weightedPoolVault[chainId],
+      abi: WeightedVaultABI,
+    }),
+    [chainId],
+  )
 
   const handleGetPoolId = useCallback(async txHash => {
     const txnReceipt = await waitCall(txHash)
     const eventLogs = parseEventLogs({
-      abi: weightedPoolFactoryAbi,
+      abi: WeightedFactoryABI,
       eventName: 'PoolCreated',
       logs: txnReceipt.logs,
     })
@@ -313,6 +336,10 @@ export const useWeightedPool = () => {
         const tokenIds = tokens.map(token => wrappedAddress(token))
         // Note: 40 => divide by 100 then toWei => 16 decimals
         const allocatesWei = allocatesPercent.map(allocates => toWei(allocates, 16).toFixed(0))
+        const poolFactoryContract = {
+          address: Contracts.weightedPoolFactory[chainId],
+          abi: WeightedFactoryABI,
+        }
 
         const txHash = await writeTxn(key, createuuid, poolFactoryContract, 'create', [
           name,
@@ -329,7 +356,7 @@ export const useWeightedPool = () => {
         }
 
         const poolId = await handleGetPoolId(txHash)
-        const weightedPoolContract = getWeightedPoolContract(poolId, chainId)
+        const weightedPoolContract = getWeightedPairContract(poolId)
         const poolId32 = await readCall(weightedPoolContract, 'getPoolId', [], chainId)
         await writeTxn(key, registerPooluuid, routerContract, 'registerPool', [poolId32, fee * 100])
         const result = await writeTxn(key, initialLiquidityuuid, routerContract, 'joinPoolInit', [
@@ -358,18 +385,7 @@ export const useWeightedPool = () => {
         setPending(false)
       }
     },
-    [
-      t,
-      startTxn,
-      writeTxn,
-      poolFactoryContract,
-      account,
-      handleGetPoolId,
-      chainId,
-      routerContract,
-      endTxn,
-      mutateAssets,
-    ],
+    [t, startTxn, writeTxn, account, handleGetPoolId, chainId, routerContract, endTxn, mutateAssets],
   )
 
   const onAddLiquiditySingleToken = useCallback(
@@ -415,12 +431,7 @@ export const useWeightedPool = () => {
       )
 
       const isApprovedFee = fromWei(allowance, token.decimals).gte(amountDeposit)
-
-      const lpContract = {
-        address: pool.address,
-        abi: weightedPoolAbi,
-      }
-
+      const lpContract = getWeightedPairContract(pool.address)
       setPending(true)
 
       startTxn({
@@ -535,7 +546,7 @@ export const useWeightedPool = () => {
       }
 
       if (!pool.tvlUSD) {
-        const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+        const weightedPoolContract = getWeightedPairContract(pool.address)
         const poolOwner = await getPoolOwner(weightedPoolContract, chainId)
         if (poolOwner?.toLowerCase() !== account.toLowerCase()) {
           warnToast('Pool not initialized liquidity')
@@ -572,10 +583,7 @@ export const useWeightedPool = () => {
       const approveLpuuid = uuidv4()
       const initialLiquidityuuid = uuidv4()
 
-      const lpContract = {
-        address: pool.address,
-        abi: weightedPoolAbi,
-      }
+      const lpContract = getWeightedPairContract(pool.address)
 
       setPending(true)
 
@@ -749,7 +757,7 @@ export const useWeightedPool = () => {
 
       const { poolId: poolId32, address: poolAddress } = pool
 
-      const weightedPoolContract = getWeightedPoolContract(poolAddress, chainId)
+      const weightedPoolContract = getWeightedPairContract(poolAddress)
 
       const lpTokenDecimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
       const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
@@ -839,7 +847,7 @@ export const useWeightedPool = () => {
 
       const { poolId: poolId32, address: poolAddress } = pool
 
-      const weightedPoolContract = getWeightedPoolContract(poolAddress, chainId)
+      const weightedPoolContract = getWeightedPairContract(poolAddress)
       const lpTokenDecimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
       const lpTokenContract = getERC20Contract(poolAddress, chainId)
 
@@ -985,7 +993,7 @@ export const useWeightedPool = () => {
       setPending(true)
       try {
         const { address, poolId: poolId32 } = pool
-        const weightedPoolContract = getWeightedPoolContract(address, chainId)
+        const weightedPoolContract = getWeightedPairContract(address)
 
         const decimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
         const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
@@ -1015,7 +1023,7 @@ export const useWeightedPool = () => {
       setPending(true)
       if (!amount) return []
       try {
-        const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+        const weightedPoolContract = getWeightedPairContract(pool.address)
         const lpTokenDecimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
 
         const minAmountsOut = await readCall(
@@ -1198,10 +1206,16 @@ export const usePositionData = (pool, isStaked) => {
   const claimableStaked = useRef(0)
   const { chainId, account } = useWallet()
   const assets = useAssets()
-  const poolContract = getWeightedPoolContract(pool?.address, chainId)
-  const gaugeContract = getWeightedGaugeContract(pool?.gauge?.address, chainId)
+  const poolContract = getWeightedPairContract(pool?.address)
+  const gaugeContract = {
+    address: pool?.gauge?.address,
+    abi: GaugeV3ABI,
+  }
   const contractGetBalance = isStaked ? gaugeContract : poolContract
-  const vaultContract = getWeightedPoolVaultContract(chainId)
+  const vaultContract = {
+    address: Contracts.weightedPoolVault[chainId],
+    abi: WeightedVaultABI,
+  }
   const { data, refetch: mutateTokens } = useReadContracts({
     contracts: [
       {
@@ -1240,7 +1254,7 @@ export const usePositionData = (pool, isStaked) => {
 
   const { data: expectedFees = [], refetch: mutateFees } = useReadContract({
     address: poolFeeContract,
-    abi: weightedPoolFeesAbi,
+    abi: WeightedPairFeesABI,
     functionName: 'expectedFees',
     args: [account],
     query: {
@@ -1323,9 +1337,15 @@ export const usePositionData = (pool, isStaked) => {
 export const getWeightedPoolData = async ({ pools = [], chainId, account, assets }) => {
   if (pools.length === 0) return []
   try {
-    const poolContracts = pools.map(pool => getWeightedPoolContract(pool?.address, chainId))
-    const gaugeContracts = pools.map(pool => getWeightedGaugeContract(pool?.gauge?.address, chainId))
-    const vaultContract = getWeightedPoolVaultContract(chainId)
+    const poolContracts = pools.map(pool => getWeightedPairContract(pool?.address))
+    const gaugeContracts = pools.map(pool => ({
+      address: pool?.gauge?.address,
+      abi: GaugeV3ABI,
+    }))
+    const vaultContract = {
+      address: Contracts.weightedPoolVault[chainId],
+      abi: WeightedVaultABI,
+    }
     const feesContracts = await batchCallMulti(
       poolContracts.map(contract => ({
         ...contract,
@@ -1368,7 +1388,7 @@ export const getWeightedPoolData = async ({ pools = [], chainId, account, assets
     const expectedFeesOfPools = await batchCallMulti(
       feesContracts.map(item => ({
         address: item,
-        abi: weightedPoolFeesAbi,
+        abi: WeightedPairFeesABI,
         functionName: 'expectedFees',
         args: [account],
       })),
@@ -1452,10 +1472,14 @@ export const useWeightedPositionList = () => {
     const results = []
     for (let i = 0; i < weightedPools.length; i++) {
       const pool = weightedPools[i]
-      const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+      const weightedPoolContract = getWeightedPairContract(pool.address)
       let gaugeBalance
       if (pool.gauge.address !== zeroAddress) {
-        const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+        const gaugeContract = {
+          address: pool?.gauge?.address,
+          abi: GaugeV3ABI,
+        }
+
         gaugeBalance = await getBalance(gaugeContract, account, chainId)
       }
       const poolBalance = await getBalance(weightedPoolContract, account, chainId)
@@ -1496,9 +1520,12 @@ export const useClaimWeightedPoolFees = () => {
         const key = uuidv4()
         const claimuuid = uuidv4()
 
-        const poolContract = getWeightedPoolContract(pool?.address, chainId)
+        const poolContract = getWeightedPairContract(pool?.address)
         const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
-        const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
+        const feesContract = {
+          address: feesContractAddress,
+          abi: WeightedPairFeesABI,
+        }
         setPending(true)
         startTxn({
           key,
@@ -1576,7 +1603,10 @@ export const useGaugeStakeWeighted = () => {
             return
           }
         }
-        const gaugeContract = getGaugeContract(pool.gauge.address, chainId)
+        const gaugeContract = {
+          address: pool.gauge.address,
+          abi: GaugeV3ABI,
+        }
         const params = [toWei(amount, pool.decimals).toFixed(0)]
         if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', params))) {
           setPending(false)
@@ -1614,7 +1644,10 @@ export const useGaugeUnstakeWeighted = balance => {
       const unstakeuuid = uuidv4()
       const approveuuid = uuidv4()
       try {
-        const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+        const gaugeContract = {
+          address: pool?.gauge?.address,
+          abi: GaugeV3ABI,
+        }
         const rewardsAmount = await readCall(gaugeContract, 'earnedAll', [account], chainId)
         const shouldHarvest =
           (rewardsAmount || []).some(item => !isInvalidAmount(item)) && new BigNumber(amount).gte(balance)
@@ -1679,7 +1712,6 @@ export const useGaugeUnstakeWeighted = balance => {
 
 export const useGaugeHarvestWeighted = () => {
   const [pending, setPending] = useState(false)
-  const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
@@ -1701,7 +1733,10 @@ export const useGaugeHarvestWeighted = () => {
           },
         },
       })
-      const gaugeContract = getWeightedGaugeContract(pair.gauge.address, chainId)
+      const gaugeContract = {
+        address: pair.gauge.address,
+        abi: GaugeV3ABI,
+      }
       if (!(await writeTxn(key, harvestuuid, gaugeContract, 'getReward', []))) {
         setPending(false)
         return
@@ -1713,7 +1748,7 @@ export const useGaugeHarvestWeighted = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn, t],
+    [startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeHarvest, pending }
@@ -1742,7 +1777,10 @@ export const useWithdrawUserBalanceWeighted = () => {
         },
       },
     })
-    const emergencyRouterContract = getEmergencyRouterContract(chainId)
+    const emergencyRouterContract = {
+      address: Contracts.emergencyRouter[chainId],
+      abi: EmergencyRouterABI,
+    }
     if (!(await writeTxn(key, withdrawuuid, emergencyRouterContract, 'withdrawUserBalance', []))) {
       setPending(false)
       return

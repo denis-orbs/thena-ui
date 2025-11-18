@@ -5,13 +5,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { maxUint256, parseEventLogs } from 'viem'
 
 import tcManagerAbi from '@/abis/core/tcManager.json'
-import { DEPOSIT_TYPE, TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
-import { useTC } from '@/context/tcContext'
+import { useTC } from '@/app/arena/TCContext'
+import { TXN_STATUS } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES } from '@/constant/arena'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 export const useCreateTC = () => {
   const [pending, setPending] = useState(false)

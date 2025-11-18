@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import React, { Suspense, useState } from 'react'
 
-import { DibsRewarderContextProvider, useDibsRewarder } from '@/context/dibsRewarderContext'
+import { DibsRewarderContextProvider, useDibsRewarder } from '@/app/t2e/DibsRewarderContext'
 import useWallet from '@/hooks/useWallet'
 import { fetchDataDailyVolume, fetchDataTotalVolume } from '@/modules/TradeToEarn'
 

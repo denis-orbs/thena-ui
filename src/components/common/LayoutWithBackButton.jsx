@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
+import cn from '@/utils/classes'
 
 import BackButton from '../buttons/BackButton'
 

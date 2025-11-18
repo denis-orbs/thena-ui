@@ -9,8 +9,9 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { THENACOLORS } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import PieChart from '@/modules/WeightedPool/PieChart'
+import cn from '@/utils/classes'
+import { formatAmount, unwrappedSymbol } from '@/utils/utils'
 
 export function TokenAnalytics({ pair, classNames }) {
   const { tokens } = pair || {}

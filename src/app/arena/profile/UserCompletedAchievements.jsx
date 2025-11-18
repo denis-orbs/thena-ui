@@ -8,9 +8,9 @@ import Box from '@/components/box'
 import Highlight from '@/components/highlight'
 import { Paragraph, TextHeading } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
-import { v4Client } from '@/lib/graphql'
-import { sortAchievements } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
+import { sortAchievements } from '@/utils/utils'
 
 const V4_USER_ACHIEVEMENT_COMPLETED = gql`
   query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {
@@ -35,7 +35,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
 `
 export const fetchAchievements = async userId => {
   try {
-    const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
+    const { userAchievements } = await ArenaClient.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
     return userAchievements
   } catch (error) {
     return {}

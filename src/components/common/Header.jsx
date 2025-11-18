@@ -19,8 +19,6 @@ import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { BNB_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
-import { SizeTypes } from '@/constant/type'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
@@ -30,10 +28,11 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, goToDoc } from '@/utils/utils'
 import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
@@ -44,7 +43,7 @@ import HamburgerIcon from '~/svgs/hamburger.svg'
 import LanguageIcon from '~/svgs/language.svg'
 import XIcon from '~/svgs/x-close.svg'
 
-import ConnectButton from '../buttons/ConnectButton'
+import HeaderConnectButton from '../buttons/HeaderConnectButton'
 import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
@@ -504,7 +503,6 @@ function Header() {
   }, [connect, connectionStatus, disconnect])
   // end: fix social auth login
 
-  const { isUpcoming, isRegistered } = useTHEStory()
   const { signWallet } = useSignWallet()
 
   useEffect(() => {
@@ -680,7 +678,7 @@ function Header() {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
-                    push('/trade-to-earn')
+                    push('/t2e')
                   },
                 },
                 {
@@ -723,7 +721,7 @@ function Header() {
                   heading: 'T2E',
                   subheading: t('Trade2Earn (Ended)'),
                   onClickHandler: () => {
-                    push('/trade-to-earn')
+                    push('/t2e')
                   },
                 },
                 {
@@ -870,79 +868,6 @@ function Header() {
         },
       ]),
     [account, pathname, userInfo],
-  )
-
-  // isRegister, !isUpcoming
-  const storySubmenus1 = useMemo(
-    () =>
-      compact([
-        {
-          label: 'Chapters',
-          active: pathname === '/story',
-          onClickHandler: () => {
-            push('/story')
-          },
-        },
-        {
-          label: 'Profile',
-          active: pathname === '/story/profile',
-          onClickHandler: () => {
-            push('/story/profile')
-          },
-        },
-        {
-          label: 'Leaderboard',
-          active: pathname === '/story/leaderboard',
-          onClickHandler: () => {
-            push('/story/leaderboard')
-          },
-        },
-        {
-          label: 'Referral',
-          active: pathname === '/story/referral',
-          onClickHandler: () => {
-            push('/story/referral')
-          },
-        },
-        {
-          label: 'Rewards',
-          active: pathname === '/story/rewards',
-          onClickHandler: () => {
-            push('/story/rewards')
-          },
-        },
-        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
-          ? {
-              label: 'User Stats',
-              active: pathname === '/story/userstats',
-              isLink: true,
-              href: '/story/userstats',
-            }
-          : undefined,
-      ]),
-    [account, pathname, push, userInfo],
-  )
-
-  // isRegister && isUpcoming
-  const storySubmenus2 = useMemo(
-    () =>
-      compact([
-        {
-          label: 'Home',
-          active: pathname === '/story',
-          onClickHandler: () => {
-            push('/story')
-          },
-        },
-        {
-          label: 'Chapters',
-          active: pathname === '/story/chapters',
-          onClickHandler: () => {
-            push('/story/chapters')
-          },
-        },
-      ]),
-    [pathname, push],
   )
 
   const onLogoClick = () => {
@@ -1093,13 +1018,12 @@ function Header() {
             {/* <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://perps.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton> */}
-            <ConnectButton
+            <HeaderConnectButton
               className={cn(
                 'flex px-3 py-2 text-xs !leading-4 text-nowrap lg:px-4 lg:py-3 lg:text-base lg:!leading-5',
                 spaceIdName || userInfo?.username ? 'max-2sm:bg-transparent flex' : 'max-2sm:hidden',
                 !account && is2SmDown && 'max-2sm:flex size-8! p-2!',
               )}
-              isHeader
               isMini={!account && is2SmDown}
             />
             <div
@@ -1230,7 +1154,7 @@ function Header() {
                 )}
               </React.Fragment>
             ))}
-            <ConnectButton className='w-full' isHeader isMobile />
+            <HeaderConnectButton className='w-full' isMobile />
           </div>
         </Modal>
         <TxnModal />
@@ -1272,23 +1196,6 @@ function Header() {
                 <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
                 <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
               </>
-            )}
-          </div>
-        </div>
-      )}
-      {pathname.startsWith('/story') && isRegistered && (
-        <div
-          className={cn(
-            '2sm:top-[80px] fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll md:top-[92px] lg:py-5',
-            showBannerMigrate && '2sm:top-[188px] top-[180px] lg:top-[146px]',
-          )}
-        >
-          <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
-            {!isUpcoming && (
-              <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
-            )}
-            {isUpcoming && (
-              <Tabs data={storySubmenus2} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
             )}
           </div>
         </div>

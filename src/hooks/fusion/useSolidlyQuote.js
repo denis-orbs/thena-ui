@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { WBNB } from 'thena-sdk-core'
-import { useSimulateContract } from 'wagmi'
+import { useReadContract } from 'wagmi'
 
 import { getSolidlyRouterContract } from '@/lib/contracts'
-import { toWei } from '@/lib/utils'
+import { toWei } from '@/utils/utils'
 
-export const useThenaQuote = (fromAsset, toAsset, fromAmount, networkId, enabled) => {
+export const useSolidlyQuote = (fromAsset, toAsset, fromAmount, networkId, enabled) => {
   // NOTE: If CL pool, use fusionQuoter contract
   const SolidlyRouterContract = getSolidlyRouterContract(networkId)
 
@@ -17,7 +17,7 @@ export const useThenaQuote = (fromAsset, toAsset, fromAmount, networkId, enabled
   const token0Address = fromAsset?.address === 'BNB' ? WBNB[networkId].address : fromAsset?.address
   const token1Address = toAsset?.address === 'BNB' ? WBNB[networkId].address : toAsset?.address
 
-  return useSimulateContract({
+  return useReadContract({
     ...SolidlyRouterContract,
     functionName: 'getAmountOut',
     args: [amount, token0Address, token1Address],

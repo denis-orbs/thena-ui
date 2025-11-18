@@ -1,7 +1,7 @@
 import { area, curveStepAfter } from 'd3'
 import React, { useMemo } from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export const Area = ({ series, xScale, yScale, xValue, yValue, fill }) =>
   useMemo(

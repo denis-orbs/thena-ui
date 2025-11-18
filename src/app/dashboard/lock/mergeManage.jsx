@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
+import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
@@ -11,12 +12,11 @@ import { ModalBody, ModalFooter } from '@/components/modal'
 import ConfirmModal from '@/components/modal/ConfirmModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useMerge } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount } from '@/lib/utils'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
+import { formatAmount } from '@/utils/utils'
 
 export default function MergeManage({ selected, status, contract, mutateAutomationData }) {
   const [veTHE, setVeTHE] = useState(null)

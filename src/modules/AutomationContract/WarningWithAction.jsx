@@ -8,7 +8,7 @@ import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import InfoIcon from '@/icons/InfoIcon'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
 import ChainlinkModal from './head/ChainlinkModal'

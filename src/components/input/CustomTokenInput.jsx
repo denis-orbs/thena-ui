@@ -1,8 +1,9 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
 import CustomTokenModal from '@/modules/TokenModal/CustomTokenModal'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import TokenBadge from '../badges/TokenBadge'
 import Skeleton from '../skeleton'

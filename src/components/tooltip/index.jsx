@@ -1,7 +1,7 @@
 import React from 'react'
 import { Tooltip } from 'react-tooltip'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function CustomTooltip({ children, className, id, place = 'top' }) {
   return (

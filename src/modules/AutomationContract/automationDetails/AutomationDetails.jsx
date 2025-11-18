@@ -10,10 +10,24 @@ import { AUTOMATION_STATUS, PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/consta
 import { useCopyText } from '@/hooks/useCopyText'
 import useWallet from '@/hooks/useWallet'
 import CheckIcon from '@/icons/CheckIcon'
-import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { formatAddress, formatAmount } from '@/utils/utils'
 
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
+
+const calculateNextWeek = startTime => {
+  const now = Date.now() + new Date().getTimezoneOffset() * 60 * 1000
+  if (startTime > now) {
+    return startTime
+  }
+  const oneWeekInMs = 86400 * 7 * 1000
+
+  const weeksElapsed = Math.floor((now - startTime) / oneWeekInMs)
+
+  const nextWeek = startTime + (weeksElapsed + 1) * oneWeekInMs
+
+  return nextWeek
+}
 
 function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()

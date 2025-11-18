@@ -11,7 +11,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Spinner from '@/components/spinner'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useTokens } from '@/context/tokensContext'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import TokensTable from './TokensTable'
 

@@ -14,8 +14,8 @@ import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getSolidlyRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 const EnabledDexIds = '43,47'
 const Connectors =
@@ -304,13 +304,13 @@ export const useTaxTokenSwap = (autoClose = false) => {
   return { handleTaxTokenSwap, pending }
 }
 
-export const useThenaFusionSwap = (autoClose = false) => {
+export const useSolidlySwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn2, closeTxnModal } = useTxn()
   const t = useTranslations()
 
-  const handleThenaFusionSwap = useCallback(
+  const handleSolidlySwap = useCallback(
     async (fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
@@ -426,7 +426,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
     [chainId, startTxn, t, account, endTxn, autoClose, writeTxn2, closeTxnModal],
   )
 
-  return { handleThenaFusionSwap, pending }
+  return { handleSolidlySwap, pending }
 }
 
 export const useBestQuoteSwap = (fromAddress, toAddress, fromAmount, slippage, networkId) =>

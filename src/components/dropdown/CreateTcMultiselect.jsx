@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react'
 
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import CheckBox from '../checkbox'
 import Input from '../input'

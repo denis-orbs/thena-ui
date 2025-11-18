@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Spinner from '@/components/spinner'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function Loading({ className = '' }) {
   // You can add any UI inside Loading, including a Skeleton.

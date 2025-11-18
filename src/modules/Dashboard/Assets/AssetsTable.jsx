@@ -7,8 +7,9 @@ import { TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import useWallet from '@/hooks/useWallet'
 import ArrowDownIcon from '@/icons/ArrowDownIcon'
-import { cn, formatNumber } from '@/lib/utils'
 import { calculateManualAPR } from '@/state/fusion/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import FarmingItem from './FarmingItem'
 import ManualItem from './ManualItem'
@@ -215,15 +216,15 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
           break
         case 'apr':
           res =
-            (formatNumber(a.type === 'Manual' ? calculateManualAPR(a) : Number(a.apr) || 0) -
-              formatNumber(b.type === 'Manual' ? calculateManualAPR(b) : Number(b.apr) || 0)) *
+            (formatAmount(a.type === 'Manual' ? calculateManualAPR(a) : Number(a.apr) || 0) -
+              formatAmount(b.type === 'Manual' ? calculateManualAPR(b) : Number(b.apr) || 0)) *
             desc
           break
         case 'value':
-          res = (formatNumber(a.fiatValueOfLiquidity) - formatNumber(b.fiatValueOfLiquidity)) * desc
+          res = (formatAmount(a.fiatValueOfLiquidity) - formatAmount(b.fiatValueOfLiquidity)) * desc
           break
         case 'rewards':
-          res = (formatNumber(a.rewardUsd) - formatNumber(b.rewardUsd)) * desc
+          res = (formatAmount(a.rewardUsd) - formatAmount(b.rewardUsd)) * desc
           break
 
         default:

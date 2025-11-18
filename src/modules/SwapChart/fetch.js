@@ -3,7 +3,7 @@ import request from 'graphql-request'
 import { ChainId } from 'thena-sdk-core'
 
 import { FUSION_MULTI_CHAIN_START_TIME } from '@/constant'
-import { codexClient, fusionGraphUrl, v1GraphUrl } from '@/lib/graphql'
+import { CodexClient, FusionGraphUrl, SolidlyGraphUrl } from '@/lib/graphql'
 
 import {
   getAdvanceChartDataCodexQuery,
@@ -18,12 +18,12 @@ const PROTOCOL = ['v1', 'fusion']
 
 const SWAP_INFO_BY_CHAIN = {
   [ChainId.BSC]: {
-    v1: v1GraphUrl[ChainId.BSC],
-    fusion: fusionGraphUrl[ChainId.BSC],
+    v1: SolidlyGraphUrl[ChainId.BSC],
+    fusion: FusionGraphUrl[ChainId.BSC],
   },
   [ChainId.OPBNB]: {
-    v1: v1GraphUrl[ChainId.OPBNB],
-    fusion: fusionGraphUrl[ChainId.OPBNB],
+    v1: SolidlyGraphUrl[ChainId.OPBNB],
+    fusion: FusionGraphUrl[ChainId.OPBNB],
   },
 }
 
@@ -90,7 +90,7 @@ const getSimpleTokenDerivedUSDCPrices = async (
   try {
     const interval = getInterval(timeWindow)
 
-    const { getBars } = await codexClient.request(
+    const { getBars } = await CodexClient.request(
       getSimpleChartDataCodexQuery(tokenAddress, networkId, interval, startTimestampUnix, endTimestampUnix),
       null,
       {
@@ -119,7 +119,7 @@ const getSimpleTokenDerivedUSDCPrices = async (
 
 export const getCurrentprice = async (tokenA, tokenB, networkId) => {
   try {
-    const { getTokenPrices = [] } = await codexClient.request(
+    const { getTokenPrices = [] } = await CodexClient.request(
       getCurrentPriceCodexQuery(tokenA, tokenB, networkId),
       null,
       {
@@ -137,7 +137,7 @@ export const getCurrentprice = async (tokenA, tokenB, networkId) => {
 
 export const getTokenCurrentUSDPrice = async (token, networkId) => {
   try {
-    const { getTokenPrices = [] } = await codexClient.request(getCurrentPriceUSDCodexQuery(token, networkId), null, {
+    const { getTokenPrices = [] } = await CodexClient.request(getCurrentPriceUSDCodexQuery(token, networkId), null, {
       'Content-Type': 'application/json',
       Authorization: process.env.NEXT_PUBLIC_CODEX_API_KEY,
     })
@@ -157,7 +157,7 @@ const getAdvancedTokenDerivedUSDCPrices = async (
   endTimestampUnix,
 ) => {
   try {
-    const { getBars } = await codexClient.request(
+    const { getBars } = await CodexClient.request(
       getAdvanceChartDataCodexQuery(tokenAddress, networkId, timeInterval, startTimestampUnix, endTimestampUnix),
       null,
       {

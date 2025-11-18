@@ -18,8 +18,8 @@ import {
   usePositionData,
 } from '@/hooks/weightedPool/useWeigtedPool'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
+import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/utils/utils'
 
 import GaugeWeightedManageModal from './GaugeWeightedManageModal'
 import RemoveWeightedPositionModal from './ManageWeightedPositionModal'

@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request'
 
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 const V4_USER_ACHIEVEMENT_COMPLETED = gql`
   query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {
@@ -25,7 +25,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
 `
 export const fetchAchievementsCompleted = async userId => {
   try {
-    const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
+    const { userAchievements } = await ArenaClient.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
 
     return userAchievements
   } catch (error) {
@@ -46,7 +46,7 @@ const V4_TRADING_COMPETITION_WON = gql`
 `
 export const fetchTradingCompetitionWon = async userId => {
   try {
-    const { userLeaderboards } = await v4Client.request(V4_TRADING_COMPETITION_WON, { userId })
+    const { userLeaderboards } = await ArenaClient.request(V4_TRADING_COMPETITION_WON, { userId })
     return userLeaderboards ? userLeaderboards[0]?.competition : {}
   } catch (error) {
     return {}

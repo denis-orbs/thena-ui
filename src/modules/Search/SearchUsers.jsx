@@ -10,8 +10,9 @@ import Spinner from '@/components/spinner'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
-import { v4Client } from '@/lib/graphql'
-import { cn, sliceAddress } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import cn from '@/utils/classes'
+import { sliceAddress } from '@/utils/utils'
 
 import { PAGE_SIZE, TYPE_SEE, V4_USERS_SEARCH } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
@@ -61,7 +62,7 @@ function SearchUserItem({ user, setIsPopoverOpen }) {
 const fetchUser = async (search, limit, offset) => {
   try {
     if (search) {
-      const { users } = await v4Client.request(V4_USERS_SEARCH, { search, limit, offset })
+      const { users } = await ArenaClient.request(V4_USERS_SEARCH, { search, limit, offset })
 
       return users
     }

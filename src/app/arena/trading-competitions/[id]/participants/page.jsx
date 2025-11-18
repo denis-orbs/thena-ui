@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { isNil } from 'lodash'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
@@ -12,8 +13,8 @@ import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
-import { v4Client } from '@/lib/graphql'
-import { customSort, formatNumberDecimals } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
+import { formatNumberDecimals } from '@/utils/utils'
 
 const V4_TC_COMPETITION_DATA = gql`
   query V4_TC_COMPETITION($id: String!) {
@@ -40,7 +41,7 @@ const V4_TC_COMPETITION_DATA = gql`
 
 const getCompetitionParticipants = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_TC_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_TC_COMPETITION_DATA, { id })
     return competition
   } catch (error) {
     return { error: true }
@@ -59,7 +60,7 @@ const V4_TRADE_RANK_DATA = gql`
 
 const getTradeRank = async participantIds => {
   try {
-    const { userLeaderboards } = await v4Client.request(V4_TRADE_RANK_DATA, { participantIds })
+    const { userLeaderboards } = await ArenaClient.request(V4_TRADE_RANK_DATA, { participantIds })
     return userLeaderboards
   } catch (error) {
     return { error: true }
@@ -79,7 +80,7 @@ const V4_TC_TRADES_DATA = gql`
 
 const getTcTrades = async tcTradeId => {
   try {
-    const { tcTrades } = await v4Client.request(V4_TC_TRADES_DATA, { tcTradeId })
+    const { tcTrades } = await ArenaClient.request(V4_TC_TRADES_DATA, { tcTradeId })
     return tcTrades
   } catch (error) {
     return { error: true }
@@ -116,6 +117,14 @@ const fetchCompetitionParticipationData = async id => {
   } catch (error) {
     return { error: true }
   }
+}
+
+/** Sort if null or undefined become last */
+const customSort = (a, b, isDesc) => {
+  if ((isNil(a) || isNaN(a)) && (isNil(b) || isNaN(b))) return 0
+  if (isNil(a) || isNaN(a)) return 1
+  if (isNil(b) || isNaN(b)) return -1
+  return (a - b) * (isDesc ? -1 : 1)
 }
 
 const PAGE_SIZE = 10

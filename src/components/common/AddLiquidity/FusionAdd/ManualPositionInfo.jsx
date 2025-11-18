@@ -14,9 +14,10 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
-import { cn, formatAmount } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, type }) {
   const t = useTranslations()

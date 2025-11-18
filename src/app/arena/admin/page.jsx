@@ -3,7 +3,7 @@
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { useUserInfo } from '@/context/userInfoContext'
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import useWallet from '@/hooks/useWallet'
 import ModalRemoveAddAdmin from '@/modules/Admin/ModalRemoveAddAdmin'
 

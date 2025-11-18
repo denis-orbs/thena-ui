@@ -4,11 +4,13 @@ import React from 'react'
 
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
 import StoryHome from '@/modules/Story/StoryHome'
+
+import { useTHEStory } from '../provider'
 
 function StoryPage() {
   const { isRegistered, isUpcoming } = useTHEStory()
+  console.log('isRegistered', isRegistered)
 
   return (
     <div className='relative'>

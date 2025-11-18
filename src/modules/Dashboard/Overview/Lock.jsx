@@ -2,14 +2,14 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
+import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextSubHeading } from '@/components/typography'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useExtendMultipleLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, ZERO_VALUE } from '@/lib/utils'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
 

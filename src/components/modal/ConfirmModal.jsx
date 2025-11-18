@@ -5,7 +5,7 @@ import Highlight from '@/components/highlight'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function ConfirmModal({
   popup,

@@ -6,7 +6,8 @@ import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 export function PairBasicInfo({ pair, className, classNames, etApr = true, useSolidBg = false }) {
   const t = useTranslations()

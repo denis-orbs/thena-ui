@@ -5,11 +5,10 @@ import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { HyperLink, TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
-import { useTHEStory } from '@/context/THEStoryContext'
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 
@@ -25,6 +24,7 @@ import {
   TaskTwitterRetweet,
   TaskType,
 } from '../../constant'
+import { useTHEStory } from '../../provider'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi 💜🏛️
 

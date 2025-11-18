@@ -15,7 +15,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
 import TxnSettings from '@/modules/SettingsModal'
@@ -59,7 +59,7 @@ export default function SwapBest({
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
-  // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
+  // const { handleSolidlySwap, pending: solidlySwapPending } = useSolidlySwap()
 
   const isEnabledTradeLH = useMemo(() => {
     if (!liquidityHubEnabled) return false
@@ -361,7 +361,7 @@ export default function SwapBest({
               swapLoadingLH ||
               comparingTrade ||
               wrapPending ||
-              // thenaSwapPending ||
+              // solidlySwapPending ||
               // isLoadingThenaQuote ||
               btnMsg.isError
             }

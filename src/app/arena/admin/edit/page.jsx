@@ -6,7 +6,7 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { EditProfile } from '@/modules/Profile/EditProfile'
 
 const V4_USER_RANK = gql`
@@ -47,9 +47,9 @@ const V4_USER_INFO = gql`
 
 const fetchUserInfo = async id => {
   try {
-    const { userById } = await v4Client.request(V4_USER_INFO, { id: id.toLowerCase() })
+    const { userById } = await ArenaClient.request(V4_USER_INFO, { id: id.toLowerCase() })
 
-    const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
+    const { tradeRankByAddress } = await ArenaClient.request(V4_USER_RANK, { id: id.toLowerCase() })
 
     return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
   } catch (error) {

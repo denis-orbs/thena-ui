@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef } from 'react'
 
 import { Paragraph, TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function Navigation({ isOpen, setIsOpen }) {
   const t = useTranslations()

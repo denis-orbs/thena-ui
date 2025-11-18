@@ -4,7 +4,7 @@ import { BNB_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
 
-import { ZERO_VALUE } from './utils'
+import { ZERO_VALUE } from '../utils/utils'
 
 // TODO: Fix on prod
 const backendApi = 'https://api.thena.fi/api'

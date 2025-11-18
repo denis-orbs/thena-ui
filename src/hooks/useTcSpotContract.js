@@ -4,14 +4,15 @@ import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getOldTcSpotContract, getTcSpotContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount } from '@/utils/utils'
 
 export const useTCContractInfor = (tcAddress, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
   const [loaded, setLoaded] = useState(false)

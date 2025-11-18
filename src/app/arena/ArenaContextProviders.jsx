@@ -1,12 +1,16 @@
 'use client'
 
-import { PairContractContextProvider } from '@/context/pairsContractContext'
-import { UserInfoContextProvider } from '@/context/userInfoContext'
+import { PairContractContextProvider } from '@/app/arena/PairsContractContext'
+import { UserInfoContextProvider } from '@/app/arena/UserInfoContext'
+
+import { TCContextProvider } from './TCContext'
 
 export function ArenaContextProviders({ children }) {
   return (
     <PairContractContextProvider>
-      <UserInfoContextProvider>{children}</UserInfoContextProvider>
+      <UserInfoContextProvider>
+        <TCContextProvider>{children}</TCContextProvider>
+      </UserInfoContextProvider>
     </PairContractContextProvider>
   )
 }

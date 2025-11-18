@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 const V4_USER_RANK = gql`
   query V4_USER_RANK($user: UserWhereInput = {}) {
@@ -164,11 +164,11 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
 `
 const fetchUserInfo = async idOrUserName => {
   try {
-    const { users } = await v4Client.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
+    const { users } = await ArenaClient.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
 
     if (users.length === 1) {
       const user = users[0]
-      const { userLeaderboards } = await v4Client.request(V4_USER_RANK, { user: { id_eq: user.id } })
+      const { userLeaderboards } = await ArenaClient.request(V4_USER_RANK, { user: { id_eq: user.id } })
 
       return {
         ...user,

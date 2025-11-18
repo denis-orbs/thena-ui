@@ -5,7 +5,8 @@ import React, { useMemo } from 'react'
 import ReactModal from 'react-modal'
 
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { cn, isSmallScreen } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { isSmallScreen } from '@/utils/utils'
 
 import XIcon from '~/svgs/x-close.svg'
 

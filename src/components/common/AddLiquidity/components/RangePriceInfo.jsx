@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
+import cn from '@/utils/classes'
 
 import ReverseIcon from '~/svgs/reverse.svg'
 

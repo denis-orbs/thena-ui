@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl'
 
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, unwrappedSymbol } from '@/utils/utils'
 
 export function PoolReserveSection({ pool, className, showMyInfo = true }) {
   const t = useTranslations()

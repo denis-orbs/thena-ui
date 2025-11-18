@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
 import { getSubarrayFromFirstDataToLast } from '@/lib/analytics'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
 import { TCLines } from './constants'
@@ -29,7 +29,7 @@ const V4_ENTRY_FEE_ANALYTICS = gql`
 const fetchEntryFees = async period => {
   try {
     const where = period ? { date_gte: dayjs().subtract(period, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]') } : {}
-    const { arenaAnalytics } = await v4Client.request(V4_ENTRY_FEE_ANALYTICS, { where })
+    const { arenaAnalytics } = await ArenaClient.request(V4_ENTRY_FEE_ANALYTICS, { where })
     if (arenaAnalytics) {
       const spotData = []
       const perpetualData = []

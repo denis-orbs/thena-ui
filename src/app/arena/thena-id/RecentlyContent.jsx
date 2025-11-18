@@ -12,10 +12,11 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { v4Client } from '@/lib/graphql'
-import { cn, formatAmount } from '@/lib/utils'
+import { ArenaClient } from '@/lib/graphql'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import MenuTab from './MenuTab'
 
@@ -96,7 +97,7 @@ const V4_RECENTLY_GIFTED = gql`
 
 const fetchRecentlyMinted = async (isMinted = false) => {
   try {
-    const { usernameNfts } = await v4Client.request(isMinted ? V4_RECENTLY_MINTED : V4_RECENTLY_GIFTED)
+    const { usernameNfts } = await ArenaClient.request(isMinted ? V4_RECENTLY_MINTED : V4_RECENTLY_GIFTED)
     return usernameNfts
   } catch (error) {
     console.log(error)

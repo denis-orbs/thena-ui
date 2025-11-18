@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 
@@ -72,7 +72,7 @@ export const V4_ASSIGN_TC_TAG = gql`
 
 export const fetchGetTCTag = async () => {
   try {
-    const { tcTags } = await v4Client.request(V4_GET_TC_TAG)
+    const { tcTags } = await ArenaClient.request(V4_GET_TC_TAG)
 
     if (tcTags && Array.isArray(tcTags) && tcTags.length > 0) {
       return tcTags
@@ -89,7 +89,7 @@ export const useCreateTcTag = () => {
   const { signWallet } = useSignWallet()
 
   const assignTCTagFn = useCallback(async ({ tradingCompetitionId, tcTagId }) => {
-    const { assignTCTag } = await v4Client.request(
+    const { assignTCTag } = await ArenaClient.request(
       V4_ASSIGN_TC_TAG,
       {
         tradingCompetitionId,
@@ -114,7 +114,7 @@ export const useCreateTcTag = () => {
 
   const createTcTagFn = useCallback(async ({ name, description }) => {
     try {
-      const { createTCTag } = await v4Client.request(
+      const { createTCTag } = await ArenaClient.request(
         V4_CREATE_TC_TAG,
         {
           name,
@@ -145,7 +145,7 @@ export const useCreateTcTag = () => {
   )
 
   const updateTCTagFn = useCallback(async ({ name, description, id }) => {
-    const { updateTCTag } = await v4Client.request(
+    const { updateTCTag } = await ArenaClient.request(
       V4_UPDATE_TC_TAG,
       {
         name,
@@ -174,7 +174,7 @@ export const useCreateTcTag = () => {
 
   const deleteTCTagFn = useCallback(async tcTagId => {
     try {
-      await v4Client.request(
+      await ArenaClient.request(
         V4_DELETE_TC_TAG,
         { tcTagId },
         {

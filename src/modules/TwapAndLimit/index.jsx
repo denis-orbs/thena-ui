@@ -20,7 +20,7 @@ import Modal from '@/components/modal'
 import Dropdown from '@/components/dropdown'
 import CustomTooltip from '@/components/tooltip'
 import CircleImage from '@/components/image/CircleImage'
-import { toWei } from '@/lib/utils'
+import { toWei } from '@/utils/utils'
 
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'

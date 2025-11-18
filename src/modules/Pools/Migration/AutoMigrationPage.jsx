@@ -17,10 +17,10 @@ import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { useV1Migrate } from '@/hooks/useV1Liquidity'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useGetAutoPoolMigration, usePairInfo, usePools } from '@/state/pools/hooks'
+import { formatAmount, getDisplayedStrategy } from '@/utils/utils'
 
 import NavigateToAddLiquidityModal from './NavigateToAddLiquidityModal'
 

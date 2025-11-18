@@ -2,9 +2,9 @@ import { redirect } from 'next/navigation'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 
+import { fetchUserInfo } from '@/app/arena/UserInfoContext'
 import Loading from '@/app/loading'
 import { useAssets } from '@/context/assetsContext'
-import { fetchUserInfo } from '@/context/userInfoContext'
 import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 
 import { FollowedProfiles } from './FollowedProfiles'

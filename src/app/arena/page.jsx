@@ -7,18 +7,18 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { useTC } from '@/app/arena/TCContext'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
-import { INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant'
+import { ARENA_INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant/arena'
 import { useAssets } from '@/context/assetsContext'
-import { useTC } from '@/context/tcContext'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { addOrReplaceURLParams, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { fromWei, objectDiff } from '@/lib/utils'
 import Create from '@/modules/CreateTradingCompetition/Create'
 import Preview from '@/modules/CreateTradingCompetition/Preview'
+import { fromWei, objectDiff } from '@/utils/utils'
 
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { DEFAULT_TAG_ALL_TC, FILTERS } from './FilterDropDown'
@@ -86,7 +86,7 @@ const V4_COMPETITION_DATAS = gql`
 
 const fetchCompetition = async () => {
   try {
-    const { tradingCompetitions } = await v4Client.request(V4_COMPETITION_DATAS)
+    const { tradingCompetitions } = await ArenaClient.request(V4_COMPETITION_DATAS)
     return tradingCompetitions
   } catch (error) {
     return { error: true }
@@ -167,7 +167,7 @@ export default function ArenaPage() {
 
   const [showModalCreateCompetition, setShowModalCreateCompetition] = useState(false)
   const [step, setStep] = useState(0)
-  const [data, setData] = useState(INIT_VALUES)
+  const [data, setData] = useState(ARENA_INIT_VALUES)
   const [showPreview, setShowPreview] = useState(true)
 
   const [filter, setFilter] = useState({

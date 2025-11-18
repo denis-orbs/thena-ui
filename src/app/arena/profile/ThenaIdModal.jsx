@@ -20,8 +20,9 @@ import {
   useRandomThenaId,
   useUSDTCostPerToken,
 } from '@/hooks/useThenaIdContract'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import ThenaIdInput from './ThenaIdInput'
 

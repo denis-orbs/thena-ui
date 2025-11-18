@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function ImageSelect({ options, selectedOption, setSelectedOption }) {
   const [isOpen, setIsOpen] = useState(false)

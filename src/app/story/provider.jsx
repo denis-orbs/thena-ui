@@ -1,9 +1,11 @@
+'use client'
+
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
-import { isoDateToTimeStampSeconds } from '@/lib/utils'
 import { fetchCampaignChapter, fetchTHEStoryParticipant } from '@/modules/Story'
+import { isoDateToTimeStampSeconds } from '@/utils/utils'
 
 const THEStoryContext = createContext({
   campaignStartsAt: 1725278400, // 2024-09-02 12:00 UTC

@@ -3,15 +3,15 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo } from 'react'
 
+import { useTC } from '@/app/arena/TCContext'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { INIT_VALUES } from '@/constant'
-import { useTC } from '@/context/tcContext'
+import { ARENA_INIT_VALUES } from '@/constant/arena'
 import { useCreateTC } from '@/hooks/useTCManager'
 import useWallet from '@/hooks/useWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 import { useCreateTcTag } from '.'
 import Details from './Details/Details'
@@ -28,7 +28,7 @@ const V4_ADD_TC_TEMPORARY = gql`
 
 const addTCTemporary = async (tcId, ownerId) => {
   try {
-    await v4Client.request(V4_ADD_TC_TEMPORARY, { tcId, ownerId: ownerId?.toLowerCase() })
+    await ArenaClient.request(V4_ADD_TC_TEMPORARY, { tcId, ownerId: ownerId?.toLowerCase() })
   } catch (error) {
     return undefined
   }
@@ -119,7 +119,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           if (data?.tag?.id) {
             await assignTCTag({ tradingCompetitionId: tcId, tcTagId: data.tag.id }, () => {
               setShowModalCreateCompetition(false)
-              setData(INIT_VALUES)
+              setData(ARENA_INIT_VALUES)
               setStep(0)
               setShowPreview(false)
               closeTxnModal()
@@ -128,7 +128,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           }
         } else {
           setShowModalCreateCompetition(false)
-          setData(INIT_VALUES)
+          setData(ARENA_INIT_VALUES)
           setStep(0)
           setShowPreview(false)
           closeTxnModal()

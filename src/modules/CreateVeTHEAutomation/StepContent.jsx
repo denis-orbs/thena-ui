@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
-import { convertBooleansToHex } from '@/lib/utils'
+import { convertBooleansToHex } from '@/utils/utils'
 
 import Step1Settings from './Steps/Step1Settings'
 import Step2Vote from './Steps/Step2Vote'

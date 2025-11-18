@@ -3,7 +3,7 @@ import React from 'react'
 
 import CustomTooltip from '@/components/tooltip'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function LabelTooltip({
   label = '',

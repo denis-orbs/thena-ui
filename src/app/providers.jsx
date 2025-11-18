@@ -14,13 +14,8 @@ import { CustomAssetsContextProvider } from '@/context/customAssetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
-import { RewardsContextProvider } from '@/context/rewardsContext'
-import { TCContextProvider } from '@/context/tcContext'
-import { THEStoryContextProvider } from '@/context/THEStoryContext'
-import { TitleNotiContextProvider } from '@/context/titleNotiContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
-import { VeTHEsContextProvider } from '@/context/veTHEsContext'
 import enMessage from '@/lang/en.json'
 import esMessage from '@/lang/es.json'
 import jaMessage from '@/lang/ja.json'
@@ -44,17 +39,7 @@ function ContextProviders({ children }) {
           <PairsContextProvider>
             <FusionsContextProvider>
               <ManualsContextProvider>
-                <TokensContextProvider>
-                  <VeTHEsContextProvider>
-                    <RewardsContextProvider>
-                      <TitleNotiContextProvider>
-                        <TCContextProvider>
-                          <THEStoryContextProvider>{children}</THEStoryContextProvider>
-                        </TCContextProvider>
-                      </TitleNotiContextProvider>
-                    </RewardsContextProvider>
-                  </VeTHEsContextProvider>
-                </TokensContextProvider>
+                <TokensContextProvider>{children}</TokensContextProvider>
               </ManualsContextProvider>
             </FusionsContextProvider>
           </PairsContextProvider>

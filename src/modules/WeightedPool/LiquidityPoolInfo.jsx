@@ -4,7 +4,7 @@ import React from 'react'
 import { TokenAnalytics } from '@/app/analytics/pairs/[address]/PoolAttributesAnalytic'
 import Divider from '@/components/divider'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import PieChart from './PieChart'
 

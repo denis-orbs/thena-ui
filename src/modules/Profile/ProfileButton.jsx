@@ -4,14 +4,14 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import ShareProfileStatsModal from '@/app/arena/profile/ShareProfileStatsModal'
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Spinner from '@/components/spinner'
-import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
 import CheckIcon from '@/icons/CheckIcon'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 
 import PublicIcon from '~/svgs/public.svg'
@@ -38,7 +38,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
     async function getUserRef() {
       try {
         if (account) {
-          const { userById } = await v4Client.request(V4_USER_INFO, { id: account.toLowerCase() })
+          const { userById } = await ArenaClient.request(V4_USER_INFO, { id: account.toLowerCase() })
           if (userById && userById.username) {
             setCurrentUserRef(userById.username)
           } else {

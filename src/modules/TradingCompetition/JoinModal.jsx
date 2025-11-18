@@ -12,11 +12,11 @@ import BalanceInput from '@/components/input/BalanceInput'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 export function JoinModal({ competition, open, onClose }) {
   const t = useTranslations()

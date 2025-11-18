@@ -4,7 +4,7 @@ import FileResizer from 'react-image-file-resizer'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 
 export const resizeFile = file =>
@@ -34,7 +34,7 @@ export const useUpdateTCBanner = () => {
   const { signWallet } = useSignWallet()
 
   const updateTCBannerFn = useCallback(async ({ bannerUrl, tcId }) => {
-    const res = await v4Client.request(
+    const res = await ArenaClient.request(
       V4_UPDATE_TC_BANNER,
       { bannerUrl, tcId },
       {
@@ -69,7 +69,7 @@ export const useUpdateTCIsHidden = () => {
   const { signWallet } = useSignWallet()
 
   const updateIsHiddenFn = useCallback(async ({ isHidden, tcId }) => {
-    const { data: res } = await v4Client.request(
+    const { data: res } = await ArenaClient.request(
       V4_UPDATE_TC_IS_HIDDEN,
       {
         isHidden,

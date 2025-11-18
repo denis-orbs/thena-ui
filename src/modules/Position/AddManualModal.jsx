@@ -18,9 +18,9 @@ import { useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { maxAmountSpend, tryParseAmount, unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { warnToast } from '@/lib/notify'
-import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
+import { unwrappedSymbol } from '@/utils/utils'
 
 export default function AddManualModal({
   popup,

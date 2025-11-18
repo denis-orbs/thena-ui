@@ -11,7 +11,7 @@ import NextImage from '@/components/image/NextImage'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

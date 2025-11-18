@@ -19,11 +19,11 @@ import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

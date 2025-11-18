@@ -14,7 +14,7 @@ import { TextHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import { PAGE_SIZE, TYPE_SEE, V4_ID_SEARCH, V4_MINTED_ID_SEARCH } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
@@ -66,7 +66,7 @@ function SearchThenaIdItem({ thenaId, setIsPopoverOpen }) {
 const fetchThenaId = async (search, limit, offset) => {
   try {
     if (search) {
-      const { usernameNfts } = await v4Client.request(V4_MINTED_ID_SEARCH, { search, limit, offset })
+      const { usernameNfts } = await ArenaClient.request(V4_MINTED_ID_SEARCH, { search, limit, offset })
 
       return usernameNfts
     }
@@ -86,7 +86,7 @@ const fetchMintedId = async search => {
       ])
 
       if (nameValid || !!tokkenvalid) {
-        const { usernameNfts: idSearch } = await v4Client.request(V4_ID_SEARCH, { search })
+        const { usernameNfts: idSearch } = await ArenaClient.request(V4_ID_SEARCH, { search })
         const _idSearch = idSearch.length
           ? {
               ...idSearch[0],

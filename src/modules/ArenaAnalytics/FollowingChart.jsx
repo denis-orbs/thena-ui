@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
 import { getSubarrayFromFirstDataToLast } from '@/lib/analytics'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
 
@@ -24,7 +24,7 @@ const V4_FOLLOWING_ANALYTICS = gql`
 const fetchCreatedTC = async period => {
   try {
     const where = period ? { date_gte: dayjs().subtract(period, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]') } : {}
-    const { arenaAnalytics } = await v4Client.request(V4_FOLLOWING_ANALYTICS, {
+    const { arenaAnalytics } = await ArenaClient.request(V4_FOLLOWING_ANALYTICS, {
       where,
     })
     if (arenaAnalytics) {

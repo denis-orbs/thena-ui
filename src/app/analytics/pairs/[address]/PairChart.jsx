@@ -15,7 +15,7 @@ import {
 } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
 import { fetchHistoricalTokensPrice } from '@/lib/api'
-import { AlgebraClient, v1Client, weightedClient } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient, WeightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
@@ -144,7 +144,7 @@ export function findNearestPrice(historicalPrices, targetTimestamp, address) {
 
 export const getV1ChartData = async ({ chainId, tokens: tokensParam, address, fee }, skip) => {
   try {
-    const { pairDayDatas, tokens } = await v1Client[chainId].request(V1_DAY_DATAS, {
+    const { pairDayDatas, tokens } = await SolidlyClient[chainId].request(V1_DAY_DATAS, {
       address,
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
@@ -220,7 +220,7 @@ export const getFusionChartData = async ({
 
 export const getWeightedChartData = async (chainId, address, skip) => {
   try {
-    const { poolSnapshots } = await weightedClient[chainId].request(WEIGHTED_DAY_DATA, {
+    const { poolSnapshots } = await WeightedClient[chainId].request(WEIGHTED_DAY_DATA, {
       address,
       skip,
     })

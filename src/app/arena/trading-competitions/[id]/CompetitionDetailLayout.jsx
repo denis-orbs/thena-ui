@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { useUserInfo } from '@/app/arena/UserInfoContext'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import BackButton from '@/components/buttons/BackButton'
@@ -14,15 +15,15 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import { SizeTypes } from '@/constant/type'
 import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionContext'
-import { useUserInfo } from '@/context/userInfoContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { cn, sleep } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { sleep } from '@/utils/utils'
 
 import XIcon from '~/svgs/x-close.svg'
 
@@ -98,7 +99,7 @@ const V4_TC_TEMPORARY = gql`
 
 const tcTemporary = async tcId => {
   try {
-    const { tcTemporaries } = await v4Client.request(V4_TC_TEMPORARY, { tcId })
+    const { tcTemporaries } = await ArenaClient.request(V4_TC_TEMPORARY, { tcId })
 
     return !!tcTemporaries?.length
   } catch (error) {
@@ -108,7 +109,7 @@ const tcTemporary = async tcId => {
 
 const fetchCompetition = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await ArenaClient.request(V4_COMPETITION_DATA, { id })
     return competition
   } catch (error) {
     return { error: true }

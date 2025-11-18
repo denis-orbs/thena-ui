@@ -6,7 +6,8 @@ import PercentBadge from '@/components/badges/PercentBadge'
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 function SummaryAnalyticsInfo({ totalStats }) {
   const t = useTranslations()

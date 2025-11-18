@@ -10,7 +10,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import useDebounce from '@/hooks/useDebounce'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import ThenaIdItem from './ThenaIdItem'
 
@@ -42,7 +42,7 @@ const fetchUsernameNfts = async (page = 1, debounceSearch = '', signal = undefin
       }
     }
 
-    const { usernameNfts } = await v4Client.request({
+    const { usernameNfts } = await ArenaClient.request({
       document: V4_USERNAME_NFTS,
       variables: {
         offset: (page - 1) * 24,
@@ -77,7 +77,7 @@ const fetchAvailableThenaIds = async (page = 1, debounceSearch = '', signal = un
         name_containsInsensitive: debounceSearch,
       }
     }
-    const { thenaIdAvailables } = await v4Client.request({
+    const { thenaIdAvailables } = await ArenaClient.request({
       document: V4_AVAILABLE,
       variables: {
         offset: (page - 1) * 24,

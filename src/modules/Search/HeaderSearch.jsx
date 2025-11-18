@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import useDebounce from '@/hooks/useDebounce'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 
 import SearchIcon from '~/svgs/search.svg'
 
@@ -24,13 +24,13 @@ import SearchInput from '../../components/input/SearchInput'
 const fetchData = async search => {
   try {
     if (search) {
-      const { tradingCompetitions } = await v4Client.request(V4_USERS_COMPETITIONS, { search })
-      const { usersTotalCount } = await v4Client.request(V4_USERS_COUNT, { search })
-      const { users } = await v4Client.request(V4_USERS_SEARCH, { search })
+      const { tradingCompetitions } = await ArenaClient.request(V4_USERS_COMPETITIONS, { search })
+      const { usersTotalCount } = await ArenaClient.request(V4_USERS_COUNT, { search })
+      const { users } = await ArenaClient.request(V4_USERS_SEARCH, { search })
 
-      const { usernameNfts: mintedId } = await v4Client.request(V4_MINTED_ID_SEARCH, { search })
+      const { usernameNfts: mintedId } = await ArenaClient.request(V4_MINTED_ID_SEARCH, { search })
 
-      const { usernameNftsCountForSearch } = await v4Client.request(V4_ID_COUNT, { search })
+      const { usernameNftsCountForSearch } = await ArenaClient.request(V4_ID_COUNT, { search })
       let usernameNftsCount = usernameNftsCountForSearch
 
       const thenaIds = mintedId.length
@@ -48,7 +48,7 @@ const fetchData = async search => {
         ])
 
         if (nameValid || !!tokkenvalid) {
-          const { usernameNfts: idSearch } = await v4Client.request(V4_ID_SEARCH, { search })
+          const { usernameNfts: idSearch } = await ArenaClient.request(V4_ID_SEARCH, { search })
           const _idSearch = idSearch.length
             ? {
                 ...idSearch[0],

@@ -8,14 +8,14 @@ import { useReadContract, useReadContracts } from 'wagmi'
 
 import { VeTheAutomationABI } from '@/abis/automation/VeTheAutomationABI'
 import { VeTheAutomationFactoryABI } from '@/abis/automation/VeTheAutomationFactoryABI'
+import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import { AUTOMATION_STATUS, CHAINLINK_TOKEN, PAIR_TYPES, TXN_STATUS } from '@/constant'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/lib/utils'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 const defaultEasing = [0.25, 0.46, 0.45, 0.94] // easeOutCubic
 export function CollapsibleMotion({

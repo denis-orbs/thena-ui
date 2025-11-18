@@ -11,9 +11,9 @@ import Table from '@/components/table'
 import RoundedTabs from '@/components/tabs/RoundedTab'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
-import { weightedClient } from '@/lib/graphql'
-import { formatAmount, goScan } from '@/lib/utils'
+import { WeightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import { TXN_TYPE } from './PairTransaction'
 import TransactionMobile from './PairTransactionMobile'
@@ -75,7 +75,7 @@ const formatTime = unix => {
 const getWeightedTransactions = async (chainId, address) => {
   try {
     const newTxns = []
-    const { poolActivities, swaps } = await weightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
+    const { poolActivities, swaps } = await WeightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
       address,
     })
 

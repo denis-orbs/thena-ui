@@ -6,8 +6,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
 import { NewTextHeading, TextSubHeading } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
 import { calculateManualAPR } from '@/state/fusion/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 

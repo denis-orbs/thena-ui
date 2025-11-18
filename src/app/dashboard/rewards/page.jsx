@@ -1,25 +1,25 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { VeRewardsContext } from '@/app/dashboard/VeRewardsContext'
+import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import { Info } from '@/components/alert'
 import { TertiaryButton } from '@/components/buttons/Button'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
-import { rewardsContext, useGetVeRewardV2 } from '@/context/rewardsContext'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import usePrices from '@/hooks/usePrices'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 
@@ -39,18 +39,14 @@ export default function RewardsPage() {
   const prices = usePrices()
   const { account } = useWallet()
   const { networkId } = useChainSettings()
-  const { current } = useContext(rewardsContext)
+  const { veRewardsV3, veRewardsV3Mutate, veRewardsV2, veRewardsV2Mutate } = useContext(VeRewardsContext)
   const { veTHEs } = useVeTHEsContext()
 
   const [activeTab, setActiveTab] = useState(RewardsTab.CURRENT)
   const [approvedId, setApprovedId] = useState('All')
   const [veTHEId, setVeTHEId] = useState('All')
   const debouncedId = useDebounce(approvedId)
-
-  const { currentRewardsV2, refetchVetheRewardV2, isLoading: isLoadingV2 } = useGetVeRewardV2()
   const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
-
-  const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = current
   const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
 
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
@@ -81,19 +77,9 @@ export default function RewardsPage() {
   }, [veRewardsV3, filteredVeTHEs, prices.THE])
 
   const totalUsdV2 = useMemo(
-    () => currentRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
-    [currentRewardsV2],
+    () => veRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
+    [veRewardsV2],
   )
-
-  const [hasV2Rewards, setHasV2Rewards] = useState(false)
-
-  useEffect(() => {
-    if (totalUsdV2.gt(ZERO_VALUE)) {
-      setHasV2Rewards(true)
-    } else if (!isLoadingV2) {
-      setHasV2Rewards(false)
-    }
-  }, [totalUsdV2, isLoadingV2])
 
   const typeSelections = useMemo(() => {
     const selections = [
@@ -113,7 +99,7 @@ export default function RewardsPage() {
       },
     ]
 
-    if (hasV2Rewards) {
+    if (veRewardsV2.length > 0) {
       selections.push({
         label: 'V2 Rewards',
         active: activeTab === RewardsTab.V2_REWARDS,
@@ -124,7 +110,7 @@ export default function RewardsPage() {
     }
 
     return selections
-  }, [activeTab, hasV2Rewards])
+  }, [activeTab, veRewardsV2])
 
   return (
     <LayoutWithBackButton backUrl='/dashboard'>
@@ -149,9 +135,9 @@ export default function RewardsPage() {
                   className='min-w-fit'
                   onClick={() => {
                     if (activeTab === RewardsTab.V2_REWARDS) {
-                      handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
+                      handleClaimAllV2(veRewardsV2, [], () => veRewardsV2Mutate())
                     } else {
-                      handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
+                      handleClaimAll(veRewardsV3, filteredVeTHEs, () => veRewardsV3Mutate())
                     }
                   }}
                   disabled={allPendingV3 || allPendingV2 || totalUsd.isZero()}
@@ -187,10 +173,10 @@ export default function RewardsPage() {
 
             {activeTab === RewardsTab.HISTORY && <VotingHistory veTHEId={veTHEId} />}
             {activeTab === RewardsTab.CURRENT && (
-              <CurrentRewards rewards={currentRewards} currentMutate={refreshVetheRewardV3} version={3} />
+              <CurrentRewards rewards={currentRewards} currentMutate={veRewardsV3Mutate} version={3} />
             )}
             {activeTab === RewardsTab.V2_REWARDS && (
-              <CurrentRewards rewards={currentRewardsV2} currentMutate={refetchVetheRewardV2} version={2} />
+              <CurrentRewards rewards={veRewardsV2} currentMutate={veRewardsV2Mutate} version={2} />
             )}
           </>
         ) : (

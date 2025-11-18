@@ -2,18 +2,18 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import ERC20Abi from '@/abis/erc20.json'
 import { BribeABI } from '@/abis/ve/BribeABI'
 import { GlobalFactoryABI } from '@/abis/ve/GlobalFactoryABI'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { toWei } from '@/utils/utils'
 
-export const POOL_TYPES = {
+const POOL_TYPES = {
   Classic: 0,
   Stable: 0,
   'Conc Liquidity': 1,
@@ -99,7 +99,10 @@ export const useBribeAdd = () => {
       const approveuuid = uuidv4()
       const bribeuuid = uuidv4()
       const bribeAddress = pool.gauge.bribe
-      const tokenContract = getERC20Contract(asset.address, chainId)
+      const tokenContract = {
+        address: asset.address,
+        abi: ERC20Abi,
+      }
       const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress], chainId)
       const amountToApprove = toWei(total, asset.decimals).minus(allowance)
 

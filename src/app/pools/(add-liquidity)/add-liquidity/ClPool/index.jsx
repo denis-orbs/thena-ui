@@ -20,12 +20,13 @@ import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo, usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/utils/utils'
 
 function DepositIcon({ sub, title }) {
   if (ICHI_TYPES.includes(title)) {

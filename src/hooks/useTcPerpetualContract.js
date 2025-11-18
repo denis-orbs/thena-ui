@@ -10,7 +10,8 @@ import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
-import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant/arena'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import {
@@ -19,10 +20,10 @@ import {
   getTcPerpetualContract,
   getTCPerpRewarderContract,
 } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
+import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount } from '@/utils/utils'
 
 const V4_TC_PARTICIPANTS_CLAIM = gql`
   query V4_TC_PARTICIPANTS_CLAIM($tcAddress: String!, $userId: String!) {
@@ -34,7 +35,7 @@ const V4_TC_PARTICIPANTS_CLAIM = gql`
 
 const fetchTcParticipant = async (tcAddress, userId) => {
   try {
-    const { tcParticipants } = await v4Client.request(V4_TC_PARTICIPANTS_CLAIM, {
+    const { tcParticipants } = await ArenaClient.request(V4_TC_PARTICIPANTS_CLAIM, {
       tcAddress,
       userId,
     })
