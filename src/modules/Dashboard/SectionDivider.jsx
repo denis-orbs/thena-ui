@@ -1,5 +1,5 @@
 import Divider from '@/components/divider'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function SectionDivider({ className }) {
   return (

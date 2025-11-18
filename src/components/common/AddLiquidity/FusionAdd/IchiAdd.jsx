@@ -16,8 +16,9 @@ import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
-import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import cn from '@/utils/classes'
+import { isInvalidAmount } from '@/utils/utils'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

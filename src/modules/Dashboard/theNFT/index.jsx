@@ -10,7 +10,8 @@ import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
-import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 

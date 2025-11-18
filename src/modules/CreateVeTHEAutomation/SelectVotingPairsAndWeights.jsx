@@ -11,7 +11,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { LINK_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import PlusIcon from '~/svgs/plus.svg'
 

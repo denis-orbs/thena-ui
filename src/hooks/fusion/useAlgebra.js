@@ -16,11 +16,11 @@ import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { errorToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 const getNPMContract = (chainId, version) => ({
   abi: version === 3 ? IntegralNPMABI : FusionNPMABI,

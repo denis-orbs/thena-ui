@@ -4,10 +4,10 @@ import { BNB, Token, WBNB } from 'thena-sdk-core'
 import { BNB_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { maxAmountSpend } from '@/lib/fusion'
-import { cn } from '@/lib/utils'
 import { Field } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
 
 import { TokenAmountCard } from './TokenAmountCard'
 

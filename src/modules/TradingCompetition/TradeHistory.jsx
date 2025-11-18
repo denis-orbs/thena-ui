@@ -13,8 +13,8 @@ import { useAssets } from '@/context/assetsContext'
 import { useTCTradeHistory } from '@/hooks/trade/useTradingCompetitionTradeHistory'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { formatAmount, fromWei } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 

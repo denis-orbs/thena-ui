@@ -26,9 +26,10 @@ import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/utils/utils'
 
 import RefreshIcon from '~/svgs/refresh.svg'
 

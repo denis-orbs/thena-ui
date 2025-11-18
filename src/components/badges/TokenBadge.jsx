@@ -4,7 +4,7 @@ import { BNB_LOGO, BSC_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { CompTypes } from '@/constant/type'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'

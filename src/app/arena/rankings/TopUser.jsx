@@ -18,7 +18,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import MenuTab from './MenuTab'
 import { RankElement } from './TopCompetition'

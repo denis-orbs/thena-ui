@@ -9,7 +9,8 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 const sortOptions = [
   {

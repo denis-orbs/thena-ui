@@ -14,7 +14,7 @@ import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { isInvalidAmount } from '@/lib/utils'
+import { isInvalidAmount } from '@/utils/utils'
 
 import DeallocateModal from './DeallocateModal'
 import { JoinModal } from './JoinModal'

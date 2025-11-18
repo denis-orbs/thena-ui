@@ -31,7 +31,7 @@ import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { fetchFusionPools } from '@/lib/api'
 import { callMulti, simulateCall } from '@/lib/contractActions'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'

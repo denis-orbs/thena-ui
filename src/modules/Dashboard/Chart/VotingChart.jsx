@@ -6,7 +6,8 @@ import { useTranslations } from 'use-intl'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 const GRAY_COLOR = '#281B2E'

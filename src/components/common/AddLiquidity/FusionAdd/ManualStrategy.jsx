@@ -10,10 +10,11 @@ import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typog
 import { FusionRangeType, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import WarningIcon from '@/icons/WarningIcon'
-import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 

@@ -14,10 +14,10 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
 

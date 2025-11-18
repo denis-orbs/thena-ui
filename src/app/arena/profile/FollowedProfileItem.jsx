@@ -13,8 +13,9 @@ import Tag from '@/components/tag'
 import { TextHeading } from '@/components/typography'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
-import { cn, sliceAddress } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
+import cn from '@/utils/classes'
+import { sliceAddress } from '@/utils/utils'
 
 export function FollowedProfileItem({ user }) {
   const t = useTranslations()

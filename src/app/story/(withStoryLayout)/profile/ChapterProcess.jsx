@@ -8,7 +8,7 @@ import { HyperLink, TranslationWithFormatLink } from '@/components/common/Transl
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 

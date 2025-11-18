@@ -11,7 +11,7 @@ import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { simulateCall } from '@/lib/contractActions'
 import { getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
-import { fromWei, ZERO_VALUE } from '@/lib/utils'
+import { fromWei, ZERO_VALUE } from '@/utils/utils'
 
 import { getToken, useGetAssetFn } from '../fusion/Tokens'
 import { getFarmInfoList } from '../fusion/useEstimateAPR'

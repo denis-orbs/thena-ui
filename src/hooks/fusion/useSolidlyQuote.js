@@ -3,7 +3,7 @@ import { WBNB } from 'thena-sdk-core'
 import { useReadContract } from 'wagmi'
 
 import { getSolidlyRouterContract } from '@/lib/contracts'
-import { toWei } from '@/lib/utils'
+import { toWei } from '@/utils/utils'
 
 export const useSolidlyQuote = (fromAsset, toAsset, fromAmount, networkId, enabled) => {
   // NOTE: If CL pool, use fusionQuoter contract

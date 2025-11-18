@@ -5,7 +5,7 @@ import { useTranslations } from 'use-intl'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

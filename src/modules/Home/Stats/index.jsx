@@ -6,7 +6,7 @@ import useSWR from 'swr'
 
 import Skeleton from '@/components/skeleton'
 import { fetchStats } from '@/lib/subgraph'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import { Features } from './Features'
 import { Heading } from '../Common/Heading'

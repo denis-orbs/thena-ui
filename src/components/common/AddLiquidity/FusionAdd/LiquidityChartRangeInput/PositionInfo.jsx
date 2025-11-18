@@ -13,9 +13,10 @@ import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGaugeStake, useGaugeUnstake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeManageModal from '@/modules/Position/GaugeManageModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 // for classic, stable
 function PositionInfo({ position }) {

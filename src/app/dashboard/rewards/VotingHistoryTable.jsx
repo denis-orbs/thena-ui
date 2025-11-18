@@ -12,10 +12,10 @@ import { LOCALES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { usePools } from '@/state/pools/hooks'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { formatAmount } from '@/utils/utils'
 
 const sortOptions = [
   {

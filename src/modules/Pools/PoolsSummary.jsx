@@ -3,7 +3,7 @@ import React from 'react'
 
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 

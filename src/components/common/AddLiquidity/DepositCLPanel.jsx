@@ -6,8 +6,8 @@ import AddLiquidityCLPane from '@/app/pools/(add-liquidity)/add-liquidity/ClPool
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
+import cn from '@/utils/classes'
 
 export function PoolAttributes({ pair, strategy, classNames }) {
   const t = useTranslations()

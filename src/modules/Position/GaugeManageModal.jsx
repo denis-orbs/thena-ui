@@ -7,7 +7,7 @@ import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import DoubleInput from '@/components/input/DoubleInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { warnToast } from '@/lib/notify'
-import { isInvalidAmount } from '@/lib/utils'
+import { isInvalidAmount } from '@/utils/utils'
 
 export default function GaugeManageModal({ popup, setPopup, pair, balance, title, onGaugeManage, pending, label }) {
   const [amount, setAmount] = useState('')

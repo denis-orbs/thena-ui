@@ -15,9 +15,10 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import WarningZapper from '../components/WarningZapper'
 

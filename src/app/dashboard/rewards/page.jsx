@@ -18,8 +18,8 @@ import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 

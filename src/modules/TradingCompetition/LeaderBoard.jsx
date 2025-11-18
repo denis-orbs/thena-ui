@@ -13,7 +13,7 @@ import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, formatNumberDecimals, fromWei, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'

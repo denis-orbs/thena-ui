@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function RadioInput({ name, value, onChange, label, checked = false, className }) {
   const t = useTranslations()

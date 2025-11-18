@@ -13,7 +13,7 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { ArenaClient } from '@/lib/graphql'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 dayjs.extend(localizedFormat)
 

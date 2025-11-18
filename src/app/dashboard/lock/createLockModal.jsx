@@ -14,7 +14,7 @@ import { PERIOD_LEVELS } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useCreateLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 const week = 86400 * 7 * 1000
 

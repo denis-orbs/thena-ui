@@ -6,7 +6,7 @@ import { useReadContracts } from 'wagmi'
 
 import { ZERO_ADDRESS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { toWei } from '@/lib/utils'
+import { toWei } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

@@ -21,7 +21,6 @@ import { useAssets } from '@/context/assetsContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { formatAmount, fromWei } from '@/lib/utils'
 import {
   fetchDataEarnings,
   fetchDataTradeToEarnCount,
@@ -29,6 +28,7 @@ import {
   useGetMuonMutation,
 } from '@/modules/TradeToEarn'
 import { useChainSettings } from '@/state/settings/hooks'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import Loading from '../loading'
 

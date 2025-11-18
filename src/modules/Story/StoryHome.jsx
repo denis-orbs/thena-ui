@@ -11,7 +11,7 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import useWallet from '@/hooks/useWallet'
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
-import { isoDateToTimeStampSeconds } from '@/lib/utils'
+import { isoDateToTimeStampSeconds } from '@/utils/utils'
 
 import { useFetchChaptersAndTasks } from '.'
 import Banner from './Banner'

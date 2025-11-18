@@ -18,9 +18,9 @@ import {
   useWithdrawUserBalanceWeighted,
 } from '@/hooks/weightedPool/useWeigtedPool'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import GaugeWeightedManageModal from '@/modules/Position/GaugeWeightedManageModal'
 import RemoveWeightedPositionModal from '@/modules/Position/ManageWeightedPositionModal'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import WeightedRange from './WeightedRange'
 

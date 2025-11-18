@@ -15,9 +15,9 @@ import useWallet from '@/hooks/useWallet'
 import { readCall, signCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, successToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 // Relative imports
 import { simulateOdosSwap } from '../../hooks/useSwap'

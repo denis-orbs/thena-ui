@@ -13,7 +13,7 @@ import { TextSubHeading } from '@/components/typography'
 import { centerAspectCrop, useCropImage } from '@/hooks/useCropImages'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
-import { sliceAddress } from '@/lib/utils'
+import { sliceAddress } from '@/utils/utils'
 
 import { useUpdateArenaAvatar } from '../Arena/hooks/profile'
 

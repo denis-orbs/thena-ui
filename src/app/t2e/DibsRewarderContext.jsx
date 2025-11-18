@@ -5,9 +5,9 @@ import { DibsRewarderABI } from '@/abis/t2e/DibsRewarderABI'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { fromWei } from '@/lib/utils'
 import { fetchDataTotalClaimedRewards } from '@/modules/TradeToEarn'
 import { useChainSettings } from '@/state/settings/hooks'
+import { fromWei } from '@/utils/utils'
 
 import { useAssets } from '../../context/assetsContext'
 

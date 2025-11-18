@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 function HeaderRewards({ totalUsd, account }) {
   const t = useTranslations()

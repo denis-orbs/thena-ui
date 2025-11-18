@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function Popover({ children, triggerElement, trigger = 'click', position = 'right' }) {
   const [show, setShow] = useState(false)

@@ -7,7 +7,7 @@ import { NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typ
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 import PoolSummary from './PoolSummary'
 import SetInitialLiquidity from './SetInitialLiquidity'

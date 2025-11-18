@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import Input from '../input'
 

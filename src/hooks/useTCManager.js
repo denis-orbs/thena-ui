@@ -11,8 +11,8 @@ import { DEPOSIT_TYPE, TC_MARKET_TYPES } from '@/constant/arena'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 export const useCreateTC = () => {
   const [pending, setPending] = useState(false)

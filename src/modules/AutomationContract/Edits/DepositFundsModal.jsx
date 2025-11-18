@@ -8,8 +8,8 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import WarningLINKBalance from '@/modules/CreateVeTHEAutomation/WarningLINKBalance'
+import { fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) {
   const { veTHEId } = contract

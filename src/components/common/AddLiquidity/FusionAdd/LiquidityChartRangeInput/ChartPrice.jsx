@@ -4,9 +4,9 @@ import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
-// import Skeleton from '@/components/skeleton'
-import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
+// import Skeleton from '@/components/skeleton'
+import { formatAmount } from '@/utils/utils'
 
 function ChartPrice({
   data,

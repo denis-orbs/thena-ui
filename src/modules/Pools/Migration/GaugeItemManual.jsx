@@ -8,8 +8,9 @@ import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { cn, formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
+import cn from '@/utils/classes'
+import { formatAmount, formatAmountLP, unwrappedSymbol } from '@/utils/utils'
 
 import RefreshIcon from '~/svgs/refresh.svg'
 

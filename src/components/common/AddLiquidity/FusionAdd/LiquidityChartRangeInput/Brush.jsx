@@ -2,7 +2,7 @@ import { brushX, select } from 'd3'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { brushHandleAccentPath, brushHandlePath, OffScreenHandle } from './svg'
 

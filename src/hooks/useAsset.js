@@ -4,8 +4,8 @@ import { erc20Abi } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
 import { fetchAssets } from '@/lib/api'
-import { fromWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
+import { fromWei } from '@/utils/utils'
 
 export const useAsset = (networkId, address) => {
   const { liquidityHubEnabled } = useSettings()

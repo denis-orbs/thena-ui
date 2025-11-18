@@ -38,7 +38,8 @@ import {
 } from '@/hooks/weightedPool/useWeigtedPool'
 import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/utils/utils'
 
 import SettingsIcon from '~/svgs/settings.svg'
 

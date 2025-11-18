@@ -22,7 +22,8 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { cn, sleep } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { sleep } from '@/utils/utils'
 
 import XIcon from '~/svgs/x-close.svg'
 

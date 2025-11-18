@@ -9,7 +9,7 @@ import { TextHeading } from '@/components/typography'
 import { useTokenBalanceFn } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import WarningIcon from '@/icons/WarningIcon'
-import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
+import { formatAmount, roundIfMoreThanDecimals } from '@/utils/utils'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()

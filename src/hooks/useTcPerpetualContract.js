@@ -22,8 +22,8 @@ import {
 } from '@/lib/contracts'
 import { ArenaClient } from '@/lib/graphql'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount } from '@/utils/utils'
 
 const V4_TC_PARTICIPANTS_CLAIM = gql`
   query V4_TC_PARTICIPANTS_CLAIM($tcAddress: String!, $userId: String!) {

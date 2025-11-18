@@ -22,7 +22,8 @@ import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import InfoIcon from '@/icons/InfoIcon'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 import WarningZapper from './WarningZapper'
 

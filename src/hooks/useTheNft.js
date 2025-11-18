@@ -10,8 +10,8 @@ import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getNftStakingContract, getRoyaltyContract, getTheNftContract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 import usePrices from './usePrices'
 

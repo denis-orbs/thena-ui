@@ -6,7 +6,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { countries } from './Country'
 

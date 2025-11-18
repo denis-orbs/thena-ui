@@ -11,7 +11,7 @@ import { THENACOLORS } from '@/constant'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { errorToast } from '@/lib/notify'
-import { formatAmount, toWei, wrappedAddress } from '@/lib/utils'
+import { formatAmount, toWei, wrappedAddress } from '@/utils/utils'
 
 import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'

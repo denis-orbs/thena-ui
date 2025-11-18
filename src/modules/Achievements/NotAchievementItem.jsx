@@ -5,7 +5,7 @@ import './style.css'
 
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAmount, formatNumberDecimals } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals } from '@/utils/utils'
 
 function NotAchievementItem({ achievement, onClick = () => {}, showTooltip = true }) {
   const [formatedCurrentQuantity, formatedQuantityTarget, percentage] = useMemo(

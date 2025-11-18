@@ -7,7 +7,7 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useDeallocateTCPerp } from '@/hooks/useTcPerpetualContract'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 import { Countdown } from '../Countdown'
 

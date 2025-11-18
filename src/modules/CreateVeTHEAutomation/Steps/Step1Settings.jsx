@@ -11,9 +11,9 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { LINK_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'
+import { formatAmount } from '@/utils/utils'
 
 import SelectExecutionTime from '../SelectExecutionTime'
 

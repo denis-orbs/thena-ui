@@ -4,7 +4,7 @@ import React from 'react'
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import Toggle from '@/components/toggle'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import DownloadButton from './DownloadImage'
 import SelectAchievement from './SelectAchievement'

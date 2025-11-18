@@ -3,8 +3,8 @@ import { createChart } from 'lightweight-charts'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { formatAmount } from '@/utils/utils'
 
 import Skeleton from '../skeleton'
 

@@ -2,7 +2,8 @@ import { useTranslations } from 'next-intl'
 import React, { useId, useMemo } from 'react'
 
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAddress, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAddress, formatAmount } from '@/utils/utils'
 
 import { ThreeIconGroup } from '../icongroup/ThreeIconGroup'
 import Skeleton from '../skeleton'

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { useTranslations } from 'use-intl'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, classOfButton }) {
   const t = useTranslations()

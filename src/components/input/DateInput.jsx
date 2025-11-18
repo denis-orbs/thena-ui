@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import { createPortal } from 'react-dom'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import CalendarIcon from '~/svgs/calendar.svg'
 

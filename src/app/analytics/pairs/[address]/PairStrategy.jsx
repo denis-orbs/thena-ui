@@ -17,7 +17,6 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import {
@@ -27,6 +26,8 @@ import {
   useV3MintActionHandlers,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import cn from '@/utils/classes'
+import { formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/utils/utils'
 
 const feeAmount = 3000
 

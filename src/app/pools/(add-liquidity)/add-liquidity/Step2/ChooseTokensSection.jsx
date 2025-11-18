@@ -14,10 +14,10 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { getTokenInfo } from '@/lib/helper'
-import { wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
 import { tokensSelected } from '@/state/weightedPool/action'
+import { wrappedAddress } from '@/utils/utils'
 
 import AvailablePools from './AvailablePools'
 

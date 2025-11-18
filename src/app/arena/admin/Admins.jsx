@@ -14,8 +14,8 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ArenaClient } from '@/lib/graphql'
-import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
+import { sliceAddress } from '@/utils/utils'
 
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {

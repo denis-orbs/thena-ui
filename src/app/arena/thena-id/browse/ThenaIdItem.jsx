@@ -10,7 +10,7 @@ import ImageThenaId from '@/components/image/ImageThenaId'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 function ThenaIdItem({ item }) {
   const t = useTranslations()

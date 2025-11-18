@@ -14,8 +14,8 @@ import { PERIOD_LEVELS } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useExtendLock, useIncreaseLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 const week = 86400 * 7 * 1000
 const minTimeStamp = 86400 * 14 * 1000

@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react'
 import './style.css'
 
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice } from '@/utils/utils'
 
 const labelWidth = 55
 const labelHeight = 28

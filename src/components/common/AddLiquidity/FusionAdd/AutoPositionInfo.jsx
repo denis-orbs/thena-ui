@@ -12,8 +12,9 @@ import { useIchiClaim, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGaugeStake } from '@/hooks/useGauge'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
+import cn from '@/utils/classes'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 const calculateRewardData = (position, isSwapFee) => {
   if (position?.staked) {

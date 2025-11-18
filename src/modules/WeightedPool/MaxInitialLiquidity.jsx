@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const t = useTranslations()

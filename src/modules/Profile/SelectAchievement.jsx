@@ -5,7 +5,7 @@ import Select, { components } from 'react-select'
 
 import Loading from '@/app/loading'
 import CheckBox from '@/components/checkbox'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 const formatGroupLabel = props => (
   <div className='bg-neutral-800'>

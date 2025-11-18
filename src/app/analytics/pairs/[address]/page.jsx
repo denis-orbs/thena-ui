@@ -18,11 +18,12 @@ import { TextHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useBackURL } from '@/hooks/useBackURL'
-import { cn, goScan } from '@/lib/utils'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { goScan } from '@/utils/utils'
 
 import LinkExternalIcon from '~/svgs/link-external.svg'
 

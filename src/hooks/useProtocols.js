@@ -10,8 +10,8 @@ import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
-import { toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { toWei } from '@/utils/utils'
 
 const POOL_TYPES = {
   Classic: 0,

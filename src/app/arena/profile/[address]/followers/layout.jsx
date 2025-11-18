@@ -3,7 +3,7 @@ import React from 'react'
 
 import { siteConfig } from '@/constant/config'
 import { ArenaClient } from '@/lib/graphql'
-import { formatAddress } from '@/lib/utils'
+import { formatAddress } from '@/utils/utils'
 
 const V4_USER_META_DATA = gql`
   query V4_USER_META($address: String!) {

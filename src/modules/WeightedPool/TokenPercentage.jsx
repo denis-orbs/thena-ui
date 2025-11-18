@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 
 import { Paragraph } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 

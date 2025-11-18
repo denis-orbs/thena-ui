@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import Input from '../input'
 

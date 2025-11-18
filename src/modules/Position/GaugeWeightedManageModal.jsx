@@ -6,7 +6,7 @@ import InputManyToken from '@/components/input/InputManyToken'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
-import { isInvalidAmount } from '@/lib/utils'
+import { isInvalidAmount } from '@/utils/utils'
 
 function GaugeWeightedManageModal({ popup, setPopup, pool, title, onGaugeManage, pending, label, isStake }) {
   const [amount, setAmount] = useState('')

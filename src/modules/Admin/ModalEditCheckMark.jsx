@@ -9,7 +9,7 @@ import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { successToast } from '@/lib/notify'
-import { sliceAddress } from '@/lib/utils'
+import { sliceAddress } from '@/utils/utils'
 
 import { useUpdateArenaCheckmarkIcon } from '../Arena/hooks/profile'
 

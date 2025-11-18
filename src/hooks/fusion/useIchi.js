@@ -15,9 +15,9 @@ import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount, toWei } from '@/utils/utils'
 
 import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
 

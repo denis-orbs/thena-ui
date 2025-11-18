@@ -13,8 +13,8 @@ import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
 
 import LiquidityCharts from './LiquidityCharts'
 

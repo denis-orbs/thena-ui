@@ -12,8 +12,8 @@ import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getSolidlyRouterContract } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei } from '@/utils/utils'
 
 export const useV1Add = () => {
   const [pending, setPending] = useState(false)

@@ -9,7 +9,7 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { rewriteS3Host } from '@/lib/utils'
+import { rewriteS3Host } from '@/utils/utils'
 
 export default function DownloadButton({ fileName, scale = 1 }) {
   const t = useTranslations()
