@@ -1,5 +1,5 @@
 import { CurrencyAmount, JSBI, validateAndParseAddress } from 'thena-sdk-core'
-import { ADDRESS_ZERO, Position, toHex } from 'thenafi-fusion-sdk'
+import { ADDRESS_ZERO, toHex } from 'thenafi-fusion-sdk'
 import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
@@ -7,6 +7,7 @@ import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
 import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import { ZERO_ADDRESS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { createPosition } from '@/lib/position'
 
 import { SelfPermit } from './selfPermit'
 
@@ -184,7 +185,7 @@ export class NonfungiblePositionManager extends SelfPermit {
     const tokenId = toHex(options.tokenId)
 
     // construct a partial position with a percentage of liquidity
-    const partialPosition = new Position({
+    const partialPosition = createPosition({
       pool: position.pool,
       liquidity: options.liquidityPercentage.multiply(position.liquidity).quotient,
       tickLower: position.tickLower,
