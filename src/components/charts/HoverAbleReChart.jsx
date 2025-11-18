@@ -2,7 +2,8 @@ import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount } from '@/utils/utils'
 
 import AnalyticsReChart from './AnalyticsReChart'
 import Box from '../box'

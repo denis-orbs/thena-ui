@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { TextHeading } from '@/components/typography'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 export function CompetitionCardHeader({ competition, className, banner }) {
   const {

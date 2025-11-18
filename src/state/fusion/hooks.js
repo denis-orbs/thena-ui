@@ -22,7 +22,7 @@ import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { createPositionFromAmount0, createPositionFromAmount1, createPositionFromAmounts } from '@/lib/position'
-import { toDecimalString, toWei } from '@/lib/utils'
+import { toDecimalString, toWei } from '@/utils/utils'
 
 import {
   Bound,

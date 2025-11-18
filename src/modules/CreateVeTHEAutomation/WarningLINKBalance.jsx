@@ -5,8 +5,8 @@ import { ErrorButton } from '@/components/buttons/Button'
 import { Paragraph } from '@/components/typography'
 import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import InfoIcon from '@/icons/InfoIcon'
-import { convertBooleansToHex, formatAmount } from '@/lib/utils'
 import SwapModal from '@/modules/SwapModal'
+import { convertBooleansToHex, formatAmount } from '@/utils/utils'
 
 function WarningLINKBalance({ contract, chainLINK, refetchChainLINKData }) {
   const t = useTranslations()

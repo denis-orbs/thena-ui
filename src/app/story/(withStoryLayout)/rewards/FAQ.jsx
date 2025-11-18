@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 
 import { TextHeading } from '@/components/typography'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export function FAQ() {
   const t = useTranslations()

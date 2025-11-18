@@ -1,7 +1,8 @@
 import Image from 'next/image'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { cn, formatAmount, rewriteS3Host } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, rewriteS3Host } from '@/utils/utils'
 
 function BoxShow({ value, title, className }) {
   return (

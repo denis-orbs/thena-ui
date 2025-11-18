@@ -23,8 +23,8 @@ import { batchCallMulti, callMulti, readCall, waitCall } from '@/lib/contractAct
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, toWeiRound, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, toWeiRound, wrappedAddress } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

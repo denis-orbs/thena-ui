@@ -17,7 +17,7 @@ import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, WIN_TYPE } from '@/constant/arena'
 import InfoIcon from '@/icons/InfoIcon'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'

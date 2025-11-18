@@ -6,8 +6,8 @@ import { Chart } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChart
 import { useDensityChartData } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/hooks'
 import Spinner from '@/components/spinner'
 import { NewTextHeading, TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
+import cn from '@/utils/classes'
 
 const ZOOM_LEVEL = {
   stableMin: 0.9995,

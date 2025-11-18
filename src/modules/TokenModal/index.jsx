@@ -15,8 +15,9 @@ import { useAssets } from '@/context/assetsContext'
 import { useTokens } from '@/context/tokensContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { cn, wrappedAddress } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
+import cn from '@/utils/classes'
+import { wrappedAddress } from '@/utils/utils'
 
 import { ItemToken } from './ItemToken'
 

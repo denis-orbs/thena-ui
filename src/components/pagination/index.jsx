@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import ChevronRightIcon from '@/icons/ChevronRightIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function Pagination({ currentPage = 1, totalPages = 1, onPageChange = () => {}, className = '' }) {
   const [visiblePages, setVisiblePages] = useState([])

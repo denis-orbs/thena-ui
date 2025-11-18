@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { isNil } from 'lodash'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
@@ -13,7 +14,7 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { ArenaClient } from '@/lib/graphql'
-import { customSort, formatNumberDecimals } from '@/lib/utils'
+import { formatNumberDecimals } from '@/utils/utils'
 
 const V4_TC_COMPETITION_DATA = gql`
   query V4_TC_COMPETITION($id: String!) {
@@ -116,6 +117,14 @@ const fetchCompetitionParticipationData = async id => {
   } catch (error) {
     return { error: true }
   }
+}
+
+/** Sort if null or undefined become last */
+const customSort = (a, b, isDesc) => {
+  if ((isNil(a) || isNaN(a)) && (isNil(b) || isNaN(b))) return 0
+  if (isNil(a) || isNaN(a)) return 1
+  if (isNil(b) || isNaN(b)) return -1
+  return (a - b) * (isDesc ? -1 : 1)
 }
 
 const PAGE_SIZE = 10

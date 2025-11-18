@@ -15,11 +15,11 @@ import { useAssets } from '@/context/assetsContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
-import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
 import SideBarCreateWeighted from '@/modules/WeightedPool/SideBarCreateWeighted'
+import cn from '@/utils/classes'
 
 import ScalesIcon from '~/svgs/scales.svg'
 

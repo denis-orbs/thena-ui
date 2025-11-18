@@ -16,7 +16,8 @@ import { useAssets } from '@/context/assetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn, formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/utils/utils'
 
 import SettingSlippageDropDown from './SettingSlippageDropDown'
 

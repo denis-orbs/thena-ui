@@ -5,7 +5,7 @@ import { TextButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
 import { NewTextSubHeading } from '@/components/typography'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function NavigationTop({ steps, currentStep, onPrev }) {
   const t = useTranslations()

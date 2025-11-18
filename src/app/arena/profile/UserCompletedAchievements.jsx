@@ -9,8 +9,8 @@ import Highlight from '@/components/highlight'
 import { Paragraph, TextHeading } from '@/components/typography'
 import InfoIcon from '@/icons/InfoIcon'
 import { ArenaClient } from '@/lib/graphql'
-import { sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
+import { sortAchievements } from '@/utils/utils'
 
 const V4_USER_ACHIEVEMENT_COMPLETED = gql`
   query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {

@@ -21,10 +21,10 @@ import {
   getWBNBContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
-import { fromWei, toWei, wrappedAddress } from '@/lib/utils'
 import { Presets } from '@/state/fusion/reducer'
 import { tryParseTick } from '@/state/fusion/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei, toWei, wrappedAddress } from '@/utils/utils'
 
 import useWallet from '../useWallet'
 

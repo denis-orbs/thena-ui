@@ -18,7 +18,7 @@ import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInf
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { fetchNfts } from '@/lib/api'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 import BankIcon from '~/svgs/bank.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'

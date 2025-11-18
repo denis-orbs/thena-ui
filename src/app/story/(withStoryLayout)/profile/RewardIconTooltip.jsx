@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
 import CustomTooltip from '@/components/tooltip'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import DiamondIcon from '~/svgs/diamond.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'

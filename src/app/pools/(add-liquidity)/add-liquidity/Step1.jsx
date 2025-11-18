@@ -12,7 +12,7 @@ import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import InfoIcon from '@/icons/InfoIcon'
 import { errorToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 function ContentTypeOptionMini({ heading, desc, active }) {
   const t = useTranslations()

@@ -8,7 +8,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 const sortOptions = [
   {

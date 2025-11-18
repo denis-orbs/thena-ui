@@ -10,7 +10,7 @@ import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
 import { fetchV2SolidlyPairs } from '@/lib/api'
-import { ZERO_VALUE } from '@/lib/utils'
+import { ZERO_VALUE } from '@/utils/utils'
 
 import { useChainSettings } from '../settings/hooks'
 

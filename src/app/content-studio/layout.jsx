@@ -1,9 +1,9 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import StudioShell from '@/modules/Studio/StudioLayout/StudioShell'
 import Tabs from '@/modules/Studio/StudioLayout/Tabs'
 import { useMigratePositionWarning } from '@/state/positions/hooks'
+import cn from '@/utils/classes'
 
 export default function ContentStudioLayout({ children }) {
   const { showBannerMigrate } = useMigratePositionWarning()

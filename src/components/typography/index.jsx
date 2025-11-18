@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export function Paragraph({ children, className, title = undefined, ...props }) {
   return (

@@ -12,7 +12,8 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRouteForExisting, useKyberZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5, classNames }) {
   const t = useTranslations()

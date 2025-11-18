@@ -8,7 +8,7 @@ import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 dayjs.extend(utc)
 

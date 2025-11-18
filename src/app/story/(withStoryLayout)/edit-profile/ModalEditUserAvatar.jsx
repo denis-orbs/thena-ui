@@ -11,8 +11,8 @@ import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { centerAspectCrop, useCropImage } from '@/hooks/useCropImages'
-import { sliceAddress } from '@/lib/utils'
 import { useUpdateParticipantAvatar } from '@/modules/Story'
+import { sliceAddress } from '@/utils/utils'
 
 import { useTHEStory } from '../../provider'
 

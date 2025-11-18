@@ -18,9 +18,9 @@ import { maxAmountSpend, tryParseAmount, unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { warnToast } from '@/lib/notify'
 import { createPositionFromAmount0, createPositionFromAmount1, createPositionFromAmounts } from '@/lib/position'
-import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
+import { unwrappedSymbol } from '@/utils/utils'
 
 export default function AddManualModal({
   popup,

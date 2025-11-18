@@ -3,7 +3,7 @@ import { IchiVaultV2ABI } from '@/abis/ichi/IchiVaultV2ABI'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 
 import { callMulti } from '../contractActions'
-import { fromWei } from '../utils'
+import { fromWei } from '../../utils/utils'
 
 const fetchTotalSupply = async chainId => {
   const rawRes = await callMulti(

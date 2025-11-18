@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useState } from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { ModalEditUserAvatar } from './ModalEditUserAvatar'
 

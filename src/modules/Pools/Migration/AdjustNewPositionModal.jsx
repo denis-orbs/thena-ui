@@ -12,7 +12,6 @@ import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
-import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import {
   useActivePreset,
@@ -23,6 +22,8 @@ import {
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 import { tryParseTick } from '@/state/fusion/utils'
+import cn from '@/utils/classes'
+import { unwrappedSymbol } from '@/utils/utils'
 
 export function AdjustNewPositionModal({
   isOpen,

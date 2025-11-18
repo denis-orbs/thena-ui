@@ -6,7 +6,7 @@ import { ThenaAuthToken } from '@/constant'
 import { ArenaClient } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast } from '@/lib/notify'
-import { sleep } from '@/lib/utils'
+import { sleep } from '@/utils/utils'
 
 import useWallet from './useWallet'
 

@@ -10,7 +10,7 @@ import { TC_MARKET_TYPES } from '@/constant/arena'
 import { useIncreasePrizeTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useIncreaseTCSpotPrize } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/utils/utils'
 
 function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const t = useTranslations()

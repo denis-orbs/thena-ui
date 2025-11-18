@@ -13,7 +13,8 @@ import { useSignWallet } from '@/hooks/useSignWallet'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
-import { cn, formatAddress } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAddress } from '@/utils/utils'
 
 import PowerIcon from '~/svgs/power-icon.svg'
 

@@ -7,7 +7,7 @@ import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
-import { convertBooleansToHex, formatAmount } from '@/lib/utils'
+import { convertBooleansToHex, formatAmount } from '@/utils/utils'
 
 import WarningLINKBalance from './WarningLINKBalance'
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'

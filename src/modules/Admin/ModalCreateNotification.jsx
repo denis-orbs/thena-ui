@@ -11,7 +11,7 @@ import Spinner from '@/components/spinner'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useCreateNotification } from '@/hooks/useAdminCreateNotification'
 import { successToast } from '@/lib/notify'
-import { isValidHttpUrl } from '@/lib/utils'
+import { isValidHttpUrl } from '@/utils/utils'
 
 import ChartIcon from '~/svgs/chart-line.svg'
 

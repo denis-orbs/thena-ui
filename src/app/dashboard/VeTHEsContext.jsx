@@ -14,7 +14,7 @@ import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVoterV3Contract } from '@/lib/contracts'
 import { VetheClient } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
+import { fromWei } from '@/utils/utils'
 
 const createCallMulti = (calls, abi) =>
   callMulti(

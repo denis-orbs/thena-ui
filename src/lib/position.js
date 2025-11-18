@@ -1,9 +1,10 @@
 import JSBI from 'jsbi'
-import { CurrencyAmount, MaxUint256, Percent, Position as CorePosition } from 'thena-sdk-core'
+import { CurrencyAmount, MaxUint256, Percent } from 'thena-sdk-core'
 import {
   encodeSqrtRatioX96,
   maxLiquidityForAmounts,
   Pool,
+  Position as CorePosition,
   SqrtPriceMath,
   TickMath,
   tickToPrice,

@@ -14,8 +14,8 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import WarningIcon from '@/icons/WarningIcon'
-import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
+import cn from '@/utils/classes'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 

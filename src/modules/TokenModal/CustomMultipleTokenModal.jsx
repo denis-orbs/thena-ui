@@ -8,8 +8,9 @@ import Modal, { ModalFooter } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import CheckIcon from '@/icons/CheckIcon'
-import { cn, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 

@@ -9,7 +9,8 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { POSITION_EARNED_TYPES } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, getDisplayedStrategy } from '@/utils/utils'
 
 export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' }) {
   const t = useTranslations()

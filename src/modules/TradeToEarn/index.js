@@ -11,8 +11,8 @@ import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { ArenaClient, T2EClient } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
+import { fromWei } from '@/utils/utils'
 
 const V4_DAILY_VOLUME = gql`
   query V4_DAILY_VOLUME($user: String!, $day: String!, $pair: String!) {

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { TokenomicsIllustration } from './TokenomicsIllustration'
 import { Heading } from '../../Common/Heading'

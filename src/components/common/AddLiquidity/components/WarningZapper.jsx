@@ -7,7 +7,7 @@ import Box from '@/components/box'
 import { NewTextSubHeading, Paragraph, TextSubHeading } from '@/components/typography'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 

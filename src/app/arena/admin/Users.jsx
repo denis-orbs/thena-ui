@@ -17,9 +17,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ArenaClient } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
-import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 import { useUpdateUserIsVerified } from '@/modules/Arena/hooks/profile'
+import { sliceAddress } from '@/utils/utils'
 
 const V4_USERS = gql`
   query V4_USERS($where: UserWhereInput = {}) {

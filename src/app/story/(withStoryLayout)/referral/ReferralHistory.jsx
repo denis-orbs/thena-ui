@@ -1,7 +1,7 @@
 import { useTranslations } from 'use-intl'
 
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { RewardIconTooltip } from '../profile/RewardIconTooltip'
 import { REFERRAL_REWARD, RewardType } from '../../constant'

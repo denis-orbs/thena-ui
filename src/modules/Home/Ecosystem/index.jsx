@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import { Grid } from './Grid'
 import { GridLinesAnimation } from './GridLinesAnimation'

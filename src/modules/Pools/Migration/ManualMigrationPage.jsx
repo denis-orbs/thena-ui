@@ -28,8 +28,9 @@ import useWallet from '@/hooks/useWallet'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { warnToast } from '@/lib/notify'
 import { createPosition, createPositionFromAmounts } from '@/lib/position'
-import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
 import { GaugeItemManual } from '@/modules/Pools/Migration'
+import cn from '@/utils/classes'
+import { formatAmount, getDisplayedStrategy, toWei } from '@/utils/utils'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()

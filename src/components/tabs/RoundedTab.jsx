@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { SizeTypes } from '@/constant/type'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 export default function RoundedTabs({
   tabs = [],

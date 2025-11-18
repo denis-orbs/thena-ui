@@ -10,8 +10,9 @@ import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import usePrices from '@/hooks/usePrices'
 import { useNftClaimAllReward, useTheNftAccountInfo } from '@/hooks/useTheNft'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
-import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
+import cn from '@/utils/classes'
+import { formatAmount, ZERO_VALUE } from '@/utils/utils'
 
 import SectionDivider from '../SectionDivider'
 

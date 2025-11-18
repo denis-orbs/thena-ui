@@ -10,7 +10,7 @@ import { batchCallMulti, simulateCall } from '@/lib/contractActions'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { createPosition } from '@/lib/position'
 import { getCollectedRewards, getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
-import { fromWei, ZERO_VALUE } from '@/lib/utils'
+import { fromWei, ZERO_VALUE } from '@/utils/utils'
 
 import { useGetAssetFn } from '../fusion/Tokens'
 import { getFarmInfoList } from '../fusion/useEstimateAPR'

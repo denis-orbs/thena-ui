@@ -10,7 +10,7 @@ import Box from '@/components/box'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { CHAINLINK_ADDRESS } from '@/constant'
 import InfoIcon from '@/icons/InfoIcon'
-import { goToDoc } from '@/lib/utils'
+import { goToDoc } from '@/utils/utils'
 
 import NavigationBottom from './NavigationBottom'
 import NavigationTop from './NavigationTop'

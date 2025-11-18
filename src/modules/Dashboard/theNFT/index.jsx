@@ -8,14 +8,34 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useClaimTheNFT } from '@/hooks/useClaimTheNFT'
-import { useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
+import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
-import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
+import cn from '@/utils/classes'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 import ExternalIcon from '~/svgs/external.svg'
 
 import SectionDivider from '../SectionDivider'
+
+const useClaimTheNFT = () => {
+  const { onRoyaltyClaim, pending: royaltyPending } = useNftRoyaltyClaim()
+  const { onHarvest, pending } = useNftFeesClaim()
+
+  const onClaim = async ({ isOriginal, royaltyClaimable, feesClaimAble }, mutate = () => {}) => {
+    if (isOriginal && royaltyClaimable) {
+      await onRoyaltyClaim(() => mutate())
+    }
+
+    if (feesClaimAble) {
+      await onHarvest()
+    }
+  }
+
+  return {
+    onClaim,
+    pending: royaltyPending || pending,
+  }
+}
 
 const fetchNftInfo = async (url, nftIds) => {
   if (!nftIds || nftIds.length === 0) return

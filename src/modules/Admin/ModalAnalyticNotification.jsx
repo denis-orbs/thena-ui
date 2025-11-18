@@ -10,8 +10,8 @@ import Table from '@/components/table'
 import { Paragraph } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { ArenaClient } from '@/lib/graphql'
-import { formatNumberDecimals } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { formatNumberDecimals } from '@/utils/utils'
 
 dayjs.extend(localizedFormat)
 

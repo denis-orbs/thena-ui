@@ -6,7 +6,7 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
-import { getDisplayedStrategy } from '@/lib/utils'
+import { getDisplayedStrategy } from '@/utils/utils'
 
 export default function PoolTitle({ strategy }) {
   return (

@@ -7,7 +7,7 @@ import { useDibsRewarder } from '@/app/t2e/DibsRewarderContext'
 import Box from '@/components/box'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount } from '@/utils/utils'
 
 function Information({ userDailyVolume, userTotalVolume }) {
   const t = useTranslations()

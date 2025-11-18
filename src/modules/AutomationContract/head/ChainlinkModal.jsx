@@ -7,8 +7,8 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useActiveAutomation, useAutomationContractDetail } from '@/hooks/automationContract/useAutomationContract'
 import { warnToast } from '@/lib/notify'
-import { isInvalidAmount } from '@/lib/utils'
 import RegisterAutomation from '@/modules/CreateVeTHEAutomation/RegisterAutomation'
+import { isInvalidAmount } from '@/utils/utils'
 
 const UPDATE_REGISTRATION = {
   CHAINLINK: 'chainlink',

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { useAssets } from '@/context/assetsContext'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 const MARKET_TYPE = {
   SPOT: 'SPOT',

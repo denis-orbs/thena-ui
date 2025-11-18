@@ -33,10 +33,11 @@ import InfoIcon from '@/icons/InfoIcon'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import cn from '@/utils/classes'
+import { formatAmount, fromWei } from '@/utils/utils'
 
 const sortOptions = [
   {
