@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
@@ -28,6 +27,7 @@ import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import { warnToast } from '@/lib/notify'
+import { createPosition, createPositionFromAmounts } from '@/lib/position'
 import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
 import { GaugeItemManual } from '@/modules/Pools/Migration'
 
@@ -137,7 +137,7 @@ export function ManualMigrationPage({ tokenId }) {
 
   const positionV2 = useMemo(() => {
     if (_fusion) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(posLiquidity).toString(10),
         tickLower,
@@ -165,7 +165,7 @@ export function ManualMigrationPage({ tokenId }) {
         currencyB?.decimals ?? 18,
       )
 
-      return Position.fromAmounts({
+      return createPositionFromAmounts({
         pool: poolV3,
         tickLower,
         tickUpper,

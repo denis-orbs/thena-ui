@@ -4,7 +4,7 @@ import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContract, useSimulateContract } from 'wagmi'
 
@@ -27,6 +27,7 @@ import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+import { createPosition } from '@/lib/position'
 import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
@@ -105,7 +106,7 @@ export function FarmingPosition({ position }) {
 
   const _position = useMemo(() => {
     if (_fusion) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
         tickLower,

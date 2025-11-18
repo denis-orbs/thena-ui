@@ -5,7 +5,7 @@ import { gql } from 'graphql-request'
 import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
@@ -13,6 +13,7 @@ import { EternalVirtualPoolABI } from '@/abis/integral/EternalVirtualPoolABI'
 import { IntegralPairABI } from '@/abis/integral/IntegralPairABI'
 import { batchCallMulti, callMulti } from '@/lib/contractActions'
 import { AlgebraClient, IntegralFarmingClient } from '@/lib/graphql'
+import { createPositionFromAmount0, createPositionFromAmount1, createPositionFromAmounts } from '@/lib/position'
 import { fromWei, toWei, ZERO_VALUE } from '@/lib/utils'
 import { Field } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
@@ -298,13 +299,13 @@ export const useEstimateAPR = ({
         )
         _position =
           independentField === Field.CURRENCY_A
-            ? Position.fromAmount1({
+            ? createPositionFromAmount1({
                 pool,
                 tickLower: _tickLower,
                 tickUpper: _tickUpper,
                 amount1: Math.round(independentAmount.toNumber()),
               })
-            : Position.fromAmount0({
+            : createPositionFromAmount0({
                 pool,
                 tickLower: _tickLower,
                 tickUpper: _tickUpper,
@@ -312,7 +313,7 @@ export const useEstimateAPR = ({
                 useFullPrecision: true, // we want full precision for the theoretical position
               })
       } else {
-        _position = Position.fromAmounts({
+        _position = createPositionFromAmounts({
           pool,
           tickLower: _tickLower,
           tickUpper: _tickUpper,

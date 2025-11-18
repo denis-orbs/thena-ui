@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js'
 import { useContext, useMemo, useState } from 'react'
-import { Position } from 'thenafi-fusion-sdk'
 import { useTranslations } from 'use-intl'
 import { zeroAddress } from 'viem'
 
@@ -14,6 +13,7 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useFarmPositions } from '@/hooks/position/useFarmPosition'
 import { useManualPositions } from '@/hooks/position/useManualPosition'
 import usePrevious from '@/hooks/usePrevious'
+import { createPosition } from '@/lib/position'
 import { cn, formatAmount } from '@/lib/utils'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
@@ -53,7 +53,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
 
   const _position2 = useMemo(() => {
     if (_fusion) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
         tickLower,

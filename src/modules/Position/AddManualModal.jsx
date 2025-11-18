@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { Position } from 'thenafi-fusion-sdk'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
@@ -18,6 +17,7 @@ import { useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { maxAmountSpend, tryParseAmount, unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { warnToast } from '@/lib/notify'
+import { createPositionFromAmount0, createPositionFromAmount1, createPositionFromAmounts } from '@/lib/position'
 import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
@@ -78,14 +78,14 @@ export default function AddManualModal({
       typeof tickUpper === 'number'
     ) {
       const pos = wrappedIndependentAmount.currency.equals(_fusion.token0)
-        ? Position.fromAmount0({
+        ? createPositionFromAmount0({
             pool: _fusion,
             tickLower,
             tickUpper,
             amount0: independentAmount.quotient,
             useFullPrecision: true, // we want full precision for the theoretical position
           })
-        : Position.fromAmount1({
+        : createPositionFromAmount1({
             pool: _fusion,
             tickLower,
             tickUpper,
@@ -117,7 +117,7 @@ export default function AddManualModal({
     const amount1 = parsedAmounts?.[tokenA.equals(_fusion.token0) ? Field.CURRENCY_B : Field.CURRENCY_A]?.quotient
 
     if (amount0 !== undefined && amount1 !== undefined) {
-      return Position.fromAmounts({
+      return createPositionFromAmounts({
         pool: _fusion,
         tickLower,
         tickUpper,

@@ -3,13 +3,13 @@ import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { Position } from 'thenafi-fusion-sdk'
 import { maxUint128, zeroAddress } from 'viem'
 
 import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
 import { IntegralNPMABI } from '@/abis/integral/IntegralNPMABI'
 import Contracts from '@/constant/contracts'
 import { simulateCall } from '@/lib/contractActions'
+import { createPosition } from '@/lib/position'
 import { getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
@@ -154,7 +154,7 @@ export const useManualPositions = positions => {
       const fees = feesList?.[index]
 
       const position = fusion
-        ? new Position({
+        ? createPosition({
             pool: fusion,
             liquidity: new BigNumber(liquidity).toString(10),
             tickLower,
