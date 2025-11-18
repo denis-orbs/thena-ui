@@ -11,7 +11,7 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import EmailIcon from '~/svgs/email.svg'
 import RedditIcon from '~/svgs/reddit.svg'

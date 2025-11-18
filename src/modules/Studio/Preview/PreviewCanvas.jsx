@@ -90,7 +90,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
   }
 
   const handleDrop = e => {
-    if (background.isCustom) {
+    if (background.isCustom && !background.value) {
       e.preventDefault()
       e.stopPropagation()
       setIsDragOver(false)
@@ -115,8 +115,8 @@ export default function PreviewCanvas({ children, background, setField, classNam
           ref={childRef}
           className={cn(
             'relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat',
-            background.isCustom && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
-            background.isCustom && 'cursor-pointer',
+            background.isCustom && !background.value && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
+            background.isCustom && !background.value && 'cursor-pointer',
           )}
           style={{
             width: '1024px',
@@ -133,7 +133,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => {
-            if (background.isCustom) {
+            if (background.isCustom && !background.value) {
               imgInputRef.current?.click()
             }
           }}

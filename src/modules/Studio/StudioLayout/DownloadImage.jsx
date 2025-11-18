@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
-import { cn } from '@/lib/utils'
+import cn from '@/utils/classes'
 
 import DownloadIcon from '~/svgs/download.svg'
 

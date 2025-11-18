@@ -11,8 +11,8 @@ import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
 import PreviewCanvas from '@/modules/Studio/Preview/PreviewCanvas'
+import cn from '@/utils/classes'
 
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import EditIcon from '~/svgs/edit.svg'
@@ -109,7 +109,13 @@ function BackgroundSelection({ state, setField, tpl }) {
                   ? 'outline-primary-800 bg-[#230924]'
                   : 'outline-neutral-700 hover:bg-neutral-800',
               )}
-              onClick={() => setField('background', option)}
+              onClick={() => {
+                if (option.isCustom && background.id === option.id && background.value) {
+                  imgInputRef.current?.click()
+                } else {
+                  setField('background', option)
+                }
+              }}
             >
               {isString(option.mini) ? (
                 <Image
@@ -132,6 +138,34 @@ function BackgroundSelection({ state, setField, tpl }) {
           ))}
         </div>
       </div>
+
+      <input
+        type='file'
+        onChange={e => {
+          const file = e.target.files[0]
+          if (file) {
+            const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB in bytes
+            if (file.size > MAX_FILE_SIZE) {
+              errorToast('Error', 'Image size must not exceed 20 MB')
+              e.target.value = ''
+              return
+            }
+            setField('background', {
+              id: 6,
+              name: 'Custom image',
+              image: URL.createObjectURL(file),
+              value: URL.createObjectURL(file),
+              isCustom: true,
+            })
+          }
+          // Reset input value to allow selecting the same file again
+          e.target.value = ''
+        }}
+        accept='image/*'
+        className='hidden'
+        ref={imgInputRef}
+      />
+
       <div className='flex flex-col gap-4 xl:hidden'>
         <div className='relative w-full'>
           <EmphasisButton
@@ -182,33 +216,6 @@ function BackgroundSelection({ state, setField, tpl }) {
             </div>
           )}
         </div>
-
-        <input
-          type='file'
-          onChange={e => {
-            const file = e.target.files[0]
-            if (file) {
-              const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB in bytes
-              if (file.size > MAX_FILE_SIZE) {
-                errorToast('Error', 'Image size must not exceed 20 MB')
-                e.target.value = ''
-                return
-              }
-              setField('background', {
-                id: 6,
-                name: 'Custom image',
-                image: URL.createObjectURL(file),
-                value: URL.createObjectURL(file),
-                isCustom: true,
-              })
-            }
-            // Reset input value to allow selecting the same file again
-            e.target.value = ''
-          }}
-          accept='image/*'
-          className='hidden'
-          ref={imgInputRef}
-        />
 
         {state.background.isCustom && state.background.value && (
           <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
