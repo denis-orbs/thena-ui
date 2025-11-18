@@ -11,7 +11,7 @@ const backendApi = 'https://api.thena.fi/api'
 
 const getApiVersion = version => (version === 3 ? 'v3' : 'v1')
 
-export const fetchAssets = async (networkId, liquidityHubEnabled) => {
+export const fetchAssets = async networkId => {
   try {
     const getTokens = async () => {
       const response = await fetch(`${backendApi}/v1/assets`, {
@@ -20,10 +20,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
       return response.json()
     }
 
-    const [assetsCall, liquidityHubTokens] = await Promise.all([
-      getTokens(),
-      liquidityHub.getTokens(liquidityHubEnabled),
-    ])
+    const [assetsCall, liquidityHubTokens] = await Promise.all([getTokens(), liquidityHub.getTokens()])
     const assets = _.filter(
       _.uniqBy([...assetsCall.data, ...liquidityHubTokens], it => it.address.toLowerCase()),
       it => it.chainId === networkId,

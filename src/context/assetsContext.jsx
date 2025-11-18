@@ -7,7 +7,7 @@ import { erc20Abi, formatEther, formatUnits } from 'viem'
 import useWallet from '@/hooks/useWallet'
 import { fetchAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
-import { useChainSettings, useSettings } from '@/state/settings/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 import { wagmiConfig } from '@/wallets/rainbowkit'
 
 const initialState = {
@@ -52,12 +52,11 @@ const AssetsContext = createContext(initialState)
 function AssetsContextProvider({ children }) {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
-  const { liquidityHubEnabled } = useSettings()
 
   const { data: assets = [] } = useSWRImmutable(
-    ['assets/total', networkId, liquidityHubEnabled],
+    ['assets/total', networkId],
     async () => {
-      const data = await fetchAssets(networkId, liquidityHubEnabled)
+      const data = await fetchAssets(networkId)
       return data
     },
     {

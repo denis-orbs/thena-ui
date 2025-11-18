@@ -8,16 +8,19 @@ import Input from '@/components/input'
 import Modal, { ModalBody } from '@/components/modal'
 import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
+import CustomTooltip from '@/components/tooltip'
 import { LOCALES } from '@/constant'
+import InfoIcon from '@/icons/InfoIcon'
 import { useChainSettings, useLocaleSettings, useSettings } from '@/state/settings/hooks'
 
 import SettingsIcon from '~/svgs/settings.svg'
 
 const slipageTolerance = [0.1, 0.5, 1]
+const priceProtectionTolerance = [1, 3, 5]
 
-function TxnSettings() {
+function TxnSettings({ isTwap }) {
   const [popup, setPopup] = useState(false)
-  const { slippage, deadline, updateSlippage, updateDeadline } = useSettings()
+  const { slippage, deadline, updateSlippage, updateDeadline, priceProtection, updatePriceProtection } = useSettings()
   const { networkId } = useChainSettings()
   const t = useTranslations()
 
@@ -33,6 +36,17 @@ function TxnSettings() {
     [slippage, updateSlippage],
   )
 
+  const priceProtectionSelections = useMemo(
+    () =>
+      priceProtectionTolerance.map(ele => ({
+        label: ele,
+        active: priceProtection === Number(ele),
+        onClickHandler: () => {
+          updatePriceProtection(Number(ele))
+        },
+      })),
+    [priceProtection, updatePriceProtection],
+  )
   return (
     <>
       <TextIconButton
@@ -50,33 +64,59 @@ function TxnSettings() {
         title='Transaction Settings'
       >
         <ModalBody>
-          <div className='flex w-full flex-col items-start justify-start gap-3'>
-            <p className='text-lg font-medium'>{t('Slippage Tolerance')}</p>
-            <div className='inline-flex w-full justify-between'>
-              <Selection data={selections} />
-              <Input
-                classNames={{
-                  input: 'w-[110px]',
-                }}
-                val={slippage}
-                onChange={e => updateSlippage(Number(e.target.value) || 0)}
-                suffix='%'
-              />
+          {isTwap ? (
+            <div className='flex w-full flex-col items-start justify-start gap-3'>
+              <div className='flex items-center gap-1'>
+                <p className='text-lg font-medium'>{t('Price Protection')}</p>
+                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={t('priceProtectionTooltip')} />
+              </div>
+              <CustomTooltip id={t('priceProtectionTooltip')} place='top' className='z-50 max-w-[240px]'>
+                <p className='break-words'>{t('priceProtectionTooltip')}</p>
+              </CustomTooltip>
+              <div className='inline-flex w-full justify-between'>
+                <Selection data={priceProtectionSelections} />
+                <Input
+                  classNames={{
+                    input: 'w-[110px]',
+                  }}
+                  val={priceProtection}
+                  onChange={e => updatePriceProtection(Number(e.target.value) || 0)}
+                  suffix='%'
+                />
+              </div>
             </div>
-          </div>
-          <div className='flex flex-col items-start justify-start gap-3 self-stretch'>
-            <p className='text-lg font-medium'>{t('Transaction Deadline')}</p>
-            <Input
-              classNames={{
-                input: 'w-[120px] pr-[82px]',
-              }}
-              val={deadline}
-              onChange={e => updateDeadline(Number(e.target.value) || 0)}
-              suffix={t('minutes')}
-              max={50}
-            />
-          </div>
-          {networkId === ChainId.BSC && <LiquidityHubSettings />}
+          ) : (
+            <>
+              <div className='flex w-full flex-col items-start justify-start gap-3'>
+                <p className='text-lg font-medium'>{t('Slippage Tolerance')}</p>
+                <div className='inline-flex w-full justify-between'>
+                  <Selection data={selections} />
+                  <Input
+                    classNames={{
+                      input: 'w-[110px]',
+                    }}
+                    val={slippage}
+                    onChange={e => updateSlippage(Number(e.target.value) || 0)}
+                    suffix='%'
+                  />
+                </div>
+              </div>
+
+              <div className='flex flex-col items-start justify-start gap-3 self-stretch'>
+                <p className='text-lg font-medium'>{t('Transaction Deadline')}</p>
+                <Input
+                  classNames={{
+                    input: 'w-[120px] pr-[82px]',
+                  }}
+                  val={deadline}
+                  onChange={e => updateDeadline(Number(e.target.value) || 0)}
+                  suffix={t('minutes')}
+                  max={50}
+                />
+              </div>
+              {networkId === ChainId.BSC && <LiquidityHubSettings />}
+            </>
+          )}
         </ModalBody>
       </Modal>
     </>
