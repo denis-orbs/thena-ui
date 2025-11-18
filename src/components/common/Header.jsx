@@ -15,7 +15,7 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { BNB_LOGO, LOCALES, NotShowDiscoverArenaModal, THE_LOGO, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
@@ -25,11 +25,9 @@ import { useSignWallet } from '@/hooks/useSignWallet'
 import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
 import TxnModal from '@/modules/TxnModal'
-import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import cn from '@/utils/classes'
 import { formatAmount, goToDoc } from '@/utils/utils'
@@ -351,71 +349,6 @@ function LanguageSelect({ className }) {
   )
 }
 
-function V3Banner({ onClose }) {
-  const t = useTranslations()
-  const router = useRouter()
-  const { push } = router
-  useEffect(() => {
-    document.body.classList.add('has-v3-banner')
-    return () => {
-      document.body.classList.remove('has-v3-banner')
-    }
-  }, [])
-
-  return (
-    <div
-      id='v3-banner'
-      className='fixed top-0 left-0 z-50 flex h-[116px] w-full items-center justify-between bg-[#2a002a] px-4 py-2 text-sm font-medium text-white md:h-[54px]'
-    >
-      <div className='flex flex-1 flex-col items-center justify-center md:flex-row md:gap-2'>
-        <span className='min-w-fit font-semibold'>{`🔥 ${t('THENA V3,3 is Launched')}!`}</span>
-        <span className='text-center font-normal'>
-          {new Date() >= new Date('2025-05-29')
-            ? `${t('Migrate your liquidity now to continue earning rewards')}.`
-            : 'Voting begins on May 22, and $THE emissions will migrate to new gauges on May 29.'}
-        </span>
-        <div className='flex'>
-          <TertiaryButton
-            className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'
-            onClick={() => push('/dashboard')}
-          >
-            {t('Migrate Now')} <ArrowLeftIcon className='ml-1 rotate-180' />
-          </TertiaryButton>
-          {new Date() >= new Date('2025-05-29') && (
-            <Link href='https://medium.com/@ThenaFi/thena-101-v3-3-migration-tutorial-169b08696b46' target='_blank'>
-              <TertiaryButton className='[&>svg>path]:stroke-primary-600 h-9 min-w-fit border-none text-sm md:h-11'>
-                {t('Learn More')} <ArrowLeftIcon className='ml-1 rotate-180' />
-              </TertiaryButton>
-            </Link>
-          )}
-        </div>
-      </div>
-      <button
-        onClick={onClose}
-        type='button'
-        data-drawer-hide='v3-banner'
-        aria-controls='v3-banner'
-        className='inline-flex cursor-pointer items-center rounded-lg bg-transparent p-1.5 text-sm text-neutral-400'
-      >
-        <svg
-          aria-hidden='true'
-          className='h-5 w-5'
-          fill='currentColor'
-          viewBox='0 0 20 20'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path
-            fillRule='evenodd'
-            d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-            clipRule='evenodd'
-          />
-        </svg>
-        <span className='sr-only'>{t('Close')}</span>
-      </button>
-    </div>
-  )
-}
-
 function Header() {
   const { isViewDown: is2SmDown } = useMediaQuery('down', 744)
   const [selected, setSelected] = useState(null)
@@ -438,8 +371,6 @@ function Header() {
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
   const { spaceIdName } = useSpaceIdBNB(account)
-
-  const { showBannerMigrate, onHideWarningBanner: handleCloseV3Banner } = useMigratePositionWarning()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -887,13 +818,11 @@ function Header() {
 
   return (
     <div id='headerMaster'>
-      {showBannerMigrate && <V3Banner onClose={handleCloseV3Banner} />}
       <header
         className={cn(
           'shadow-primary max-2sm:bg-neutral-900 2sm:border-b-[2px] 2sm:backdrop-blur-[24px] fixed top-0',
           'z-50 inline-flex h-[72px] w-full flex-col items-start justify-start rounded-b-xl border-b',
           '2sm:h-[80px] border-b-neutral-600 md:h-[92px]',
-          showBannerMigrate && 'top-[116px] md:top-[54px]',
         )}
       >
         <div
@@ -1182,12 +1111,7 @@ function Header() {
         </div>
       </motion.button>
       {pathname.includes('/arena') && (
-        <div
-          className={cn(
-            'fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl md:top-[92px] lg:py-5',
-            showBannerMigrate && 'top-[180px] lg:top-[146px]',
-          )}
-        >
+        <div className='fixed top-[72px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl md:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && is2SmDown ? (
               <HeaderSearch setToggleSearch={setToggleSearch} toggleSearch={toggleSearch} isSmallScreen={is2SmDown} />
