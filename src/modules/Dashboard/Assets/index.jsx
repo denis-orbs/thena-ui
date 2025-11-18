@@ -2,11 +2,11 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { usePositions } from '@/hooks/usePositions'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
@@ -24,7 +24,7 @@ const richRenderers = {
 function UserAssets({ setPositionRewards }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const { positions, removedClaimablePositions } = useSelector(state => state.positions)
+  const { positions, removedClaimablePositions } = usePositions()
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)

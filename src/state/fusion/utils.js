@@ -1,15 +1,9 @@
 import BigNumber from 'bignumber.js'
 import { JSBI, Price } from 'thena-sdk-core'
-import {
-  encodeSqrtRatioX96,
-  nearestUsableTick,
-  Position,
-  priceToClosestTick,
-  TICK_SPACING,
-  TickMath,
-} from 'thenafi-fusion-sdk'
+import { encodeSqrtRatioX96, nearestUsableTick, priceToClosestTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+import { createPosition } from '@/lib/position'
 
 import { Bound } from './actions'
 
@@ -78,7 +72,7 @@ export function calculateManualAPR(position) {
     [Bound.UPPER]: tickUpper ? tickUpper === nearestUsableTick(TickMath.MAX_TICK, _tickSpacing) : undefined,
   }
   const _position = fusion
-    ? new Position({
+    ? createPosition({
         pool: fusion,
         liquidity: new BigNumber(fusion?.liquidity ?? 0).toString(10),
         tickLower,

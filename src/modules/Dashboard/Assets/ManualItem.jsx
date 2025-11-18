@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
@@ -17,6 +17,7 @@ import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import usePrevious from '@/hooks/usePrevious'
 import InfoIcon from '@/icons/InfoIcon'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+import { createPosition } from '@/lib/position'
 import ClaimModal from '@/modules/Position/ClaimModal'
 import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
@@ -80,7 +81,7 @@ function ManualItem({ position, isXlDown }) {
 
   const _position = useMemo(() => {
     if (_fusion) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
         tickLower,

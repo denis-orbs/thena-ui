@@ -6,7 +6,6 @@ import {
   encodeSqrtRatioX96,
   nearestUsableTick,
   Pool,
-  Position,
   priceToClosestTick,
   TICK_SPACING,
   TickMath,
@@ -22,6 +21,7 @@ import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurre
 import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
+import { createPositionFromAmount0, createPositionFromAmount1, createPositionFromAmounts } from '@/lib/position'
 import { toDecimalString, toWei } from '@/utils/utils'
 
 import {
@@ -444,14 +444,14 @@ export const useV3DerivedMintInfo = (
       }
 
       const position = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-        ? Position.fromAmount0({
+        ? createPositionFromAmount0({
             pool: poolForPosition,
             tickLower,
             tickUpper,
             amount0: independentAmount.quotient,
             useFullPrecision: true, // we want full precision for the theoretical position
           })
-        : Position.fromAmount1({
+        : createPositionFromAmount1({
             pool: poolForPosition,
             tickLower,
             tickUpper,
@@ -532,7 +532,7 @@ export const useV3DerivedMintInfo = (
       : BIG_INT_ZERO
 
     if (amount0 !== undefined && amount1 !== undefined) {
-      return Position.fromAmounts({
+      return createPositionFromAmounts({
         pool: poolForPosition,
         tickLower,
         tickUpper,

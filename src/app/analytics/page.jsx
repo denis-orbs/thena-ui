@@ -21,9 +21,7 @@ import InfoIcon from '@/icons/InfoIcon'
 import { fetchStats } from '@/lib/api'
 import { fetchStats as fetchStatsRevenue } from '@/lib/subgraph'
 import SummaryAnalyticsInfo from '@/modules/Analytics/SummaryAnalyticsInfo'
-import { useMigratePositionWarning } from '@/state/positions/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
 import PairsTable from './pairs/PairsTable'
@@ -122,8 +120,6 @@ export default function AnalyticsPage() {
     })
   }, [pairs, searchTextPairs])
 
-  const { showBannerMigrate } = useMigratePositionWarning()
-
   const chartItemConfig = {
     vaultSingleSideFeesUSD: {
       label: t('THE Single Sided Vaults'),
@@ -177,10 +173,7 @@ export default function AnalyticsPage() {
   return (
     <LayoutWithBackButton
       hiddenBackButton
-      className={cn(
-        '3xl:w-[1464px] 3xl:mt-8! mt-6 max-md:mx-4! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]',
-        showBannerMigrate && 'xl:-mt-8!',
-      )}
+      className='3xl:w-[1464px] 3xl:mt-8! mt-6 max-md:mx-4! xl:mx-12 2xl:mx-auto 2xl:w-[1344px]'
     >
       <div className='flex flex-col gap-4 xl:gap-8'>
         <SummaryAnalyticsInfo totalStats={totalStats} />

@@ -236,25 +236,8 @@
     @apply mx-4 max-w-[1440px] lg:mx-[40px] xl:mx-[120px] 2xl:mx-auto 2xl:w-[1344px];
   }
 
-  body.has-v3-banner .layout,
-  body.has-v3-banner .layout-top {
-    @apply mt-[72px] md:mt-0;
-  }
-
   .layout-dashboard {
     @apply 2sm:mt-[80px] mt-[72px] md:mt-[92px];
-  }
-
-  body.has-v3-banner .layout-dashboard {
-    @apply lg:mt-0;
-  }
-
-  body.has-v3-banner .layout-container {
-    @apply 2sm:mt-[144px] mt-[136px] md:mt-[92px];
-  }
-
-  body.has-v3-banner {
-    @apply mt-[116px] md:mt-[146px];
   }
 }
 

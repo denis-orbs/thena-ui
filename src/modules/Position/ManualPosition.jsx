@@ -6,7 +6,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
@@ -26,6 +26,7 @@ import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+import { createPosition } from '@/lib/position'
 import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import cn from '@/utils/classes'
@@ -88,7 +89,7 @@ export default function ManualPosition({ position }) {
 
   const _position = useMemo(() => {
     if (_fusion) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
         tickLower,
