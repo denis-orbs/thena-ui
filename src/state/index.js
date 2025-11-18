@@ -4,7 +4,6 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
 import fusionReducer from './fusion/reducer'
 import poolsReducer from './pools/reducer'
-import positionsReducer from './positions/reducer'
 import settingsReducer from './settings/reducer'
 import transactionsReducer from './transactions/reducer'
 import veTHEAutomationContract from './veTHEAutomationContract/reducer'
@@ -42,7 +41,6 @@ const persistedReducer = persistReducer(
     fusion: fusionReducer,
     veTHEAutomationContract,
     weightedPool: weightedPoolReducer,
-    positions: positionsReducer,
   }),
 )
 
@@ -56,8 +54,7 @@ export function makeStore() {
       getDefaultMiddleware({
         thunk: true,
         serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'positions/updatePositions'],
-          ignoredPaths: ['positions.removedClaimablePositions', 'positions.positions'],
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
       }),
     devTools: process.env.NODE_ENV === 'development',

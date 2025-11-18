@@ -1,13 +1,19 @@
 import BigNumber from 'bignumber.js'
 import { useCallback, useMemo, useState } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 
 import { PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
+import {
+  createPosition,
+  createPositionFromAmount0,
+  createPositionFromAmount1,
+  createPositionFromAmounts,
+} from '@/lib/position'
 import { Bound, Field } from '@/state/fusion/actions'
 import { formatAmount } from '@/utils/utils'
 
@@ -122,7 +128,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
 
   const position = useMemo(() => {
     if (_fusion && pool) {
-      return new Position({
+      return createPosition({
         pool: _fusion,
         liquidity: new BigNumber(liquidity).toString(10),
         tickLower,
@@ -164,14 +170,14 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
       typeof tickUpper === 'number'
     ) {
       const pos = wrappedIndependentAmount.currency.equals(_fusion.token0)
-        ? Position.fromAmount0({
+        ? createPositionFromAmount0({
             pool: _fusion,
             tickLower,
             tickUpper,
             amount0: independentAmount.quotient,
             useFullPrecision: true, // we want full precision for the theoretical position
           })
-        : Position.fromAmount1({
+        : createPositionFromAmount1({
             pool: _fusion,
             tickLower,
             tickUpper,
@@ -203,7 +209,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
     const amount1 = parsedAmounts?.[tokenA?.equals(_fusion?.token0) ? Field.CURRENCY_B : Field.CURRENCY_A]?.quotient
 
     if (amount0 !== undefined && amount1 !== undefined) {
-      return Position.fromAmounts({
+      return createPositionFromAmounts({
         pool: _fusion,
         tickLower,
         tickUpper,

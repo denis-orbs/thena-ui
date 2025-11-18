@@ -163,8 +163,6 @@ export const usePairInfo = ({
     if (type === PAIR_TYPES.WEIGHTED) {
       return
     }
-    const ffff = v2Pairs.find(pair => pair.address === '0x296f2ac241243da7b26cd5ecf37ef5ce2783e613')
-    console.log('ffff', ffff)
     const found = [...pairs, ...v2Pairs].find(
       pair =>
         pair.address === poolAddress ||

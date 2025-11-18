@@ -3,12 +3,12 @@ import { isNil } from 'lodash'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { Position } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
 
 import Contracts from '@/constant/contracts'
 import { batchCallMulti, simulateCall } from '@/lib/contractActions'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
+import { createPosition } from '@/lib/position'
 import { getCollectedRewards, getIntegralFarmingData, getIntegralFeesData } from '@/lib/subgraph'
 import { fromWei, ZERO_VALUE } from '@/utils/utils'
 
@@ -165,7 +165,7 @@ export const useFarmPositions = positions => {
 
       const farmingData = fusionFarmings.find(item => item.pool.toLowerCase() === farmAddresses[index]) ?? {}
       const position = fusion
-        ? new Position({
+        ? createPosition({
             pool: fusion,
             liquidity: new BigNumber(liquidity).toString(10),
             tickLower,
