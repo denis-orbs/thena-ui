@@ -156,7 +156,7 @@ function MetricsPreview({ state }) {
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-col gap-[65px] px-10 py-6',
+        'flex h-full w-full flex-col items-center justify-center gap-[65px] px-10 py-6',
         metricsShow.length === 2 && 'gap-[84px]',
         metricsShow.length === 3 && 'gap-[115px]',
         metricsShow.length === 4 && 'gap-[44px]',
