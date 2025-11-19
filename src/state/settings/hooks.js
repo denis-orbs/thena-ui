@@ -5,7 +5,14 @@ import { useAccount, useSwitchChain } from 'wagmi'
 
 import { LOCALES, ThenaLiquidityHubEnabledKey } from '@/constant'
 
-import { switchNetwork, updateDeadline, updateLiquidityHubEnabled, updateLocale, updateSlippage } from './actions'
+import {
+  switchNetwork,
+  updateDeadline,
+  updateLiquidityHubEnabled,
+  updateLocale,
+  updatePriceProtection,
+  updateSlippage,
+} from './actions'
 
 const getFromLocalStorage = (key, defaultValue = true) => {
   if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return defaultValue
@@ -21,7 +28,7 @@ const getFromLocalStorage = (key, defaultValue = true) => {
 }
 
 export const useSettings = () => {
-  const { slippage, deadline, liquidityHubEnabled } = useSelector(state => state.settings)
+  const { slippage, deadline, liquidityHubEnabled, priceProtection } = useSelector(state => state.settings)
   const dispatch = useDispatch()
 
   // Load liquidityHubEnabled from localStorage on initial render
@@ -54,13 +61,22 @@ export const useSettings = () => {
     }
   }, [dispatch, liquidityHubEnabled])
 
+  const _updatePriceProtection = useCallback(
+    val => {
+      dispatch(updatePriceProtection(val))
+    },
+    [dispatch],
+  )
+
   return {
     slippage,
     deadline,
     liquidityHubEnabled,
+    priceProtection,
     updateSlippage: _updateSlippage,
     updateDeadline: _updateDeadline,
     updateLiquidityHubEnabled: _updateLiquidityHubEnabled,
+    updatePriceProtection: _updatePriceProtection,
   }
 }
 

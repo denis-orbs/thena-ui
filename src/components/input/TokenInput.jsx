@@ -33,6 +33,7 @@ function TokenInput({
   isHideTrending = false,
   className = '',
   hiddenAssets = [],
+  showExtendedTokens = false,
 }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
@@ -143,6 +144,7 @@ function TokenInput({
           setOtherAsset={setOtherAsset}
           isHideTrending={isHideTrending}
           hiddenAssets={hiddenAssets}
+          showExtendedTokens={showExtendedTokens}
         />
       ) : (
         <SelectTokenFromList
