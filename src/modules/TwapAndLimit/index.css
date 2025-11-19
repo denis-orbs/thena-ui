@@ -1,114 +1,27 @@
-.twap-limit-panel {
-  position: relative;
+.twap-section {
   border: 1px solid rgb(53 36 61 / 1);
   border-radius: 0.75rem;
   padding: 1rem;
-}
-
-.twap-limit-panel-input {
-  border: unset;
-  padding: 0;
-}
-.twap-limit-panel-header {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.twap-limit-panel-header-left {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.twap-limit-panel-header p {
-  font-size: 14px;
-}
-.twap-limit-panel-header img {
-  width: 20px;
-  height: 20px;
-}
-.twap-limit-price-panel-percent {
-  margin-left: auto;
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  margin-top: 10px;
-  gap: 5px;
-}
-
-.twap-select-button {
-  background: rgb(53 36 61 / 1);
-  border-radius: 0.5rem;
-  padding: 5px 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  transition: 0.2s all;
-}
-
-.twap-select-button-selected {
-  background: rgb(66 45 76 / 1);
-}
-.twap-select-button:hover {
-  background: rgb(66 45 76 / 1);
-}
-
-.twap-limit-panel-input-container {
   position: relative;
-}
-
-.twap-limit-panel-input-container > div:first-child > div:first-child {
-  border: none;
-  padding: 0px;
-}
-
-.twap-limit-panel-input-container > div:first-child > div:first-child:hover {
-  background: unset;
-}
-.twap-limit-price-panel-percent-reset {
   display: flex;
-  align-items: stretch;
-  gap: 2px;
+  flex-direction: column;
 }
 
-.twap-limit-price-panel-percent-reset-button {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-
-.twap-limit-price-panel-percent-reset-icon {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-
-.twap-limit-panel-input > div:last-child {
-  /* display: none; */
-}
-
-.twap-limit-panel-invert-button {
-  position: absolute;
-  right: 0px;
-  top: 2px;
+.twap-order-details__detail-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  width: 30px;
-  height: 30px;
-  justify-content: center;
-  margin-right: 10px;
-  margin-top: 5px;
-}
 
-.twap-limit-panel-invert-button svg {
-  width: 20px;
-  height: 20px;
-}
-
-.twap-price-switch {
-  display: flex;
-  justify-content: flex-end;
   gap: 10px;
+  justify-content: space-between;
+}
+.twap-order-details__detail-row-label {
+  display: flex;
   align-items: center;
+  gap: 10px;
+}
+.twap-create-order-bottom {
+  width: 100%;
 }
 
 .twap-panel-header {
@@ -126,8 +39,15 @@
   font-weight: 500;
 }
 
-.twap-orders {
-  min-height: 300px;
+.twap-orders__list-empty {
+  margin-top: 70px;
+  margin-bottom: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.twap-orders__selection button {
+  font-size: 13px;
 }
 .twap-orders__button {
   display: flex;
@@ -157,10 +77,21 @@
 .twap-orders__list {
   height: 600px;
   max-height: 55vh;
-  padding-top: 20px;
+}
+.twap-orders__list-item-progress {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+}
+.twap-orders__list-item-token-progress-label {
+  width: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
 }
 .twap-orders__list-item-progress-bar {
-  height: 5px;
+  height: 6px;
   flex: 1;
   background: rgb(220 0 212/0.3);
   border-radius: 10px;
@@ -181,8 +112,37 @@
   cursor: pointer;
   transition: 0.2s all;
 }
+.twap-orders__list-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .twap-orders__list-item:hover {
   background: rgb(53 36 61 / 0.5);
+}
+.twap-orders__list-item-token {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+.twap-orders__list-item-token img {
+  width: 20px;
+  height: 20px;
+}
+.twap-orders__list-item-token-symbol {
+  font-size: 13px;
+  font-weight: 500;
+}
+.twap-orders__list-item-tokens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.twap-orders__list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .twap-orders__list-item-header-title {
   font-size: 13px;
@@ -224,6 +184,7 @@
 .twap-orders__selected-order-accordion {
   border: 1px solid rgb(53 36 61 / 1);
   border-radius: 0.75rem;
+  background: rgb(53 36 61 / 0.5);
 }
 .twap-order-details__fill-delay-text {
   font-size: 14px;
@@ -253,56 +214,20 @@
   height: 16px;
 }
 .orbs_MainTokenLeft {
-  gap: 4px;
+  gap: 6px;
 }
 .orbs_MainTokenTitle {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 15px;
+  opacity: 0.7;
 }
 .orbs_MainTokenUsd {
-  font-size: 14px;
+  font-size: 13px;
   opacity: 0.7;
 }
 .orbs_MainTokenAmount {
   font-size: 18px;
   font-weight: 500;
-}
-
-.twap-warning-message {
-  font-size: 14px;
-  color: rgb(243 242 244 / 1);
-  margin-top: 10px;
-}
-.twap-warning-message svg {
-  position: relative;
-  top: 2px;
-}
-
-.twap-input input {
-  font-size: 16px;
-  color: rgb(243 242 244 / 1);
-  padding: 0px;
-  height: 35px;
-}
-
-.twap-inputs {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
-
-.twap-trades-amount-panel {
-  width: 40%;
-}
-.twap-trade-interval-panel {
-  flex: 1;
-}
-.twap-select-menu {
-  max-width: 100px;
-}
-
-.twap-duration-panel .twap-select-menu {
-  max-width: 150px;
 }
 
 .twap-select-menu input {
@@ -314,23 +239,6 @@
   font-size: 14px;
 }
 
-.twap-trade-amount-message {
-  font-size: 14px;
-}
-
-.twap-trade-amount-message-error {
-  color: #ff3333;
-}
-
-.twap-panel {
-  border: 1px solid rgb(53 36 61 / 1);
-  border-radius: 0.75rem;
-  padding: 10px;
-}
-.twap-panel-error .twap-input input {
-  color: #ff3333;
-}
-
 .twap-create-order-details {
   display: flex;
   flex-direction: column;
@@ -339,13 +247,6 @@
   background: rgb(53 36 61 / 0.5);
   border-radius: 0.75rem;
   margin-top: 16px;
-}
-
-.twap-order-modal-disclaimer {
-  margin-top: 10px;
-}
-.twap-order-modal-disclaimer a {
-  text-decoration: underline;
 }
 
 .orbs_TradeStepLayoutTitle {
@@ -361,16 +262,42 @@
 .orbs_StepIndicatorLine {
   background: rgb(220 0 212/1) !important;
 }
+
+.twap-orders-modal .twap-select-menu {
+  max-width: 150px;
+}
+.twap-select-menu-portal {
+  z-index: 999;
+}
+
+.twap-order-details__detail-row-value-id {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.twap-order-details__detail-row-value-usd {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.twap-select-menu-portal div {
+  font-size: 14px;
+  padding: 8px 10px;
+}
+.twap-orders__list-item-select-mode {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.twap-orders__list-item-select-mode.twap-orders__list-item-OPEN {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.twap-orders__list-item-OPEN.twap-orders__list-item-selected {
+  background: rgb(220 0 212/0.2);
+}
+
 @media (max-width: 768px) {
-  .twap-inputs {
-    flex-direction: column;
-  }
-  .twap-trade-interval-panel {
-    width: 100%;
-  }
-  .twap-trades-amount-panel {
-    width: 100%;
-  }
   .twap-order-details__detail-row-label {
     font-size: 12px;
   }

@@ -24,7 +24,15 @@ const Connectors =
 export const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
 export const assembleOdosUrl = 'https://api.odos.xyz/sor/assemble'
 
-export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outputToken, account, slippage }) => {
+export const fetchOdosQuote = async ({
+  inputAmount,
+  networkId,
+  inputToken,
+  outputToken,
+  account,
+  slippage,
+  isTwap = false,
+}) => {
   const quoteRequestBody = {
     chainId: networkId,
     inputTokens: [
@@ -42,7 +50,7 @@ export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outpu
     userAddr: getAddress(account || zeroAddress),
     slippageLimitPercent: slippage,
     referralCode: 121015208,
-    sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion', 'Thena V3'],
+    sourceWhitelist: isTwap ? [] : ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion', 'Thena V3'],
     pathVizImage: true,
     disableRFQs: true,
     compact: true,
@@ -69,7 +77,7 @@ export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outpu
   return quote
 }
 
-export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId) => {
+export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId, isTwap = false) => {
   const inputAmount = toWei(fromAmount, fromAsset?.decimals).dp(0).toString(10)
   const inputToken = getAddress(fromAsset?.address === 'BNB' ? zeroAddress : fromAsset?.address ?? zeroAddress)
   const outputToken = getAddress(toAsset?.address === 'BNB' ? zeroAddress : toAsset?.address ?? zeroAddress)
@@ -88,6 +96,7 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         outputToken,
         account,
         slippage,
+        isTwap,
       }),
     refetchInterval: 60000,
     enabled: Boolean(fromAsset && toAsset && networkId === ChainId.BSC && !isInvalidAmount(fromAmount)),

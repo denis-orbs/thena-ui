@@ -326,6 +326,8 @@ export const SWAP_TYPES = {
   SWAP: '1',
   TWAP: '2',
   LIMIT: '3',
+  STOP_LOSS: '4',
+  TAKE_PROFIT: '5',
 }
 
 export const ThenaAuthToken = 'thena-token'

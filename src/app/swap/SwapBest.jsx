@@ -40,22 +40,16 @@ const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap),
   loading: () => <Skeleton className='h-64' />,
 })
 
-const TwapOrders = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Orders), {
-  ssr: false,
-  loading: () => <Skeleton className='h-64' />,
-})
-
-const PoweredByOrbs = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.PoweredByOrbs), {
-  ssr: false,
-  loading: () => <Skeleton className='h-64' />,
-})
-
 const MAX_PRICE_IMPACT = 20
 const SWAP_TYPES_ITEMS = [
   { key: SWAP_TYPES.SWAP, label: 'Swap' },
   { key: SWAP_TYPES.TWAP, label: 'TWAP' },
   { key: SWAP_TYPES.LIMIT, label: 'Limit' },
+  { key: SWAP_TYPES.STOP_LOSS, label: 'SL' },
+  { key: SWAP_TYPES.TAKE_PROFIT, label: 'TP' },
 ]
+
+const TWAP_TYPES = [SWAP_TYPES.TWAP, SWAP_TYPES.LIMIT, SWAP_TYPES.STOP_LOSS, SWAP_TYPES.TAKE_PROFIT]
 
 export default function SwapBest({
   fromAsset,
@@ -77,7 +71,7 @@ export default function SwapBest({
   const { slippage, deadline, liquidityHubEnabled } = useSettings()
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
-  const isTwap = swapType === SWAP_TYPES.TWAP || swapType === SWAP_TYPES.LIMIT
+  const isTwap = useMemo(() => TWAP_TYPES.includes(swapType), [swapType])
 
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
@@ -103,15 +97,14 @@ export default function SwapBest({
     data: bestTrade,
     isLoading: bestTradePending,
     mutate,
-  } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
+  } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId, isTwap)
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
   const { handleSolidlySwap, pending: solidlySwapPending } = useSolidlySwap()
 
   const isEnabledTradeLH = useMemo(() => {
-    if (isTwap) return false
-    if (!liquidityHubEnabled) return false
+    if (!liquidityHubEnabled || isTwap) return false
     if (!fromAmount) return false
     if (!bestTrade && !bestTradePending) return true
     if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) return true
@@ -381,6 +374,10 @@ export default function SwapBest({
         return t('TWAP')
       case SWAP_TYPES.LIMIT:
         return t('Limit')
+      case SWAP_TYPES.STOP_LOSS:
+        return t('Stop Loss')
+      case SWAP_TYPES.TAKE_PROFIT:
+        return t('Take Profit')
       default:
         return t('Swap')
     }
@@ -397,6 +394,7 @@ export default function SwapBest({
       })),
     [swapType, setSwapType],
   )
+
   return (
     <>
       <div className='w-full min-w-0 md:w-[448px] 2xl:w-[480px]'>
@@ -405,7 +403,7 @@ export default function SwapBest({
           <div className='mb-3 flex items-center justify-between'>
             <h2>{title}</h2>
             <div className='flex items-center gap-2'>
-              <TxnSettings />
+              <TxnSettings isTwap={isTwap} />
             </div>
           </div>
 
@@ -419,7 +417,13 @@ export default function SwapBest({
               updateSearchParams={updateSearchParams}
               outAmount={bestTrade?.outAmounts[0]}
               fromAmount={fromAmount}
-              limit={swapType === SWAP_TYPES.LIMIT}
+              swapType={swapType}
+              isWrap={isWrap}
+              isUnwrap={isUnwrap}
+              onWrap={onWrap}
+              onUnwrap={onUnwrap}
+              wrapPending={wrapPending}
+              quotePending={quotePending}
             />
           ) : (
             <>
@@ -434,6 +438,7 @@ export default function SwapBest({
                     amount={fromAmount}
                     setAmount={setFromAmount}
                     autoFocus
+                    showExtendedTokens={liquidityHubEnabled}
                   />
                   <TokenInput
                     asset={toAsset}
@@ -442,6 +447,7 @@ export default function SwapBest({
                     setOtherAsset={asset => setFromAddress(asset.address)}
                     amount={toAmount}
                     disabled
+                    showExtendedTokens={liquidityHubEnabled}
                   />
                   <EmphasisIconButton
                     className='absolute top-0 right-0 bottom-0 left-0 z-10 m-auto'
@@ -518,51 +524,52 @@ export default function SwapBest({
             </>
           )}
         </Box>
-        {isTwap && <TwapOrders />}
-        {isTwap && <PoweredByOrbs />}
+        {isTwap && <div id='twap-orders' />}
       </div>
       <div className='flex max-w-[920px] min-w-0 flex-1 flex-col gap-4'>
         <SwapChart asset0={toAsset} asset1={fromAsset} />
 
-        <Box className='flex flex-col gap-4'>
-          <div className='flex justify-between'>
-            <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
-            <TextButton
-              className='text-xs'
-              iconClassName={cn('lg:h-4 lg:w-4', quotePending && 'animate-spin')}
-              onClick={onRefreshQuotes}
-              LeadingIcon={RefreshIcon}
-            >
-              {t('Refresh Quote')}
-            </TextButton>
-          </div>
-          {quotePending ? (
-            <Skeleton className='h-[100px] w-full' />
-          ) : (
-            <div>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-2'>
-                  <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
-                  <Paragraph>
-                    {formatAmount(fromAmount)} {fromAsset?.symbol}
-                  </Paragraph>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <Paragraph>
-                    {formatAmount(toAmount)} {toAsset?.symbol}
-                  </Paragraph>
-                  <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
-                </div>
-              </div>
-              {!isFallbackLH && (
-                <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
-                  {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
-                </div>
-              )}
-              {isFallbackLH && tradeLH && Number(tradeLH.outAmount) > 0 && <LiquidityHubRouting />}
+        {!isTwap && (
+          <Box className='flex flex-col gap-4'>
+            <div className='flex justify-between'>
+              <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
+              <TextButton
+                className='text-xs'
+                iconClassName={cn('lg:h-4 lg:w-4', quotePending && 'animate-spin')}
+                onClick={onRefreshQuotes}
+                LeadingIcon={RefreshIcon}
+              >
+                {t('Refresh Quote')}
+              </TextButton>
             </div>
-          )}
-        </Box>
+            {quotePending ? (
+              <Skeleton className='h-[100px] w-full' />
+            ) : (
+              <div>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
+                    <Paragraph>
+                      {formatAmount(fromAmount)} {fromAsset?.symbol}
+                    </Paragraph>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Paragraph>
+                      {formatAmount(toAmount)} {toAsset?.symbol}
+                    </Paragraph>
+                    <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
+                  </div>
+                </div>
+                {!isFallbackLH && (
+                  <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
+                    {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
+                  </div>
+                )}
+                {isFallbackLH && tradeLH && Number(tradeLH.outAmount) > 0 && <LiquidityHubRouting />}
+              </div>
+            )}
+          </Box>
+        )}
       </div>
       <WarningModal popup={isWarning} setPopup={setIsWarning} priceImpact={priceImpact} handleSwap={handleSwap} />
     </>

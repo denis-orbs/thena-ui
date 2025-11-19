@@ -20,7 +20,7 @@
     "@emotion/styled": "^11.14.0",
     "@next/third-parties": "^14.1.0",
     "@orbs-network/liquidity-hub-sdk": "^1.0.74",
-    "@orbs-network/twap-ui": "3.1.5",
+    "@orbs-network/twap-ui": "^5.0.67",
     "@particle-network/auth-core-modal": "^1.5.2",
     "@rainbow-me/rainbowkit": "^2.2.9",
     "@reduxjs/toolkit": "^2.0.1",
