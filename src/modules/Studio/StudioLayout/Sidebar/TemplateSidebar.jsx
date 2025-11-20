@@ -232,7 +232,7 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
         </div>
       </div>
       <div className='mt-auto hidden w-full gap-3 xl:flex'>
-        <ActionButtons scale={1920 / 1024} fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
+        <ActionButtons fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
       </div>
     </aside>
   )

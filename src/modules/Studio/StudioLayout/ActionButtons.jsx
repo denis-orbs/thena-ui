@@ -6,7 +6,7 @@ import useWallet from '@/hooks/useWallet'
 import DownloadImage from './DownloadImage'
 import ShareImage from './ShareImage'
 
-export default function ActionButtons({ fileName, scale = 1, backgroundColor = '#0B040D' }) {
+export default function ActionButtons({ fileName, backgroundColor = '#0B040D' }) {
   const { account } = useWallet()
 
   return (
@@ -14,14 +14,9 @@ export default function ActionButtons({ fileName, scale = 1, backgroundColor = '
       {!account ? (
         <ConnectButton className='w-full' />
       ) : (
-        <ShareImage fileName={fileName} scale={scale} backgroundColor={backgroundColor} />
+        <ShareImage fileName={fileName} backgroundColor={backgroundColor} />
       )}
-      <DownloadImage
-        fileName={fileName}
-        scale={scale}
-        backgroundColor={backgroundColor}
-        className={!account ? 'w-full' : 'w-1/2'}
-      />
+      <DownloadImage fileName={fileName} backgroundColor={backgroundColor} className={!account ? 'w-full' : 'w-1/2'} />
     </>
   )
 }

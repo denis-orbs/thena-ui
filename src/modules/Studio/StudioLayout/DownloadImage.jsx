@@ -14,7 +14,7 @@ const delay = ms =>
     setTimeout(resolve, ms)
   })
 
-function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
+function DownloadImage({ fileName, backgroundColor = '#0B040D', className }) {
   const t = useTranslations()
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -56,9 +56,9 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', class
       }
 
       const canvas = await html2canvas(originShare, {
-        width: 1024,
-        height: 576,
-        scale,
+        width: 1920,
+        height: 1080,
+        scale: 1,
         allowTaint: true,
         useCORS: true,
         removeContainer: true,
@@ -67,21 +67,25 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', class
           const clonedElement = clonedDoc.getElementById('share-origin')
           if (clonedElement) {
             clonedElement.style.display = 'block'
-            clonedElement.style.width = '1024px'
-            clonedElement.style.height = '576px'
+            clonedElement.style.minWidth = '1920px'
+            clonedElement.style.minHeight = '1080px'
             clonedElement.style.borderRadius = 'none'
           }
         },
       })
 
       const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(_blob => {
-          if (!_blob) {
-            reject(new Error('Failed to create image blob'))
-          } else {
-            resolve(_blob)
-          }
-        })
+        canvas.toBlob(
+          _blob => {
+            if (!_blob) {
+              reject(new Error('Failed to create image blob'))
+            } else {
+              resolve(_blob)
+            }
+          },
+          'image/png',
+          1.0,
+        )
       })
 
       await directDownload(blob)

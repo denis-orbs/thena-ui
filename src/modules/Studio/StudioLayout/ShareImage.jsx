@@ -20,7 +20,7 @@ import ShareIcon from '~/svgs/share-icon.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
 
-export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B040D', className }) {
+export default function ShareImage({ fileName, backgroundColor = '#0B040D', className }) {
   const [uploading, setUploading] = useState(false)
   const [openShareModal, setOpenShareModal] = useState(false)
   const [postContent, setPostContent] = useState('')
@@ -56,9 +56,9 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
       }
 
       const canvas = await html2canvas(originShare, {
-        width: 1024,
-        height: 576,
-        scale,
+        width: 1920,
+        height: 1080,
+        scale: 1,
         allowTaint: true,
         useCORS: true,
         removeContainer: true,
@@ -67,8 +67,8 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
           const clonedElement = clonedDoc.getElementById('share-origin')
           if (clonedElement) {
             clonedElement.style.display = 'block'
-            clonedElement.style.width = '1024px'
-            clonedElement.style.height = '576px'
+            clonedElement.style.width = '1920px'
+            clonedElement.style.height = '1080px'
             clonedElement.style.borderRadius = 'none'
           }
         },

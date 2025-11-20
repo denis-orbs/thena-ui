@@ -269,7 +269,7 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
             <Preview state={state} setField={setField} />
           </PreviewCanvas>
           <div className='flex items-center justify-center gap-2'>
-            <DownloadImage scale={1920 / 1024} fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
+            <DownloadImage fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
             <EmphasisButton className='w-1/2' onClick={() => setOpenPreview(false)}>
               <EditIcon className='size-4' /> {t('Edit')}
             </EmphasisButton>
@@ -277,12 +277,7 @@ function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
           {!account ? (
             <ConnectButton className='w-full' />
           ) : (
-            <ShareImage
-              className='w-full'
-              scale={1920 / 1024}
-              fileName={tpl.title.replace(/ /g, '_')}
-              backgroundColor='transparent'
-            />
+            <ShareImage className='w-full' fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
           )}
         </div>
       </ModalBody>
