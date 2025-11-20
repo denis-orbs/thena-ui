@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { errorToast } from '@/lib/notify'
@@ -16,6 +16,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
   const [isDragOver, setIsDragOver] = useState(false)
   const imgInputRef = useRef(null)
 
+  const backgroundImage = useMemo(() => (background.value ? `url(${background.value})` : 'none'), [background.value])
   // useFixViewport(parentRef, childRef)
   useEffect(() => {
     const calculateScale = () => {
@@ -112,7 +113,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
         <section
           ref={childRef}
           className={cn(
-            'relative origin-center rounded-xl border border-neutral-700',
+            'relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat',
             background.isCustom && !background.value && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
             background.isCustom && !background.value && 'cursor-pointer',
           )}
@@ -123,6 +124,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
             maxWidth: '1024px',
             maxHeight: '576px',
             transform: `scale(${scale})`,
+            backgroundImage,
             transformOrigin: 'top left',
           }}
           onDragEnter={handleDragEnter}
@@ -149,15 +151,6 @@ export default function PreviewCanvas({ children, background, setField, classNam
             className='hidden'
             ref={imgInputRef}
           />
-
-          {background.value && (
-            <Image
-              src={background.value}
-              alt='Background'
-              fill
-              className='absolute inset-0 top-0 right-0 bottom-0 left-0 -z-1 object-cover'
-            />
-          )}
           {background.isCustom && !background.value ? (
             <div className='flex size-full items-center justify-center bg-[url("/images/content-studio/empty_pair.png")] bg-auto bg-center bg-no-repeat'>
               <div className='flex flex-col items-center justify-center gap-3'>
@@ -190,16 +183,9 @@ export default function PreviewCanvas({ children, background, setField, classNam
           minHeight: '576px',
           maxWidth: '1024px',
           maxHeight: '576px',
+          backgroundImage,
         }}
       >
-        {background.value && (
-          <Image
-            src={background.value}
-            alt='Background'
-            fill
-            className='absolute inset-0 top-0 right-0 bottom-0 left-0 -z-1 object-cover'
-          />
-        )}
         <div className='flex h-full items-center justify-center'>{children}</div>
         <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
           <LogoIcon className='h-8 w-auto' />
