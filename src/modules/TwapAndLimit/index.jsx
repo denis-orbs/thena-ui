@@ -212,6 +212,8 @@ function LimitPrice() {
     isLimitPrice,
     error,
     warning,
+    tooltip,
+    label,
     onReset,
   } = useLimitPricePanel()
 
@@ -224,7 +226,7 @@ function LimitPrice() {
           {module !== Module.LIMIT && (
             <div className='flex items-center gap-1'>
               <Toggle checked={isLimitPrice} onChange={toggleLimitPrice} />
-              <p className='text-[14px] font-medium'>Limit Price</p>
+              <Label tooltip={tooltip} text={label} />
             </div>
           )}
           {isLimitPrice && <DefaultButton onClick={onReset} />}
@@ -393,9 +395,10 @@ function CustomInputs() {
 }
 
 function DefaultButton({ onClick, className }) {
+  const t = useTranslations()
   return (
     <div className={cn('text-primary-600 ml-auto w-fit cursor-pointer text-sm', className)} onClick={onClick}>
-      set to default
+      {t('setToDefault')}
     </div>
   )
 }
@@ -559,7 +562,8 @@ function OrdersModal() {
         isOpen={Boolean(isOpen)}
         closeModal={onCloseModal}
         width={520}
-        title='Orders'
+        title={selectedOrder ? selectedOrder.title : 'Orders'}
+        fontSizeTitle='text-xl lg:text-2xl'
       >
         <div className='twap-orders-modal mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
           {!selectedOrder && (
