@@ -1,7 +1,5 @@
 'use client'
 
-import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
-import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
 import { motion } from 'framer-motion'
 import { compact } from 'lodash'
 import Link from 'next/link'
@@ -12,7 +10,6 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
-import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -31,7 +28,6 @@ import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import cn from '@/utils/classes'
 import { formatAmount, goToDoc } from '@/utils/utils'
-import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
 import LogoMobile from '~/logo-mobile.svg'
@@ -366,10 +362,6 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
-  // start: fix social auth login
-  const { connect } = useConnect()
-  const { connectionStatus } = useParticleConnect()
-  const { disconnect } = useDisconnect()
   const { spaceIdName } = useSpaceIdBNB(account)
 
   useEffect(() => {
@@ -418,21 +410,6 @@ function Header() {
       behavior: 'smooth',
     })
   }
-  useEffect(() => {
-    if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
-      connect({
-        connector: particleWagmiWallet({ socialType: getLatestAuthType() }),
-      })
-    }
-    const onDisconnect = () => {
-      disconnect()
-    }
-    particleAuth.on(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
-    return () => {
-      particleAuth.off(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
-    }
-  }, [connect, connectionStatus, disconnect])
-  // end: fix social auth login
 
   const { signWallet } = useSignWallet()
 

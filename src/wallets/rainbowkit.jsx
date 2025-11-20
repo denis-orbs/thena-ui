@@ -17,14 +17,8 @@ import { createConfig, fallback, http, unstable_connector, WagmiProvider } from 
 import { bsc, bscTestnet, opBNB } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 
-import { particleAppleWallet, particleGoogleWallet, particleTwitterWallet, particleWallet } from './particleWallet'
-
 const connectors = connectorsForWallets(
   [
-    {
-      groupName: 'Social login',
-      wallets: [particleGoogleWallet, particleAppleWallet, particleTwitterWallet, particleWallet],
-    },
     {
       groupName: 'Wallets',
       wallets: [
