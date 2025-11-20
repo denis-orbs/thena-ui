@@ -59,7 +59,7 @@ function TokenInput({
     <div className={cn('flex w-full flex-col gap-3', className)}>
       {typeof title === 'string' && <TextHeading>{title}</TextHeading>}
       <div
-        className='flex cursor-text flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 focus-within:border-neutral-500 hover:bg-neutral-700'
+        className='flex cursor-text flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 focus-within:border-neutral-500'
         onClick={onfocusInput}
       >
         <div className='flex items-center justify-between gap-2'>
