@@ -4,6 +4,7 @@ import html2canvas from 'html2canvas-pro'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Textarea from '@/components/input/Textarea'
@@ -98,7 +99,8 @@ export default function ShareImage({ fileName, scale = 1, backgroundColor = '#0B
         },
       )
     } catch (error) {
-      console.error('Error processing image download:', error)
+      console.error('Error processing share image:', error)
+      toast.error('Error processing share image:', error)
       setUploading(false)
     }
   }

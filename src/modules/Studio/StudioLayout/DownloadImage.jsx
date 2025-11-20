@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas-pro'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
+import { toast } from 'react-toastify'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import cn from '@/utils/classes'
@@ -35,6 +36,7 @@ function DownloadImage({ fileName, scale = 1, backgroundColor = '#0B040D', class
         await delay(500)
       } catch (error) {
         console.error('Error with direct download:', error)
+        toast.error('Error with direct download:', error)
         throw error
       }
     },
