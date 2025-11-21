@@ -56,9 +56,9 @@ function DownloadImage({ fileName, backgroundColor = '#0B040D', className }) {
       }
 
       const canvas = await html2canvas(originShare, {
-        width: 1920,
-        height: 1080,
-        scale: 1,
+        width: 1024,
+        height: 576,
+        scale: 1920 / 1024,
         allowTaint: true,
         useCORS: true,
         removeContainer: true,
@@ -67,8 +67,8 @@ function DownloadImage({ fileName, backgroundColor = '#0B040D', className }) {
           const clonedElement = clonedDoc.getElementById('share-origin')
           if (clonedElement) {
             clonedElement.style.display = 'block'
-            clonedElement.style.minWidth = '1920px'
-            clonedElement.style.minHeight = '1080px'
+            clonedElement.style.minWidth = '1024px'
+            clonedElement.style.minHeight = '576px'
             clonedElement.style.borderRadius = 'none'
           }
         },

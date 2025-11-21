@@ -15,7 +15,6 @@ export default function PreviewCanvas({ children, background, setField, classNam
   const t = useTranslations()
   const [isDragOver, setIsDragOver] = useState(false)
   const imgInputRef = useRef(null)
-  const [imageSize, setImageSize] = useState({ w: 1920, h: 1080 })
 
   const backgroundImage = useMemo(() => (background.value ? `url(${background.value})` : 'none'), [background.value])
   // useFixViewport(parentRef, childRef)
@@ -102,28 +101,6 @@ export default function PreviewCanvas({ children, background, setField, classNam
     }
   }
 
-  useEffect(() => {
-    const getImageSize = url =>
-      new Promise(resolve => {
-        const img = new Image()
-        img.src = url
-        img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight })
-      })
-    if (background.isCustom && background.value) {
-      getImageSize(background.value)
-        .then(size => {
-          const width = Math.max(size.w, 1920)
-          const height = (width * 1080) / 1920
-          setImageSize({ w: width, h: height })
-        })
-        .catch(() => {
-          setImageSize({ w: 1920, h: 1080 })
-        })
-    } else {
-      setImageSize({ w: 1920, h: 1080 })
-    }
-  }, [background.isCustom, background.value])
-
   return (
     <>
       <div
@@ -136,7 +113,7 @@ export default function PreviewCanvas({ children, background, setField, classNam
         <section
           ref={childRef}
           className={cn(
-            'relative origin-center rounded-xl border border-neutral-700 bg-contain bg-center bg-no-repeat',
+            'relative origin-center rounded-xl border border-neutral-700 bg-cover bg-center bg-no-repeat',
             background.isCustom && !background.value && isDragOver && 'border-[#DC00D4] bg-neutral-800/50',
             background.isCustom && !background.value && 'cursor-pointer',
           )}
@@ -199,14 +176,27 @@ export default function PreviewCanvas({ children, background, setField, classNam
       </div>
       <div
         id='share-origin'
-        className='fixed top-[100vh] left-[100vh] order-3 hidden origin-top-left bg-cover bg-center bg-no-repeat'
+        className='fixed top-[100vh] left-[100vh] order-3 hidden origin-top-left'
         style={{
-          aspectRatio: '1920/1080',
-          minWidth: `${imageSize.w}px`,
-          minHeight: `${imageSize.h}px`,
-          backgroundImage,
+          aspectRatio: '1024/576',
+          minWidth: '1024px',
+          minHeight: '576px',
+          maxWidth: '1024px',
+          maxHeight: '576px',
         }}
       >
+        {background.value && (
+          <NextImage
+            src={background.value}
+            alt='Background'
+            width={1024}
+            height={576}
+            className='absolute inset-0 top-0 right-0 bottom-0 left-0 -z-1 object-cover'
+            crossOrigin='anonymous'
+            unoptimized
+            priority
+          />
+        )}
         <div className='flex h-full items-center justify-center'>{children}</div>
         <div className='absolute bottom-0 left-0 flex w-full items-center justify-between px-10 py-9'>
           <LogoIcon className='h-8 w-auto' />
