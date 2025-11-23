@@ -72,7 +72,7 @@ export default function HeaderConnectButton({ className, isMobile = false, isMin
       >
         <NextImage
           className={cn('size-4 cursor-pointer rounded-full lg:size-5', isMobile && '!size-5')}
-          alt='particle icon'
+          alt='wallet icon'
           src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/svgs/wallet-fold.svg'}
         />
         <span

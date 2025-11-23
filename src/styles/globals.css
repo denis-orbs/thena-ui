@@ -682,16 +682,6 @@
     background-color: #31042f !important;
   }
 
-  .particle-pwe-btn {
-    display: none;
-  }
-
-  .particle-pwe-iframe-content {
-    top: 85px !important;
-    right: 40px !important;
-    left: auto !important;
-  }
-
   .border-gradient-secondary {
     @apply from-gradient-secondary-start to-gradient-secondary-end bg-linear-to-b;
   }
