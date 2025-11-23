@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
@@ -32,7 +31,7 @@ function ThenianElement({ data, username }) {
   return (
     <div className='flex items-center gap-2 md:gap-3'>
       <Image
-        src={data?.avatarUrl ?? Avatar}
+        src={data?.avatarUrl ?? '/images/home/stats/socials/social-1.png'}
         className='size-8! rounded-full md:size-9!'
         width={36}
         height={36}

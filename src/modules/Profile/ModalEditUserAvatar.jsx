@@ -1,5 +1,4 @@
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import ReactCrop from 'react-image-crop'
@@ -182,7 +181,9 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
                 {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className='object-contain' />}
               </>
             )}
-            {stateChecked === 'default' && <CircleImage src={Avatar} alt='avatar' className='h-24 w-24' />}
+            {stateChecked === 'default' && (
+              <CircleImage src='/images/home/stats/socials/social-1.png' alt='avatar' className='h-24 w-24' />
+            )}
 
             <div className='mt-2 flex w-full flex-row items-center gap-2'>
               <EmphasisButton className='w-full' onClick={closeModal}>

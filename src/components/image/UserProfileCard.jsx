@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { useUserInfo } from '@/app/arena/UserInfoContext'
@@ -67,7 +66,11 @@ export function UserProfileCard({
   return (
     <div className='flex items-center gap-1'>
       <LinkComponent>
-        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className={avatarSize} />
+        <CircleImage
+          src={avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
+          alt='avatar'
+          className={avatarSize}
+        />
         <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
             className={cn(

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 
 import { UNKNOWN_LOGO } from '@/constant'
 import cn from '@/utils/classes'
@@ -8,8 +8,10 @@ import cn from '@/utils/classes'
  *
  * @description Must set width using `w-` className
  */
-export default function CircleImage({ src, alt, width = 100, height = 100, className, ...rest }) {
+function CircleImage({ src, alt, width = 100, height = 100, className, ...rest }) {
   const [status, setStatus] = useState('loading')
+
+  const handleLoad = useCallback(() => setStatus('complete'), [])
 
   return (
     <Image
@@ -19,8 +21,10 @@ export default function CircleImage({ src, alt, width = 100, height = 100, class
       width={width}
       height={height}
       sizes='100vw'
-      onLoad={() => setStatus('complete')}
+      onLoad={handleLoad}
       {...rest}
     />
   )
 }
+
+export default memo(CircleImage)

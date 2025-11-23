@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useState } from 'react'
 
 import cn from '@/utils/classes'
@@ -19,7 +18,7 @@ export function SelectAvatar({ avatarUrl }) {
         onClick={() => setOpenModal(true)}
       >
         <Image
-          src={avatarUrl ?? Avatar}
+          src={avatarUrl ?? '/images/home/stats/socials/social-1.png'}
           alt='Preview'
           width={124}
           height={124}

@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import Banner from 'public/images/arena/tc_cover_image.png'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
@@ -254,7 +253,7 @@ export function EditBannerModal({ competition, open, onClose }) {
               <div className='cursor-pointer' onClick={() => setOptionSelect(3)}>
                 <Image
                   alt='background'
-                  src={Banner.src}
+                  src='/images/arena/tc_cover_image.png'
                   fill
                   objectFit='fill'
                   className={cn(

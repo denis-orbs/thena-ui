@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -32,7 +31,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
             <div className='flex items-start gap-5 lg:items-center'>
               <Image
                 alt='avatar'
-                src={userInfo.avatarUrl?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+                src={userInfo.avatarUrl?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
                 width={100}
                 height={100}

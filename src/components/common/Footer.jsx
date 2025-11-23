@@ -4,7 +4,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
-import React from 'react'
+import React, { memo, useCallback } from 'react'
 
 import { SOCIAL_LINKS } from '@/constant'
 import cn from '@/utils/classes'
@@ -13,35 +13,33 @@ import Logo from '~/logo.svg'
 
 import NextImage from '../image/NextImage'
 
-function AnimatedIcon({ externalLink, hoverData, icon, iconColored }) {
-  return (
-    <a className='group relative' href={externalLink}>
-      <div className='font-figtree absolute -top-6 left-[50%] translate-x-[-50%] transform rounded-xs bg-[#311530] px-2 py-1.5 text-base leading-4 whitespace-nowrap opacity-0 transition-all duration-300 ease-in-out group-hover:-top-12 group-hover:opacity-100'>
-        <svg
-          className='absolute -bottom-1 left-[50%] translate-x-[-50%] transform'
-          width={9}
-          height={4}
-          viewBox='0 0 9 4'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path d='M4.5 4L0.5 0H8.5L4.5 4Z' fill='#311530' />
-        </svg>
-        <p dangerouslySetInnerHTML={{ __html: hoverData }} />
-      </div>
-      <NextImage
-        alt='icon'
-        src={icon}
-        className='w-fit transition-all duration-500 ease-linear group-hover:h-0 group-hover:w-0 group-hover:opacity-0'
-      />
-      <NextImage
-        alt='icon'
-        src={iconColored}
-        className='h-0 w-0 opacity-0 transition-all duration-500 ease-linear group-hover:h-auto group-hover:w-auto group-hover:opacity-100'
-      />
-    </a>
-  )
-}
+const AnimatedIcon = memo(({ externalLink, hoverData, icon, iconColored }) => (
+  <a className='group relative' href={externalLink}>
+    <div className='font-figtree absolute -top-6 left-[50%] translate-x-[-50%] transform rounded-xs bg-[#311530] px-2 py-1.5 text-base leading-4 whitespace-nowrap opacity-0 transition-all duration-300 ease-in-out group-hover:-top-12 group-hover:opacity-100'>
+      <svg
+        className='absolute -bottom-1 left-[50%] translate-x-[-50%] transform'
+        width={9}
+        height={4}
+        viewBox='0 0 9 4'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path d='M4.5 4L0.5 0H8.5L4.5 4Z' fill='#311530' />
+      </svg>
+      <p dangerouslySetInnerHTML={{ __html: hoverData }} />
+    </div>
+    <NextImage
+      alt='icon'
+      src={icon}
+      className='w-fit transition-all duration-500 ease-linear group-hover:h-0 group-hover:w-0 group-hover:opacity-0'
+    />
+    <NextImage
+      alt='icon'
+      src={iconColored}
+      className='h-0 w-0 opacity-0 transition-all duration-500 ease-linear group-hover:h-auto group-hover:w-auto group-hover:opacity-100'
+    />
+  </a>
+))
 const footerLinks = [[], []]
 // const footerLinks = [
 //   [
@@ -77,9 +75,9 @@ function Footer({ isHomePage = false }) {
   const { push } = useRouter()
   const t = useTranslations()
 
-  const onLogoClick = () => {
+  const onLogoClick = useCallback(() => {
     push('/')
-  }
+  }, [push])
   return (
     <>
       <div className='relative w-full'>
@@ -166,4 +164,4 @@ function Footer({ isHomePage = false }) {
   )
 }
 
-export default Footer
+export default memo(Footer)

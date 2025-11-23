@@ -363,36 +363,35 @@ function Header() {
   const prices = usePrices()
   const t = useTranslations()
   const { spaceIdName } = useSpaceIdBNB(account)
+  const handleScroll = useCallback(() => {
+    const currentScrollY = window.scrollY
+    const lastScrollY = lastScrollYRef.current
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      const lastScrollY = lastScrollYRef.current
+    if (currentScrollY < lastScrollY && currentScrollY > 300) {
+      setShowBackToTop(true)
 
-      if (currentScrollY < lastScrollY && currentScrollY > 300) {
-        setShowBackToTop(true)
-
-        if (hideTimeoutRef.current) {
-          clearTimeout(hideTimeoutRef.current)
-        }
-
-        // Hide the button after 3 seconds of inactivity
-        hideTimeoutRef.current = setTimeout(() => {
-          setShowBackToTop(false)
-          hideTimeoutRef.current = null
-        }, 3000)
-      } else {
-        setShowBackToTop(false)
-
-        if (hideTimeoutRef.current) {
-          clearTimeout(hideTimeoutRef.current)
-          hideTimeoutRef.current = null
-        }
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
       }
 
-      lastScrollYRef.current = currentScrollY
+      // Hide the button after 3 seconds of inactivity
+      hideTimeoutRef.current = setTimeout(() => {
+        setShowBackToTop(false)
+        hideTimeoutRef.current = null
+      }, 3000)
+    } else {
+      setShowBackToTop(false)
+
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+        hideTimeoutRef.current = null
+      }
     }
 
+    lastScrollYRef.current = currentScrollY
+  }, [])
+
+  useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
@@ -401,15 +400,15 @@ function Header() {
         clearTimeout(hideTimeoutRef.current)
       }
     }
-  }, [])
+  }, [handleScroll])
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     setShowBackToTop(false)
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     })
-  }
+  }, [])
 
   const { signWallet } = useSignWallet()
 
@@ -778,10 +777,10 @@ function Header() {
     [account, pathname, userInfo],
   )
 
-  const onLogoClick = () => {
+  const onLogoClick = useCallback(() => {
     push('/')
     setIsOpen(false)
-  }
+  }, [push])
 
   useEffect(() => {
     router.prefetch('/swap')

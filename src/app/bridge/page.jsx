@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { isAddress } from 'viem'
 
@@ -77,6 +77,15 @@ export default function BridgePage() {
   const theAssetBNBBalance = useBSCTheTokenBalance()
   const theAssetOpBNBBalance = useOpBNBTheTokenBalance()
 
+  const handleDestinationChange = useCallback(e => setDestination(e.target.value), [])
+  const handleSwitchNetwork = useCallback(
+    () => updateNetwork(sourceChain === CHAIN_ID.OPBNB ? ChainId.OPBNB : ChainId.BSC),
+    [sourceChain, updateNetwork],
+  )
+  const handleBridge = useCallback(() => {
+    onBridge(debounceDestination, amount)
+  }, [onBridge, debounceDestination, amount])
+
   const theAssetOpBNB = useAsset(CHAIN_ID.OPBNB, Contracts.THE[CHAIN_ID.OPBNB])
   const theAssetBNB = useAsset(CHAIN_ID.BSC, Contracts.THE[CHAIN_ID.BSC])
 
@@ -110,11 +119,11 @@ export default function BridgePage() {
     return networkId === ChainId.BSC
   }, [sourceChain, networkId])
 
-  const handleSwitchChains = () => {
+  const handleSwitchChains = useCallback(() => {
     const targetChain = sourceChain === CHAIN_ID.OPBNB ? ChainId.BSC : ChainId.OPBNB
     updateNetwork(targetChain)
     setAmount('')
-  }
+  }, [sourceChain, updateNetwork])
 
   // Update direction when network changes
   useEffect(() => {
@@ -214,7 +223,7 @@ export default function BridgePage() {
               type='text'
               placeholder='Destination address'
               val={destination}
-              onChange={e => setDestination(e.target.value)}
+              onChange={handleDestinationChange}
               LeadingIcon={<Wallet3Icon />}
               classNames={{
                 input: error ? 'border-error-500' : undefined,
@@ -226,17 +235,12 @@ export default function BridgePage() {
           {!account ? (
             <ConnectButton className='w-full' />
           ) : !isOnCorrectNetwork ? (
-            <PrimaryButton
-              className='w-full py-3 text-lg font-semibold'
-              onClick={() => updateNetwork(sourceChain === CHAIN_ID.OPBNB ? ChainId.OPBNB : ChainId.BSC)}
-            >
+            <PrimaryButton className='w-full py-3 text-lg font-semibold' onClick={handleSwitchNetwork}>
               {t('Switch to [chain] Chain', { chain: sourceChainName })}
             </PrimaryButton>
           ) : (
             <PrimaryButton
-              onClick={() => {
-                onBridge(debounceDestination, amount)
-              }}
+              onClick={handleBridge}
               disabled={!isAddress(debounceDestination) || !amount || pending}
               className='w-full py-3 text-lg font-semibold'
             >

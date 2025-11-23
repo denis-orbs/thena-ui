@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useRef } from 'react'
 
 import { TextHeading } from '@/components/typography'
@@ -49,10 +48,10 @@ export default function ShareProfileStatsDetail({
                   userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
                     ? userInfo.ipfsAvatar
                       ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
-                      : Avatar
+                      : '/images/home/stats/socials/social-1.png'
                     : userInfo.avatar
                       ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
-                      : Avatar
+                      : '/images/home/stats/socials/social-1.png'
                 }
                 className={`${userInfo.avatar ? 'rounded-full' : ''}`}
                 width={64}
@@ -107,10 +106,10 @@ export default function ShareProfileStatsDetail({
                 userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
                   ? userInfo.ipfsAvatar
                     ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
-                    : Avatar
+                    : '/images/home/stats/socials/social-1.png'
                   : userInfo.avatar
                     ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
-                    : Avatar
+                    : '/images/home/stats/socials/social-1.png'
               }
               className={`${userInfo.avatar ? 'rounded-full' : ''}`}
               width={64}

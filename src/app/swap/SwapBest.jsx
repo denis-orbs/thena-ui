@@ -23,7 +23,6 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
 import TxnSettings from '@/modules/SettingsModal'
-import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
@@ -34,6 +33,11 @@ import InfoIcon from '@/icons/InfoIcon'
 
 import RefreshIcon from '~/svgs/refresh.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+
+const SwapChart = dynamic(() => import('@/modules/SwapChart').then(mod => mod.default), {
+  ssr: false,
+  loading: () => <Skeleton className='h-64' />,
+})
 
 const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
   ssr: false,

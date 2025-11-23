@@ -14,8 +14,9 @@ const nextConfig = {
   crossOrigin: 'anonymous',
 
   images: {
-    unoptimized: true,
+    unoptimized: false,
     dangerouslyAllowSVG: true,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
