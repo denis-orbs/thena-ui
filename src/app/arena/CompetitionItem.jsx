@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import Banner from 'public/images/arena/tc_cover_image.png'
 import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -111,7 +110,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             <CompetitionCardHeader
               className='aspect-video w-full'
               competition={competition}
-              banner={competition.bannerUrl || Banner.src}
+              banner={competition.bannerUrl || '/images/arena/tc_cover_image.png'}
             />
             {!showCheckedHidden ? (
               <NeutralBadge className='absolute top-4 right-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>

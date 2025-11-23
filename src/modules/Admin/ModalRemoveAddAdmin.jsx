@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback } from 'react'
 
 import Box from '@/components/box'
@@ -49,14 +48,14 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
               user.username ? (
                 <div className='flex flex-col items-center gap-3'>
                   <div className='flex flex-row items-center justify-center gap-2'>
-                    <CircleImage src={Avatar} alt='avatar' className='size-9' />
+                    <CircleImage src='/images/home/stats/socials/social-1.png' alt='avatar' className='size-9' />
                     <TextHeading>{user.username}</TextHeading>
                   </div>
                   <TextSubHeading className='text-base'>{user.id}</TextSubHeading>
                 </div>
               ) : (
                 <div className='flex flex-row items-center gap-2'>
-                  <CircleImage src={Avatar} alt='avatar' className='size-9' />
+                  <CircleImage src='/images/home/stats/socials/social-1.png' alt='avatar' className='size-9' />
                   <TextHeading className='text-base'>{user.id}</TextHeading>
                 </div>
               )

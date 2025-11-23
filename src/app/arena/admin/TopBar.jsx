@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useState } from 'react'
 
 import Box from '@/components/box'
@@ -24,7 +23,7 @@ function TopBar({ userInfo, isLoading }) {
     <Box className='flex flex-col-reverse gap-4 md:flex-row md:justify-between'>
       <div className='flex flex-row items-start gap-4 md:items-center'>
         <CircleImage
-          src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || Avatar}
+          src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || '/images/home/stats/socials/social-1.png'}
           alt='avatar'
           className='size-14 md:size-[124px]'
         />

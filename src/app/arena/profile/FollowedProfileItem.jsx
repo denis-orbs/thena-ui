@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useCallback, useMemo } from 'react'
 
 import Box from '@/components/box'
@@ -53,7 +52,11 @@ export function FollowedProfileItem({ user }) {
         className={cn('flex w-2/3 cursor-pointer items-center justify-start gap-1 md:gap-2')}
         href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
       >
-        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
+        <CircleImage
+          src={avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
+          alt='avatar'
+          className='size-8'
+        />
 
         <TextHeading className={cn('text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}>
           <span

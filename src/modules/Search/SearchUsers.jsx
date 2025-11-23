@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import useSWRInfinite from 'swr/infinite'
@@ -30,7 +29,11 @@ function SearchUserItem({ user, setIsPopoverOpen }) {
         href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
         onClick={() => setIsPopoverOpen(false)}
       >
-        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
+        <CircleImage
+          src={avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
+          alt='avatar'
+          className='size-8'
+        />
         <div>
           <div className='mr-1 mb-1 flex items-center gap-1'>
             <TextHeading

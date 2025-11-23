@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -214,7 +213,7 @@ function DashboardProfile() {
               </div>
               <Image
                 alt='avatar'
-                src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+                src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
                 className='mx-auto rounded-full'
                 width={124}
                 height={124}

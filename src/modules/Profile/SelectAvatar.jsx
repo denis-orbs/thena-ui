@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -53,7 +52,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
         {!avatar && (
           <NextImage
             alt='avatar'
-            src={Avatar}
+            src='/images/home/stats/socials/social-1.png'
             className={cn(
               'h-14 w-14 rounded-full lg:h-32 lg:w-32',
               dataUpdate.avatar === null ? 'border-primary-600 border-4' : '',

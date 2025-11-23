@@ -5,7 +5,6 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -94,7 +93,7 @@ export function UserInfo({ userInfo, following, followers }) {
             <div className='flex items-start gap-5 lg:items-center'>
               <NextImage
                 alt='avatar'
-                src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+                src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? '/images/home/stats/socials/social-1.png'}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
                 width={100}
                 height={100}
