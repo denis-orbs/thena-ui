@@ -9,7 +9,6 @@ import cn from '@/utils/classes'
 
 import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
 import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
-import ScalesIcon from '~/svgs/scales.svg'
 import StablePoolIcon from '~/svgs/stable-pool-icon.svg'
 
 const titleSections = {
@@ -22,11 +21,6 @@ const titleSections = {
     Icon: ClassicPoolIcon,
     text: 'Classic Pool',
     description: 'Classic Desc',
-  },
-  [PAIR_TYPES.WEIGHTED]: {
-    Icon: ScalesIcon,
-    text: 'Weighted Pool',
-    description: 'Weighted Desc',
   },
   [PAIR_TYPES.LSD]: {
     Icon: CLPoolIcon,

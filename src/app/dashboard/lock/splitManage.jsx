@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import Input from '@/components/input'
 import { ModalBody, ModalFooter } from '@/components/modal'
 import ConfirmModal from '@/components/modal/ConfirmModal'
@@ -13,7 +14,6 @@ import { AUTOMATION_STATUS } from '@/constant'
 import { useSplit } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 const validNumber = val => (val === '' ? 0 : Number(val))
@@ -207,7 +207,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs, status, 
           <Paragraph>{t('Total Split Amount')}</Paragraph>
           <TextHeading>{total}%</TextHeading>
         </div>
-        {hasActiveAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
+        {hasActiveAutomation && <ErrorInfo className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton className='w-full' onClick={() => handleSplit()} disabled={pending || hasActiveAutomation}>

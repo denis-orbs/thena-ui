@@ -99,25 +99,6 @@ function AssetsOverview({
     [account, addReward, addFees],
   )
 
-  const processWeightedPosition = useCallback(
-    pos => {
-      const total = pos.claimableFee?.total ?? ZERO_VALUE
-      if (pos.staked && total.gt(0)) {
-        const farmReward = (pos.claimableFee?.tokenList ?? []).find(tk => tk.symbol === 'THE')
-        addReward({
-          amount: farmReward?.fee ?? 0,
-          type: 'weighted',
-          args: pos.gauge.address,
-          key: getKeyFromTokenAddress(
-            'weight',
-            pos.tokens.map(tk => tk.address),
-          ),
-        })
-      }
-    },
-    [addReward],
-  )
-
   const processV1Position = useCallback(
     pos => {
       const feeAmounts = [pos.reward0, pos.reward1]
@@ -198,8 +179,6 @@ function AssetsOverview({
     positions.forEach(pos => {
       if (pos.type === 'Manual') {
         processManualPosition(pos)
-      } else if (pos.type === 'Weighted') {
-        processWeightedPosition(pos)
       } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pos.title) && pos.version === 2) {
         processV1Position(pos)
       } else if (pos.title === ICHI_SINGLE_SIDED) {
@@ -208,14 +187,7 @@ function AssetsOverview({
         processV3Position(pos)
       }
     })
-  }, [
-    positions,
-    processManualPosition,
-    processWeightedPosition,
-    processV1Position,
-    processV3Position,
-    processIchiSingleSidedPosition,
-  ])
+  }, [positions, processManualPosition, processV1Position, processV3Position, processIchiSingleSidedPosition])
 
   useEffect(() => {
     removedClaimablePositions.forEach(pos => {

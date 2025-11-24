@@ -42,7 +42,7 @@ export const useRewardPosition = () => {
     const transactions = {}
     if (newGauge.size > 0) {
       transactions[harvestNewGaugeId] = {
-        desc: `${t('Harvest Rewards')} Classics/Stable/Weighted Pools`,
+        desc: `${t('Harvest Rewards')} Classics/Stable`,
         status: TXN_STATUS.START,
         hash: null,
       }

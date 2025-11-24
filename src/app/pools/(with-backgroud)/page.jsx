@@ -29,11 +29,10 @@ import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
 import cn from '@/utils/classes'
-import { formatAmount, getLiquidityRangeType, isInvalidAmount } from '@/utils/utils'
+import { formatAmount, getLiquidityRangeType } from '@/utils/utils'
 
 import BarChartIcon from '~/svgs/bar-chart.svg'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
@@ -157,19 +156,9 @@ export default function PoolsPage() {
       return { ...ele, subpools }
     })
     if (isInactive) {
-      final = pairFilteredSubpools.filter(ele => {
-        if (ele.type === PAIR_TYPES.WEIGHTED) {
-          return isInvalidAmount(ele.aprNumber)
-        }
-        return !ele.highApr
-      })
+      final = pairFilteredSubpools.filter(ele => !ele.highApr)
     } else {
-      final = pairFilteredSubpools.filter(ele => {
-        if (ele.type === PAIR_TYPES.WEIGHTED) {
-          return !isInvalidAmount(ele.aprNumber)
-        }
-        return ele.highApr > 0
-      })
+      final = pairFilteredSubpools.filter(ele => ele.highApr > 0)
     }
     final =
       filter === PAIR_TYPES.All
@@ -218,10 +207,7 @@ export default function PoolsPage() {
             res = (a.symbol?.localeCompare(b.symbol) || 0) * (sort.isDesc ? -1 : 1)
             break
           case 'apr':
-            res =
-              ((a.type === PAIR_TYPES.WEIGHTED ? a.aprNumber : a.highApr) -
-                (b.type === PAIR_TYPES.WEIGHTED ? b.aprNumber : b.highApr)) *
-              (sort.isDesc ? -1 : 1)
+            res = (a.highApr - b.highApr) * (sort.isDesc ? -1 : 1)
             break
           case 'tvl':
             res = (a.tvlUSD - b.tvlUSD) * (sort.isDesc ? -1 : 1)
@@ -255,27 +241,21 @@ export default function PoolsPage() {
       return sortedData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
-            {pool.type !== PAIR_TYPES.WEIGHTED ? (
-              <>
-                <GroupIconTokens
-                  classNames={{
-                    image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
-                    rows: '*:not-first:-ml-2',
-                    toolTip: 'hidden',
-                  }}
-                  width={32}
-                  height={32}
-                  tokens={[pool.token0, pool.token1]}
-                  showToolTip={false}
-                />
-                <div className='flex flex-col'>
-                  <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
-                </div>
-              </>
-            ) : (
-              <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
-            )}
+            <GroupIconTokens
+              classNames={{
+                image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
+                rows: '*:not-first:-ml-2',
+                toolTip: 'hidden',
+              }}
+              width={32}
+              height={32}
+              tokens={[pool.token0, pool.token1]}
+              showToolTip={false}
+            />
+            <div className='flex flex-col'>
+              <TextHeading>{pool.symbol}</TextHeading>
+              <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+            </div>
 
             {/* BEGIN Special pools */}
             {pool.address === weETHPoolAddress && (
@@ -444,23 +424,12 @@ export default function PoolsPage() {
           <div className='flex items-center gap-1'>
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
             <InfoIcon data-tooltip-id={`tvl-${pool.address}`} />
-            {/* TODO: Check for weighted pools */}
-            {pool.type === PAIR_TYPES.WEIGHTED ? (
-              <CustomTooltip id={`tvl-${pool.address}`}>
-                <div className='flex flex-col gap-1'>
-                  {(pool.tokens || []).map(token => (
-                    <p key={token.address}>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
-                  ))}
-                </div>
-              </CustomTooltip>
-            ) : (
-              <CustomTooltip id={`tvl-${pool.address}`}>
-                <div className='flex flex-col gap-1'>
-                  <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
-                  <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
-                </div>
-              </CustomTooltip>
-            )}
+            <CustomTooltip id={`tvl-${pool.address}`}>
+              <div className='flex flex-col gap-1'>
+                <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
+                <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
+              </div>
+            </CustomTooltip>
           </div>
         ),
         volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
@@ -484,11 +453,7 @@ export default function PoolsPage() {
                 e.stopPropagation()
                 e.preventDefault()
                 dispatch(updateStrategy({ strategy: null }))
-                push(
-                  pool.type === PAIR_TYPES.WEIGHTED
-                    ? `/pools/add-liquidity/weighted/${pool.address}?back=1`
-                    : `/pools/add-liquidity?step=3&poolAddress=${pool.address}&back=1`,
-                )
+                push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}&back=1`)
               }}
             >
               {t('Deposit')}

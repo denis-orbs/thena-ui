@@ -77,15 +77,6 @@ export const IntegralFarmingClient = {
   97: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion-farming/version/latest'),
 }
 
-export const WeightedClient = {
-  [CHAIN_ID.BSC]: new GraphQLClient(
-    `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/8GmLk8ZRWiwYMqi9Sd3qS5vu8VmPwHp8NtW64YLwtwdE`,
-  ),
-  [CHAIN_ID.TEST_BSC]: new GraphQLClient(
-    'https://api.studio.thegraph.com/query/70764/thena-chapel-weighted-pools/version/latest',
-  ),
-}
-
 export const blockClient = {
   [ChainId.BSC]: new GraphQLClient(BlockGraphUrl[ChainId.BSC]),
   [ChainId.OPBNB]: new GraphQLClient(BlockGraphUrl[ChainId.OPBNB]),

@@ -3,8 +3,6 @@ import React, { useEffect, useMemo } from 'react'
 
 import NewListings from '@/app/pools/NewListings'
 import { Paragraph } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
-import { usePairs } from '@/context/pairsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
 import { usePairInfo } from '@/state/pools/hooks'
@@ -13,7 +11,6 @@ import { wrappedAddress } from '@/utils/utils'
 import PoolCoinsIcon from '~/svgs/pool-coins.svg'
 
 function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
-  const { weightedPools } = usePairs()
   const t = useTranslations()
   const { isLgDown } = useMediaQuery()
 
@@ -23,28 +20,18 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
     type: pairType,
   })
 
-  const availablePools = useMemo(() => {
-    if (pairType === PAIR_TYPES.WEIGHTED) {
-      return (weightedPools || []).filter(pool =>
-        tokens.every(token => pool.tokens.map(pToken => pToken.address).includes(wrappedAddress(token))),
-      )
-    }
-
-    return []
-  }, [pairType, weightedPools, tokens])
-
   const sortOptions = useMemo(() => {
     const options = [
       {
         label: 'Pair',
         value: 'pair',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[50%] md:w-[42%]' : 'w-[42%] md:w-[35%]',
+        width: 'w-[42%] md:w-[35%]',
         isDesc: true,
       },
       {
         label: 'APR',
         value: 'apr',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(50%-90px)] md:w-[15%]' : 'w-[calc(58%-50px)] md:w-[15%]',
+        width: 'w-[calc(58%-50px)] md:w-[15%]',
         isDesc: true,
       },
     ]
@@ -55,7 +42,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
         {
           label: '',
           value: 'action',
-          width: pairType === PAIR_TYPES.WEIGHTED ? 'lg:w-[100px] w-[90px]' : 'lg:w-[100px] w-[50px]',
+          width: 'lg:w-[100px] w-[50px]',
           disabled: true,
           className: 'items-end',
         },
@@ -73,7 +60,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
       {
         label: 'Fees (24h)',
         value: 'fee',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(23%-100px)]' : 'w-[calc(30%-100px)]',
+        width: 'w-[calc(30%-100px)]',
         isDesc: true,
       },
       {
@@ -83,7 +70,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
         disabled: true,
       },
     ]
-  }, [isLgDown, pairType])
+  }, [isLgDown])
 
   useEffect(() => {
     if (foundedPair) {
@@ -95,11 +82,11 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
 
   return (
     <>
-      {availablePools.length > 0 || foundedPair ? (
+      {foundedPair ? (
         <div className='w-full'>
           <NewListings
             defaultShow
-            pools={pairType === PAIR_TYPES.WEIGHTED ? availablePools : foundedPair ? [foundedPair] : []}
+            pools={foundedPair ? [foundedPair] : []}
             title={
               <div className='flex gap-2'>
                 <PoolCoinsIcon className='h-6 w-6 stroke-neutral-400' />

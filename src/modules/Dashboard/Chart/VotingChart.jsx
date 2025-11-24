@@ -4,7 +4,6 @@ import { Doughnut } from 'react-chartjs-2'
 import { useTranslations } from 'use-intl'
 
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
-import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
@@ -87,7 +86,7 @@ function VotingChart({ data = [], className }) {
             }}
             width={32}
             height={32}
-            tokens={d.type === PAIR_TYPES.WEIGHTED ? d.tokens : [d.token0, d.token1]}
+            tokens={[d.token0, d.token1]}
           />
         ),
         weightPercent: d.votes.weightPercent.toNumber(),

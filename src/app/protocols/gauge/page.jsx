@@ -1,18 +1,14 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
+import React, { useState } from 'react'
 
 import { Neutral } from '@/components/alert'
 import BackButton from '@/components/buttons/BackButton'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { usePairs } from '@/context/pairsContext'
 import { usePoolWithoutGauge } from '@/hooks/usePoolWithoutGauge'
 import { useGaugeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
@@ -27,12 +23,6 @@ export default function GaugePage() {
   const [selected, setSelected] = useState(null)
   const { onGaugeAdd, pending } = useGaugeAdd()
   const poolsWithoutGauge = usePoolWithoutGauge()
-  const { pairs = [] } = usePairs()
-
-  const weightedPoolWithoutGauge = useMemo(
-    () => pairs.filter(p => p && p.type === PAIR_TYPES.WEIGHTED && p.gauge.address === zeroAddress),
-    [pairs],
-  )
 
   return (
     <div className='flex flex-col gap-10'>
@@ -51,26 +41,14 @@ export default function GaugePage() {
             >
               {selected ? (
                 <div className='flex items-center gap-3'>
-                  {selected.type === PAIR_TYPES.WEIGHTED ? (
-                    <ThreeIconGroup
-                      className='*:not-first:-ml-2'
-                      classNames={{
-                        image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                      }}
-                      logo1={selected?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                      logo2={selected?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                      extendNumber={(selected?.tokens?.length || 2) - 2}
-                    />
-                  ) : (
-                    <IconGroup
-                      className='*:not-first:-ml-2'
-                      classNames={{
-                        image: 'outline-2 w-8 h-8',
-                      }}
-                      logo1={selected.token0.logoURI}
-                      logo2={selected.token1.logoURI}
-                    />
-                  )}
+                  <IconGroup
+                    className='*:not-first:-ml-2'
+                    classNames={{
+                      image: 'outline-2 w-8 h-8',
+                    }}
+                    logo1={selected.token0.logoURI}
+                    logo2={selected.token1.logoURI}
+                  />
                   <div className='flex items-end gap-2'>
                     <TextHeading>{selected.symbol}</TextHeading>
                     <Paragraph className='text-sm'>{t(selected.title)}</Paragraph>
@@ -105,12 +83,7 @@ export default function GaugePage() {
         </Neutral>
       </div>
 
-      <PairModal
-        popup={isOpen}
-        setPopup={setIsOpen}
-        setSelected={setSelected}
-        pools={poolsWithoutGauge.concat(weightedPoolWithoutGauge)}
-      />
+      <PairModal popup={isOpen} setPopup={setIsOpen} setSelected={setSelected} pools={poolsWithoutGauge} />
     </div>
   )
 }

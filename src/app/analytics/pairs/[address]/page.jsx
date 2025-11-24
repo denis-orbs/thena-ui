@@ -12,7 +12,6 @@ import Collapsible from '@/components/collapse/Collapse2'
 import { defaultSwapFees } from '@/components/common/AddLiquidity/ChooseStrategy'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import IconGroup from '@/components/icongroup'
-import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import RadioInput from '@/components/radioInput'
 import { TextHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
@@ -29,8 +28,6 @@ import LinkExternalIcon from '~/svgs/link-external.svg'
 
 import PairStrategy from './PairStrategy'
 import TransactionTable from './PairTransaction'
-import PoolAttributesAnalytic from './PoolAttributesAnalytic'
-import WeightedTransactionTable from './WeightedPairTransaction'
 
 export default function PairDetailPage({ params }) {
   const t = useTranslations()
@@ -133,43 +130,16 @@ export default function PairDetailPage({ params }) {
         {/* Header with token info and stats in horizontal layout */}
         <div className='flex flex-col gap-4 rounded-lg lg:flex-row lg:gap-12'>
           {/* Token info and external link */}
-          <div
-            className={cn(
-              'flex flex-row gap-4 max-lg:justify-between lg:w-[20%] lg:min-w-[307px] lg:flex-col',
-              pair.type === PAIR_TYPES.WEIGHTED && 'w-full flex-col lg:w-full',
-            )}
-          >
-            <div
-              className={cn(
-                'flex items-center gap-4',
-                pair.type !== PAIR_TYPES.WEIGHTED ? 'lg:justify-between' : 'max-lg:max-h-[70px]',
-              )}
-            >
-              {pair.type === PAIR_TYPES.WEIGHTED ? (
-                <GroupIconTokens
-                  classNames={{
-                    image: 'w-7 h-7 text-xl font-medium leading-5 text-[#1C2027]',
-                    rows: '*:not-first:-ml-2',
-                  }}
-                  width={pair.tokens.length > 4 ? 28 : 48}
-                  height={pair.tokens.length > 4 ? 28 : 48}
-                  tokens={pair.tokens}
-                />
-              ) : (
-                <IconGroup
-                  classNames={{
-                    image: 'outline-4 w-8 lg:w-12',
-                  }}
-                  logo1={pair.token0.logoURI ?? UNKNOWN_LOGO}
-                  logo2={pair.token1.logoURI ?? UNKNOWN_LOGO}
-                />
-              )}
-              <div
-                className={cn(
-                  'flex min-w-0 flex-1 flex-col',
-                  pair.type === PAIR_TYPES.WEIGHTED ? 'justify-between max-md:h-[48px]' : 'gap-1',
-                )}
-              >
+          <div className={cn('flex flex-row gap-4 max-lg:justify-between lg:w-[20%] lg:min-w-[307px] lg:flex-col')}>
+            <div className={cn('flex items-center gap-4')}>
+              <IconGroup
+                classNames={{
+                  image: 'outline-4 w-8 lg:w-12',
+                }}
+                logo1={pair.token0.logoURI ?? UNKNOWN_LOGO}
+                logo2={pair.token1.logoURI ?? UNKNOWN_LOGO}
+              />
+              <div className={cn('flex min-w-0 flex-1 flex-col')}>
                 <div className='flex min-w-0 items-center gap-3'>
                   <TextHeading className='min-w-0 truncate text-xl! leading-6! lg:text-4xl! lg:leading-10!'>
                     {pair.symbol}
@@ -181,29 +151,16 @@ export default function PairDetailPage({ params }) {
                   />
                 </div>
                 <div className='hidden text-xs text-nowrap text-neutral-300 max-lg:block'>
-                  {`${t('Fee')}: ${pairFee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                  {`${t('Fee')}: ${pairFee}%`}
                 </div>
               </div>
             </div>
 
             <div className='flex items-center gap-6 text-sm text-neutral-400 max-lg:justify-end'>
-              <div
-                className={cn(
-                  'flex flex-col justify-between',
-                  pair.type === PAIR_TYPES.WEIGHTED && 'h-full min-w-[285px] max-lg:hidden',
-                )}
-              >
+              <div className={cn('flex flex-col justify-between')}>
                 <span className='hidden text-base leading-5 font-normal text-nowrap text-neutral-300 lg:block'>
-                  {`${t('Fee')}: ${pairFee}%${pair.type === PAIR_TYPES.WEIGHTED ? ' Weighted' : ''}`}
+                  {`${t('Fee')}: ${pairFee}%`}
                 </span>
-                {pair.type === PAIR_TYPES.WEIGHTED && (
-                  <EmphasisButton
-                    className='w-full leading-5! max-lg:hidden'
-                    onClick={() => push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)}
-                  >
-                    {t('Deposit')}
-                  </EmphasisButton>
-                )}
               </div>
               <div
                 className={cn(
@@ -228,11 +185,10 @@ export default function PairDetailPage({ params }) {
                   className='size-5'
                 />
               </div>
-              {pair.type === PAIR_TYPES.WEIGHTED && <PairBasicInfo pair={pair} className='h-[100px] w-full' />}
             </div>
 
             <EmphasisButton
-              className={cn('h-8! w-full py-2! text-xs! max-lg:hidden', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
+              className={cn('h-8! w-full py-2! text-xs! max-lg:hidden')}
               onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)}
             >
               {t('Deposit')}
@@ -240,18 +196,11 @@ export default function PairDetailPage({ params }) {
           </div>
 
           {/* Stats in horizontal layout */}
-          <PairBasicInfo
-            pair={pair}
-            className={cn('w-full lg:w-[80%]', pair.type === PAIR_TYPES.WEIGHTED && 'hidden')}
-          />
+          <PairBasicInfo pair={pair} className={cn('w-full lg:w-[80%]')} />
           <EmphasisButton
             className='z-40 h-8 w-full rounded-md! text-xs! lg:hidden'
             onClick={() => {
-              if (pair.type !== PAIR_TYPES.WEIGHTED) {
-                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
-              } else {
-                push(`/pools/add-liquidity/weighted/${pair.address}?back=4`)
-              }
+              push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
             }}
           >
             {t('Deposit')}
@@ -276,32 +225,7 @@ export default function PairDetailPage({ params }) {
         </div>
 
         {pair.type === PAIR_TYPES.LSD && <PairStrategy pair={pair} />}
-        {pair.type === PAIR_TYPES.WEIGHTED && (
-          <>
-            <div className='hidden lg:block'>
-              <PoolAttributesAnalytic pair={pair} />
-            </div>
-            <Collapsible
-              className='bg-contain bg-no-repeat lg:hidden'
-              backgroundImage='/images/dataplot-weighted.png'
-              title={t('Pool Attributes')}
-              subtitle={t('Weighted')}
-              previewContent={<div className='h-[161px] w-full' />}
-              classNames={{
-                content: 'pb-4 px-0! bg-gradient-purple-dark',
-                preview: '!pb-[1px] px-0! pt-0!',
-                headerOpen: 'bg-[url(/images/dataplot2.svg)] bg-contain bg-no-repeat h-[104px] content-end pb-0',
-              }}
-            >
-              <PoolAttributesAnalytic pair={pair} />
-            </Collapsible>
-          </>
-        )}
-        {pair.type === PAIR_TYPES.WEIGHTED ? (
-          <WeightedTransactionTable pair={pair} />
-        ) : (
-          <TransactionTable pair={pair} />
-        )}
+        <TransactionTable pair={pair} />
       </div>
     </LayoutWithBackButton>
   )

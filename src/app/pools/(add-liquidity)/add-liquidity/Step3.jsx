@@ -9,10 +9,9 @@ import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { usePairInfo } from '@/state/pools/hooks'
 
 import AddLiquidityV1Pool from './AddLiquidityV1Pool'
-import AddLiquidityWeightedPool from './AddLiquidityWeightedPool'
 import AddLiquidityClPool from './ClPool'
 
-export default function Step3({ setStep }) {
+export default function Step3() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const updateSearchParams = useUpdateSearchParams()
@@ -46,10 +45,6 @@ export default function Step3({ setStep }) {
 
   return (
     <div>
-      {pairType === PAIR_TYPES.WEIGHTED && (
-        <AddLiquidityWeightedPool pool={pair} showSidebar setCurrentStep={setStep} />
-      )}
-
       {pairType === PAIR_TYPES.LSD && <AddLiquidityClPool pool={pair} handleBack={handleBack} />}
 
       {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && (

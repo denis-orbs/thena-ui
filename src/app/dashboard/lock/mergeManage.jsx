@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import { PrimaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
 import { ModalBody, ModalFooter } from '@/components/modal'
@@ -15,7 +16,6 @@ import { AUTOMATION_STATUS } from '@/constant'
 import { useMerge } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import WithdrawFundsModal from '@/modules/AutomationContract/WithdrawFundsModal'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import { formatAmount } from '@/utils/utils'
 
 export default function MergeManage({ selected, status, contract, mutateAutomationData }) {
@@ -143,7 +143,7 @@ export default function MergeManage({ selected, status, contract, mutateAutomati
             </div>
           )}
         </div>
-        {hasActiveAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
+        {hasActiveAutomation && <ErrorInfo className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton className='w-full' disabled={pending || hasActiveAutomation} onClick={() => handleMerge()}>

@@ -5,9 +5,6 @@ import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
-
-import { ListTokenPercantage } from '../WeightedPool/TokenPercentage'
 
 function PairModal({ popup, setPopup, setSelected, pools }) {
   const [searchText, setSearchText] = useState('')
@@ -64,29 +61,23 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
               key={pool.address}
             >
               <div className='flex items-center gap-3'>
-                {pool.type === PAIR_TYPES.WEIGHTED ? (
-                  <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
-                ) : (
-                  <>
-                    <GroupIconTokens
-                      classNames={{
-                        image: 'outline-2 w-7 h-7',
-                        rows: '*:not-first:-ml-2',
-                        toolTip: 'hidden',
-                      }}
-                      width={32}
-                      height={32}
-                      tokens={[pool.token0, pool.token1]}
-                      showToolTip={false}
-                    />
-                    <div className='flex flex-col'>
-                      <TextHeading>{pool.symbol}</TextHeading>
-                      <Paragraph className='text-sm'>
-                        {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title ?? pool.type}
-                      </Paragraph>
-                    </div>
-                  </>
-                )}
+                <GroupIconTokens
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                    rows: '*:not-first:-ml-2',
+                    toolTip: 'hidden',
+                  }}
+                  width={32}
+                  height={32}
+                  tokens={[pool.token0, pool.token1]}
+                  showToolTip={false}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{pool.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>
+                    {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title ?? pool.type}
+                  </Paragraph>
+                </div>
               </div>
             </div>
           ))}

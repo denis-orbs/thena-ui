@@ -113,12 +113,6 @@ export const FUSION_MULTI_CHAIN_START_TIME = {
   [CHAIN_ID.OPBNB]: 1702339200,
 }
 
-export const WEIGHTED_MULTI_CHAIN_START_TIME = {
-  [CHAIN_ID.BSC]: 1681862400,
-  [CHAIN_ID.OPBNB]: 1702339200,
-  [CHAIN_ID.TEST_BSC]: 1681862400,
-}
-
 export const STABLE_TOKENS = {
   [CHAIN_ID.BSC]: {
     BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
@@ -178,7 +172,6 @@ export const PAIR_TYPES = {
   LSD: 'Conc Liquidity',
   STABLE: 'Stable',
   CLASSIC: 'Classic',
-  WEIGHTED: 'Weighted',
 }
 
 export const POSITION_EARNED_TYPES = {

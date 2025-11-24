@@ -2,11 +2,11 @@ import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import Input from '@/components/input'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAutomationContractDetail, useEditGasLimit } from '@/hooks/automationContract/useAutomationContract'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
 function EditGasLimitModal({ contract, popup, setPopup }) {
   const { veTHEId } = contract
@@ -32,7 +32,7 @@ function EditGasLimitModal({ contract, popup, setPopup }) {
           <div className='flex flex-col gap-[11px]'>
             <TextHeading>{t('Gas limit')}</TextHeading>
             <Input val={gasLimit} onChange={e => setGasLimit(Number(e.target.value))} />
-            <ErrorMessage className='lg:p-4' message={t('Edit automation gas limit warning')} showIcon={false} />
+            <ErrorInfo className='lg:p-4' message={t('Edit automation gas limit warning')} showIcon={false} />
           </div>
         </div>
       </ModalBody>

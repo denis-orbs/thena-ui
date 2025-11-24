@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 
 import RegisterAutomation from '../RegisterAutomation'
@@ -71,24 +69,20 @@ function Step3Create() {
         {createData?.votes?.isAutoVote &&
           (createData?.votes?.pairs || []).map((pair, index) => (
             <div key={`${pair.pair.address}_${index}`} className='flex flex-row items-center justify-between'>
-              {pair.pair?.type !== PAIR_TYPES.WEIGHTED ? (
-                <div className='flex flex-row gap-3'>
-                  <IconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'outline-2 w-7 h-7',
-                    }}
-                    logo1={pair.pair.token0.logoURI}
-                    logo2={pair.pair.token1.logoURI}
-                  />
-                  <div className='flex flex-row gap-[6px]'>
-                    <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
-                    <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>
-                  </div>
+              <div className='flex flex-row gap-3'>
+                <IconGroup
+                  className='*:not-first:-ml-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={pair.pair.token0.logoURI}
+                  logo2={pair.pair.token1.logoURI}
+                />
+                <div className='flex flex-row gap-[6px]'>
+                  <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>
                 </div>
-              ) : (
-                <ListTokenPercantage listToken={pair.pair.tokens} />
-              )}
+              </div>
               <TextHeading>{pair.weight}%</TextHeading>
             </div>
           ))}

@@ -6,11 +6,10 @@ import React, { useEffect, useState } from 'react'
 import Box from '@/components/box'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { AUTOMATION_STATUS, PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
+import { AUTOMATION_STATUS, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import useWallet from '@/hooks/useWallet'
 import CheckIcon from '@/icons/CheckIcon'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { formatAddress, formatAmount } from '@/utils/utils'
 
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
@@ -99,24 +98,20 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             <div className='flex max-h-[120px] flex-col gap-3 overflow-y-auto'>
               {(contractData?.votes?.pairs || []).map((pair, index) => (
                 <div key={`${pair?.pair?.address}_${index}`} className='flex flex-row justify-between'>
-                  {pair?.pair?.type !== PAIR_TYPES.WEIGHTED ? (
-                    <div className='flex flex-row gap-3'>
-                      <IconGroup
-                        className='*:not-first:-ml-2'
-                        classNames={{
-                          image: 'outline-2 w-7 h-7',
-                        }}
-                        logo1={pair?.pair?.token0?.logoURI || UNKNOWN_LOGO}
-                        logo2={pair?.pair?.token1?.logoURI || UNKNOWN_LOGO}
-                      />
-                      <div className='flex flex-row gap-[6px]'>
-                        <TextHeading>{pair?.pair?.symbol || 'UNKNOWN'}</TextHeading>
-                        <Paragraph className='text-sm'>{t(pair?.pair?.type || '')}</Paragraph>
-                      </div>
+                  <div className='flex flex-row gap-3'>
+                    <IconGroup
+                      className='*:not-first:-ml-2'
+                      classNames={{
+                        image: 'outline-2 w-7 h-7',
+                      }}
+                      logo1={pair?.pair?.token0?.logoURI || UNKNOWN_LOGO}
+                      logo2={pair?.pair?.token1?.logoURI || UNKNOWN_LOGO}
+                    />
+                    <div className='flex flex-row gap-[6px]'>
+                      <TextHeading>{pair?.pair?.symbol || 'UNKNOWN'}</TextHeading>
+                      <Paragraph className='text-sm'>{t(pair?.pair?.type || '')}</Paragraph>
                     </div>
-                  ) : (
-                    <ListTokenPercantage listToken={pair?.pair?.tokens} />
-                  )}
+                  </div>
                   <TextHeading>{pair.weight}%</TextHeading>
                 </div>
               ))}

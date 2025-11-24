@@ -4,12 +4,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
 import SelectVotingPairsAndWeights from '@/modules/CreateVeTHEAutomation/SelectVotingPairsAndWeights'
 import { updateWeight } from '@/modules/CreateVeTHEAutomation/Steps/Step2Vote'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
 const SETTINGS_TYPE = {
   CLAIM: 'claim',
@@ -204,7 +204,7 @@ function EditAutomationContract({ data }) {
           <div className='col-span-full flex flex-row lg:col-span-8'>
             <div className='flex w-full flex-col gap-11'>
               <SelectVotingPairsAndWeights data={dataEdit} handleVotingPairs={handleVotingPairs} />
-              {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
+              {Boolean(error) && <ErrorInfo className='lg:p-4' message={error} />}
               <PrimaryButton disabled={pendingEdit} className='w-full lg:w-fit' onClick={handleSave}>
                 {t('Save Changes')}
               </PrimaryButton>

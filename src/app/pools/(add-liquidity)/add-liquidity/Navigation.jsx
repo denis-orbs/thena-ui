@@ -74,10 +74,6 @@ export default function Navigation({ isOpen, setIsOpen }) {
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Stable Pools')}</TextHeading>
           <Paragraph className='text-[16px] lg:text-[18px]'>{t('Stable Desc')}</Paragraph>
         </div>
-        <div className='flex flex-col gap-2'>
-          <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Weighted Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Weighted Desc')}</Paragraph>
-        </div>
       </div>
     </div>
   )

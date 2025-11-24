@@ -244,15 +244,6 @@ export const sortAchievements = (a, b) => {
   return 0
 }
 
-export const getPoolType = type =>
-  type === 'Conc Liquidity'
-    ? 'Conc. Liquidity'
-    : type === 'Classic'
-      ? 'Classic'
-      : type === 'Stable'
-        ? 'Stable'
-        : 'Weighted'
-
 export const roundIfMoreThanDecimals = (number, decimals = 18) => {
   if (!number) return number
   const parts = number.toString().split('.')

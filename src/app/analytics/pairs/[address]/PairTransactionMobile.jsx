@@ -195,15 +195,7 @@ function Pagination({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
   )
 }
 
-function TransactionMobile({
-  filters = [],
-  getTransactionType,
-  formatTime,
-  className = '',
-  filter,
-  sortedData,
-  isWeighted = false,
-}) {
+function TransactionMobile({ filters = [], getTransactionType, formatTime, className = '', filter, sortedData }) {
   const t = useTranslations()
   const [pageSize, setPageSize] = useState(10)
   const [currentPage, setCurrentPage] = useState(1)
@@ -259,31 +251,18 @@ function TransactionMobile({
 
               {/* Details Grid */}
               <div className='flex min-w-0 items-center justify-between gap-4 overflow-x-auto'>
-                {isWeighted ? (
-                  (item.tokens || []).map(token => (
-                    <div key={token.symbol} className='flex flex-col'>
-                      <TextHeading className='text-[10px]! leading-4 text-neutral-300'>{t('Amount')}</TextHeading>
-                      <TextHeading className='text-[10px]! leading-4 text-nowrap text-neutral-300'>
-                        {formatAmount(Number(token.amount) < 0 ? token.amount * -1 : token.amount)} {token.symbol}
-                      </TextHeading>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div className='flex flex-col'>
-                      <TextHeading className='text-[10px]! leading-4 text-neutral-300'>{t('Amount')}</TextHeading>
-                      <TextHeading className='text-[10px]! leading-4 text-nowrap text-neutral-300'>
-                        {`${formatAmount(item.token0Amount)} ${item.token0Symbol}`}
-                      </TextHeading>
-                    </div>
-                    <div className='flex flex-col'>
-                      <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Amount')}</TextHeading>
-                      <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>
-                        {`${formatAmount(item.token1Amount)} ${item.token1Symbol}`}
-                      </TextHeading>
-                    </div>
-                  </>
-                )}
+                <div className='flex flex-col'>
+                  <TextHeading className='text-[10px]! leading-4 text-neutral-300'>{t('Amount')}</TextHeading>
+                  <TextHeading className='text-[10px]! leading-4 text-nowrap text-neutral-300'>
+                    {`${formatAmount(item.token0Amount)} ${item.token0Symbol}`}
+                  </TextHeading>
+                </div>
+                <div className='flex flex-col'>
+                  <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Amount')}</TextHeading>
+                  <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>
+                    {`${formatAmount(item.token1Amount)} ${item.token1Symbol}`}
+                  </TextHeading>
+                </div>
                 <div className='flex flex-col'>
                   <TextHeading className='text-[10px]! leading-4! text-neutral-300'>{t('Account')}</TextHeading>
                   <TextHeading className='text-[10px]! leading-4! text-nowrap text-neutral-300'>

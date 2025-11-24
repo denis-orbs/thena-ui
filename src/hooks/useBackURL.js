@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { useParams, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
@@ -8,8 +8,7 @@ import { useGetV2SolidlyPairs } from '@/state/pools/hooks'
 
 const poolsUrlPrefix = '/pools/add-liquidity'
 
-export const useBackURL = type => {
-  const { address } = useParams()
+export const useBackURL = () => {
   const params = useSearchParams()
   const { pairs } = usePairs()
   const { v2Pairs } = useGetV2SolidlyPairs(PAIR_TYPES.CLASSIC)
@@ -33,14 +32,6 @@ export const useBackURL = type => {
 
     if (back === 5) return '/analytics/tokens'
 
-    if (type === PAIR_TYPES.WEIGHTED) {
-      if (address) {
-        if (back === 1) return '/pools'
-        return `${poolsUrlPrefix}?step=2&pairType=Weighted`
-      }
-      return
-    }
-
     if (step === 1 || back === 1) return '/pools'
 
     let step1Url = `${poolsUrlPrefix}?step=1&pairType=${pairType}`
@@ -60,7 +51,7 @@ export const useBackURL = type => {
     if (step === 3) return step2Url
 
     return '/pools'
-  }, [address, back, firstAddress, pairType, pairs, poolAddress, secondAddress, step, type, v2Pairs])
+  }, [back, firstAddress, pairType, pairs, poolAddress, secondAddress, step, v2Pairs])
 
   return backUrl
 }
