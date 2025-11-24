@@ -42,11 +42,15 @@ const reverseAnimateSwap = async animate => {
     duration: reverseAnimationDuration,
     ease: 'easeIn',
   }
-
-  animate('#swap-swap', animation, transition)
-  animate('#swap-chart', animation, transition)
-
-  await animate('#swap-order-routing', animation, transition)
+  if (document.getElementById('swap-swap')) {
+    animate('#swap-swap', animation, transition)
+  }
+  if (document.getElementById('swap-chart')) {
+    animate('#swap-chart', animation, transition)
+  }
+  if (document.getElementById('swap-order-routing')) {
+    await animate('#swap-order-routing', animation, transition)
+  }
 }
 
 const animatePools = async animate => {

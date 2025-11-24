@@ -32,6 +32,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'medium.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'tokens.pancakeswap.finance',
       },
       {
