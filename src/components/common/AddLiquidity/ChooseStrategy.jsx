@@ -35,7 +35,6 @@ export const defaultSwapFees = {
   type: 'Conc Liquidity',
   gauge: {
     apr: ZERO_VALUE,
-    projectedApr: ZERO_VALUE,
     voteApr: ZERO_VALUE,
     totalSupply: 0,
     address: zeroAddress,
@@ -186,7 +185,6 @@ export default function ChooseStrategyAuto({
           bribeUsd: sub.gauge?.bribeUsd?.toNumber(),
           pooled0: sub.gauge?.pooled0?.toNumber(),
           pooled1: sub.gauge?.pooled1?.toNumber(),
-          projectedApr: sub.gauge?.projectedApr?.toNumber(),
           voteApr: sub.gauge?.voteApr?.toNumber(),
           tvl: sub.gauge?.tvl?.toNumber(),
           weight: sub.gauge?.weight?.toNumber(),

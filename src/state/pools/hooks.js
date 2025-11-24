@@ -30,7 +30,6 @@ export const usePools = () => {
             tvl: new BigNumber(fusion.gauge.tvl),
             apr: new BigNumber(fusion.gauge.apr || 0),
             voteApr: new BigNumber(fusion.gauge.voteApr),
-            projectedApr: new BigNumber(fusion.gauge.projectedApr),
             weight: new BigNumber(fusion.gauge.weight),
             weightPercent: new BigNumber(fusion.gauge.weightPercent),
             bribeUsd: new BigNumber(fusion.gauge.bribeUsd),

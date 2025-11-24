@@ -13,6 +13,9 @@
   },
   // Tailwind CSS Autocomplete, add more if used in projects
   "tailwindCSS.classAttributes": ["class", "className", "classNames", "containerClassName"],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -88,7 +88,6 @@ const transformStrategy = sub => ({
     bribeUsd: sub.gauge?.bribeUsd?.toNumber(),
     pooled0: sub.gauge?.pooled0?.toNumber(),
     pooled1: sub.gauge?.pooled1?.toNumber(),
-    projectedApr: sub.gauge?.projectedApr?.toNumber(),
     voteApr: sub.gauge?.voteApr?.toNumber(),
     tvl: sub.gauge?.tvl?.toNumber(),
     weight: sub.gauge?.weight?.toNumber(),

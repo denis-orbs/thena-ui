@@ -114,7 +114,6 @@ function StakedItem({ position, isXlDown }) {
         bribeUsd: position.gauge?.bribeUsd?.toNumber(),
         pooled0: position.gauge?.pooled0?.toNumber(),
         pooled1: position.gauge?.pooled1?.toNumber(),
-        projectedApr: position.gauge?.projectedApr?.toNumber(),
         voteApr: position.gauge?.voteApr?.toNumber(),
         tvl: position.gauge?.tvl?.toNumber(),
         weight: position.gauge?.weight?.toNumber(),
