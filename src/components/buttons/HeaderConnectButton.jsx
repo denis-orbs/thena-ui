@@ -1,7 +1,5 @@
 'use client'
 
-import { getLatestAuthType } from '@particle-network/auth-core'
-import { useAuthCore } from '@particle-network/auth-core-modal'
 import { useAccountModal, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
@@ -27,7 +25,6 @@ export default function HeaderConnectButton({ className, isMobile = false, isMin
   const { openChainModal } = useChainModal()
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
-  const { openWallet } = useAuthCore()
 
   const { spaceIdName } = useSpaceIdBNB(account)
   // const [walletURL, setWalletURL] = useState(null) // Change type to string | null
@@ -66,30 +63,7 @@ export default function HeaderConnectButton({ className, isMobile = false, isMin
   }
 
   if (userInfo || account) {
-    const auth = getLatestAuthType()
-    return auth ? (
-      <div className={`flex items-center gap-2 ${className}`}>
-        <EmphasisButton
-          className={className}
-          onClick={() => {
-            openAccountModal()
-          }}
-        >
-          {formatAddress(account)}
-        </EmphasisButton>
-        <NextImage
-          className='h-[20px] w-[20px] cursor-pointer'
-          alt='particle icon'
-          src='/images/socials/particle-logo.png'
-          onClick={() => {
-            openWallet({
-              windowSize: 'small',
-              topMenuType: 'close',
-            })
-          }}
-        />
-      </div>
-    ) : (
+    return (
       <EmphasisButton
         className={className}
         onClick={() => {
@@ -98,14 +72,8 @@ export default function HeaderConnectButton({ className, isMobile = false, isMin
       >
         <NextImage
           className={cn('size-4 cursor-pointer rounded-full lg:size-5', isMobile && '!size-5')}
-          alt='particle icon'
+          alt='wallet icon'
           src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? '/svgs/wallet-fold.svg'}
-          onClick={() => {
-            openWallet({
-              windowSize: 'small',
-              topMenuType: 'close',
-            })
-          }}
         />
         <span
           style={{
