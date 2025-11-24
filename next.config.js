@@ -58,6 +58,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'thena-s3.s3.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      },
     ],
   },
 
