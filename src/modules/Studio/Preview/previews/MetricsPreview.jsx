@@ -168,7 +168,10 @@ function MetricsPreview({ state }) {
         {t(metricsType === METRICS_TYPE.KEY_METRICS ? 'THENA in Numbers' : 'THENA Recent Activity')}
       </TextHeading>
       <div
-        className={cn('flex w-full flex-wrap justify-center gap-x-px gap-y-6', metricsShow.length === 4 && 'gap-y-6')}
+        className={cn(
+          'flex w-full flex-wrap justify-center gap-x-px gap-y-6 pt-4',
+          metricsShow.length === 4 && 'gap-y-6',
+        )}
       >
         <div className='flex w-full justify-center gap-x-px'>
           {metricsShow.slice(0, metricsShow.length !== 4 ? 3 : 2).map((metric, index) => renderMetrics(index, metric))}
