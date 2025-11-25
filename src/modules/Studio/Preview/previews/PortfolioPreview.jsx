@@ -3,9 +3,8 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { UNKNOWN_LOGO } from '@/constant'
 import { formatAmount } from '@/utils/utils'
 
 import EmptyShow from './EmptyShow'
@@ -35,27 +34,15 @@ function PortfolioPreview({ state }) {
         <div className='flex w-fit items-center gap-3.5'>
           <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day in')}</TextHeading>
           <div className='flex items-center justify-center gap-[5px]'>
-            {pair.type === PAIR_TYPES.WEIGHTED ? (
-              <ThreeIconGroup
-                className='*:not-first:-ml-1'
-                classNames={{
-                  image: 'w-9 h-9 text-xl font-medium leading-5 text-[#1C2027]',
-                }}
-                logo1={normalizeAssetUrl(pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO)}
-                logo2={normalizeAssetUrl(pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO)}
-                extendNumber={(pair?.tokens?.length || 2) - 2}
-              />
-            ) : (
-              <IconGroup
-                classNames={{
-                  image: 'outline-none w-9 h-9',
-                }}
-                className='*:not-first:-ml-[10px]'
-                logo1={normalizeAssetUrl(pair?.token0?.logoURI ?? UNKNOWN_LOGO)}
-                logo2={normalizeAssetUrl(pair?.token1?.logoURI ?? UNKNOWN_LOGO)}
-                style={{ border: '3px solid rgba(26, 13, 31, 0.2)' }}
-              />
-            )}
+            <IconGroup
+              classNames={{
+                image: 'outline-none w-9 h-9',
+              }}
+              className='*:not-first:-ml-[10px]'
+              logo1={normalizeAssetUrl(pair?.token0?.logoURI ?? UNKNOWN_LOGO)}
+              logo2={normalizeAssetUrl(pair?.token1?.logoURI ?? UNKNOWN_LOGO)}
+              style={{ border: '3px solid rgba(26, 13, 31, 0.2)' }}
+            />
             <div className='flex items-center gap-1.5'>
               <TextHeading className='text-[32px]! leading-10!'>{pair.symbol}</TextHeading>
               <Paragraph className='text-lg! leading-[27px]!'>{t(pair.type)}</Paragraph>

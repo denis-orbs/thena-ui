@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef } from 'react'
 
+import ErrorInfo from '@/components/common/ErrorInfo'
 import CircleImage from '@/components/image/CircleImage'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextHeading } from '@/components/typography'
@@ -10,7 +11,6 @@ import useChainLINKData from '@/hooks/useChainLINKData'
 import { convertBooleansToHex, formatAmount } from '@/utils/utils'
 
 import WarningLINKBalance from './WarningLINKBalance'
-import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
 const UPDATE_REGISTRATION = {
   CHAINLINK: 'chainlink',
@@ -96,7 +96,7 @@ function RegisterAutomation({
         />
       </div>
       {minFunds?.gt(chainLINKAmount) && (
-        <ErrorMessage message={t('LINK Amount should be larger than [value]', { value: formatAmount(minFunds) })} />
+        <ErrorInfo message={t('LINK Amount should be larger than [value]', { value: formatAmount(minFunds) })} />
       )}
     </div>
   )

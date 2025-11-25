@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
@@ -110,7 +109,7 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
               }}
               width={isLgDown ? 28 : 32}
               height={isLgDown ? 28 : 32}
-              tokens={item.type === PAIR_TYPES.WEIGHTED ? item.tokens : [item.token0, item.token1]}
+              tokens={[item.token0, item.token1]}
               showToolTip={false}
             />
             <div className='hidden flex-col lg:flex'>

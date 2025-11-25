@@ -18,14 +18,13 @@ export const useFarmRewards = create()(set => ({
     manualV3: new Map(),
     classic: new Map(),
     stable: new Map(),
-    weighted: new Map(),
   },
 
   /**
    * Add a reward to the farm rewards
    * @param {Object} position - The reward position to add
    * @param {string} position.symbol - The pool symbol
-   * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable | weighted
+   * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable | oldGauge | newGauge
    * @param {string} position.key - The reward key
    * @param {number} position.amount - The reward  amount
    * @param {number} position.amountInUSD - The reward amount in USD
@@ -35,7 +34,7 @@ export const useFarmRewards = create()(set => ({
     set(state => {
       let { type } = position
       const { key } = position
-      if (type === 'classic' || type === 'stable' || type === 'weighted') type = 'newGauge'
+      if (type === 'classic' || type === 'stable') type = 'newGauge'
 
       delete position.type
       delete position.key

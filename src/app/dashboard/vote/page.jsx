@@ -21,7 +21,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { PAIR_TYPES, THE_LOGO } from '@/constant'
+import { THE_LOGO } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
@@ -33,7 +33,6 @@ import InfoIcon from '@/icons/InfoIcon'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import cn from '@/utils/classes'
@@ -254,26 +253,18 @@ export default function VotePage() {
       sortedPools.map(pool => ({
         pair: (
           <>
-            {pool.type !== PAIR_TYPES.WEIGHTED ? (
-              <>
-                <IconGroup
-                  className='*:not-first:-ml-2'
-                  classNames={{
-                    image: 'outline-2 w-7 h-7',
-                  }}
-                  logo1={pool.token0.logoURI}
-                  logo2={pool.token1.logoURI}
-                />
-                <div className='flex flex-col'>
-                  <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>
-                    {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title}
-                  </Paragraph>
-                </div>
-              </>
-            ) : (
-              <ListTokenPercantage listToken={pool.tokens} />
-            )}
+            <IconGroup
+              className='*:not-first:-ml-2'
+              classNames={{
+                image: 'outline-2 w-7 h-7',
+              }}
+              logo1={pool.token0.logoURI}
+              logo2={pool.token1.logoURI}
+            />
+            <div className='flex flex-col'>
+              <TextHeading>{pool.symbol}</TextHeading>
+              <Paragraph className='text-sm'>{pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title}</Paragraph>
+            </div>
           </>
         ),
         apr: <Paragraph>{formatAmount(pool.gauge?.voteApr, true)}%</Paragraph>,

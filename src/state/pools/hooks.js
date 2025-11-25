@@ -8,7 +8,6 @@ import { zeroAddress } from 'viem'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
 import { fetchV2SolidlyPairs } from '@/lib/api'
 import { ZERO_VALUE } from '@/utils/utils'
 
@@ -78,17 +77,15 @@ export const usePools = () => {
 
 export const useV3PoolsWithGauge = (isAlive = true) => {
   const pools = usePools()
-  const weightedPools = useWeightedPools()
 
   return useMemo(() => {
-    if (!Array.isArray(pools) || !Array.isArray(weightedPools)) return []
-
-    return [...pools, ...weightedPools].filter(pool => {
+    if (!Array.isArray(pools)) return []
+    return pools.filter(pool => {
       const hasGauge = pool.version === 3 && pool.gauge.address !== zeroAddress
       return isAlive ? hasGauge && pool.gauge.isAlive : hasGauge
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAlive, pools, weightedPools.length])
+  }, [isAlive, pools])
 }
 
 export const getStrategy = type => {
@@ -159,9 +156,6 @@ export const usePairInfo = ({
   const { v2Pairs } = useGetV2SolidlyPairs(type || PAIR_TYPES.CLASSIC)
 
   return useMemo(() => {
-    if (type === PAIR_TYPES.WEIGHTED) {
-      return
-    }
     const found = [...pairs, ...v2Pairs].find(
       pair =>
         pair.address === poolAddress ||

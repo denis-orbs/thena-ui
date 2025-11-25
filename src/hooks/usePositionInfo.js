@@ -57,7 +57,7 @@ export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
   }, [pair])
 
   const userManuals = useMemo(() => {
-    if (!pair || pair.type === PAIR_TYPES.WEIGHTED) return []
+    if (!pair) return []
 
     const { token0, token1 } = pair
     const token0Address = token0.address.toLowerCase()

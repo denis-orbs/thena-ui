@@ -8,7 +8,6 @@ import { usePairs } from '@/context/pairsContext'
 import ActionButtons from '@/modules/Studio/StudioLayout/ActionButtons'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import cn from '@/utils/classes'
-import { isInvalidAmount } from '@/utils/utils'
 
 import AddPairButtonField from './fields/AddPairButtonField'
 import CheckboxListField from './fields/CheckboxListField'
@@ -54,17 +53,8 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     () =>
       pairFilteredSubpools
         .filter(ele => !excluded.has(String(ele.address || ele.pool?.address || '').toLowerCase()))
-        .filter(ele => {
-          if (ele.type === PAIR_TYPES.WEIGHTED) {
-            return !isInvalidAmount(ele.aprNumber)
-          }
-          return ele.highApr > 0
-        })
-        .sort(
-          (a, b) =>
-            (b.type === PAIR_TYPES.WEIGHTED ? b.aprNumber : b.highApr) -
-            (a.type === PAIR_TYPES.WEIGHTED ? a.aprNumber : a.highApr),
-        ),
+        .filter(ele => ele.highApr > 0)
+        .sort((a, b) => b.highApr - a.highApr),
     [excluded, pairFilteredSubpools],
   )
 

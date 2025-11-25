@@ -5,13 +5,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { shallowEqual, useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
 import { warnToast } from '@/lib/notify'
 import { convertBooleansToHex, isInvalidAmount } from '@/utils/utils'
-
-import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
 const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registration, minimumBalance, t }) => {
   const message = null
@@ -136,7 +135,7 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
+      {Boolean(error) && <ErrorInfo className='lg:p-4' message={error} />}
       <>
         {currentStep < 3 && (
           <PrimaryButton className='w-full' onClick={() => handleValidate()}>

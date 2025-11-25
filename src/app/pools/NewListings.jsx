@@ -13,7 +13,6 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
@@ -58,10 +57,7 @@ function NewListings({
             res = a.symbol.localeCompare(b.symbol) * (sort.isDesc ? -1 : 1)
             break
           case 'apr':
-            res =
-              ((a.type === PAIR_TYPES.WEIGHTED ? a.aprNumber : a.highApr) -
-                (b.type === PAIR_TYPES.WEIGHTED ? b.aprNumber : b.highApr)) *
-              (sort.isDesc ? -1 : 1)
+            res = (a.highApr - b.highApr) * (sort.isDesc ? -1 : 1)
             break
           case 'tvl':
             res = (a.tvlUSD - b.tvlUSD) * (sort.isDesc ? -1 : 1)
@@ -142,29 +138,23 @@ function NewListings({
     return data.map(pool => ({
       pair: (
         <div className='flex items-center gap-2 md:gap-3'>
-          {pool.type !== PAIR_TYPES.WEIGHTED ? (
-            <>
-              <GroupIconTokens
-                classNames={{
-                  image: cn('outline-2', 'size-7'),
-                  rows: '*:not-first:-ml-2',
-                  toolTip: 'hidden',
-                }}
-                width={28}
-                height={28}
-                tokens={[pool.token0, pool.token1]}
-                showToolTip={false}
-              />
-              <div className='flex flex-col'>
-                <TextHeading className='text-sm md:text-base'>{pool.symbol}</TextHeading>
-                <Paragraph className='text-[10px] md:text-xs'>
-                  {t(pool.type === PAIR_TYPES.LSD && isMdDown ? 'Concentrated' : pool.type)}
-                </Paragraph>
-              </div>
-            </>
-          ) : (
-            <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} small={size === 'small'} />
-          )}
+          <GroupIconTokens
+            classNames={{
+              image: cn('outline-2', 'size-7'),
+              rows: '*:not-first:-ml-2',
+              toolTip: 'hidden',
+            }}
+            width={28}
+            height={28}
+            tokens={[pool.token0, pool.token1]}
+            showToolTip={false}
+          />
+          <div className='flex flex-col'>
+            <TextHeading className='text-sm md:text-base'>{pool.symbol}</TextHeading>
+            <Paragraph className='text-[10px] md:text-xs'>
+              {t(pool.type === PAIR_TYPES.LSD && isMdDown ? 'Concentrated' : pool.type)}
+            </Paragraph>
+          </div>
 
           {/* BEGIN Special pools */}
           {pool.address === weETHPoolAddress && (
@@ -332,22 +322,12 @@ function NewListings({
         <div className='flex items-center gap-1'>
           <Paragraph className='min-w-0 flex-1 truncate text-sm md:text-base'>${formatAmount(pool.tvlUSD)}</Paragraph>
           <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}-${id}`} />
-          {pool.type === PAIR_TYPES.WEIGHTED ? (
-            <CustomTooltip id={`tvl-${pool.address}-${id}`}>
-              <div className='flex flex-col gap-1'>
-                {(pool.tokens || []).map(token => (
-                  <p key={token.address}>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
-                ))}
-              </div>
-            </CustomTooltip>
-          ) : (
-            <CustomTooltip id={`tvl-${pool.address}-${id}`}>
-              <div className='flex flex-col gap-1'>
-                <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
-                <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
-              </div>
-            </CustomTooltip>
-          )}
+          <CustomTooltip id={`tvl-${pool.address}-${id}`}>
+            <div className='flex flex-col gap-1'>
+              <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
+              <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
+            </div>
+          </CustomTooltip>
         </div>
       ),
       volume: (
@@ -378,11 +358,8 @@ function NewListings({
               e.stopPropagation()
               e.preventDefault()
 
-              let url =
-                pool.type === PAIR_TYPES.WEIGHTED
-                  ? `/pools/add-liquidity/weighted/${pool.address}`
-                  : `/pools/add-liquidity?step=3&poolAddress=${pool.address}`
-              if (back) url += pool.type === PAIR_TYPES.WEIGHTED ? `?back=${back}` : `&back=${back}`
+              let url = `/pools/add-liquidity?step=3&poolAddress=${pool.address}`
+              if (back) url += `&back=${back}`
               push(url)
             }}
           >

@@ -11,12 +11,11 @@ import BackButton from '@/components/buttons/BackButton'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useBribeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
@@ -99,26 +98,14 @@ export default function IncentivePage() {
           {topPools.map(pool => (
             <Box className='flex items-center justify-between' key={`incentive-${pool.address}`}>
               <div className='flex items-center gap-3'>
-                {pool.type === PAIR_TYPES.WEIGHTED ? (
-                  <ThreeIconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                    }}
-                    logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                    logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                    extendNumber={(pool?.tokens?.length || 2) - 2}
-                  />
-                ) : (
-                  <IconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'outline-2 w-8 h-8',
-                    }}
-                    logo1={pool.token0.logoURI}
-                    logo2={pool.token1.logoURI}
-                  />
-                )}
+                <IconGroup
+                  className='*:not-first:-ml-2'
+                  classNames={{
+                    image: 'outline-2 w-8 h-8',
+                  }}
+                  logo1={pool.token0.logoURI}
+                  logo2={pool.token1.logoURI}
+                />
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
                   <Paragraph className='text-sm'>
@@ -283,26 +270,14 @@ export default function IncentivePage() {
             <article className='mb-5 flex items-center justify-between border-b border-neutral-700 pb-5'>
               <TextHeading className='block'>Pair</TextHeading>
               <div className='mt-2 flex items-center gap-3'>
-                {pair.type === PAIR_TYPES.WEIGHTED ? (
-                  <ThreeIconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                    }}
-                    logo1={pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                    logo2={pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                    extendNumber={(pair?.tokens?.length || 2) - 2}
-                  />
-                ) : (
-                  <IconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'outline-2 w-5 h-5',
-                    }}
-                    logo1={pair.token0.logoURI}
-                    logo2={pair.token1.logoURI}
-                  />
-                )}
+                <IconGroup
+                  className='*:not-first:-ml-2'
+                  classNames={{
+                    image: 'outline-2 w-5 h-5',
+                  }}
+                  logo1={pair.token0.logoURI}
+                  logo2={pair.token1.logoURI}
+                />
                 <div className='flex items-end gap-2'>
                   <TextHeading>{pair.symbol}</TextHeading>
                   <Paragraph className='text-sm'>{t(pair.title)}</Paragraph>
@@ -404,26 +379,14 @@ export default function IncentivePage() {
             <article className='mb-6 border-b border-neutral-700 pb-5'>
               <TextHeading className='block'>Selected Pair</TextHeading>
               <div className='mt-2 flex items-center gap-3'>
-                {pair.type === PAIR_TYPES.WEIGHTED ? (
-                  <ThreeIconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'size-7 text-xl font-medium leading-5 text-[#1C2027]',
-                    }}
-                    logo1={pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                    logo2={pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                    extendNumber={(pair?.tokens?.length || 2) - 2}
-                  />
-                ) : (
-                  <IconGroup
-                    className='*:not-first:-ml-2'
-                    classNames={{
-                      image: 'outline-2 size-6',
-                    }}
-                    logo1={pair.token0.logoURI}
-                    logo2={pair.token1.logoURI}
-                  />
-                )}
+                <IconGroup
+                  className='*:not-first:-ml-2'
+                  classNames={{
+                    image: 'outline-2 size-6',
+                  }}
+                  logo1={pair.token0.logoURI}
+                  logo2={pair.token1.logoURI}
+                />
                 <div className='flex items-end gap-2'>
                   <TextHeading>{pair.symbol}</TextHeading>
                   <Paragraph className='text-sm'>

@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo } from 'react'
-import { zeroAddress } from 'viem'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -13,14 +12,12 @@ import { TextButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, SPECIAL_POOLS, UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import ArrowLeftIcon from '@/icons/ArrowLeftIcon'
 import InfoIcon from '@/icons/InfoIcon'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
@@ -29,10 +26,9 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
 import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
-import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { formatAmount, goScan, isInvalidAmount } from '@/utils/utils'
+import { formatAmount, goScan } from '@/utils/utils'
 
 import AnalyticsIcon from '~/svgs/analytics.svg'
 import ExternalIcon from '~/svgs/external.svg'
@@ -75,12 +71,6 @@ export default function SpecificPoolPage({ params }) {
     [address, pairs],
   )
 
-  const { balance: weightedPoolBalance } = useWeightPoolData(pair?.type === PAIR_TYPES.WEIGHTED ? pair.address : null)
-
-  const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(
-    pair?.type === PAIR_TYPES.WEIGHTED ? pair.gauge.address : zeroAddress,
-  )
-
   const userPools = useMemo(() => {
     if (!pair) return []
 
@@ -100,7 +90,7 @@ export default function SpecificPoolPage({ params }) {
 
   const userManuals = useMemo(
     () =>
-      pair && pair.type !== PAIR_TYPES.WEIGHTED
+      pair
         ? manuals.filter(
             ele =>
               [pair?.token0.address, pair?.token1.address].includes(ele.token0Address.toLowerCase()) &&
@@ -115,7 +105,7 @@ export default function SpecificPoolPage({ params }) {
     [userManuals, userPools],
   )
 
-  if (isLoading || !pair || loadingGaugeBalance) {
+  if (isLoading || !pair) {
     return <Loading />
   }
 
@@ -129,45 +119,20 @@ export default function SpecificPoolPage({ params }) {
         {/* Title */}
         <div className='mt-4 mb-6'>
           <div>
-            {pair.type !== PAIR_TYPES.WEIGHTED ? (
-              <div className='flex gap-4'>
-                <IconGroup
-                  classNames={{
-                    image: 'w-[36px] lg:w-[56px]',
-                  }}
-                  logo1={pair?.token0.logoURI}
-                  logo2={pair?.token1.logoURI}
-                />
-                <div className='flex items-center gap-2'>
-                  <div className='flex items-center gap-3'>
-                    <TextHeading className='text-xl lg:text-4xl'>{pair?.symbol}</TextHeading>
-                  </div>
+            <div className='flex gap-4'>
+              <IconGroup
+                classNames={{
+                  image: 'w-[36px] lg:w-[56px]',
+                }}
+                logo1={pair?.token0.logoURI}
+                logo2={pair?.token1.logoURI}
+              />
+              <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-3'>
+                  <TextHeading className='text-xl lg:text-4xl'>{pair?.symbol}</TextHeading>
                 </div>
               </div>
-            ) : (
-              <div className='flex gap-2'>
-                <ThreeIconGroup
-                  classNames={{
-                    image: 'w-[36px] lg:w-[56px] h-[36px] lg:h-[56px] text-xl font-medium leading-5 text-[#1C2027]',
-                  }}
-                  logo1={pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                  logo2={pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                  extendNumber={(pair?.tokens?.length || 2) - 2}
-                />
-                <div className='flex items-center gap-2'>
-                  <div className='flex w-full flex-wrap items-center gap-1 lg:gap-3'>
-                    {(pair?.tokens || []).map(token => (
-                      <div className='flex items-center gap-1' key={token?.address}>
-                        <span className='text-xl leading-10 font-semibold lg:text-4xl'>{token?.symbol}</span>
-                        <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>
-                          {formatAmount(token?.weight)}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -179,7 +144,7 @@ export default function SpecificPoolPage({ params }) {
           <div className='mb-6 flex items-center justify-between gap-3 lg:mb-7'>
             <div className='flex gap-3'>
               <NeutralBadge className='inline text-[14px] leading-5 font-normal text-neutral-50'>
-                {t(pair?.type ?? 'Weighted')}
+                {t(pair?.type)}
               </NeutralBadge>
               <NeutralBadge className='inline text-[14px] leading-5 font-normal whitespace-nowrap'>
                 <span className='text-neutral-300'>{t('Fee')}: </span>
@@ -426,18 +391,7 @@ export default function SpecificPoolPage({ params }) {
               {t('My Positions')}
             </TextHeading>
             <div className='grid grid-cols-1 gap-4'>
-              {pair.type === PAIR_TYPES.WEIGHTED ? (
-                <>
-                  {!isInvalidAmount(weightedPoolBalance) || !isInvalidAmount(gaugeBalance) ? (
-                    <>
-                      {!isInvalidAmount(weightedPoolBalance) && <WeightedPoolPosition pool={pair} isStake={false} />}
-                      {!isInvalidAmount(gaugeBalance) && <WeightedPoolPosition pool={pair} isStake />}
-                    </>
-                  ) : (
-                    <NoPosition />
-                  )}
-                </>
-              ) : userPositions && userPositions.length > 0 ? (
+              {userPositions && userPositions.length > 0 ? (
                 userPositions.map((ele, idx) =>
                   ele.type === 'Manual' ? (
                     <React.Fragment key={`pos-fragment-${idx}`}>

@@ -16,7 +16,6 @@ import ManualItem from './ManualItem'
 import NotStakedItem from './NotStakedItem'
 import Pagination from './Pagination'
 import StakedItem from './StakedItem'
-import WeightedItem from './WeightedItem'
 
 const ITEMS_PER_PAGE = 10
 
@@ -121,16 +120,6 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFro
         ) : (
           <ManualItem position={position} isXlDown={isXlDown} />
         )
-      }
-
-      if (position.type === 'Weighted') {
-        if (position.notStaked) {
-          return <WeightedItem position={position} isStake={false} isXlDown={isXlDown} />
-        }
-
-        if (position.staked) {
-          return <WeightedItem position={position} isStake isXlDown={isXlDown} />
-        }
       }
 
       return position.staked ? (

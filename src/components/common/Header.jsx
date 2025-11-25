@@ -782,16 +782,6 @@ function Header() {
     setIsOpen(false)
   }, [push])
 
-  useEffect(() => {
-    router.prefetch('/swap')
-    router.prefetch('/pools')
-    router.prefetch('/dashboard')
-    router.prefetch('/dashboard/vote')
-    router.prefetch('/dashboard/rewards')
-    router.prefetch('/dashboard/lock')
-    router.prefetch('/analytics')
-  }, [router])
-
   return (
     <div id='headerMaster'>
       <header

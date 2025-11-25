@@ -3,14 +3,9 @@ import { gql } from 'graphql-request'
 import { fromPairs, sumBy } from 'lodash'
 import useSWR from 'swr'
 
-import {
-  FUSION_MULTI_CHAIN_START_TIME,
-  ONE_DAY_UNIX,
-  V1_MULTI_CHAIN_START_TIME,
-  WEIGHTED_MULTI_CHAIN_START_TIME,
-} from '@/constant'
+import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { getAnalyticsData } from '@/lib/api'
-import { AlgebraClient, SolidlyClient, WeightedClient } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 export const fetchChartData = async (getEntityDayDatas, params = [], isFusion = false) => {
@@ -136,64 +131,20 @@ const getFusionOverviewChartData = async (params, skip) => {
   }
 }
 
-const WEIGHTED_DAY_DATAS = gql`
-  query overviewCharts($startTime: Int!, $skip: Int!) {
-    balancerSnapshots(
-      first: 1000
-      skip: $skip
-      where: { timestamp_gte: $startTime }
-      orderBy: timestamp
-      orderDirection: asc
-    ) {
-      timestamp
-      totalLiquidity
-      totalSwapVolume
-    }
-  }
-`
-/**
- * Fetches and processes fusion overview chart data for a specific chain.
- * @returns {Promise<{ [date: number]: { volumeUSD: number, tvlUSD: number } } | { error: boolean }>}
- */
-const getWeightedOverviewChartData = async (chainId, skip) => {
-  try {
-    const { balancerSnapshots } = await WeightedClient[chainId].request(WEIGHTED_DAY_DATAS, {
-      startTime: WEIGHTED_MULTI_CHAIN_START_TIME[chainId],
-      skip,
-    })
-
-    const data = balancerSnapshots.map(ele => ({
-      date: ele.date,
-      volumeUSD: parseFloat(ele.totalSwapVolume),
-      tvlUSD: parseFloat(ele.totalLiquidity),
-    }))
-
-    return { data, error: false }
-  } catch (error) {
-    console.error('Failed to fetch overview chart data', error)
-    return { error: true }
-  }
-}
-
 const fetchGlobalChartData = async chainId => {
-  const [{ data: v1data }, { data: fusiondata2 }, { data: fusiondata3 }, { data: weightedData }] = await Promise.all([
+  const [{ data: v1data }, { data: fusiondata2 }, { data: fusiondata3 }] = await Promise.all([
     fetchChartData(getV1OverviewChartData, [chainId], false),
     fetchChartData(getFusionOverviewChartData, [{ chainId, version: 2 }], true),
     fetchChartData(getFusionOverviewChartData, [{ chainId, version: 3 }], true),
-    fetchChartData(getWeightedOverviewChartData, [chainId], true),
   ])
-
-  // console.log({ v1data, fusiondata2, fusiondata3, weightedData })
 
   return v1data.map(ele => {
     const foundV2 = fusiondata2.find(fusion => fusion.date === ele.date)
     const foundV3 = fusiondata3.find(fusion => fusion.date === ele.date)
-    const foundWeighted = weightedData.find(weighted => weighted.date === ele.date)
     return {
       ...ele,
-      volumeUSD:
-        ele.volumeUSD + (foundV2?.volumeUSD ?? 0) + (foundV3?.volumeUSD ?? 0) + (foundWeighted?.volumeUSD ?? 0),
-      tvlUSD: ele.tvlUSD + (foundV2?.tvlUSD ?? 0) + (foundV3?.tvlUSD ?? 0) + (foundWeighted?.tvlUSD ?? 0),
+      volumeUSD: ele.volumeUSD + (foundV2?.volumeUSD ?? 0) + (foundV3?.volumeUSD ?? 0),
+      tvlUSD: ele.tvlUSD + (foundV2?.tvlUSD ?? 0) + (foundV3?.tvlUSD ?? 0),
     }
   })
 }

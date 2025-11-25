@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import ErrorInfo from '@/components/common/ErrorInfo'
 import BalanceInput from '@/components/input/BalanceInput'
 import DateInput from '@/components/input/DateInput'
 import { ModalBody, ModalFooter } from '@/components/modal'
@@ -14,7 +15,6 @@ import { PERIOD_LEVELS } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useExtendLock, useIncreaseLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import { formatAmount, isInvalidAmount } from '@/utils/utils'
 
 const week = 86400 * 7 * 1000
@@ -170,7 +170,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
             </div>
           </div>
         )}
-        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
+        {isAutomation && <ErrorInfo className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         {isExtend ? (

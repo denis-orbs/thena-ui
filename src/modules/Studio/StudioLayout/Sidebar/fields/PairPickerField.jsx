@@ -6,13 +6,12 @@ import { useRef, useState } from 'react'
 
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { UNKNOWN_LOGO } from '@/constant'
+import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { PATH_NAME } from '@/modules/Studio/lib/utils'
 import cn from '@/utils/classes'
 
-import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import TrashIcon from '~/svgs/trash.svg'
 
 import PairModal from './PairModal'
@@ -33,26 +32,14 @@ export default function PairPickerField({ value, onChange, options = [], onRemov
       >
         {value ? (
           <div className='flex items-center gap-3'>
-            {value.type === PAIR_TYPES.WEIGHTED ? (
-              <ThreeIconGroup
-                className='*:not-first:-ml-1'
-                classNames={{
-                  image: 'w-4 h-4 text-xl font-medium leading-5 text-[#1C2027] z-0',
-                }}
-                logo1={value?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                logo2={value?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                extendNumber={(value?.tokens?.length || 2) - 2}
-              />
-            ) : (
-              <IconGroup
-                className='*:not-first:-ml-1'
-                classNames={{
-                  image: 'outline-2 w-4 h-4 z-0',
-                }}
-                logo1={value?.token0?.logoURI ?? UNKNOWN_LOGO}
-                logo2={value?.token1?.logoURI ?? UNKNOWN_LOGO}
-              />
-            )}
+            <IconGroup
+              className='*:not-first:-ml-1'
+              classNames={{
+                image: 'outline-2 w-4 h-4 z-0',
+              }}
+              logo1={value?.token0?.logoURI ?? UNKNOWN_LOGO}
+              logo2={value?.token1?.logoURI ?? UNKNOWN_LOGO}
+            />
             <div className='flex items-center gap-2'>
               <div className='flex min-w-0 items-center gap-2' title={value.symbol}>
                 <TextHeading className='block max-w-[120px] truncate text-base! leading-5! uppercase'>

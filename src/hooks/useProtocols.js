@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import ERC20Abi from '@/abis/erc20.json'
 import { BribeABI } from '@/abis/ve/BribeABI'
 import { GlobalFactoryABI } from '@/abis/ve/GlobalFactoryABI'
-import { PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
@@ -17,7 +17,6 @@ const POOL_TYPES = {
   Classic: 0,
   Stable: 0,
   'Conc Liquidity': 1,
-  Weighted: 3,
 }
 
 export const useGaugeAdd = () => {
@@ -37,17 +36,10 @@ export const useGaugeAdd = () => {
         abi: GlobalFactoryABI,
       }
 
-      let res = []
-      if (pool.type === PAIR_TYPES.WEIGHTED) {
-        res = await Promise.all(
-          pool.tokens.map(token => readCall(globalFactoryContract, 'isToken', [token.address], chainId)),
-        )
-      } else {
-        res = await Promise.all([
-          readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
-          readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
-        ])
-      }
+      const res = await Promise.all([
+        readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
+        readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
+      ])
 
       const isWhitelisted = res.every(ele => ele)
       if (!isWhitelisted) {

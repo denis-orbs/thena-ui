@@ -3,10 +3,9 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Input from '@/components/input'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { UNKNOWN_LOGO } from '@/constant'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import PairModal from '@/modules/PairModal'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
@@ -70,27 +69,16 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
         title: pairState.selected.title,
         type: pairState.selected.type,
         version: pairState.selected.version,
-        ...(pairState.selected.type === PAIR_TYPES.WEIGHTED
-          ? {
-              tokens: (pairState.selected.tokens || []).map(token => ({
-                ...token,
-                totalValue: token?.totalValue?.toString() || 0,
-                balance: token?.balance?.toString() || 0,
-                reserve: token?.reserve?.toString() || 0,
-              })),
-            }
-          : {
-              token0: {
-                ...pairState.selected.token0,
-                reserve: pairState.selected?.token0?.reserve?.toString() || 0,
-                balance: pairState.selected?.token0?.balance?.toString() || 0,
-              },
-              token1: {
-                ...pairState.selected.token1,
-                reserve: pairState.selected?.token1?.reserve?.toString() || 0,
-                balance: pairState.selected?.token1?.balance?.toString() || 0,
-              },
-            }),
+        token0: {
+          ...pairState.selected.token0,
+          reserve: pairState.selected?.token0?.reserve?.toString() || 0,
+          balance: pairState.selected?.token0?.balance?.toString() || 0,
+        },
+        token1: {
+          ...pairState.selected.token1,
+          reserve: pairState.selected?.token1?.reserve?.toString() || 0,
+          balance: pairState.selected?.token1?.balance?.toString() || 0,
+        },
       },
     })
   }, [pairState, onSelected])
@@ -114,29 +102,17 @@ function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
       >
         {pair.pair ? (
           <div className='flex items-center gap-1'>
-            {pair.pair.type === PAIR_TYPES.WEIGHTED ? (
-              <ThreeIconGroup
-                className='*:not-first:-ml-2'
-                classNames={{
-                  image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-                }}
-                logo1={pair.pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                logo2={pair.pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                extendNumber={(pair.pair?.tokens?.length || 2) - 2}
-              />
-            ) : (
-              <IconGroup
-                className='*:not-first:-ml-2'
-                classNames={{
-                  image: 'outline-2 w-8 h-8',
-                }}
-                logo1={pair.pair.token0.logoURI ?? UNKNOWN_LOGO}
-                logo2={pair.pair.token1.logoURI ?? UNKNOWN_LOGO}
-              />
-            )}
+            <IconGroup
+              className='*:not-first:-ml-2'
+              classNames={{
+                image: 'outline-2 w-8 h-8',
+              }}
+              logo1={pair.pair.token0.logoURI ?? UNKNOWN_LOGO}
+              logo2={pair.pair.token1.logoURI ?? UNKNOWN_LOGO}
+            />
             <div className='flex items-end gap-[6px]'>
               <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
-              {pair.pair.type !== PAIR_TYPES.WEIGHTED && <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>}
+              <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>
             </div>
           </div>
         ) : (

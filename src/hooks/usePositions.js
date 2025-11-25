@@ -16,10 +16,8 @@ import { useFarmPositions } from './position/useFarmPosition'
 import { useManualPositions } from './position/useManualPosition'
 import { useNotStakedPositions } from './position/useNotStakedPosition'
 import { useStakedPosition } from './position/useStakedPosition'
-import { useWeightedPositions } from './position/useWeightedPosition'
 import { useCachedSWR } from './useCachedSWR'
 import useWallet from './useWallet'
-import { useWeightedPositionList } from './weightedPool/useWeigtedPool'
 
 const updateWalletBalance = positions => {
   const groupedPositions = positions.reduce((map, position) => {
@@ -125,7 +123,6 @@ const useRemovedClaimablePositions = () => {
 
 export const usePositions = () => {
   const userManuals = useManuals()
-  const weightedPositionList = useWeightedPositionList()
   const pools = usePools()
   const vaults = useVaults()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
@@ -142,8 +139,6 @@ export const usePositions = () => {
     positions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
   )
 
-  const weightedPositions = useWeightedPositions(weightedPositionList)
-
   const stakedPosition = useStakedPosition(
     positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.gaugeBalance?.gt(0)),
   )
@@ -153,13 +148,11 @@ export const usePositions = () => {
 
   const allPositions = useMemo(
     () =>
-      [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions, ...weightedPositions].map(
-        (item, index) => ({
-          ...item,
-          positionId: `pos-${index}`,
-        }),
-      ),
-    [manualPositions, farmingPositions, weightedPositions, stakedPosition, notStakedPosition],
+      [...stakedPosition, ...notStakedPosition, ...manualPositions, ...farmingPositions].map((item, index) => ({
+        ...item,
+        positionId: `pos-${index}`,
+      })),
+    [manualPositions, farmingPositions, stakedPosition, notStakedPosition],
   )
 
   const removedClaimablePositions = useRemovedClaimablePositions()

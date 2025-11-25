@@ -10,11 +10,10 @@ import CircleImage from '@/components/image/CircleImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, THE_LOGO } from '@/constant'
+import { THE_LOGO } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import { useClaimBribes, useClaimBribesV2, useClaimRebase } from '@/hooks/useVeThe'
 import InfoIcon from '@/icons/InfoIcon'
-import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { formatAmount } from '@/utils/utils'
 
 import { NoRewards } from './NoRewards'
@@ -106,24 +105,18 @@ export default function CurrentRewards({ rewards, currentMutate, version = 3 }) 
         return {
           id: (
             <>
-              {pool.type !== PAIR_TYPES.WEIGHTED ? (
-                <>
-                  <IconGroup
-                    className='*:not-fitst:-ml-2'
-                    classNames={{
-                      image: 'outline-2 w-7 h-7',
-                    }}
-                    logo1={pool.token0?.logoURI}
-                    logo2={pool.token1?.logoURI}
-                  />
-                  <div className='flex flex-col'>
-                    <TextHeading>{pool.symbol}</TextHeading>
-                    <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
-                  </div>
-                </>
-              ) : (
-                <ListTokenPercantage listToken={pool.tokens} />
-              )}
+              <IconGroup
+                className='*:not-fitst:-ml-2'
+                classNames={{
+                  image: 'outline-2 w-7 h-7',
+                }}
+                logo1={pool.token0?.logoURI}
+                logo2={pool.token1?.logoURI}
+              />
+              <div className='flex flex-col'>
+                <TextHeading>{pool.symbol}</TextHeading>
+                <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+              </div>
             </>
           ),
           type: <Paragraph>{`${t('Incentives')} + ${t('Fees')}`}</Paragraph>,

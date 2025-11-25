@@ -15,7 +15,7 @@ import {
 } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
 import { fetchHistoricalTokensPrice } from '@/lib/api'
-import { AlgebraClient, SolidlyClient, WeightedClient } from '@/lib/graphql'
+import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
@@ -65,19 +65,6 @@ const FUSION_DAY_DATAS = gql`
       tvlUSD
       feesToken0
       feesToken1
-    }
-  }
-`
-
-const WEIGHTED_DAY_DATA = gql`
-  query weightedPairCharts($address: String!) {
-    poolSnapshots(first: 1000, where: { pool_: { address: $address } }) {
-      timestamp
-      swapsCount
-      swapVolume
-      swapFees
-      liquidity
-      amounts
     }
   }
 `
@@ -218,33 +205,7 @@ export const getFusionChartData = async ({
   }
 }
 
-export const getWeightedChartData = async (chainId, address, skip) => {
-  try {
-    const { poolSnapshots } = await WeightedClient[chainId].request(WEIGHTED_DAY_DATA, {
-      address,
-      skip,
-    })
-
-    const data = poolSnapshots?.map(ele => ({
-      date: ele.timestamp,
-      dayVolume: Number(ele.swapVolume),
-      tvlUSD: Number(ele.liquidity),
-      dayFees: Number(ele.swapFees),
-    }))
-
-    return { data, error: false }
-  } catch (error) {
-    console.error('Failed to fetch fusion pair chart data', error)
-    return { data: [], error: true }
-  }
-}
-
 export const fetchPairChartData = async (chainId, pair) => {
-  if (pair.type === PAIR_TYPES.WEIGHTED) {
-    const { data: weightedData = [] } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
-    return weightedData
-  }
-
   if (pair.type === PAIR_TYPES.LSD) {
     const version = pair?.version
     // const needFetchHistoricalPrice = await checkFusionTokensData([pair.token0.address, pair.token1.address])

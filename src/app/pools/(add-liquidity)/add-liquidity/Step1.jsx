@@ -11,7 +11,6 @@ import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import InfoIcon from '@/icons/InfoIcon'
-import { errorToast } from '@/lib/notify'
 import cn from '@/utils/classes'
 
 function ContentTypeOptionMini({ heading, desc, active }) {
@@ -103,21 +102,6 @@ export default function Step1() {
       {
         content: (
           <>
-            <ContentTypeOptionMini active={pairType === PAIR_TYPES.WEIGHTED} heading='Weighted' desc='Weighted Desc' />
-
-            <div className='hidden flex-1 flex-col gap-1 lg:flex'>
-              <TextHeading className='text-sm lg:text-base'>{t('Weighted')}</TextHeading>
-            </div>
-          </>
-        ),
-        active: pairType === PAIR_TYPES.WEIGHTED,
-        onClickHandler: () => {
-          updateSearchParams({ pairType: PAIR_TYPES.WEIGHTED })
-        },
-      },
-      {
-        content: (
-          <>
             <ContentTypeOptionMini active={pairType === PAIR_TYPES.STABLE} heading='Stable' desc='Stable Desc' />
 
             <div className='hidden flex-1 flex-col gap-1 lg:flex'>
@@ -150,12 +134,8 @@ export default function Step1() {
   )
 
   const handleNext = useCallback(() => {
-    if (pairType === PAIR_TYPES.WEIGHTED) {
-      errorToast('Creation of Weighted pools is currently unavailable')
-      return
-    }
     updateSearchParams({ step: 2 }, true)
-  }, [pairType, updateSearchParams])
+  }, [updateSearchParams])
 
   return (
     <div className='flex flex-col gap-4 max-lg:-mx-2 max-lg:-mt-2.5 max-lg:-mb-4 max-lg:min-h-[calc(100vh-128px)] lg:gap-6'>
@@ -187,10 +167,6 @@ export default function Step1() {
           <div className='flex flex-col gap-2'>
             <TextHeading className='leading-5'>{t('Concentrated Liquidity')}</TextHeading>
             <Paragraph className='text-sm! font-normal'>{t('Conc Desc')}</Paragraph>
-          </div>
-          <div className='flex flex-col gap-2'>
-            <TextHeading className='text-base leading-5'>{t('Weighted')}</TextHeading>
-            <Paragraph className='text-sm! font-normal'>{t('Weighted Desc')}</Paragraph>
           </div>
           <div className='flex flex-col gap-2'>
             <TextHeading className='text-base leading-5'>{t('Stable')}</TextHeading>

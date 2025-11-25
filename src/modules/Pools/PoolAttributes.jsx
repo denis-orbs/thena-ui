@@ -356,11 +356,7 @@ export function NormalPoolAttributes({ pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
           <div className='col-span-4 text-neutral-50'>
-            {pool.type === PAIR_TYPES.WEIGHTED
-              ? pool?.name ?? pool?.symbol
-              : pool.type === PAIR_TYPES.STABLE
-                ? `sAMM ${pool?.symbol}`
-                : `vAMM ${pool?.symbol}`}
+            {pool.type === PAIR_TYPES.STABLE ? `sAMM ${pool?.symbol}` : `vAMM ${pool?.symbol}`}
           </div>
         </div>
 

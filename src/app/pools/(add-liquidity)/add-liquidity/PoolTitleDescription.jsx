@@ -12,10 +12,6 @@ const descriptionSections = {
     text: 'Classic',
     description: 'Classic Desc',
   },
-  [PAIR_TYPES.WEIGHTED]: {
-    text: 'Weighted',
-    description: 'Weighted Desc',
-  },
   [PAIR_TYPES.LSD]: {
     text: 'Conc Liquidity',
     description: 'Conc Desc',

@@ -115,11 +115,6 @@ export const fetchV2SolidlyPairs = async ({ networkId }) =>
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchWeightedPools = ({ networkId }) =>
-  fetch(`${backendApi}/v3/weightedpools/${networkId}`)
-    .then(r => r.json())
-    .then(r => (Array.isArray(r.data) ? r.data : []))
-
 export const fetchTopTokens = async ({ networkId, version = 3 }) => {
   const apiVersion = getApiVersion(version)
   return fetch(`${backendApi}/${apiVersion}/topTokens/${networkId}`)

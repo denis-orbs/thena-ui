@@ -3,21 +3,19 @@ import { useMemo } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import { TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
-function LiquidityFeeRow({ token, pairType }) {
+function LiquidityFeeRow({ token }) {
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   return (
     <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800 px-5 py-4 lg:grid-cols-3'>
       <div className='col-span-2 flex flex-col items-start lg:col-span-1 lg:flex-row lg:items-center'>
-        <div className='mb-1 text-[13px] leading-5 font-normal lg:hidden'>
-          {t(pairType === PAIR_TYPES.WEIGHTED ? 'Token and Weight' : 'Token')}
-        </div>
+        <div className='mb-1 text-[13px] leading-5 font-normal lg:hidden'>{t('Token')}</div>
         <div className='flex items-center gap-2 lg:gap-3'>
           <CircleImage className='h-7 w-7 lg:h-8 lg:w-8' src={token?.logoURI || UNKNOWN_LOGO} alt='thena logo' />
           <TextHeading className='text-base font-medium lg:text-[18px] lg:leading-[26px]'>
@@ -54,37 +52,33 @@ function LiquidityFeeRow({ token, pairType }) {
 export function LiquidityFeesTable({ pool }) {
   const t = useTranslations()
 
-  const tokensList = useMemo(() => {
-    if (pool.type !== PAIR_TYPES.WEIGHTED) {
-      return [
-        {
-          ...pool.token0,
-          reserve: pool.reserve0,
-          totalFees: pool.totalFees0,
-        },
-        {
-          ...pool.token1,
-          reserve: pool.reserve1,
-          totalFees: pool.totalFees1,
-        },
-      ]
-    }
-    if (!pool?.tokens) return []
-
-    return pool.tokens
-  }, [pool])
+  const tokensList = useMemo(
+    () => [
+      {
+        ...pool.token0,
+        reserve: pool.reserve0,
+        totalFees: pool.totalFees0,
+      },
+      {
+        ...pool.token1,
+        reserve: pool.reserve1,
+        totalFees: pool.totalFees1,
+      },
+    ],
+    [pool],
+  )
 
   return (
     <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-3 lg:p-6'>
       <div className='hidden grid-cols-3 px-5 text-[14px] leading-5 font-normal lg:grid'>
-        <div className='col-span-1'>{t(pool.type === PAIR_TYPES.WEIGHTED ? 'Token and Weight' : 'Token')}</div>
+        <div className='col-span-1'>{t('Token')}</div>
         <div>{t('Current Liquidity')}</div>
         <div>{t('Generated Cumulative Fees')}</div>
       </div>
 
       <div className='flex max-h-[600px] flex-col gap-3 overflow-y-auto lg:max-h-[430px]'>
         {tokensList.map(token => (
-          <LiquidityFeeRow key={token?.address} token={token} pairType={pool.type} />
+          <LiquidityFeeRow key={token?.address} token={token} />
         ))}
       </div>
     </div>

@@ -9,7 +9,7 @@ import { useReadContract, useReadContracts } from 'wagmi'
 import { VeTheAutomationABI } from '@/abis/automation/VeTheAutomationABI'
 import { VeTheAutomationFactoryABI } from '@/abis/automation/VeTheAutomationFactoryABI'
 import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
-import { AUTOMATION_STATUS, CHAINLINK_TOKEN, PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { AUTOMATION_STATUS, CHAINLINK_TOKEN, TXN_STATUS } from '@/constant'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
@@ -345,26 +345,16 @@ export const useAutomationContractDetail = tokenId => {
             title: result.title,
             type: result.type,
             version: result.version,
-            ...(result.type === PAIR_TYPES.WEIGHTED
-              ? {
-                  tokens: (result.tokens || []).map(token => ({
-                    ...token,
-                    totalValue: token?.totalValue || 0,
-                    balance: token?.balance?.toNumber() || 0,
-                  })),
-                }
-              : {
-                  token0: {
-                    ...result.token0,
-                    reserve: result?.token0?.reserve?.toNumber() || 0,
-                    balance: result?.token0?.balance?.toNumber() || 0,
-                  },
-                  token1: {
-                    ...result.token1,
-                    reserve: result?.token1?.reserve?.toNumber() || 0,
-                    balance: result?.token1?.balance?.toNumber() || 0,
-                  },
-                }),
+            token0: {
+              ...result.token0,
+              reserve: result?.token0?.reserve?.toNumber() || 0,
+              balance: result?.token0?.balance?.toNumber() || 0,
+            },
+            token1: {
+              ...result.token1,
+              reserve: result?.token1?.reserve?.toNumber() || 0,
+              balance: result?.token1?.balance?.toNumber() || 0,
+            },
           },
           weight: Number(weights[index]),
           lock: true,
