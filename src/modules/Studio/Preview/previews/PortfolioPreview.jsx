@@ -20,19 +20,19 @@ function PortfolioPreview({ state }) {
   )
 
   return pair ? (
-    <div className='mt-20 flex flex-col gap-[45px]'>
+    <div className='flex flex-col gap-5'>
       <div className='flex flex-col items-center justify-center gap-3 text-center'>
         <TextHeading className='text-[32px]! leading-10! font-semibold'>
           {t('Your [amount] Can Earn', { amount: `$${formatAmount(amount, true)}` })}
         </TextHeading>
         <TextHeading
-          className='font-archia text-[164px]! leading-[170px]! font-semibold tracking-[0.02em]'
+          className='font-archia text-[152px]! leading-[180px]! font-semibold tracking-[0.02em]'
           style={{ color: '#D642DB' }}
         >
           ${formatAmount(calculateProfitPerDay(maxApr, amount), true)}
         </TextHeading>
         <div className='flex w-fit items-center gap-3.5'>
-          <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day on')}</TextHeading>
+          <TextHeading className='text-[32px]! leading-10! font-semibold'>{t('Per Day in')}</TextHeading>
           <div className='flex items-center justify-center gap-[5px]'>
             <IconGroup
               classNames={{
@@ -55,7 +55,9 @@ function PortfolioPreview({ state }) {
         <TextHeading className='text-lg! leading-4.5! font-normal tracking-[.0625em] text-neutral-300 uppercase'>
           {t('Estimated APR')}
         </TextHeading>
-        <TextHeading className='text-2xl! leading-6! font-medium tracking-[.0625em]'>{pair.apr} APR</TextHeading>
+        <TextHeading className='text-2xl! leading-6! font-medium tracking-[.0625em]'>
+          {formatAmount(maxApr, true)}%
+        </TextHeading>
       </div>
     </div>
   ) : (

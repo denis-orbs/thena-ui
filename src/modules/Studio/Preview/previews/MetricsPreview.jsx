@@ -21,11 +21,11 @@ const TITLE_SIZES = {
 }
 
 const VALUE_SIZES = {
-  sm: 'text-[52px] leading-[67px]',
-  md: 'text-[68px] leading-[83px]',
-  lg: 'text-[64px] leading-[67px]',
-  xl: 'text-[96px] leading-[110px]',
-  '2xl': 'text-[164px] leading-[170px]',
+  sm: 'text-[56px] leading-[62px]',
+  md: 'text-[54px] leading-[65px]',
+  lg: 'text-[56px] leading-[62px]',
+  xl: 'text-[82px] leading-[90px]',
+  '2xl': 'text-[138px] leading-[145px]',
 }
 
 function NumberInfo({ title, value, size = 'sm', colorClass = '#D642DB', prefix = '$', keyTranslate, className }) {
@@ -156,18 +156,21 @@ function MetricsPreview({ state }) {
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-[110px] px-10 py-9',
-        metricsShow.length > 3 && 'gap-[88px]',
-        metricsShow.length === 4 && 'gap-[46px]',
+        'flex h-full w-full flex-col gap-[65px] px-10 py-6',
+        metricsShow.length === 2 && 'gap-[84px]',
+        metricsShow.length === 3 && 'gap-[115px]',
+        metricsShow.length === 4 && 'gap-[44px]',
+        metricsShow.length === 5 && 'gap-[62px]',
+        metricsShow.length === 6 && 'gap-[60px]',
       )}
     >
-      <TextHeading className='font-archia mx-auto text-[64px] leading-[70px] font-semibold tracking-[-1px]'>
+      <TextHeading className='font-archia mx-auto text-[54px] leading-[70px] font-semibold tracking-[-1px]'>
         {t(metricsType === METRICS_TYPE.KEY_METRICS ? 'THENA in Numbers' : 'THENA Recent Activity')}
       </TextHeading>
       <div
         className={cn(
-          'flex w-full flex-wrap justify-center gap-x-px gap-y-[68px]',
-          metricsShow.length === 4 && 'gap-y-9',
+          'flex w-full flex-wrap justify-center gap-x-px gap-y-6 pt-4',
+          metricsShow.length === 4 && 'gap-y-6',
         )}
       >
         <div className='flex w-full justify-center gap-x-px'>

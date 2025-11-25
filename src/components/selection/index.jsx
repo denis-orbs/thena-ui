@@ -12,7 +12,7 @@ function SelectionItem({ className, item, isFull, isSmall, isTranslation = true 
       className={cn(
         'cursor-pointer rounded-md px-2 py-1 text-nowrap!',
         'text-xs text-neutral-300',
-        'outline-2 outline-offset-4 outline-transparent outline-solid',
+        'outline-2 outline-offset-2 outline-transparent outline-solid lg:outline-offset-4',
         'transition-all duration-150 ease-out',
         'active:outline-focus hover:bg-neutral-700',
         item.active && 'bg-neutral-700 font-medium text-neutral-200',

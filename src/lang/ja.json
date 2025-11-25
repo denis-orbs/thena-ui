@@ -1609,7 +1609,7 @@
   "Content Studio": "Content Studio",
   "Select pairs from the dropdown to see the results": "Select pairs from the dropdown to see the results.",
   "Your [amount] Can Earn": "Your {amount} Can Earn",
-  "Per Day on": "Per Day on",
+  "Per Day in": "Per Day in",
   "on-chain metrics subtitle": "Select up to 6 on-chain metrics to showcase their data.",
   "Pools to Display": "Pools to Display",
   "pools apr template subtitle": "Select up to 6 pairs to showcase their APR and TVL data",
@@ -1656,5 +1656,23 @@
   "opBNB to BNB": "opBNB to BNB",
   "Bridge [amount1] THE for [amount2] THE via [bridge]": "Bridge {amount1} THE for {amount2} THE via {bridge}",
   "Expected Time": "Expected Time",
-  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}"
+  "Bridge [amount] THE to [destinationChainName]": "Bridge {amount} THE to {destinationChainName}",
+  "Share Image": "Share Image",
+  "Download": "Download",
+  "Background Image": "Background Image",
+  "Search by name, symbol or address": "Search by name, symbol or address",
+  "Write your description here": "Write your description here...",
+
+  "Type here": "Type here",
+  "Edit": "Edit",
+  "Dowloading": "Dowloading",
+  "Add Custom Image": "Add Custom Image",
+  "Recent Activity": "Recent Activity",
+  "Key Metrics": "Key Metrics",
+  "Select Background Image": "Select Background Image",
+  "Upload image title": "<link>Upload</link> or Drop an Image Here",
+  "Upload image subtitle": "JPG or PNG (max 20MB). Recommended size is 1920x1080.",
+  "Clear Selected": "Clear Selected",
+  "Selected Pair": "Selected Pair",
+  "Image size must not exceed 20 MB": "Image size must not exceed 20 MB"
 }

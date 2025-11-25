@@ -1,0 +1,288 @@
+/* eslint-disable @next/next/no-img-element */
+import { isString } from 'lodash'
+import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import React, { useMemo, useRef, useState } from 'react'
+
+import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
+import Divider from '@/components/divider'
+import Modal, { ModalBody } from '@/components/modal'
+import { Paragraph, TextHeading } from '@/components/typography'
+import useWallet from '@/hooks/useWallet'
+import { errorToast } from '@/lib/notify'
+import PreviewCanvas from '@/modules/Studio/Preview/PreviewCanvas'
+import cn from '@/utils/classes'
+
+import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import EditIcon from '~/svgs/edit.svg'
+import ImageUpIcon from '~/svgs/image-up.svg'
+
+import DownloadImage from './DownloadImage'
+import ShareImage from './ShareImage'
+
+function BackgroundSelection({ state, setField, tpl }) {
+  const t = useTranslations()
+  const [openPreview, setOpenPreview] = useState(false)
+  const [open, setOpen] = useState(false)
+  const imgInputRef = useRef(null)
+  const background = useMemo(() => state.background, [state.background])
+  const { Preview } = tpl
+
+  const imageOptions = useMemo(
+    () => [
+      {
+        id: 1,
+        name: '3D Grid',
+        shortName: 'Grid',
+        image: '/images/content-studio/3d_grid.png',
+        value: '/images/content-studio/3d_grid1.png',
+        mini: '/images/content-studio/3d_grid_option.png',
+      },
+      {
+        id: 2,
+        name: 'Violet Glow',
+        shortName: 'Glow',
+        image: '/images/content-studio/violet_glow.png',
+        value: '/images/content-studio/violet_glow1.png',
+        mini: '/images/content-studio/violet_glow_option.png',
+      },
+      {
+        id: 3,
+        name: 'Starry Night',
+        shortName: 'Starry',
+        image: '/images/content-studio/starry_night.png',
+        value: '/images/content-studio/starry_night1.png',
+        mini: '/images/content-studio/starry_night_option.png',
+      },
+      {
+        id: 4,
+        name: 'Tech Horizon',
+        shortName: 'Tech',
+        image: '/images/content-studio/tech_horizon.png',
+        value: '/images/content-studio/tech_horizon1.png',
+        mini: '/images/content-studio/tech_horizon_option.png',
+      },
+      {
+        id: 5,
+        name: 'Empty',
+        shortName: 'Empty',
+        image: null,
+        value: null,
+        mini: '/images/content-studio/transparent_option.png',
+      },
+      {
+        id: 6,
+        isCustom: true,
+        name: 'Custom image',
+        shortName: 'Custom',
+        image: null,
+        value: null,
+        mini: (
+          <div className='flex aspect-[1.7] w-full flex-1 items-center justify-center rounded-lg bg-neutral-700'>
+            <ImageUpIcon className='size-8 text-neutral-200' />
+          </div>
+        ),
+      },
+    ],
+    [],
+  )
+
+  const selectedOption = useMemo(
+    () => imageOptions.filter(option => !option.isCustom).find(option => option.id === background.id),
+    [background.id, imageOptions],
+  )
+
+  return (
+    <>
+      <div className='mt-auto hidden w-full flex-col gap-4 xl:flex'>
+        <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white xl:leading-[35px]'>
+          {t('Background Image')}
+        </TextHeading>
+        <div className='grid w-full grid-cols-6 gap-4 px-px pb-px'>
+          {imageOptions.map(option => (
+            <div
+              key={option.id}
+              className={cn(
+                'flex cursor-pointer flex-col items-center gap-3 rounded-xl px-2 py-3 outline transition-all duration-150 ease-out',
+                background.id === option.id
+                  ? 'outline-primary-800 bg-[#230924]'
+                  : 'outline-neutral-700 hover:bg-neutral-800',
+              )}
+              onClick={() => {
+                if (option.isCustom && background.id === option.id && background.value) {
+                  imgInputRef.current?.click()
+                } else {
+                  setField('background', option)
+                }
+              }}
+            >
+              {isString(option.mini) ? (
+                <Image
+                  className='rounded-lg object-cover xl:h-[75px] xl:w-[97.33px] 2xl:h-[75px] 2xl:w-[111.33px]'
+                  src={option.mini}
+                  alt={option.name}
+                  width={97.33}
+                  height={75}
+                />
+              ) : (
+                option.mini
+              )}
+              <Paragraph className='text-md hidden text-center leading-5 text-neutral-200 2xl:flex'>
+                {option.name}
+              </Paragraph>
+              <Paragraph className='text-md text-center leading-5 text-neutral-200 2xl:hidden'>
+                {option.shortName}
+              </Paragraph>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <input
+        type='file'
+        onChange={e => {
+          const file = e.target.files[0]
+          if (file) {
+            const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB in bytes
+            if (file.size > MAX_FILE_SIZE) {
+              errorToast('Error', 'Image size must not exceed 20 MB')
+              e.target.value = ''
+              return
+            }
+            setField('background', {
+              id: 6,
+              name: 'Custom image',
+              image: URL.createObjectURL(file),
+              value: URL.createObjectURL(file),
+              isCustom: true,
+            })
+          }
+          // Reset input value to allow selecting the same file again
+          e.target.value = ''
+        }}
+        accept='image/*'
+        className='hidden'
+        ref={imgInputRef}
+      />
+
+      <div className='flex flex-col gap-4 xl:hidden'>
+        <div className='relative w-full'>
+          <EmphasisButton
+            onClick={() => setOpen(!open)}
+            className='flex w-full items-center justify-between rounded-lg bg-neutral-700 p-3 font-normal text-neutral-50 backdrop-blur-sm transition-all duration-200 hover:bg-neutral-700/50'
+          >
+            <div className='flex items-center space-x-3'>
+              {selectedOption ? (
+                <>
+                  <span className='text-sm'>{selectedOption.name}</span>
+                </>
+              ) : (
+                <span className='text-sm text-gray-300'>{t('Select Background Image')}</span>
+              )}
+            </div>
+            <ChevronDownIcon className={cn('size-4 transition-transform duration-200', open && 'rotate-180')} />
+          </EmphasisButton>
+
+          {/* Dropdown Options */}
+          {open && (
+            <div className='absolute top-full right-0 z-50 mt-2 w-full space-y-4 overflow-y-auto rounded-lg border border-neutral-700 bg-neutral-900 p-4 shadow-2xl backdrop-blur-md'>
+              {imageOptions
+                .filter(option => !option.isCustom)
+                .map(option => (
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      setField('background', option)
+                      setOpen(false)
+                    }}
+                    className={cn(
+                      'group flex cursor-pointer items-center gap-4 rounded-xl border border-neutral-700 p-4 transition-colors duration-200 hover:bg-neutral-800',
+                      option.id === selectedOption?.id && 'bg-primary-950/50 border-primary-800',
+                    )}
+                  >
+                    <Image
+                      className='h-[77px] w-[116px] rounded-lg'
+                      src={option.mini}
+                      alt={option.name}
+                      width={116}
+                      height={77}
+                    />
+                    <div className='flex-1'>
+                      <span className='text-sm font-medium text-white'>{option.name}</span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+
+        {state.background.isCustom && state.background.value && (
+          <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
+            <Preview state={state} setField={setField} />
+          </PreviewCanvas>
+        )}
+        <div className='flex items-center justify-center gap-2'>
+          <Divider className='w-full bg-[#422D4C]' />
+          <span className='text-md text-[#8E8194]'>or</span>
+          <Divider className='w-full bg-[#422D4C]' />
+        </div>
+        <OutlinedButton className='w-full' onClick={() => imgInputRef.current?.click()}>
+          <ImageUpIcon className='size-4 text-neutral-200' />
+          <span className='text-sm text-neutral-200'>{t('Add Custom Image')}</span>
+        </OutlinedButton>
+        <div className='mt-10 mb-2 flex'>
+          <EmphasisButton className='w-full' onClick={() => setOpenPreview(true)}>
+            {t('Preview')}
+          </EmphasisButton>
+        </div>
+        {openPreview && (
+          <PreviewModal
+            openPreview={openPreview}
+            setOpenPreview={setOpenPreview}
+            state={state}
+            setField={setField}
+            tpl={tpl}
+          />
+        )}
+      </div>
+    </>
+  )
+}
+
+function PreviewModal({ openPreview, setOpenPreview, state, setField, tpl }) {
+  const { Preview } = tpl
+  const { account } = useWallet()
+  const t = useTranslations()
+
+  return (
+    <Modal
+      showHeadModal={false}
+      isOpen={openPreview}
+      closeModal={() => setOpenPreview(false)}
+      className='center-modal'
+      width='90%'
+    >
+      <ModalBody>
+        <div className='flex flex-col gap-3'>
+          <PreviewCanvas background={state.background} className='flex' watermark='THENA'>
+            <Preview state={state} setField={setField} />
+          </PreviewCanvas>
+          <div className='flex items-center justify-center gap-2'>
+            <DownloadImage fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
+            <EmphasisButton className='w-1/2' onClick={() => setOpenPreview(false)}>
+              <EditIcon className='size-4' /> {t('Edit')}
+            </EmphasisButton>
+          </div>
+          {!account ? (
+            <ConnectButton className='w-full' />
+          ) : (
+            <ShareImage className='w-full' fileName={tpl.title.replace(/ /g, '_')} backgroundColor='transparent' />
+          )}
+        </div>
+      </ModalBody>
+    </Modal>
+  )
+}
+
+export default BackgroundSelection

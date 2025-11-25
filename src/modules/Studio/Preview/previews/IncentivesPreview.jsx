@@ -78,14 +78,13 @@ function IncentiveInfo({ pair, size = 'lg' }) {
 
 function IncentivesPreview({ state }) {
   const { pairs: _pairs } = state
-  if ((_pairs || []).length === 0) {
+  const pairs = (_pairs || []).filter(Boolean)
+  if (pairs.length === 0) {
     return <EmptyShow />
   }
 
-  const pairs = _pairs.filter(Boolean)
-
   return (
-    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-25')}>
+    <div className={cn('h-full w-full px-10', pairs.length > 1 && 'pt-17')}>
       <div
         className={cn(
           'grid',

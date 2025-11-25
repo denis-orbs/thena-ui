@@ -34,8 +34,8 @@ function PairInfo({ pair, size = 'lg', type = 'normal', className }) {
           image: cn('outline-none', size === 'lg' ? '!size-[166px]' : size === 'md' ? '!size-[60px]' : '!size-[52px]'),
         }}
         className={cn('*:not-first:-ml-4', size === 'lg' && '*:not-first:-ml-[58px]')}
-        logo1={normalizeAssetUrl(pair.token0.logoURI ?? UNKNOWN_LOGO)}
-        logo2={normalizeAssetUrl(pair.token1.logoURI ?? UNKNOWN_LOGO)}
+        logo1={normalizeAssetUrl(pair.token0?.logoURI ?? UNKNOWN_LOGO)}
+        logo2={normalizeAssetUrl(pair.token1?.logoURI ?? UNKNOWN_LOGO)}
         width={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         height={size === 'lg' ? 166 : size === 'md' ? 60 : 52}
         style={{
@@ -141,18 +141,12 @@ export default function PoolsAprPreview({ state }) {
     <div
       className={cn(
         'h-full w-full px-10',
-        pairs.length > 1 && 'pt-16',
-        (pairs.length === 3 || pairs.length === 2) && 'pt-25',
+        pairs.length > 1 && 'pt-[56px]',
+        pairs.length === 2 && 'pt-[82px]',
+        pairs.length === 3 && 'pt-20',
       )}
     >
-      <div
-        // className={cn(
-        //   'grid gap-x-5.5 gap-y-8',
-        //   pairs.length === 2 || pairs.length === 4 ? 'grid-cols-2' : 'grid-cols-3',
-        //   pairs.length === 1 && 'grid-cols-1',
-        // )}
-        className='grid grid-cols-1 gap-8'
-      >
+      <div className='grid grid-cols-1 gap-8'>
         <div className='flex w-full justify-center gap-x-5.5'>
           {pairs.slice(0, pairs.length !== 4 ? 3 : 2).map((pair, index) => (
             <PairInfo
