@@ -2,28 +2,33 @@
 
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import { PATH_NAME } from '@/modules/Studio/lib/utils'
+import cn from '@/utils/classes'
+
+import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import TrashIcon from '~/svgs/trash.svg'
 
 import PairModal from './PairModal'
 
-export default function PairPickerField({ label, value, onChange, options = [] }) {
+export default function PairPickerField({ value, onChange, options = [], onRemove = () => {}, pairIndex }) {
   const [open, setOpen] = useState(false)
   const t = useTranslations()
+  const wrapperRef = useRef(null)
 
   const pathname = usePathname()
 
   return (
-    <div>
-      <TextHeading className='leading-5! font-medium'>{label}</TextHeading>
+    <div ref={wrapperRef} className='relative flex items-center gap-2'>
       <div
-        className='mt-2 flex h-11 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
+        data-pair-index={pairIndex}
+        className='flex h-11 flex-1 cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-3 py-3'
         onClick={() => setOpen(!open)}
       >
         {value ? (
@@ -49,7 +54,6 @@ export default function PairPickerField({ label, value, onChange, options = [] }
               />
             )}
             <div className='flex items-center gap-2'>
-              {/* <TextHeading>{value.symbol}</TextHeading> */}
               <div className='flex min-w-0 items-center gap-2' title={value.symbol}>
                 <TextHeading className='block max-w-[120px] truncate text-base! leading-5! uppercase'>
                   {value.symbol}
@@ -61,14 +65,17 @@ export default function PairPickerField({ label, value, onChange, options = [] }
         ) : (
           <p className='text-neutral-400'>{t('Select Pair')}</p>
         )}
-        <ChevronDownIcon isRevert={open} />
+        <ChevronDownIcon className={cn('size-4 transition-transform duration-200', open && 'rotate-180')} />
       </div>
+      <EmphasisIconButton className='size-11 xl:hidden' onClick={onRemove} Icon={TrashIcon} />
+
       <PairModal
         popup={open}
         setPopup={setOpen}
         pools={options}
         setSelected={onChange}
         field={pathname !== PATH_NAME.INCENTIVES ? 'apr' : 'incentives'}
+        selected={value}
       />
     </div>
   )

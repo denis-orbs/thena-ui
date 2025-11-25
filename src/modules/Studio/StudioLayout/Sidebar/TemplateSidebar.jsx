@@ -1,23 +1,25 @@
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
-import DownloadButton from '@/modules/Profile/DownloadImage'
+import ActionButtons from '@/modules/Studio/StudioLayout/ActionButtons'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import cn from '@/utils/classes'
 import { isInvalidAmount } from '@/utils/utils'
 
+import AddPairButtonField from './fields/AddPairButtonField'
 import CheckboxListField from './fields/CheckboxListField'
 import DisplayCountPickerField from './fields/DisplayCountPickerField'
 import InputField from './fields/InputField'
 import PairPickerField from './fields/PairPickerField'
-import SegmentedField from './fields/SegmentedField'
+import RadioGroupField from './fields/RadioGroupField'
+import Tabs from './Tabs'
 import { PATH_NAME } from '../../lib/utils'
 
-export default function TemplateSidebar({ title, subTitle = '', fields, state, setField }) {
+export default function TemplateSidebar({ title, subTitle = '', fields, state, setField, split = false }) {
   const t = useTranslations()
 
   // For Pool apr
@@ -82,6 +84,9 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     select: {
       component: DisplayCountPickerField,
     },
+    addPairButton: {
+      component: AddPairButtonField,
+    },
     pair: {
       component: PairPickerField,
       options:
@@ -94,45 +99,54 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     input: {
       component: InputField,
     },
-    segmented: {
-      component: SegmentedField,
+    radioGroup: {
+      component: RadioGroupField,
     },
     checkboxList: {
       component: CheckboxListField,
     },
   }
 
-  // ---- expand fields have repeatBy ----
-  const expandedFields = fields.flatMap(f => {
-    if (f.repeatBy) {
-      const count = Number(state[f.repeatBy] ?? 0)
-      const max = f.max ?? count
-      const safeCount = Math.min(count, max)
+  const hydratedFields = useMemo(() => {
+    // ---- expand fields have repeatBy ----
+    const expandedFields = fields.flatMap(f => {
+      if (f.repeatBy) {
+        const count = Number(state[f.repeatBy] ?? 0)
+        const max = f.max ?? count
+        const safeCount = Math.min(count, max)
 
-      return Array.from({ length: safeCount }, (_, i) => ({
-        ...f,
-        __baseName: f.name,
-        __index: i,
-        label: `${f.label} ${i + 1}`,
-        name: `${f.name}[${i}]`,
-      }))
-    }
-    return [f]
-  })
-
-  const hydratedFields = expandedFields.map(f => {
-    if (f.dependsOn && f.optionMap) {
-      const key = state?.[f.dependsOn]
-      return { ...f, options: f.optionMap[key] ?? [] }
-    }
-    return f
-  })
+        return Array.from({ length: safeCount }, (_, i) => ({
+          ...f,
+          __baseName: f.name,
+          __index: i,
+          label: f.label ? `${f.label} ${i + 1}` : undefined,
+          name: `${f.name}[${i}]`,
+        }))
+      }
+      return [f]
+    })
+    return expandedFields.map(f => {
+      if (f.dependsOn && f.optionMap) {
+        const key = state?.[f.dependsOn]
+        return { ...f, options: f.optionMap[key] ?? [] }
+      }
+      return f
+    })
+  }, [fields, state])
 
   const getValue = f => {
     if (typeof f.__index === 'number' && f.__baseName) {
       return (state?.[f.__baseName] ?? [])[f.__index] ?? 0
     }
     return state?.[f.name]
+  }
+
+  const onRemove = f => {
+    setField(
+      f.__baseName,
+      (state?.[f.__baseName] ?? []).filter((_, i) => i !== f.__index),
+    )
+    setField(f.repeatBy, (state?.[f.repeatBy] ?? 0) - 1)
   }
 
   const handleChange = (f, v) => {
@@ -183,33 +197,42 @@ export default function TemplateSidebar({ title, subTitle = '', fields, state, s
     setField(f.name, v)
   }
 
+  const ref = useRef(null)
   return (
-    <aside className='flex h-[576px] flex-col gap-5 rounded-xl bg-neutral-900 p-6'>
-      <div className='flex flex-col gap-1'>
-        {title && (
-          <TextHeading className='font-archia text-2xl font-semibold -tracking-[0.03em] text-white'>
-            {t(title)}
-          </TextHeading>
-        )}
-        {subTitle && <Paragraph>{t(subTitle)}</Paragraph>}
+    <aside className='flex h-full flex-col justify-between rounded-xl xl:min-h-[576px]'>
+      <div className='flex flex-1 flex-col gap-5 xl:gap-6'>
+        <Tabs />
+        <div className='flex flex-col gap-1'>
+          {title && (
+            <TextHeading className='font-archia text-2xl leading-[35px]! font-semibold -tracking-[0.03em] text-white max-xl:hidden'>
+              {t(title)}
+            </TextHeading>
+          )}
+          {subTitle && <Paragraph className='leading-5!'>{t(subTitle)}</Paragraph>}
+        </div>
+        <div ref={ref} className={cn('scrollbar-gutter-stable space-y-4')}>
+          {hydratedFields.map((f, index) => {
+            const Field = map[f.type]?.component ?? null
+            if (!Field) return <></>
+            return (
+              <div key={f.name} className={cn('flex flex-col gap-6', f.className)}>
+                {split && index > 0 && <div className='h-px w-full bg-neutral-700' />}
+                <Field
+                  key={f.name}
+                  {...f}
+                  options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
+                  value={getValue(f)}
+                  onChange={v => handleChange(f, v)}
+                  onRemove={() => f.type === 'pair' && onRemove(f)}
+                  pairIndex={f.type === 'pair' && typeof f.__index === 'number' ? f.__index : undefined}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
-      <div className={cn('max-h-[360px] space-y-6 overflow-y-auto', pathname === PATH_NAME.METRICS && 'space-y-3')}>
-        {hydratedFields.map(f => {
-          const Field = map[f.type]?.component ?? null
-          if (!Field) return <></>
-          return (
-            <Field
-              key={f.name}
-              {...f}
-              options={f.type !== 'pair' ? f.options : map[f.type]?.options || []}
-              value={getValue(f)}
-              onChange={v => handleChange(f, v)}
-            />
-          )
-        })}
-      </div>
-      <div className='mt-auto w-full'>
-        <DownloadButton scale={1920 / 1024} fileName={title.replace(/ /g, '_')} />
+      <div className='mt-auto hidden w-full gap-3 xl:flex'>
+        <ActionButtons fileName={title.replace(/ /g, '_')} backgroundColor='transparent' />
       </div>
     </aside>
   )

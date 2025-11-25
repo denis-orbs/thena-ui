@@ -262,10 +262,8 @@
 .orbs_StepIndicatorLine {
   background: rgb(220 0 212/1) !important;
 }
-{
 
-}
-.twap-orders-modal .twap-select-menu  {
+.twap-orders-modal .twap-select-menu {
   max-width: 150px;
 }
 .twap-select-menu-portal {

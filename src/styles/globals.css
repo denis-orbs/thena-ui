@@ -332,6 +332,18 @@
     opacity: 0;
   }
 
+  .center-modal {
+    top: 50% !important;
+    transform: translate(0%, -50%) !important;
+    position: absolute;
+  }
+
+  @media screen and (min-width: 1024px) {
+    .center-modal {
+      transform: translate(-50%, -50%) !important;
+    }
+  }
+
   .notify-class {
     z-index: 99999;
   }
@@ -799,5 +811,9 @@
       background: linear-gradient(87.54deg, #0d090f 19.75%, #422d4c 240.97%),
         linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
     }
+  }
+
+  .scrollbar-gutter-stable:has(:where(:first-child))::-webkit-scrollbar {
+    width: 6px;
   }
 }

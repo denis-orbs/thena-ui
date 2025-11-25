@@ -1,6 +1,6 @@
 // define constants
 export const PATH_NAME = {
-  POOL_APR: '/content-studio/pools-apr',
+  POOL_APR: '/content-studio/pool-apr',
   INCENTIVES: '/content-studio/incentives',
   PORTFOLIO: '/content-studio/portfolio',
   METRICS: '/content-studio/metrics',
