@@ -44,7 +44,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'orbs.com',
+        hostname: '*.orbs.com',
       },
       {
         protocol: 'https',
