@@ -129,15 +129,23 @@ export const fetchNfts = nftId =>
 export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').then(r => r.json())
 
 export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
-  let url = `${backendApi}/v3/historical-token-price/${chainId}?page=${page}&limit=${limit}&date_gte=${startDate}`
-
-  for (const address of tokenAddresses) {
-    url += `&tokens[]=${address}`
+  const url = `${backendApi}/v3/historical-token-price/${chainId}`
+  const payload = {
+    tokens: tokenAddresses,
+    page,
+    limit,
+    date_gte: startDate,
   }
 
-  return fetch(url)
-    .then(r => r.json())
-    .then(r => r)
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  return await response.json()
 }
 
 export const getAnalyticsData = async ({ networkId, first, page, epoch }) => {
