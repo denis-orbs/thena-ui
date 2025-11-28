@@ -130,19 +130,15 @@ export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').the
 
 export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
   const url = `${backendApi}/v3/historical-token-price/${chainId}`
-  const payload = {
-    tokens: tokenAddresses,
-    page,
-    limit,
-    date_gte: startDate,
-  }
+  const formData = new FormData()
 
+  formData.append('page', page)
+  formData.append('limit', limit)
+  formData.append('date_gte', startDate)
+  formData.append('tokens', JSON.stringify(tokenAddresses))
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
+    body: formData,
   })
 
   return await response.json()
