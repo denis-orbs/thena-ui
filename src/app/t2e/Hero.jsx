@@ -8,12 +8,12 @@ export default function Hero() {
       <div className='absolute w-full lg:-mt-[92px]'>
         {/* <HomeImage
           alt='background mask'
-          src='/images/home/hero/mask.png'
+          src='/images/home/hero/mask.webp'
           className='absolute top-10 z-0 hidden w-full lg:block'
         /> */}
         <HomeImage
           alt='blob background'
-          src='/images/home/hero/blob.png'
+          src='/images/home/hero/blob.webp'
           className='absolute -top-12 z-25 w-full opacity-70 lg:-top-64'
         />
         <HomeImage
@@ -28,7 +28,7 @@ export default function Hero() {
         />
         {/* mobile backgrounds */}
         {/* <HomeImage
-          src='/images/home/hero/blob-mobile.png'
+          src='/images/home/hero/blob-mobile.webp'
           alt='thean blob mobile'
           height={687}
           width={393}
