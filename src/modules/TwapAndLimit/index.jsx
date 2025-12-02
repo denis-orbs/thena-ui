@@ -223,12 +223,10 @@ function LimitPrice() {
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between gap-2'>
         <div className='flex flex-1 flex-row items-center justify-between gap-1'>
-          {module !== Module.LIMIT && (
-            <div className='flex items-center gap-1'>
-              <Toggle checked={isLimitPrice} onChange={toggleLimitPrice} />
-              <Label tooltip={tooltip} text={label} />
-            </div>
-          )}
+          <div className='flex items-center gap-1'>
+            {module !== Module.LIMIT && <Toggle checked={isLimitPrice} onChange={toggleLimitPrice} />}
+            <Label tooltip={tooltip} text={label} />
+          </div>
           {isLimitPrice && <DefaultButton onClick={onReset} />}
         </div>
       </div>
