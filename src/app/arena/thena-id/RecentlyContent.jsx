@@ -1,5 +1,7 @@
+import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { gql } from 'graphql-request'
-import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -19,6 +21,9 @@ import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
 import MenuTab from './MenuTab'
+
+dayjs.extend(relativeTime)
+dayjs.extend(localizedFormat)
 
 const V4_RECENTLY_MINTED = gql`
   query V4_RECENTLY_MINTED {
@@ -255,7 +260,13 @@ function RecentlyContent({ isMinted = true }) {
     () =>
       sortedData?.map(item => ({
         index: <Paragraph>{item.index}</Paragraph>,
-        timestamp: <Paragraph>{moment(item.timestamp).locale(locale).fromNow()}</Paragraph>,
+        timestamp: (
+          <Paragraph>
+            {dayjs(item.timestamp)
+              .locale(locale === 'zh_CN' ? 'zh-cn' : locale)
+              .fromNow()}
+          </Paragraph>
+        ),
         name: (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'

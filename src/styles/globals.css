@@ -6,8 +6,10 @@
 @theme {
   --flex-2: 2 2 0%;
 
-  --font-archia: Archia, sans-serif;
-  --font-aeonik: Aeonik, sans-serif;
+  /* Font variables are set by next/font in layout.jsx */
+  --font-archia: var(--font-archia), Archia, sans-serif;
+  --font-aeonik: var(--font-aeonik), Aeonik, sans-serif;
+  --font-inter: var(--font-inter), Inter, sans-serif;
 
   --animate-gradient: gradient 5s ease infinite;
 
@@ -137,51 +139,61 @@
   ::file-selector-button {
     border-color: var(--color-neutral-200, currentcolor);
   }
+  /* Fonts are now loaded via next/font in src/lib/fonts.js for better optimization */
+  /* Keeping these as fallback for any edge cases */
   @font-face {
     font-family: 'Inter';
     src: url('/fonts/Inter-Regular.ttf') format('truetype');
     font-weight: normal;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Inter';
     src: url('/fonts/Inter-Medium.ttf') format('truetype');
     font-weight: 500;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Inter';
     src: url('/fonts/Inter-SemiBold.ttf') format('truetype');
     font-weight: 600;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Inter';
     src: url('/fonts/Inter-Bold.ttf') format('truetype');
     font-weight: 700;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Archia';
     src: url('/fonts/Archia-Regular.ttf') format('truetype');
     font-weight: normal;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Archia';
     src: url('/fonts/Archia-Medium.otf') format('opentype');
     font-weight: 500;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Archia';
     src: url('/fonts/Archia-Semibold.otf') format('opentype');
     font-weight: 600;
+    font-display: swap;
   }
 
   @font-face {
     font-family: 'Aeonik';
     src: url('/fonts/Aeonikpro-Air.otf') format('opentype');
+    font-display: swap;
   }
 
   /* #region  /**=========== Typography =========== */
@@ -210,7 +222,7 @@
   }
 
   body {
-    font-family: Inter, sans-serif !important;
+    font-family: var(--font-inter), Inter, sans-serif !important;
     @apply bg-neutral-950 text-base leading-tight text-neutral-50 antialiased;
   }
 
@@ -768,7 +780,7 @@
   } */
 
   .axis-bottom-time .tv-lightweight-charts table tr:nth-child(2) td:nth-child(2) > canvas {
-    font-family: 'Inter, sans-serif' !important;
+    font-family: var(--font-inter), Inter, sans-serif !important;
     font-size: 12px !important;
     font-weight: 500 !important;
     fill: #685770 !important;

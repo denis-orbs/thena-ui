@@ -1,4 +1,5 @@
-import _ from 'lodash'
+import filter from 'lodash/filter'
+import uniqBy from 'lodash/uniqBy'
 
 import { BNB_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -21,8 +22,8 @@ export const fetchAssets = async networkId => {
     }
 
     const [assetsCall, liquidityHubTokens] = await Promise.all([getTokens(), liquidityHub.getTokens()])
-    const assets = _.filter(
-      _.uniqBy([...assetsCall.data, ...liquidityHubTokens], it => it.address.toLowerCase()),
+    const assets = filter(
+      uniqBy([...assetsCall.data, ...liquidityHubTokens], it => it.address.toLowerCase()),
       it => it.chainId === networkId,
     )
     // both lists have CAKE, so we need to merge them
@@ -69,8 +70,8 @@ export const fetchCustomAssets = async networkId => {
 
     const customAssetsData = (await getCustomTokens()).data
 
-    const customAssets = _.filter(
-      _.uniqBy(customAssetsData, it => it.address.toLowerCase()),
+    const customAssets = filter(
+      uniqBy(customAssetsData, it => it.address.toLowerCase()),
       it => it.chainId === networkId,
     )
 

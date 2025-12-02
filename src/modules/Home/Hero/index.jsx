@@ -18,22 +18,22 @@ function Hero() {
       <div className='absolute w-full lg:-mt-[92px]'>
         <HomeImage
           alt='background mask'
-          src='/images/home/hero/mask.png'
+          src='/images/home/hero/mask.webp'
           className='absolute top-10 z-0 hidden w-full lg:block'
         />
         <HomeImage
           alt='blob background'
-          src='/images/home/hero/blob.png'
+          src='/images/home/hero/blob.webp'
           className='absolute -top-16 z-25 hidden h-[944px] w-full opacity-70 lg:block'
         />
         <HomeImage
           alt='pillars'
-          src='/images/home/hero/pillars.png'
+          src='/images/home/hero/pillars.webp'
           className='absolute top-[92px] hidden w-full lg:block'
         />
         {/* mobile backgrounds */}
         <HomeImage
-          src='/images/home/hero/blob-mobile.png'
+          src='/images/home/hero/blob-mobile.webp'
           alt='thean blob mobile'
           height={687}
           width={393}

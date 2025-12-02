@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
 import { isNil } from 'lodash'
-import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
@@ -128,7 +128,7 @@ export const useManualPositions = positions => {
 
   const { data: annualPoolFeesPools } = useCachedSWR(
     annualPoolKey,
-    () => getIntegralFeesData({ chainId, poolIds: addressList, date: moment().subtract(7, 'days').unix() }),
+    () => getIntegralFeesData({ chainId, poolIds: addressList, date: dayjs().subtract(7, 'day').unix() }),
     { refreshInterval: REFRESH_INTERVAL },
   )
 

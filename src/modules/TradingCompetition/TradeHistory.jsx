@@ -1,10 +1,12 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
-import 'moment/locale/zh-cn'
+import 'dayjs/locale/zh-cn'
 
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
@@ -17,6 +19,9 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 import { formatAmount, fromWei } from '@/utils/utils'
 
 import TransferIcon from '~/svgs/switch-horizontal.svg'
+
+dayjs.extend(relativeTime)
+dayjs.extend(localizedFormat)
 
 const sortOptions = [
   {
@@ -181,7 +186,11 @@ export function TradeHistory() {
           ),
           timestamp: (
             <div className='flex flex-col'>
-              <Paragraph>{moment(item.timestamp.split('T')[0]).locale(locale).format('ll')}</Paragraph>
+              <Paragraph>
+                {dayjs(item.timestamp.split('T')[0])
+                  .locale(locale === 'zh_CN' ? 'zh-cn' : locale)
+                  .format('LL')}
+              </Paragraph>
               <TextSubHeading>{item.timestamp.split('T')[1].split('.')[0]} UTC</TextSubHeading>
             </div>
           ),

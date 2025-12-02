@@ -1,11 +1,9 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import dynamic from 'next/dynamic'
 import useSWR from 'swr'
 
-import BarChart from '@/components/charts/BarChart'
-import HoverableChart from '@/components/charts/HoverableChart'
-import LineChart from '@/components/charts/LineChart'
 import {
   FUSION_MULTI_CHAIN_START_TIME,
   ICHI_SINGLE_SIDED,
@@ -17,6 +15,11 @@ import { fetchChartData } from '@/hooks/useGraph'
 import { fetchHistoricalTokensPrice } from '@/lib/api'
 import { AlgebraClient, SolidlyClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
+
+// Dynamically import heavy chart components to reduce initial bundle size
+const BarChart = dynamic(() => import('@/components/charts/BarChart'), { ssr: false })
+const HoverableChart = dynamic(() => import('@/components/charts/HoverableChart'), { ssr: false })
+const LineChart = dynamic(() => import('@/components/charts/LineChart'), { ssr: false })
 
 const V1_DAY_DATAS = gql`
   query v1PairCharts($address: String!, $startTime: Int!, $tokens: [String!]!, $skip: Int!) {

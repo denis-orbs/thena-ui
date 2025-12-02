@@ -1,7 +1,8 @@
+import dynamic from 'next/dynamic'
 import React from 'react'
 
-import Footer from '@/components/common/Footer'
-import Home from '@/modules/Home'
+const Footer = dynamic(() => import('@/components/common/Footer'), { ssr: false })
+const Home = dynamic(() => import('@/modules/Home'), { ssr: true })
 
 export default function HomePage() {
   return (

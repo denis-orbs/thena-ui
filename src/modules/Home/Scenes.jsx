@@ -232,7 +232,7 @@ function Scenes() {
 
   return (
     <div className='relative w-full lg:pb-24'>
-      <HomeImage alt='background' src='/images/home/scenes/bg.png' className='absolute top-0 w-full' />
+      <HomeImage alt='background' src='/images/home/scenes/bg.webp' className='absolute top-0 w-full' />
       <div className='relative z-20 container mx-auto flex flex-col items-center justify-center pb-8 lg:pb-20'>
         <HomeImage className='mb-6 w-fit' alt='scenes' src='/images/home/scenes/1.png' />
         <Heading heading={t('Behind THE Scenes')} wrapperStyles='items-center' title={t('FOUNDERS')} />

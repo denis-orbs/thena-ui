@@ -18,7 +18,7 @@ const LIST_THEME = [
     src: '/images/bg-demo-3.png',
   },
   {
-    src: '/images/home/scenes/bg.png',
+    src: '/images/home/scenes/bg.webp',
   },
 ]
 export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
