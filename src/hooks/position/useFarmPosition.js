@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
 import { isNil } from 'lodash'
-import moment from 'moment'
 import { useMemo } from 'react'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
@@ -99,7 +99,7 @@ export const useFarmPositions = positions => {
 
   const { data: annualPoolFeesPools } = useCachedSWR(
     annualPoolKey,
-    () => getIntegralFeesData({ chainId, poolIds: farmAddresses, date: moment().subtract(7, 'days').unix() }),
+    () => getIntegralFeesData({ chainId, poolIds: farmAddresses, date: dayjs().subtract(7, 'day').unix() }),
     { refreshInterval: REFRESH_INTERVAL },
   )
 

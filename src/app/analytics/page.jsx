@@ -1,12 +1,12 @@
 'use client'
 
 import { groupBy } from 'lodash'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
-import AnalyticsChart from '@/components/charts/AnalyticsChart'
 import Collapsible from '@/components/collapse/Collapse2'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import Highlight from '@/components/highlight'
@@ -26,6 +26,9 @@ import { formatAmount } from '@/utils/utils'
 
 import PairsTable from './pairs/PairsTable'
 import TokensTable from './tokens/TokensTable'
+
+// Dynamically import heavy chart component to reduce initial bundle size
+const AnalyticsChart = dynamic(() => import('@/components/charts/AnalyticsChart'), { ssr: false })
 
 export default function AnalyticsPage() {
   const { networkId } = useChainSettings()

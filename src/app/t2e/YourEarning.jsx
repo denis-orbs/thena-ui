@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import _ from 'lodash'
+import isEqual from 'lodash/isEqual'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -120,7 +120,7 @@ function YourEarning({ setPending }) {
   const getDataCallback = useCallback(async () => {
     if (!isLoading) {
       if (earnings && earnings.length) {
-        if (!_.isEqual(earnings, earningsFetch) || !data.length) {
+        if (!isEqual(earnings, earningsFetch) || !data.length) {
           setLoading(true)
         }
         const dibsRewarder = {

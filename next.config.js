@@ -13,6 +13,22 @@ const nextConfig = {
   swcMinify: true,
   crossOrigin: 'anonymous',
 
+  // Optimize bundle size
+  compress: true,
+
+  // Optimize chunking strategy
+  experimental: {
+    optimizePackageImports: [
+      'lodash',
+      '@rainbow-me/rainbowkit',
+      'recharts',
+      'chart.js',
+      'react-chartjs-2',
+      'd3',
+      'lightweight-charts',
+    ],
+  },
+
   images: {
     unoptimized: false,
     dangerouslyAllowSVG: true,

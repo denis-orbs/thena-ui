@@ -11,6 +11,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import '@/styles/globals.css'
 
 import { siteConfig } from '@/constant/config'
+import { aeonik, archia, inter } from '@/lib/fonts'
 
 import Loading from './loading'
 import { Providers } from './providers'
@@ -54,7 +55,7 @@ export const revalidate = 30
 export default function RootLayout({ children }) {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
-    <html lang='en'>
+    <html lang='en' className={`${inter.variable} ${archia.variable} ${aeonik.variable}`}>
       <head>
         <script
           src='https://attribution.metacrm.inc/tracking.js'

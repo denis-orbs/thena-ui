@@ -1,9 +1,9 @@
 /* eslint-disable no-bitwise */
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { isNil } from 'lodash'
-import moment from 'moment'
 import { useMemo } from 'react'
 import { nearestUsableTick, TICK_SPACING, TickMath } from 'thenafi-fusion-sdk'
 import { zeroAddress } from 'viem'
@@ -37,7 +37,7 @@ const getIntegralFeesData = async ({ chainId, pool }) => {
       `,
       {
         pool: pool.toLowerCase(),
-        date: moment().subtract(7, 'days').unix(), // last 7 day
+        date: dayjs().subtract(7, 'day').unix(), // last 7 days
       },
     )
     const avgPoolDayFees =
