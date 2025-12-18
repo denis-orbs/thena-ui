@@ -37,4 +37,14 @@ export const AlgebraFactoryABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      { internalType: 'uint256', name: 'index', type: 'uint256' },
+    ],
+    name: 'getRoleMember',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ]
