@@ -1767,5 +1767,7 @@
   "TP": "TP",
   "Price Protection": "Price Protection",
   "priceProtectionTooltip": "The protocol uses an oracle price to help protect users from unfavorable executions. If the execution price is worse than the oracle price by more than the allowed percentage, the transaction will not be executed.",
-  "setToDefault": "Set to default"
+  "setToDefault": "Set to default",
+  "Token Analytics": "Token Analytics",
+  "Generate Token Analytics": "Generate Token Analytics"
 }

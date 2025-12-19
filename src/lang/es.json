@@ -1672,5 +1672,7 @@
   "Upload image subtitle": "JPG or PNG (max 20MB). Recommended size is 1920x1080.",
   "Clear Selected": "Clear Selected",
   "Selected Pair": "Selected Pair",
-  "Image size must not exceed 20 MB": "Image size must not exceed 20 MB"
+  "Image size must not exceed 20 MB": "Image size must not exceed 20 MB",
+  "Token Analytics": "Analíticas de Token",
+  "Generate Token Analytics": "Generar Analíticas de Token"
 }

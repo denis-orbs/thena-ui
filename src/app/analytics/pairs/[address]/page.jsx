@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo } from 'react'
@@ -126,23 +127,29 @@ export default function PairDetailPage({ params }) {
 
   return (
     <LayoutWithBackButton backUrl={backUrl}>
-      <div className='flex flex-col gap-4 lg:gap-8'>
+      <div className='flex flex-col gap-4 xl:gap-8'>
         {/* Header with token info and stats in horizontal layout */}
-        <div className='flex flex-col gap-4 rounded-lg lg:flex-row lg:gap-12'>
+        <div className='flex flex-col gap-4 rounded-lg xl:flex-row xl:gap-12'>
           {/* Token info and external link */}
-          <div className={cn('flex flex-row gap-4 max-lg:justify-between lg:w-[20%] lg:min-w-[307px] lg:flex-col')}>
+          <div className={cn('flex w-full flex-1 flex-row gap-4 max-xl:justify-between xl:max-w-[600px] xl:flex-col')}>
             <div className={cn('flex items-center gap-4')}>
               <IconGroup
                 classNames={{
-                  image: 'outline-4 w-8 lg:w-12',
+                  image: 'outline-4 w-8 xl:w-12',
                 }}
                 logo1={pair.token0.logoURI ?? UNKNOWN_LOGO}
                 logo2={pair.token1.logoURI ?? UNKNOWN_LOGO}
               />
-              <div className={cn('flex min-w-0 flex-1 flex-col')}>
-                <div className='flex min-w-0 items-center gap-3'>
-                  <TextHeading className='min-w-0 truncate text-xl! leading-6! lg:text-4xl! lg:leading-10!'>
-                    {pair.symbol}
+              <div className={cn('flex flex-1 flex-col')}>
+                <div className='flex items-center gap-3'>
+                  <TextHeading className='min-w-0 text-xl! leading-6! xl:text-4xl! xl:leading-10!'>
+                    <Link className='hover:underline' href={`/analytics/tokens/${pair.token0.address}?back=4`}>
+                      {pair.token0.symbol}
+                    </Link>
+                    /
+                    <Link className='hover:underline' href={`/analytics/tokens/${pair.token1.address}?back=4`}>
+                      {pair.token1.symbol}
+                    </Link>
                   </TextHeading>
                   <LinkExternalIcon
                     className='size-4 flex-shrink-0 cursor-pointer stroke-neutral-500 transition-all duration-150 ease-out hover:stroke-neutral-100 xl:size-6'
@@ -150,15 +157,15 @@ export default function PairDetailPage({ params }) {
                     data-tooltip-id='contract-tooltip'
                   />
                 </div>
-                <div className='hidden text-xs text-nowrap text-neutral-300 max-lg:block'>
+                <div className='hidden text-xs text-nowrap text-neutral-300 max-xl:block'>
                   {`${t('Fee')}: ${pairFee}%`}
                 </div>
               </div>
             </div>
 
-            <div className='flex items-center gap-6 text-sm text-neutral-400 max-lg:justify-end'>
+            <div className='flex items-center gap-6 text-sm text-neutral-400 max-xl:justify-end'>
               <div className={cn('flex flex-col justify-between')}>
-                <span className='hidden text-base leading-5 font-normal text-nowrap text-neutral-300 lg:block'>
+                <span className='hidden text-base leading-5 font-normal text-nowrap text-neutral-300 max-xl:block'>
                   {`${t('Fee')}: ${pairFee}%`}
                 </span>
               </div>
@@ -188,7 +195,7 @@ export default function PairDetailPage({ params }) {
             </div>
 
             <EmphasisButton
-              className={cn('h-8! w-full py-2! text-xs! max-lg:hidden')}
+              className={cn('h-8! w-full py-2! text-xs! max-xl:hidden')}
               onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)}
             >
               {t('Deposit')}
@@ -196,9 +203,9 @@ export default function PairDetailPage({ params }) {
           </div>
 
           {/* Stats in horizontal layout */}
-          <PairBasicInfo pair={pair} className={cn('w-full lg:w-[80%]')} />
+          <PairBasicInfo pair={pair} className={cn('w-full')} />
           <EmphasisButton
-            className='z-40 h-8 w-full rounded-md! text-xs! lg:hidden'
+            className='z-40 h-8 w-full rounded-md! text-xs! xl:hidden'
             onClick={() => {
               push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
             }}
@@ -207,7 +214,7 @@ export default function PairDetailPage({ params }) {
           </EmphasisButton>
         </div>
 
-        <div className='rounded-xl lg:hidden'>
+        <div className='rounded-xl xl:hidden'>
           <Collapsible
             title={t('Analytics')}
             subtitle='TVL / Volume / Fees / Liquidity'
@@ -220,7 +227,7 @@ export default function PairDetailPage({ params }) {
           </Collapsible>
         </div>
 
-        <div className='max-lg:hidden'>
+        <div className='max-xl:hidden'>
           <PoolChart address={pair.address} />
         </div>
 
