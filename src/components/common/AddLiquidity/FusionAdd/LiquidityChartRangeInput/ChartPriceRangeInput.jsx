@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { batch, useDispatch, useSelector } from 'react-redux'
+import { batch, useDispatch } from 'react-redux'
 
 import { Warning } from '@/components/alert'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -94,7 +94,6 @@ export default function ChartPriceRangeInput({
   const windowSize = useWindowSize()
   const { startPriceTypedValue, presetRange } = useV3MintState()
   const dispatch = useDispatch()
-  const { isReverse } = useSelector(state => state.fusion)
   const [isFlip, setIsFlip] = useState(false)
 
   const [zoomFactor, setZoomFactor] = useState(1)
@@ -392,7 +391,7 @@ export default function ChartPriceRangeInput({
     if (!startPriceTypedValue && pairPrices?.length > 0) {
       setLastPrice(pairPrices[pairPrices.length - 1]?.value)
     }
-  }, [pairPrices, setLastPrice, startPriceTypedValue, isReverse])
+  }, [pairPrices, setLastPrice, startPriceTypedValue])
 
   const chartPriceWidth = useMemo(
     () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 180 : 100),
