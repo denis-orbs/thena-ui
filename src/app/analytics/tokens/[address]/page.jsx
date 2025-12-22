@@ -2,16 +2,18 @@
 
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import CircleImage from '@/components/image/CircleImage'
+import Modal from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { SCAN_URLS } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
 import { useTokens } from '@/context/tokensContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -29,11 +31,31 @@ export default function TokenDetailPage({ params }) {
   const t = useTranslations()
   const { push } = useRouter()
   const backUrl = useBackURL()
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false)
 
   const token = useMemo(
     () => (tokens ? tokens.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [tokens, address],
   )
+
+  // Map networkId to chain name for creditLink
+  const chainName = useMemo(() => {
+    if (networkId === CHAIN_ID.BSC) return 'BSC'
+    if (networkId === CHAIN_ID.OPBNB) return 'OPBNB'
+    return 'BSC' // default to BSC
+  }, [networkId])
+
+  // Generate creditLink URL
+  const analyticsUrl = useMemo(() => {
+    if (!token) return ''
+    const urlParams = new URLSearchParams({
+      chain: chainName,
+      address: token.address,
+      model: 'dark',
+      platform: 'thena.fi',
+    })
+    return `https://app.creditlink.info/tokenAnalyse?${urlParams.toString()}`
+  }, [token, chainName])
 
   if (isLoading || !tokens || !token) {
     return (
@@ -49,11 +71,20 @@ export default function TokenDetailPage({ params }) {
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end'>
-              <div className='flex w-full items-center gap-4'>
-                <CircleImage className='h-[48px] w-[48px] lg:h-[56px] lg:w-[56px]' src={token.logoURI} alt='' />
-                <div className='flex w-full flex-col gap-0.5 lg:gap-2'>
+              <div className='flex h-16 w-full items-center gap-6'>
+                <CircleImage className='h-[48px] w-[48px]' src={token.logoURI} alt='' />
+                <div className='flex w-full flex-col gap-0.5 xl:gap-1'>
                   <div className='flex items-center justify-between gap-3 lg:justify-start'>
-                    <TextHeading className='text-xl leading-normal lg:text-3xl'>{token.symbol}</TextHeading>
+                    <TextHeading className='text-xl leading-normal xl:text-4xl xl:leading-10'>
+                      {token.symbol}
+                    </TextHeading>
+                    <TextIconButton
+                      className='hidden lg:flex'
+                      Icon={ExternalIcon}
+                      onClick={() => {
+                        window.open(`${SCAN_URLS[networkId]}/address/${token.address}`, '_blank')
+                      }}
+                    />
                   </div>
                   <div className='flex w-full justify-between'>
                     <div className='flex items-center gap-0.5'>
@@ -70,13 +101,16 @@ export default function TokenDetailPage({ params }) {
                 </div>
               </div>
               <div className='flex w-full justify-end gap-2'>
-                <TextIconButton
+                {/* <TextIconButton
                   className='hidden lg:flex'
                   Icon={ExternalIcon}
                   onClick={() => {
                     window.open(`${SCAN_URLS[networkId]}/address/${token.address}`, '_blank')
                   }}
-                />
+                /> */}
+                <EmphasisButton onClick={() => setShowAnalyticsModal(true)}>
+                  {t('Generate Token Analytics')}
+                </EmphasisButton>
                 <PrimaryButton
                   onClick={() => {
                     push(`/swap?inputCurrency=BNB&outputCurrency=${token.address}&swapType=1`)
@@ -117,6 +151,39 @@ export default function TokenDetailPage({ params }) {
           <TokenPairs token={token} />
         </div>
       </div>
+
+      {/* Token Analytics Modal CreditLink */}
+      <Modal
+        width={1200}
+        styles={{
+          largeScreen: {
+            overflow: 'hidden',
+            height: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+          mediumScreen: {
+            overflow: 'hidden',
+            height: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+          smallScreen: {
+            overflow: 'hidden',
+            height: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
+        isOpen={showAnalyticsModal}
+        closeModal={() => setShowAnalyticsModal(false)}
+        title={t('Token Analytics')}
+      >
+        <div className='relative flex flex-1 overflow-hidden pl-2.5'>
+          <iframe src={analyticsUrl} title='Token Analytics' className='h-full w-full border-0' />
+          <div className='pointer-events-none absolute top-0 right-0 h-full w-[15px] bg-[#1A121E]' />
+        </div>
+      </Modal>
     </LayoutWithBackButton>
   )
 }
