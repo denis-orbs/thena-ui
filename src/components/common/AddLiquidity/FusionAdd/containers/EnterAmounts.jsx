@@ -27,52 +27,102 @@ export function EnterAmounts({
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
   const actions = useV3MintActionHandlers(mintInfo.noLiquidity)
 
-  const onFieldAInput = useMemo(
-    () => (position ? position.onFieldAInput : actions.onFieldAInput),
-    [actions.onFieldAInput, position],
-  )
+  const onFieldAInput = useMemo(() => {
+    if (position) {
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
 
-  const onFieldBInput = useMemo(
-    () => (position ? position.onFieldBInput : actions.onFieldBInput),
-    [actions.onFieldBInput, position],
-  )
+      return isReversed ? position.onFieldBInput : position.onFieldAInput
+    }
+    return actions.onFieldAInput
+  }, [actions.onFieldAInput, position, currencyA, currencyB])
+
+  const onFieldBInput = useMemo(() => {
+    if (position) {
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
+
+      return isReversed ? position.onFieldAInput : position.onFieldBInput
+    }
+    return actions.onFieldBInput
+  }, [actions.onFieldBInput, position, currencyA, currencyB])
 
   // get formatted amounts
-  const formattedAmounts = useMemo(
-    () =>
-      position
-        ? position.formattedAmounts
-        : {
-            [independentField]: typedValue,
-            [mintInfo.dependentField]: mintInfo.parsedAmounts[mintInfo.dependentField]?.toExact() ?? '',
-          },
-    [independentField, mintInfo.dependentField, mintInfo.parsedAmounts, position, typedValue],
-  )
+  const formattedAmounts = useMemo(() => {
+    if (position) {
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
+
+      if (isReversed) {
+        return {
+          [Field.CURRENCY_A]: position.formattedAmounts[Field.CURRENCY_B],
+          [Field.CURRENCY_B]: position.formattedAmounts[Field.CURRENCY_A],
+        }
+      }
+      return position.formattedAmounts
+    }
+    return {
+      [independentField]: typedValue,
+      [mintInfo.dependentField]: mintInfo.parsedAmounts[mintInfo.dependentField]?.toExact() ?? '',
+    }
+  }, [independentField, mintInfo.dependentField, mintInfo.parsedAmounts, position, typedValue, currencyA, currencyB])
 
   // get the max amounts user can add
-  const maxAmounts = useMemo(
-    () =>
-      position
-        ? position?.maxAmounts
-        : [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
-            (accumulator, field) => ({
-              ...accumulator,
-              [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
-            }),
-            {},
-          ),
-    [mintInfo.currencyBalances, position],
-  )
+  const maxAmounts = useMemo(() => {
+    if (position) {
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
 
-  const depositADisabled = useMemo(
-    () => (position ? position.depositADisabled : mintInfo.depositADisabled),
-    [mintInfo.depositADisabled, position],
-  )
+      if (isReversed) {
+        return {
+          [Field.CURRENCY_A]: position.maxAmounts[Field.CURRENCY_B],
+          [Field.CURRENCY_B]: position.maxAmounts[Field.CURRENCY_A],
+        }
+      }
+      return position.maxAmounts
+    }
+    return [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
+      (accumulator, field) => ({
+        ...accumulator,
+        [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
+      }),
+      {},
+    )
+  }, [mintInfo.currencyBalances, position, currencyA, currencyB])
 
-  const depositBDisabled = useMemo(
-    () => (position ? position.depositBDisabled : mintInfo.depositBDisabled),
-    [mintInfo.depositBDisabled, position],
-  )
+  const depositADisabled = useMemo(() => {
+    if (position) {
+      // Check if currencies are reversed compared to position
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
+
+      if (isReversed) {
+        // Swap the disabled states when currencies are reversed
+        return position.depositBDisabled
+      }
+      return position.depositADisabled
+    }
+    return mintInfo.depositADisabled
+  }, [mintInfo.depositADisabled, position, currencyA, currencyB])
+
+  const depositBDisabled = useMemo(() => {
+    if (position) {
+      const isReversed =
+        currencyA?.wrapped?.address?.toLowerCase() === position.quoteCurrency?.wrapped?.address?.toLowerCase() &&
+        currencyB?.wrapped?.address?.toLowerCase() === position.baseCurrency?.wrapped?.address?.toLowerCase()
+
+      if (isReversed) {
+        return position.depositADisabled
+      }
+      return position.depositBDisabled
+    }
+    return mintInfo.depositBDisabled
+  }, [mintInfo.depositBDisabled, position, currencyA, currencyB])
 
   const assetsSelect = useMemo(
     () =>
