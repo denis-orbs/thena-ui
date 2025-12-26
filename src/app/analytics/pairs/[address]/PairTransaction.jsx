@@ -400,8 +400,10 @@ const getTransactionType = (event, symbol0, symbol1, t) => {
 const fetchPairTransaction = async (chainId, pair) => {
   if (pair.type === PAIR_TYPES.LSD) {
     const version = pair?.version
-    const swapPool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])?.address
-    const { data: fusiondata } = await getFusionTransactions(chainId, version, [pair.address, swapPool])
+    const swapPools = pair.subpools
+      .filter(ele => ele.title === MANUAL_TYPES[0] || ele.title === MANUAL_TYPES[1])
+      .map(ele => ele.address)
+    const { data: fusiondata } = await getFusionTransactions(chainId, version, [pair.address, ...swapPools])
     return fusiondata
   }
 
