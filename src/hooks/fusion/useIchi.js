@@ -11,6 +11,7 @@ import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
 import { VaultDepositGaurdABI } from '@/abis/ichi/VaultDepositGaurdABI'
 import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { FARM_CONFIG } from '@/constant/ichiVaults'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
@@ -367,12 +368,21 @@ export const useIchiRemove = () => {
 
       const vaultContract = getIchiVaultContract(pool.address, version)
       if (isFarming) {
-        const farmContractAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
+        // Use hardcoded farming contract address from FARM_CONFIG
+        // The vault contract's farmingContract will be set to 0, so we can't read it
+        const farmConfig = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase())
+        if (!farmConfig) {
+          errorToast('Error', 'Farming contract not found for this pool')
+          setPending(false)
+          return
+        }
+        const farmContractAddress = farmConfig.farming
         const farmingContract = {
           address: farmContractAddress,
           abi: IchiFarmingABI,
         }
         const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
+        // For Ichi farming pools, users MUST unstake before withdrawing
         if (isStaked) {
           if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
             setPending(false)
@@ -418,6 +428,13 @@ export const useIchiManageV3 = () => {
 
   const addIchiPool = useCallback(
     async ({ vault, amount, amountToWrap, slippage }, callback) => {
+      // TODO: temporary block and do no deposit for Ichi pools until update new ICHI strategies
+
+      // eslint-disable-next-line no-constant-condition
+      if (true) {
+        return
+      }
+      // eslint-disable-next-line no-unused-vars
       const { token0, token1, address: vaultAddress, isFarming = false } = vault
       const vaultContract = getIchiVaultContract(vaultAddress, 3)
 
@@ -994,7 +1011,23 @@ export const useIchiClaim = () => {
 
       setPending(true)
       const ichiVault = getIchiVaultContract(pool.address, pool.account?.version)
-      const farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
+
+      // Use hardcoded farming contract address from FARM_CONFIG for Ichi farming pools
+      // The vault contract's farmingContract will be set to 0, so we can't read it
+      const isFarming = pool.title === ICHI_TYPES[0] && pool.account?.version === 3
+      let farmContractAddress
+      if (isFarming) {
+        const farmConfig = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase())
+        if (!farmConfig) {
+          errorToast('Error', 'Farming contract not found for this pool')
+          setPending(false)
+          return
+        }
+        farmContractAddress = farmConfig.farming
+      } else {
+        farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
+      }
+
       const multiFeeDistributionContract = getMultiFeeDistributionContract(farmContractAddress, networkId)
       if (!(await writeTxn(key, claimId, multiFeeDistributionContract, 'getAllRewards', []))) {
         setPending(false)

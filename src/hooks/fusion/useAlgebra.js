@@ -301,33 +301,47 @@ export const useAlgebraClaim = (version = 3) => {
       const key = uuidv4()
       const claimFeeId = uuidv4()
       const claimFarmId = uuidv4()
+      const approveFarmingId = uuidv4()
+
+      const transactions = {}
+      if (isFarming) {
+        const positionManger = getNPMContract(chainId, version)
+        const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
+        const farmingCenter = getFarmingCenterContract(chainId)
+        const isNotApproved = farmingApprovals !== farmingCenter.address
+
+        if (isNotApproved) {
+          transactions[approveFarmingId] = {
+            desc: `${t('Approve For Farming')}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        transactions[claimFarmId] = {
+          desc: t('Claim Farming Rewards'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      } else {
+        transactions[claimFeeId] = {
+          desc: t('Claim Fees'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
 
       setPending(true)
       startTxn({
         key,
         title: 'Claim Rewards',
-        transactions: {
-          ...(isFarming
-            ? {
-                [claimFarmId]: {
-                  desc: t('Claim Farming Rewards'),
-                  status: TXN_STATUS.START,
-                  hash: null,
-                },
-              }
-            : {
-                [claimFeeId]: {
-                  desc: t('Claim Fees'),
-                  status: TXN_STATUS.START,
-                  hash: null,
-                },
-              }),
-        },
+        transactions,
       })
 
       if (isFarming) {
         if (!poolkey) {
           errorToast('Error', 'Missing pool key')
+          setPending(false)
           return
         }
 
@@ -355,7 +369,7 @@ export const useAlgebraClaim = (version = 3) => {
 
       endTxn({ key, final: 'Claimed' })
       setPending(false)
-      callback()
+      if (callback) callback()
     },
     [startTxn, t, endTxn, chainId, writeTxn, version, account, sendTxn],
   )
@@ -520,13 +534,6 @@ export const useAlgebraRemove = (version = 3) => {
         key,
         title: 'Remove Liquidity',
         transactions: {
-          ...(rewardAmount > 0 && {
-            [claimRewardId]: {
-              desc: t('Claim Rewards'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
           ...(isFarmingPosition &&
             isNotApprovedForFarming && {
               [approveFarmingId]: {
@@ -535,6 +542,13 @@ export const useAlgebraRemove = (version = 3) => {
                 hash: null,
               },
             }),
+          ...(rewardAmount > 0 && {
+            [claimRewardId]: {
+              desc: t('Claim Rewards'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -542,15 +556,6 @@ export const useAlgebraRemove = (version = 3) => {
           },
         },
       })
-
-      if (rewardAmount > 0) {
-        const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
-
-        if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
-          setPending(false)
-          return
-        }
-      }
 
       // Approve for farming if needed
       if (isFarmingPosition && isNotApprovedForFarming) {
@@ -560,6 +565,15 @@ export const useAlgebraRemove = (version = 3) => {
           farmingCenter.address,
         ])
         if (!txHash) {
+          setPending(false)
+          return
+        }
+      }
+
+      if (rewardAmount > 0) {
+        const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
+
+        if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
           setPending(false)
           return
         }
@@ -700,6 +714,14 @@ export const useAlgebraIncrease = (version = 3) => {
         key,
         title: 'Add Liquidity',
         transactions: {
+          ...(isFarmingPosition &&
+            isNotApprovedForFarming && {
+              [approveFarmingId]: {
+                desc: `${t('Approve For Farming')}`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
               desc: `${t('Approve')} ${baseCurrency.symbol}`,
@@ -714,14 +736,6 @@ export const useAlgebraIncrease = (version = 3) => {
               hash: null,
             },
           }),
-          ...(isFarmingPosition &&
-            isNotApprovedForFarming && {
-              [approveFarmingId]: {
-                desc: `${t('Approve For Farming')}`,
-                status: TXN_STATUS.START,
-                hash: null,
-              },
-            }),
           [adduuid]: {
             desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
@@ -730,6 +744,20 @@ export const useAlgebraIncrease = (version = 3) => {
         },
       })
       setPending(true)
+
+      // Approve for farming if needed
+      if (isFarmingPosition && isNotApprovedForFarming) {
+        const txHash = await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
+          tokenId,
+          true,
+          farmingCenter.address,
+        ])
+        if (!txHash) {
+          setPending(false)
+          return
+        }
+      }
+
       if (!isFirstApproved) {
         if (
           !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
@@ -749,19 +777,6 @@ export const useAlgebraIncrease = (version = 3) => {
             toWei(amountB.toExact(), quoteCurrency.decimals),
           ]))
         ) {
-          setPending(false)
-          return
-        }
-      }
-
-      // Approve for farming if needed
-      if (isFarmingPosition && isNotApprovedForFarming) {
-        const txHash = await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
-          tokenId,
-          true,
-          farmingCenter.address,
-        ])
-        if (!txHash) {
           setPending(false)
           return
         }

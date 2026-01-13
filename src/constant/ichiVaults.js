@@ -182,3 +182,138 @@ export const ICHI_VAULTS = {
     // },
   ],
 }
+
+// Hardcoded farming contract addresses for Ichi V3 farming pools
+// The vault contract's farmingContract will be set to 0, so we use this mapping instead
+export const FARM_CONFIG = [
+  {
+    symbol: 'IV-THE_V3_RW-0-ETH-WBNB',
+    pool: '0xdaDAdc327c2CD434E65913c11e81a98CF9c9FC95',
+    farming: '0xb6F3C6770aB81f7F7e4E8794d391EF4A3fa1533a',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-1-WBNB-ETH',
+    pool: '0xf20a62ED4541a0360975D391761ADf15EC4b3453',
+    farming: '0xB75634f63c8876Ca04961E8425d0353dd82c4ff3',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-2-BTCB-WBNB',
+    pool: '0x756B21617f3782289089991a9A6b6F4c5A455d68',
+    farming: '0x70d6880717968107370593b47C40C9435F90fd1A',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-3-WBNB-BTCB',
+    pool: '0x3929E5B7D447ed243Ee2655Dfbd1ed9F24F1aC56',
+    farming: '0x2e01Ba342d8a7168adc5C9fd9DabC581B355f6dE',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-4-WBNB-THE',
+    pool: '0xEddD271ccf0BCeDDC8C720e878d36F2F4824c8c0',
+    farming: '0x3F892Da13b928C33215D2fCFdD680c59ec53d15E',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-5-SOL-WBNB',
+    pool: '0x75c4235bFF0e0631d77De05941055a28002256e9',
+    farming: '0xe0d9Fd089AC910B733db514D91fe189e5e288760',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-6-WBNB-SOL',
+    pool: '0x048FAaec8c31E0910dAcB4a6Ff4fdD501CbdB125',
+    farming: '0xa8D1E811aF96aae39777691Ef36801Cc4F6a504E',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-7-FIL-WBNB',
+    pool: '0xEF5ab86C303302D7DCe9C7226E18D55Ad029cDa9',
+    farming: '0x4d82E9B8557Eb100fa2150842e4673820C738A66',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-8-WBNB-FIL',
+    pool: '0xBC0c25B48B2c75672b88bB6668FA5D5894647Ac8',
+    farming: '0x5Cf32aA07004c9360E0292904A1db6a15fC4647A',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-9-ETH-USDT',
+    pool: '0x4aB48D934a8cfF2e557f8bf7EA7e54419504C0B2',
+    farming: '0x733742B1A1d93cD77DB3CCB751A3822c011D8958',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-10-USDT-ETH',
+    pool: '0xa8c3bF3E437248C5968c45091047D7d9e7d5BF10',
+    farming: '0x7ad238debFf6595786a83AbBAC1c2ef09c1062C4',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-11-USDT-WBNB',
+    pool: '0xAcf0fF327b36b2e45DcA3567E1669a43bC973ed7',
+    farming: '0x4a5d31b7c98CF4b1Dff63741233047FC6744Cb7b',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-12-WBNB-USDT',
+    pool: '0x2B3cf44cd82E4475aeC06f4051Ae4a3ddD16BE24',
+    farming: '0xc791C9985Fe04E9Dafe2a1893A869e3630A4F389',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-13-DOGE-WBNB',
+    pool: '0x9A050BFd44C3D15D336c1a286A26dA01Ad1772E7',
+    farming: '0x2A230E768CefA7E605d0b2b224a65e20c8615C0b',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-14-WBNB-DOGE',
+    pool: '0xDd29B440713C3AEA3204E6259E92c1c58d551aA0',
+    farming: '0x1434da63ebE8E4D4700D7C32ea813E509Da377ca',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-15-USDT-THE',
+    pool: '0xA2EbD5d2FD39546782d9c98E63F799DCFF9874F8',
+    farming: '0xCf7BFa8e04901273b6201Ed86c190045c258fe19',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-16-HBR-USDT',
+    pool: '0x9C47E919a628612ba3F1889a97f8c35a23003079',
+    farming: '0x2Cd5f6F50Ed045715DbfC9c3DF8F385E0583F978',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-17-Cake-mCake',
+    pool: '0x8E291f0653446481AF22A158DAa8FF77E4F5e42C',
+    farming: '0x01cf499d9c055c1Be6Af45c3eb2fb5976E697Ee6',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-18-USDT-XCAD',
+    pool: '0xCbF8A017A88E0AeF1E12D1bb21220d66440dB1B7',
+    farming: '0x0B8E7FF9089aE6ed3C04aF4D1B31530145d8A1bE',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-19-mPendle-PENDLE',
+    pool: '0xdA183965BCE824F7adBbf14B381fA2060B1020F7',
+    farming: '0xCFbE7806d654de76e40Aa99B5bd588479394f170',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-20-PENDLE-mPendle',
+    pool: '0x86FaDA04f005467bC9abce7Fb28c2F635691B308',
+    farming: '0xaf947A095BAc36010953B4B393caED14256f4DFd',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-21-ETH-THE',
+    pool: '0x646Ecd3CAe8c9F02Ae2eA93305f8B574a2c6eE04',
+    farming: '0xb497EB396E03278489c155083D2271b737332a03',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-22-BTCB-THE',
+    pool: '0x8833E5Db9CCb6DC5d3C394E5b0166883F0a222AC',
+    farming: '0xee9058515e692d2a3a80b80524aEAb7D2f7fd480',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-23-USDC-THE',
+    pool: '0x9B465EaF72891e81b4A3F1D407E30418E1dD403A',
+    farming: '0x9Cf345554Ca79Bd621e597b91A4274919aF13259',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-24-ADA-WBNB',
+    pool: '0xd5775439d9f5d2de77E472939AB4B758a635f601',
+    farming: '0x6225D53E8725f560652afd955d858517eDcA0F3B',
+  },
+  {
+    symbol: 'IV-THE_V3_RW-25-WBNB-ADA',
+    pool: '0x58d18070bC0cAeB7bb298DBE8045F0bfC6588477',
+    farming: '0x8cDa3179f3A694DD06873BEd550535E95Ac349cf',
+  },
+]
