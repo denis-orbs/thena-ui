@@ -174,7 +174,9 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           {t('Withdraw')}
         </EmphasisButton>
         <EmphasisButton
-          className='flex-1'
+          className={cn('flex-1', {
+            hidden: ICHI_TYPES.includes(position?.title) && position?.version === 3,
+          })}
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}
         >
@@ -198,6 +200,8 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
       isSwapFee,
       position?.account?.walletBalance,
       position?.staked,
+      position?.title,
+      position?.version,
       rewardsData.totalRewardUsd,
       stakeGammaPending,
       stakeIchiPending,
