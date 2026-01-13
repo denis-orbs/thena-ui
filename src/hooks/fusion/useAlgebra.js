@@ -507,17 +507,16 @@ export const useAlgebraRemove = (version = 3) => {
       slippage,
       deadline,
       callback,
+      isFarming,
     }) => {
       const key = uuidv4()
       const claimRewardId = uuidv4()
       const approveFarmingId = uuidv4()
       const removeuuid = uuidv4()
-
       const { reward0, reward1, poolkey } = farmReward ?? {}
       const rewardAmount = Number(reward0?.toSignificant() ?? 0) + Number(reward1?.toSignificant() ?? 0)
 
-      // Check if this is a farming position (indicated by farmReward having poolkey)
-      const isFarmingPosition = position?.isFarming || false
+      const isFarmingPosition = !!isFarming
       const positionManger = getNPMContract(chainId, version)
       const farmingCenter = getFarmingCenterContract(chainId)
       let isNotApprovedForFarming = false
@@ -530,6 +529,7 @@ export const useAlgebraRemove = (version = 3) => {
         isNotApprovedForFarming = !currentApproval || currentApproval !== newFarmingCenterAddress
       }
 
+      setPending(true)
       startTxn({
         key,
         title: 'Remove Liquidity',
@@ -579,7 +579,6 @@ export const useAlgebraRemove = (version = 3) => {
         }
       }
 
-      setPending(true)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -602,7 +601,7 @@ export const useAlgebraRemove = (version = 3) => {
 
       endTxn({ key, final: 'Removed position' })
       setPending(false)
-      callback()
+      if (callback) callback()
     },
     [startTxn, t, chainId, version, account, sendTxn, endTxn, writeTxn],
   )

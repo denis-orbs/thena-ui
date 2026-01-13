@@ -61,6 +61,7 @@ export default function RemoveManualModal({
         currency1: CurrencyAmount.fromRawAmount(_pool?.token1, BigNumber(0n)),
         slippage,
         deadline,
+        isFarming: pool?.isFarming,
         callback: () => {
           if (debouncedPercent === 100) {
             addOrReplaceURLParams('pid')
