@@ -106,6 +106,7 @@ export default function ManualAdd({
           position.setTypedValue('')
           onShowModalSuccess()
         },
+        strategy?.title === MANUAL_TYPES[0] || position.isFarming,
       )
     }
   }, [
@@ -121,6 +122,7 @@ export default function ManualAdd({
     deadline,
     onShowModalSuccess,
     onAlgebraIncrease,
+    strategy?.title,
   ])
 
   return (

@@ -191,22 +191,34 @@ export default function AddManualModal({
     }
     const amountA = parsedAmounts[Field.CURRENCY_A]
     const amountB = parsedAmounts[Field.CURRENCY_B]
-    onAlgebraIncrease(amountA, amountB, pos, depositADisabled, depositBDisabled, slippage, deadline, tokenId, () => {
-      mutateManual()
-      setPopup(false)
-      setTypedValue('')
-    })
+    onAlgebraIncrease(
+      amountA,
+      amountB,
+      pos,
+      depositADisabled,
+      depositBDisabled,
+      slippage,
+      deadline,
+      tokenId,
+      () => {
+        mutateManual()
+        setPopup(false)
+        setTypedValue('')
+      },
+      pool?.isFarming,
+    )
   }, [
     errorMessage,
     parsedAmounts,
+    onAlgebraIncrease,
     pos,
     depositADisabled,
     depositBDisabled,
     slippage,
     deadline,
     tokenId,
+    pool?.isFarming,
     mutateManual,
-    onAlgebraIncrease,
     setPopup,
   ])
 
