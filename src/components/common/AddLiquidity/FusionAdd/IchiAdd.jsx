@@ -11,6 +11,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { TextHeading } from '@/components/typography'
+import { ICHI_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
@@ -150,7 +151,9 @@ export default function IchiAdd({
         </EmphasisButton>
         {account ? (
           <PrimaryButton
-            disabled={pendingV2 || pendingV3}
+            // Block deposits only for Ichi farming strategies (ICHI_Farming v3)
+            // Single-sided and SwapFee strategies should still work
+            disabled={pendingV2 || pendingV3 || (strategy?.title === ICHI_TYPES[0] && strategy?.version === 3)}
             onClick={() => {
               onAddLiquidityAndStake()
             }}

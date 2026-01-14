@@ -301,33 +301,47 @@ export const useAlgebraClaim = (version = 3) => {
       const key = uuidv4()
       const claimFeeId = uuidv4()
       const claimFarmId = uuidv4()
+      const approveFarmingId = uuidv4()
+
+      const transactions = {}
+      if (isFarming) {
+        const positionManger = getNPMContract(chainId, version)
+        const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
+        const farmingCenter = getFarmingCenterContract(chainId)
+        const isNotApproved = farmingApprovals !== farmingCenter.address
+
+        if (isNotApproved) {
+          transactions[approveFarmingId] = {
+            desc: `${t('Approve For Farming')}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        transactions[claimFarmId] = {
+          desc: t('Claim Farming Rewards'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      } else {
+        transactions[claimFeeId] = {
+          desc: t('Claim Fees'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
 
       setPending(true)
       startTxn({
         key,
         title: 'Claim Rewards',
-        transactions: {
-          ...(isFarming
-            ? {
-                [claimFarmId]: {
-                  desc: t('Claim Farming Rewards'),
-                  status: TXN_STATUS.START,
-                  hash: null,
-                },
-              }
-            : {
-                [claimFeeId]: {
-                  desc: t('Claim Fees'),
-                  status: TXN_STATUS.START,
-                  hash: null,
-                },
-              }),
-        },
+        transactions,
       })
 
       if (isFarming) {
         if (!poolkey) {
           errorToast('Error', 'Missing pool key')
+          setPending(false)
           return
         }
 
@@ -355,7 +369,7 @@ export const useAlgebraClaim = (version = 3) => {
 
       endTxn({ key, final: 'Claimed' })
       setPending(false)
-      callback()
+      if (callback) callback()
     },
     [startTxn, t, endTxn, chainId, writeTxn, version, account, sendTxn],
   )
@@ -493,18 +507,41 @@ export const useAlgebraRemove = (version = 3) => {
       slippage,
       deadline,
       callback,
+      isFarming,
     }) => {
       const key = uuidv4()
       const claimRewardId = uuidv4()
+      const approveFarmingId = uuidv4()
       const removeuuid = uuidv4()
-
       const { reward0, reward1, poolkey } = farmReward ?? {}
       const rewardAmount = Number(reward0?.toSignificant() ?? 0) + Number(reward1?.toSignificant() ?? 0)
 
+      const isFarmingPosition = !!isFarming
+      const positionManger = getNPMContract(chainId, version)
+      const farmingCenter = getFarmingCenterContract(chainId)
+      let isNotApprovedForFarming = false
+
+      if (isFarmingPosition) {
+        // Check if farming approval is needed
+        const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
+        const currentApproval = farmingApprovals?.toLowerCase()
+        const newFarmingCenterAddress = farmingCenter.address.toLowerCase()
+        isNotApprovedForFarming = !currentApproval || currentApproval !== newFarmingCenterAddress
+      }
+
+      setPending(true)
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
+          ...(isFarmingPosition &&
+            isNotApprovedForFarming && {
+              [approveFarmingId]: {
+                desc: `${t('Approve For Farming')}`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           ...(rewardAmount > 0 && {
             [claimRewardId]: {
               desc: t('Claim Rewards'),
@@ -520,8 +557,20 @@ export const useAlgebraRemove = (version = 3) => {
         },
       })
 
+      // Approve for farming if needed
+      if (isFarmingPosition && isNotApprovedForFarming) {
+        const txHash = await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
+          tokenId,
+          true,
+          farmingCenter.address,
+        ])
+        if (!txHash) {
+          setPending(false)
+          return
+        }
+      }
+
       if (rewardAmount > 0) {
-        const farmingCenter = getFarmingCenterContract(chainId)
         const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
 
         if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
@@ -530,8 +579,6 @@ export const useAlgebraRemove = (version = 3) => {
         }
       }
 
-      setPending(true)
-      const positionManger = getNPMContract(chainId, version)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -554,7 +601,7 @@ export const useAlgebraRemove = (version = 3) => {
 
       endTxn({ key, final: 'Removed position' })
       setPending(false)
-      callback()
+      if (callback) callback()
     },
     [startTxn, t, chainId, version, account, sendTxn, endTxn, writeTxn],
   )
@@ -612,9 +659,33 @@ export const useAlgebraIncrease = (version = 3) => {
   const t = useTranslations()
 
   const onAlgebraIncrease = useCallback(
-    async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
+    async (
+      amountA,
+      amountB,
+      position,
+      depositADisabled,
+      depositBDisabled,
+      slippage,
+      deadline,
+      tokenId,
+      callback,
+      isFarming,
+    ) => {
       const positionManger = getNPMContract(chainId, version)
       const algebraAddress = positionManger.address
+      const farmingCenter = getFarmingCenterContract(chainId)
+
+      // Check if position is a farming position and needs approval
+      const isFarmingPosition = isFarming || false
+      let isNotApprovedForFarming = false
+
+      // If it's a farming position, check if approval is needed
+      if (isFarmingPosition) {
+        const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
+        const currentApproval = farmingApprovals?.toLowerCase()
+        const newFarmingCenterAddress = farmingCenter.address.toLowerCase()
+        isNotApprovedForFarming = !currentApproval || currentApproval !== newFarmingCenterAddress
+      }
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const baseCurrency = amountA.currency
@@ -636,11 +707,20 @@ export const useAlgebraIncrease = (version = 3) => {
       const key = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
+      const approveFarmingId = uuidv4()
       const adduuid = uuidv4()
       startTxn({
         key,
         title: 'Add Liquidity',
         transactions: {
+          ...(isFarmingPosition &&
+            isNotApprovedForFarming && {
+              [approveFarmingId]: {
+                desc: `${t('Approve For Farming')}`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
               desc: `${t('Approve')} ${baseCurrency.symbol}`,
@@ -663,6 +743,20 @@ export const useAlgebraIncrease = (version = 3) => {
         },
       })
       setPending(true)
+
+      // Approve for farming if needed
+      if (isFarmingPosition && isNotApprovedForFarming) {
+        const txHash = await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
+          tokenId,
+          true,
+          farmingCenter.address,
+        ])
+        if (!txHash) {
+          setPending(false)
+          return
+        }
+      }
+
       if (!isFirstApproved) {
         if (
           !(await writeTxn(key, approve1uuid, firstContract, 'approve', [

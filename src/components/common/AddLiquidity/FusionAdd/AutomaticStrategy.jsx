@@ -1,13 +1,17 @@
 import SelectorGrid from '@/components/selector/SelectorGrid'
+import cn from '@/utils/classes'
 
-function AutomaticStrategy({ strategyAutoData, className, classNames, canSelect = true, isGrid = true }) {
+function AutomaticStrategy({ strategyAutoData, className, classNames, canSelect = true }) {
   return (
     <SelectorGrid
-      className={className}
-      classNames={classNames}
+      className={cn('!flex !flex-col !gap-4', className)}
+      classNames={{
+        ...classNames,
+        item: cn('!h-auto', classNames?.item),
+      }}
       data={strategyAutoData}
       canSelect={canSelect}
-      isGrid={isGrid}
+      isGrid={false}
     />
   )
 }

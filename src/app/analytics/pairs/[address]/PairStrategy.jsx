@@ -14,7 +14,7 @@ import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/Liq
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
+import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useAprStore } from '@/state/APR/store'
@@ -92,7 +92,14 @@ function PairStrategy({ pair }) {
 
   const sortedSubPools = useMemo(() => {
     const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }
-    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+    // TODO: temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
+    return (pair?.subpools || [])
+      .filter(
+        sub =>
+          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+          (!ICHI_TYPES.includes(sub.title) && sub.version === 3),
+      )
+      .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])
 
   const strategyAutoData = useMemo(() => {

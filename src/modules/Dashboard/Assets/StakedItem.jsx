@@ -346,7 +346,7 @@ function StakedItem({ position, isXlDown }) {
         <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
           onClick={handleHarvest}
-          disabled={claimPending || isSwapFee}
+          disabled={claimPending || isSwapFee || (ICHI_TYPES.includes(position.title) && position.version === 3)}
         >
           {t('Claim')}
         </EmphasisButton>
@@ -416,6 +416,8 @@ function StakedItem({ position, isXlDown }) {
     migrationOptions?.length,
     t,
     version,
+    position?.title,
+    position?.version,
   ])
 
   return (
