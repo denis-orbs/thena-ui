@@ -321,6 +321,7 @@ function NotStakedItem({ position, isXlDown }) {
                     className={cn('h-8 w-[77px]! rounded-md text-xs leading-4 text-nowrap', {
                       // hidden: hideButton.earn,
                     })}
+                    disabled={ICHI_TYPES.includes(position.title)}
                     onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
                   >
                     {t('Earn $THE')}
