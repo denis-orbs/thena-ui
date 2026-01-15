@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
-import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, ICHI_WITHOUT_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { fetchV2SolidlyPairs } from '@/lib/api'
@@ -170,9 +170,7 @@ export const usePairInfo = ({
       ...found,
       // TODO:temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
       subpools: found.subpools.filter(
-        sub =>
-          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
-          (!ICHI_TYPES.includes(sub.title) && sub.version === 3),
+        sub => (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
       ),
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }

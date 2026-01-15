@@ -186,7 +186,13 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
           <PrimaryButton
             className='flex-1 text-nowrap'
             onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
-            disabled={stakePending || stakeIchiPending || stakeGammaPending}
+            // TODO: temporary block and do no deposit for Ichi pools until update new ICHI strategies
+            disabled={
+              stakePending ||
+              stakeIchiPending ||
+              stakeGammaPending ||
+              (ICHI_TYPES.includes(position?.title) && position?.version === 3)
+            }
           >
             {t('Earn $THE')}
           </PrimaryButton>

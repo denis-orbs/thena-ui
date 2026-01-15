@@ -29,9 +29,11 @@ function PoolInfo({ pair, pool, showAttributes = true, showMyInfo = false }) {
         </div>
       )}
 
-      <div className='order-1 xl:order-2'>
-        <PoolReserveSection pool={pool} className='hidden xl:block' showMyInfo={showMyInfo} />
-      </div>
+      {pool && (
+        <div className='order-1 xl:order-2'>
+          <PoolReserveSection pool={pool} className='hidden xl:block' showMyInfo={showMyInfo} />
+        </div>
+      )}
     </div>
   )
 }

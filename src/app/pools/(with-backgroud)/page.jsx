@@ -23,7 +23,15 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
+import {
+  GAMMA_TYPES,
+  ICHI_SINGLE_SIDED,
+  ICHI_TYPES,
+  ICHI_WITHOUT_SINGLE_SIDED,
+  MANUAL_TYPES,
+  PAIR_TYPES,
+  SPECIAL_POOLS,
+} from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -406,15 +414,22 @@ export default function PoolsPage() {
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-sm'>APR</TextHeading>
                 <div className='flex flex-col gap-1'>
-                  {pool.subpools.map((sub, idx) => (
-                    <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
-                      <div className='flex items-center gap-1'>
-                        <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
-                        <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
+                  {/* TODO: temporary hide Ichi v3 */}
+                  {pool.subpools
+                    .filter(
+                      sub =>
+                        (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+                        !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
+                    )
+                    .map((sub, idx) => (
+                      <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
+                        <div className='flex items-center gap-1'>
+                          <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
+                          <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
+                        </div>
+                        <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
                       </div>
-                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </CustomTooltip>

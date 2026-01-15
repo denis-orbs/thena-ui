@@ -14,7 +14,14 @@ import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/Liq
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, STABLE_PAIRS } from '@/constant'
+import {
+  GAMMA_TYPES,
+  ICHI_SINGLE_SIDED,
+  ICHI_TYPES,
+  ICHI_WITHOUT_SINGLE_SIDED,
+  MANUAL_TYPES,
+  STABLE_PAIRS,
+} from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useAprStore } from '@/state/APR/store'
@@ -95,9 +102,7 @@ function PairStrategy({ pair }) {
     // TODO: temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
     return (pair?.subpools || [])
       .filter(
-        sub =>
-          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
-          (!ICHI_TYPES.includes(sub.title) && sub.version === 3),
+        sub => (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
       )
       .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])
