@@ -10,7 +10,7 @@ import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
 import cn from '@/utils/classes'
@@ -303,7 +303,11 @@ function NewListings({
               <TextHeading className='text-sm'>APR</TextHeading>
               <div className='flex flex-col gap-1'>
                 {pool.subpools
-                  .filter(item => item.version === 3)
+                  .filter(
+                    item =>
+                      (item.title === ICHI_SINGLE_SIDED && item.version === 2) ||
+                      (!ICHI_TYPES.includes(item.title) && item.version === 3),
+                  )
                   .map((sub, idx) => (
                     <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
                       <div className='flex items-center gap-1'>

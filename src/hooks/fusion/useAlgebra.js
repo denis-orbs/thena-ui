@@ -302,13 +302,13 @@ export const useAlgebraClaim = (version = 3) => {
       const claimFeeId = uuidv4()
       const claimFarmId = uuidv4()
       const approveFarmingId = uuidv4()
-
+      let isNotApproved = false
+      const positionManger = getNPMContract(chainId, version)
+      const farmingCenter = getFarmingCenterContract(chainId)
       const transactions = {}
       if (isFarming) {
-        const positionManger = getNPMContract(chainId, version)
         const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
-        const farmingCenter = getFarmingCenterContract(chainId)
-        const isNotApproved = farmingApprovals !== farmingCenter.address
+        isNotApproved = farmingApprovals !== farmingCenter.address
 
         if (isNotApproved) {
           transactions[approveFarmingId] = {
@@ -345,7 +345,18 @@ export const useAlgebraClaim = (version = 3) => {
           return
         }
 
-        const farmingCenter = getFarmingCenterContract(chainId)
+        if (isNotApproved) {
+          if (
+            !(await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
+              tokenId,
+              true,
+              farmingCenter.address,
+            ]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
         const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
 
         if (!(await writeTxn(key, claimFarmId, farmingCenter, 'multicall', [calldata]))) {
@@ -353,7 +364,6 @@ export const useAlgebraClaim = (version = 3) => {
           return
         }
       } else {
-        const positionManger = getNPMContract(chainId, version)
         const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
           tokenId,
           expectedCurrencyOwed0: feeValue0,
