@@ -14,18 +14,18 @@ export function PoolReserveSection({ pool, className, showMyInfo = true }) {
         <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
             <Paragraph className='text-base leading-5! font-normal text-neutral-300'>
-              {unwrappedSymbol(pool.token0)} {t('Amount')}
+              {unwrappedSymbol(pool?.token0)} {t('Amount')}
             </Paragraph>
             <Paragraph className='text-base leading-5! font-normal text-neutral-300'>
-              {formatAmount(pool.token0.reserve)}
+              {formatAmount(pool?.token0?.reserve)}
             </Paragraph>
           </div>
           <div className='flex items-center justify-between'>
             <Paragraph className='text-base leading-5! font-normal text-neutral-300'>
-              {unwrappedSymbol(pool.token1)} {t('Amount')}
+              {unwrappedSymbol(pool?.token1)} {t('Amount')}
             </Paragraph>
             <Paragraph className='text-base leading-5! font-normal text-neutral-300'>
-              {formatAmount(pool.token1.reserve)}
+              {formatAmount(pool?.token1?.reserve)}
             </Paragraph>
           </div>
         </div>

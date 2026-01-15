@@ -23,7 +23,15 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
+import {
+  GAMMA_TYPES,
+  ICHI_SINGLE_SIDED,
+  ICHI_TYPES,
+  ICHI_WITHOUT_SINGLE_SIDED,
+  MANUAL_TYPES,
+  PAIR_TYPES,
+  SPECIAL_POOLS,
+} from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -411,7 +419,7 @@ export default function PoolsPage() {
                     .filter(
                       sub =>
                         (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
-                        (!ICHI_TYPES.includes(sub.title) && sub.version === 3),
+                        !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
                     )
                     .map((sub, idx) => (
                       <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
