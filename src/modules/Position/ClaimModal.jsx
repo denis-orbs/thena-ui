@@ -84,7 +84,9 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
               },
               () => {
                 setPopup(false)
-                mutate()
+                if (typeof mutate === 'function') {
+                  mutate()
+                }
               },
             )
           }}
