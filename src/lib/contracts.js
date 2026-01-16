@@ -14,6 +14,7 @@ import {
 import { FarmingCenterABI } from '@/abis/integral/FarmingCenterABI'
 import { IncentiveMakerABI } from '@/abis/integral/IncentiveMakerABI'
 import { SolidlyRouterABI } from '@/abis/solidly/SolidlyRouterABI'
+import { UniversalRouterABI } from '@/abis/swap/UniversalRouterABI'
 import { NFTStakingABI } from '@/abis/thenft/NFTStakingABI'
 import { RoyaltyABI } from '@/abis/thenft/RoyaltyABI'
 import { TheNFTABI } from '@/abis/thenft/TheNFTABI'
@@ -116,3 +117,8 @@ export const getIncentiveContract = chainId => ({
   abi: IncentiveMakerABI,
   address: Contracts.IncentiveMaker[chainId],
 })
+
+/**
+ *  UniversalRouter
+ */
+export const geUniversalRouterContract = chainId => getContract(UniversalRouterABI, Contracts.UniversalRouter, chainId)

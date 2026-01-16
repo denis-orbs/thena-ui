@@ -195,5 +195,8 @@ const Contracts = {
   emergencyRouter: {
     [CHAIN_ID.BSC]: '0xd7afb093fe61f43773539d475388876fab0ed356',
   },
+  UniversalRouter: {
+    [CHAIN_ID.BSC]: '0x146c3126932B6908DF8a4e8664f22082A97a0840',
+  },
 }
 export default Contracts

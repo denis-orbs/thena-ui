@@ -153,3 +153,24 @@ export const getAnalyticsData = async ({ networkId, first, page, epoch }) => {
     .then(r => r.json())
     .then(r => r.data)
 }
+
+export const getTradingRoute = async ({ tokenIn, tokenOut, amountIn, networkId, tradeType = 0 }) => {
+  try {
+    const params = new URLSearchParams({
+      chainId: networkId?.toString() || '56',
+      tokenIn,
+      tokenOut,
+      amountIn,
+      tradeType: tradeType.toString(),
+    })
+
+    const response = await fetch(`${backendApi}/v3/trading-route?${params.toString()}`, {
+      method: 'GET',
+    })
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('getTradingRoute error', error)
+    throw error
+  }
+}

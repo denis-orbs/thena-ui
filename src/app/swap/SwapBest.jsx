@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable simple-import-sort/imports */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
@@ -17,22 +17,23 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap, useSolidlySwap } from '@/hooks/useSwap'
+import { useOdosSwap, useTaxTokenSwap, useSolidlySwap, useOdosQuoteSwap } from '@/hooks/useSwap'
 import cn from '@/utils/classes'
 import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
+import { theFallback } from '@/hooks/theFallbackSwap/useTheFallbackSwap'
 import TxnSettings from '@/modules/SettingsModal'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
 import Spinner from '@/components/spinner'
-import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
 import InfoIcon from '@/icons/InfoIcon'
 
 import RefreshIcon from '~/svgs/refresh.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
 
 const SwapChart = dynamic(() => import('@/modules/SwapChart').then(mod => mod.default), {
   ssr: false,
@@ -44,7 +45,7 @@ const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap),
   loading: () => <Skeleton className='h-64' />,
 })
 
-const MAX_PRICE_IMPACT = 20
+const MAX_PRICE_IMPACT = 10
 const SWAP_TYPES_ITEMS = [
   { key: SWAP_TYPES.SWAP, label: 'Swap' },
   { key: SWAP_TYPES.TWAP, label: 'TWAP' },
@@ -122,10 +123,38 @@ export default function SwapBest({
   } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isEnabledTradeLH)
 
   const isFallbackLH = useMemo(() => {
-    if (!tradeLH) return false
+    if (!tradeLH || !liquidityHubEnabled) return false
     const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
     return new BigNumber(tradeLH.minAmountOut || 0).gt(dexMinAmountOut)
-  }, [tradeLH, slippage, bestTrade])
+  }, [tradeLH, liquidityHubEnabled, slippage, bestTrade?.outAmounts])
+
+  const isEnabledTheFallback = useMemo(() => {
+    if (isTwap || quotePendingLH || bestTradePending) return false
+    if (!fromAmount) return false
+
+    const odosNotGood = !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT
+
+    // Case 1: Odos not good && LiquidityHub enabled -> enable The Fallback if LH failed or not found
+    if (odosNotGood && liquidityHubEnabled) {
+      return !tradeLH || liquidityHubFailed
+    }
+
+    // Case 2: Odos not good && LiquidityHub disabled -> enable The Fallback
+    if (odosNotGood && !liquidityHubEnabled) {
+      return true
+    }
+
+    return false
+  }, [
+    isTwap,
+    quotePendingLH,
+    bestTradePending,
+    fromAmount,
+    bestTrade,
+    liquidityHubEnabled,
+    tradeLH,
+    liquidityHubFailed,
+  ])
 
   const { mutateAsync: onSwapLH, isLoading: swapLoadingLH } = liquidityHub.useSwap(
     fromAsset,
@@ -143,6 +172,38 @@ export default function SwapBest({
     liquidityHubFailed,
   )
 
+  const {
+    data: tradeTheFallback,
+    isLoading: quotePendingTheFallback,
+    refetch: refetchTheFallback,
+  } = theFallback.useTrade(fromAsset, toAsset, debouncedAmount, isEnabledTheFallback, slippage)
+
+  const { commands, inputs } = theFallback.useTheFallbackCommandsInput(
+    fromAsset,
+    toAsset,
+    debouncedAmount,
+    tradeTheFallback?.route,
+  )
+
+  const { onSwap: onSwapTheFallback, pending: swapPendingTheFallback } = theFallback.useSwap()
+
+  const isFallbackThe = useMemo(() => {
+    const theFallbackMinAmountOut = subtractSlippage(slippage, tradeTheFallback?.outAmount) || '0'
+
+    if (liquidityHubEnabled && tradeLH) {
+      const lhMinAmountOut = subtractSlippage(slippage, tradeLH?.outAmount) || '0'
+      return new BigNumber(theFallbackMinAmountOut).gt(lhMinAmountOut)
+    }
+
+    if (!liquidityHubEnabled && bestTrade) {
+      const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
+      return new BigNumber(theFallbackMinAmountOut).gt(dexMinAmountOut)
+    }
+
+    if (!tradeLH && !bestTrade) return true
+    return false
+  }, [slippage, tradeTheFallback?.outAmount, liquidityHubEnabled, tradeLH, bestTrade])
+
   const { data: solidlyQuoteData, isLoading: solidlyQuotePending } = useSolidlyQuote(
     fromAsset,
     toAsset,
@@ -157,21 +218,50 @@ export default function SwapBest({
         ? solidlyQuotePending
         : isFallbackLH
           ? quotePendingLH
-          : isEnabledTradeLH
-            ? quotePendingLH || bestTradePending
-            : bestTradePending,
-    [isFallbackLH, quotePendingLH, isEnabledTradeLH, bestTradePending, isSolidlySwap, solidlyQuotePending],
+          : isFallbackThe
+            ? quotePendingTheFallback
+            : isEnabledTheFallback
+              ? quotePendingTheFallback || bestTradePending
+              : isEnabledTradeLH
+                ? quotePendingLH || bestTradePending
+                : bestTradePending,
+    [
+      isFallbackLH,
+      isFallbackThe,
+      isEnabledTheFallback,
+      quotePendingLH,
+      quotePendingTheFallback,
+      isEnabledTradeLH,
+      bestTradePending,
+      isSolidlySwap,
+      solidlyQuotePending,
+    ],
   )
 
   const onRefreshQuotes = useCallback(() => {
     if (isFallbackLH) {
       refetchTradeLH()
+    } else if (isFallbackThe) {
+      refetchTheFallback()
     } else {
       mutate()
     }
-  }, [refetchTradeLH, mutate, isFallbackLH])
+  }, [refetchTradeLH, refetchTheFallback, mutate, isFallbackLH, isFallbackThe])
 
   // NOTE: For the above function, please check if the token pool is CL or Classic
+
+  const hasTheFallbackResult = useMemo(
+    () =>
+      tradeTheFallback?.outAmount &&
+      commands &&
+      inputs &&
+      commands.length > 0 &&
+      inputs.length > 0 &&
+      (typeof tradeTheFallback.outAmount === 'string'
+        ? tradeTheFallback.outAmount !== '0' && tradeTheFallback.outAmount !== ''
+        : Number(tradeTheFallback.outAmount) > 0),
+    [tradeTheFallback?.outAmount, commands, inputs],
+  )
 
   const outAmount = useMemo(() => {
     if (isSolidlySwap) {
@@ -179,48 +269,116 @@ export default function SwapBest({
       return outAmountThenaQuote
     }
 
-    return isFallbackLH ? tradeLH?.outAmount : bestTrade?.outAmounts[0] || ''
-  }, [isSolidlySwap, tradeLH?.outAmount, bestTrade?.outAmounts, solidlyQuoteData, isFallbackLH])
+    if (isFallbackLH) return tradeLH?.outAmount
+    if (isFallbackThe && hasTheFallbackResult) return tradeTheFallback.outAmount
+
+    if (isEnabledTheFallback && !hasTheFallbackResult) {
+      const odosNotGood = !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT
+
+      if (odosNotGood && liquidityHubEnabled && tradeLH?.outAmount) {
+        const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
+        const lhMinAmountOut = subtractSlippage(slippage, tradeLH?.outAmount) || '0'
+        // Return the one with better output
+        return new BigNumber(lhMinAmountOut).gt(dexMinAmountOut) ? tradeLH.outAmount : bestTrade?.outAmounts[0] || ''
+      }
+    }
+
+    if (isEnabledTheFallback && hasTheFallbackResult) {
+      return tradeTheFallback.outAmount
+    }
+
+    return bestTrade?.outAmounts[0] || ''
+  }, [
+    isSolidlySwap,
+    tradeLH?.outAmount,
+    tradeTheFallback?.outAmount,
+    solidlyQuoteData,
+    isFallbackLH,
+    isFallbackThe,
+    isEnabledTheFallback,
+    hasTheFallbackResult,
+    liquidityHubEnabled,
+    slippage,
+    bestTrade,
+  ])
 
   const toAmount = useMemo(() => {
-    if (outAmount && Number(outAmount) > 0 && toAsset) {
-      return fromWei(outAmount, toAsset.decimals).toString(10)
+    if (!outAmount || !toAsset) return ''
+    const amount = typeof outAmount === 'string' ? outAmount : outAmount.toString()
+    if (amount === '' || amount === '0' || Number(amount) <= 0) return ''
+
+    if (isSolidlySwap || isFallbackLH) {
+      try {
+        return fromWei(amount, toAsset.decimals).toString(10)
+      } catch (error) {
+        console.error('Error converting outAmount to toAmount:', error)
+        return ''
+      }
     }
-    return ''
-  }, [toAsset, outAmount])
+
+    if (isFallbackThe && tradeTheFallback?.outAmount) {
+      return fromWei(tradeTheFallback?.outAmount, toAsset.decimals).toString(10)
+    }
+
+    return fromWei(outAmount, toAsset.decimals).toString(10)
+  }, [outAmount, toAsset, isSolidlySwap, isFallbackLH, isFallbackThe, tradeTheFallback?.outAmount])
 
   const minimumReceived = useMemo(() => {
     if (!toAsset || !outAmount) return ''
+
     if (isFallbackLH && tradeLH?.minAmountOut) {
       return `${formatAmount(fromWei(tradeLH.minAmountOut, toAsset.decimals))} ${toAsset.symbol}`
     }
+
+    if (isFallbackThe && tradeTheFallback?.outAmount) {
+      const { minAmountOut } = tradeTheFallback
+      return `${formatAmount(fromWei(minAmountOut, toAsset.decimals))} ${toAsset.symbol}`
+    }
+
     if (slippage && Boolean(Number(slippage))) {
       return `${formatAmount(fromWei(outAmount * (1 - slippage / 100), toAsset.decimals))} ${toAsset.symbol}`
     }
     return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
-  }, [toAsset, outAmount, slippage, tradeLH?.minAmountOut, isFallbackLH])
+  }, [toAsset, outAmount, isFallbackLH, tradeLH?.minAmountOut, isFallbackThe, tradeTheFallback, slippage])
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
+
     let fromInUsd = 0
     let toInUsd = 0
     if (fromAsset && toAsset && fromAmount && toAmount) {
       fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
       toInUsd = new BigNumber(toAmount).times(toAsset.price)
     }
-    if (!isFallbackLH && bestTrade) {
+
+    if (!isFallbackLH && !isFallbackThe && !isEnabledTheFallback && bestTrade) {
       const inDiff = Math.abs((fromInUsd - bestTrade.inValues) / bestTrade.inValues) * 100
       const outDiff = Math.abs((toInUsd - bestTrade.outValues) / bestTrade.outValues) * 100
       if (inDiff < 5 && outDiff < 5) {
         return Math.abs(bestTrade.percentDiff)
       }
     }
+
+    if ((isFallbackThe || isEnabledTheFallback) && tradeTheFallback?.priceImpact) {
+      return tradeTheFallback.priceImpact
+    }
+
     if (fromAsset && toAsset && fromAmount && toAmount) {
       return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
     }
     return 0
-  }, [bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending, isFallbackLH])
-
+  }, [
+    quotePending,
+    fromAsset,
+    toAsset,
+    fromAmount,
+    toAmount,
+    isFallbackLH,
+    isFallbackThe,
+    isEnabledTheFallback,
+    tradeTheFallback?.priceImpact,
+    bestTrade,
+  ])
   const percents = useMemo(
     () => [
       {
@@ -278,36 +436,122 @@ export default function SwapBest({
         },
       })
 
-    if (isFallbackLH && tradeLH?.quote) {
-      swapWithLH(tradeLH.quote)
+    const swapWithTheFallback = async () => {
+      if (!commands || !inputs || commands.length === 0 || inputs.length === 0) {
+        return
+      }
+
+      try {
+        await onSwapTheFallback(
+          {
+            fromAsset,
+            toAsset,
+            fromAmount,
+            commands,
+            inputs,
+            deadline,
+          },
+          () => onSuccess(tradeTheFallback?.quote, false),
+        )
+      } catch (error) {
+        console.error('The Fallback swap error:', error)
+      }
+    }
+
+    // Case 1: Odos is good -> use Odos
+    if (bestTrade && Math.abs(bestTrade.priceImpact) <= MAX_PRICE_IMPACT) {
+      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(bestTrade, false))
       return
     }
 
-    const result = await compareWithLHCallback()
-    if (isFallbackLH && result?.isLH) {
-      await swapWithLH(result?.quote)
-    } else {
-      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
+    const odosNotGood = !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT
+    // Case 2: Odos not good && LiquidityHub enabled
+    if (odosNotGood && liquidityHubEnabled) {
+      const result = await compareWithLHCallback()
+
+      // Try LiquidityHub first
+      if (isFallbackLH && tradeLH?.quote) {
+        await swapWithLH(tradeLH.quote)
+        return
+      }
+
+      if (result?.isLH && result?.quote) {
+        await swapWithLH(result.quote)
+        return
+      }
+
+      const hasTheFallback =
+        hasTheFallbackResult && commands && inputs && commands.length > 0 && inputs.length > 0 && isFallbackThe
+      if (hasTheFallback) {
+        await swapWithTheFallback()
+        return
+      }
+
+      // If The Fallback has no result, compare Odos vs LiquidityHub and choose the better one
+      if (!hasTheFallback) {
+        const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
+        const lhMinAmountOut = subtractSlippage(slippage, tradeLH?.outAmount) || '0'
+
+        if (bestTrade && tradeLH && new BigNumber(lhMinAmountOut).gt(dexMinAmountOut)) {
+          // LiquidityHub is better
+          if (tradeLH?.quote) {
+            await swapWithLH(tradeLH.quote)
+            return
+          }
+        } else if (bestTrade) {
+          // Odos is better or equal
+          await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
+          return
+        } else if (tradeLH?.quote) {
+          // Only LiquidityHub available
+          await swapWithLH(tradeLH.quote)
+          return
+        }
+      } else if (bestTrade) {
+        // The Fallback exists but not better, use Odos
+        await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
+        return
+      }
+    }
+
+    if (odosNotGood && !liquidityHubEnabled) {
+      const hasTheFallback =
+        hasTheFallbackResult && commands && inputs && commands.length > 0 && inputs.length > 0 && isFallbackThe
+      if (hasTheFallback) {
+        await swapWithTheFallback()
+        return
+      }
+    }
+
+    if (bestTrade) {
+      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(bestTrade, false))
     }
   }, [
+    isFallbackThe,
     fromAsset,
     toAsset,
+    isSolidlySwap,
     bestTrade,
+    liquidityHubEnabled,
     handleTaxTokenSwap,
     fromAmount,
     slippage,
     deadline,
     mutateAssets,
-    onOdosSwap,
-    isSolidlySwap,
-    outAmount,
     handleSolidlySwap,
+    outAmount,
+    onTradeSuccess,
+    onSwapLH,
+    commands,
+    inputs,
+    onSwapTheFallback,
+    tradeTheFallback,
+    onOdosSwap,
     toAmount,
     compareWithLHCallback,
-    onSwapLH,
     isFallbackLH,
     tradeLH,
-    onTradeSuccess,
+    hasTheFallbackResult,
   ])
 
   const btnMsg = useMemo(() => {
@@ -359,10 +603,32 @@ export default function SwapBest({
       }
     }
 
-    if (!toAmount) {
+    // Check if all fallbacks have been tried and none found a path
+    const odosNotGood = !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT
+    const hasLHResult = tradeLH && tradeLH.outAmount && Number(tradeLH.outAmount) > 0
+
+    const allFallbacksFailed =
+      !quotePending &&
+      !quotePendingLH &&
+      !quotePendingTheFallback &&
+      !bestTradePending &&
+      odosNotGood &&
+      (!liquidityHubEnabled || !hasLHResult) &&
+      (!isEnabledTheFallback || !hasTheFallbackResult) &&
+      !toAmount
+
+    if (allFallbacksFailed) {
       return {
         isError: true,
         label: t('Insufficient liquidity for this trade'),
+      }
+    }
+
+    // Show loading if any quote is pending
+    if (quotePendingTheFallback || quotePendingLH || bestTradePending) {
+      return {
+        isError: false,
+        label: t('Fetching Quotes'),
       }
     }
 
@@ -370,7 +636,25 @@ export default function SwapBest({
       isError: false,
       label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t, comparingTrade])
+  }, [
+    comparingTrade,
+    fromAsset,
+    toAsset,
+    fromAmount,
+    quotePending,
+    quotePendingLH,
+    quotePendingTheFallback,
+    bestTradePending,
+    isWrap,
+    isUnwrap,
+    isEnabledTheFallback,
+    toAmount,
+    t,
+    bestTrade,
+    tradeLH,
+    liquidityHubEnabled,
+    hasTheFallbackResult,
+  ])
 
   const title = useMemo(() => {
     switch (swapType) {
@@ -398,6 +682,10 @@ export default function SwapBest({
       })),
     [swapType, setSwapType],
   )
+
+  useEffect(() => {
+    onRefreshQuotes()
+  }, [liquidityHubEnabled, onRefreshQuotes])
 
   return (
     <>
@@ -502,10 +790,9 @@ export default function SwapBest({
                     taxTokenSwapPending ||
                     solidlySwapPending ||
                     swapLoadingLH ||
+                    swapPendingTheFallback ||
                     comparingTrade ||
                     wrapPending ||
-                    // solidlySwapPending ||
-                    // isLoadingThenaQuote ||
                     btnMsg.isError
                   }
                   onClick={() => {
