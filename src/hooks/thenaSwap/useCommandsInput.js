@@ -3,8 +3,7 @@ import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import { encodeAbiParameters, encodePacked, parseAbiParameters, zeroAddress } from 'viem'
 
-import SWAP_COMMANDS from '@/constant/swap/commands'
-import { PROTOCOL, TRADE_TYPE } from '@/constant/swap/constants'
+import { PROTOCOL, SWAP_COMMANDS, TRADE_TYPE } from '@/constant/thenaSwap'
 import { useSettings } from '@/state/settings/hooks'
 import { toWeiRound } from '@/utils/utils'
 

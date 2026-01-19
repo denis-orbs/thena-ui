@@ -1,4 +1,4 @@
-const SWAP_COMMANDS = {
+export const SWAP_COMMANDS = {
   /*
     Algebra Integral methods:
     IntegralExactInput
@@ -48,4 +48,13 @@ export const SWAP_KIND = {
   SLD_EXACT_TOKENS_TOKENS_FEE: 'SLD_EXACT_TOKENS_TOKENS_FEE',
 }
 
-export default SWAP_COMMANDS
+export const PROTOCOL = {
+  SOLIDLY: 'V1',
+  FUSION: 'V2',
+  INTEGRAL: 'V3',
+}
+
+export const TRADE_TYPE = {
+  EXACT_INPUT: 'EXACT_INPUT',
+  EXACT_OUTPUT: 'EXACT_OUTPUT',
+}
