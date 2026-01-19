@@ -308,7 +308,9 @@ export const useAlgebraClaim = (version = 3) => {
       const transactions = {}
       if (isFarming) {
         const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
-        isNotApproved = farmingApprovals !== farmingCenter.address
+        const currentApproval = farmingApprovals?.toLowerCase()
+        const newFarmingCenterAddress = farmingCenter.address.toLowerCase()
+        isNotApproved = !currentApproval || currentApproval !== newFarmingCenterAddress
 
         if (isNotApproved) {
           transactions[approveFarmingId] = {
@@ -409,7 +411,7 @@ export const useAlgebraEnterFarming = () => {
       const positionManger = getNPMContract(chainId, 3)
 
       const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
-      const isNotAppproved = farmingApprovals !== farmingCenter.address
+      const isNotAppproved = farmingApprovals?.toLowerCase() !== farmingCenter.address?.toLowerCase()
 
       const transactions = {}
       if (isNotAppproved) {
