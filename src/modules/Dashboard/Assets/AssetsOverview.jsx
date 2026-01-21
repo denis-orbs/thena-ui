@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import Skeleton from '@/components/skeleton'
 import { NewParagraph, NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ICHI_SINGLE_SIDED, PAIR_TYPES, ZERO_ADDRESS } from '@/constant'
 import { useSimulateFarmReward } from '@/hooks/fusion/useAlgebra'
@@ -23,6 +24,7 @@ function AssetsOverview({
   isHoverFromChart,
   setIsHoverFromChart,
   setPositionRewards,
+  isLoading,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -221,25 +223,33 @@ function AssetsOverview({
     <div className='flex flex-col gap-6 md:px-4'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2'>
         <div className='flex flex-col gap-4'>
-          {filteredPositions.length > 0 && (
+          {(filteredPositions.length > 0 || isLoading) && (
             <>
               <NewTextHeading className='text-xl md:text-[40px] md:leading-[48px]'>
                 {t('Total Value Provided')}
               </NewTextHeading>
-              <NewParagraph className='max-md:text-primary-300 flex gap-4 text-3xl max-md:text-center md:text-4xl'>
-                <span>${formatAmount(totalProvided)}</span>
-                <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
-              </NewParagraph>
+              {isLoading ? (
+                <Skeleton className='h-8 w-[150px] md:h-10 md:w-[200px]' />
+              ) : filteredPositions.length > 0 ? (
+                <NewParagraph className='max-md:text-primary-300 flex gap-4 text-3xl max-md:text-center md:text-4xl'>
+                  <span>${formatAmount(totalProvided)}</span>
+                  <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
+                </NewParagraph>
+              ) : null}
             </>
           )}
           <NewTextHeading className='font-semibold max-md:hidden md:text-3xl'>
             {t('Generated Fees and Rewards')}
           </NewTextHeading>
-          <NewTextHeading className='text-primary-600 font-semibold max-md:hidden'>
-            ${formatAmount(totalRewards)}
-          </NewTextHeading>
+          {isLoading ? (
+            <Skeleton className='h-8 w-[150px] md:h-10 md:w-[200px]' />
+          ) : (
+            <NewTextHeading className='text-primary-600 font-semibold max-md:hidden'>
+              ${formatAmount(totalRewards)}
+            </NewTextHeading>
+          )}
           <PrimaryButton
-            disabled={isInvalidAmount(totalRewards)}
+            disabled={isInvalidAmount(totalRewards) || isLoading}
             className='w-fit max-md:hidden'
             onClick={() => onClaimAllRewardPosition()}
           >
@@ -247,8 +257,8 @@ function AssetsOverview({
           </PrimaryButton>
         </div>
 
-        {filteredPositions.length > 0 && (
-          <div className='flex h-full items-center justify-center'>
+        <div className='flex h-full items-center justify-center'>
+          {filteredPositions.length > 0 && !isLoading ? (
             <LiquidityAPRChart
               data={filteredPositions}
               currentHoverTableRow={currentHoverTableRow}
@@ -256,11 +266,13 @@ function AssetsOverview({
               isHoverFromChart={isHoverFromChart}
               setIsHoverFromChart={setIsHoverFromChart}
             />
-          </div>
-        )}
+          ) : (
+            <Skeleton className='h-[163px] w-[163px] rounded-full md:h-[276px] md:w-[276px]' />
+          )}
+        </div>
       </div>
 
-      {migratePositions.length > 0 && (
+      {migratePositions.length > 0 && !isLoading && (
         <div className={cn('border-warn-900 bg-warn-950 flex items-center gap-4 rounded-lg border px-5 py-4')}>
           <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
             <WarningIcon className='stroke-warn-600 size-full' />

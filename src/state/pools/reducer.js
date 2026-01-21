@@ -3,7 +3,7 @@ import { createReducer } from '@reduxjs/toolkit'
 
 import { CHAIN_ID } from '@/constant/contracts'
 
-import { updatePools, updatePoolsMigration } from './actions'
+import { updatePools, updatePoolsLoading, updatePoolsMigration } from './actions'
 
 export const initialState = {
   data: {
@@ -15,6 +15,7 @@ export const initialState = {
     ichi: [],
     gamma: [],
   },
+  isLoading: false,
 }
 
 export default createReducer(initialState, builder =>
@@ -32,5 +33,9 @@ export default createReducer(initialState, builder =>
     .addCase(updatePoolsMigration, (state, { payload }) => ({
       ...state,
       autoPoolsMigration: payload,
+    }))
+    .addCase(updatePoolsLoading, (state, { payload }) => ({
+      ...state,
+      isLoading: payload,
     })),
 )

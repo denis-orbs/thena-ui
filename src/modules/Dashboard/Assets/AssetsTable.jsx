@@ -1,8 +1,11 @@
+'use client'
+
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import NewSearchInput from '@/components/input/NewSearchInput'
+import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import useWallet from '@/hooks/useWallet'
@@ -16,6 +19,86 @@ import ManualItem from './ManualItem'
 import NotStakedItem from './NotStakedItem'
 import Pagination from './Pagination'
 import StakedItem from './StakedItem'
+
+function TableRowSkeleton({ isXlDown, repeat = 1 }) {
+  if (!isXlDown) {
+    return Array.from({ length: repeat }).map((_, index) => (
+      <tr key={`table-row-skeleton-${index}`} className='position-item my-1 h-[76px] rounded-md [&>td]:px-2'>
+        <td className='rounded-l-md pl-4!' aria-label='Pair'>
+          <div className='flex w-full items-center gap-2' aria-hidden='true'>
+            <Skeleton className='h-7 w-7 rounded-full' />
+            <div className='flex flex-col gap-2'>
+              <Skeleton className='h-5 w-24' />
+              <Skeleton className='h-4 w-16' />
+            </div>
+          </div>
+        </td>
+        <td aria-label='Range'>
+          <div className='w-full text-center' aria-hidden='true'>
+            <Skeleton className='mx-auto h-5 w-32' />
+          </div>
+        </td>
+        <td aria-label='My APR'>
+          <div className='flex flex-col gap-1' aria-hidden='true'>
+            <Skeleton className='h-5 w-16' />
+            <Skeleton className='h-4 w-12' />
+          </div>
+        </td>
+        <td aria-label='My Value'>
+          <div className='flex flex-col gap-1' aria-hidden='true'>
+            <Skeleton className='h-5 w-20' />
+            <Skeleton className='h-4 w-12' />
+          </div>
+        </td>
+        <td aria-label='Rewards'>
+          <div className='flex flex-col gap-1' aria-hidden='true'>
+            <Skeleton className='h-5 w-16' />
+            <Skeleton className='h-4 w-12' />
+          </div>
+        </td>
+        <td className='rounded-r-md pr-4!' aria-label='Actions'>
+          <div className='grid w-full grid-cols-2 gap-2' aria-hidden='true'>
+            <Skeleton className='h-8 w-full' />
+            <Skeleton className='h-8 w-full' />
+          </div>
+        </td>
+      </tr>
+    ))
+  }
+
+  return Array.from({ length: repeat }).map((_, index) => (
+    <div key={`table-row-skeleton-${index}`} className='position-item flex flex-col gap-4 py-4'>
+      <div className='flex w-full items-center gap-2'>
+        <Skeleton className='h-7 w-7 rounded-full' />
+        <div className='flex flex-col gap-2'>
+          <Skeleton className='h-5 w-24' />
+          <Skeleton className='h-4 w-16' />
+        </div>
+      </div>
+      <div className='w-full text-center'>
+        <Skeleton className='mx-auto h-5 w-32' />
+      </div>
+      <div className='flex w-full gap-2'>
+        <div className='flex flex-col gap-1'>
+          <Skeleton className='h-5 w-16' />
+          <Skeleton className='h-4 w-12' />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <Skeleton className='h-5 w-20' />
+          <Skeleton className='h-4 w-12' />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <Skeleton className='h-5 w-16' />
+          <Skeleton className='h-4 w-12' />
+        </div>
+      </div>
+      <div className='grid w-full grid-cols-2 gap-2'>
+        <Skeleton className='h-8 w-full' />
+        <Skeleton className='h-8 w-full' />
+      </div>
+    </div>
+  ))
+}
 
 const ITEMS_PER_PAGE = 10
 
@@ -111,7 +194,7 @@ function TableHeader({ sort, setSort, searchText, setSearchText }) {
   )
 }
 
-function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFromChart }) {
+function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFromChart, isLoading, positionsPerPage }) {
   const renderPosition = useCallback(
     position => {
       if (position.type === 'Manual') {
@@ -150,30 +233,34 @@ function TableBody({ positions, setCurrentHoverTableRow, isXlDown, setIsHoverFro
           {renderPosition(position)}
         </tr>
       ))}
+      {isLoading && positions.length < positionsPerPage && <TableRowSkeleton isXlDown={isXlDown} repeat={3} />}
       <tr className='h-6' />
     </tbody>
   ) : (
-    positions.map((position, index) => (
-      <div
-        key={`table-row-${index}`}
-        id={`table-row-${index}`}
-        className='position-item hover:bg-neutral-800'
-        data-position-id={position.positionId}
-        onMouseEnter={() => {
-          setIsHoverFromChart(false)
-          setCurrentHoverTableRow(position.positionId)
-        }}
-        onMouseLeave={() => {
-          setCurrentHoverTableRow(null)
-        }}
-      >
-        {renderPosition(position)}
-      </div>
-    ))
+    <>
+      {positions.map((position, index) => (
+        <div
+          key={`table-row-${index}`}
+          id={`table-row-${index}`}
+          className='position-item hover:bg-neutral-800'
+          data-position-id={position.positionId}
+          onMouseEnter={() => {
+            setIsHoverFromChart(false)
+            setCurrentHoverTableRow(position.positionId)
+          }}
+          onMouseLeave={() => {
+            setCurrentHoverTableRow(null)
+          }}
+        >
+          {renderPosition(position)}
+        </div>
+      ))}
+      {isLoading && positions.length < positionsPerPage && <TableRowSkeleton isXlDown={isXlDown} repeat={3} />}
+    </>
   )
 }
 
-function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromChart }) {
+function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromChart, isLoading }) {
   const { account, chainId } = useWallet()
   const accountRef = useRef(account)
   const chainIdRef = useRef(chainId)
@@ -260,10 +347,12 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
             setSearchText={setSearchText}
           />
           <TableBody
+            isLoading={isLoading}
             setCurrentHoverTableRow={setCurrentHoverTableRow}
             positions={paginatedPositions}
             isXlDown={isXlDown}
             setIsHoverFromChart={setIsHoverFromChart}
+            positionsPerPage={itemsPerPage}
           />
         </table>
       )}
@@ -274,6 +363,7 @@ function AssetsTable({ positions = [], setCurrentHoverTableRow, setIsHoverFromCh
           positions={paginatedPositions}
           isXlDown={isXlDown}
           setIsHoverFromChart={setIsHoverFromChart}
+          isLoading={isLoading}
         />
       )}
 

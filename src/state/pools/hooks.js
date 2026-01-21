@@ -185,3 +185,8 @@ export const usePairInfo = ({
     JSON.stringify(v2Pairs),
   ])
 }
+
+export const useIsLoadingPools = () => {
+  const { isLoading } = useSelector(state => state.pools)
+  return isLoading
+}

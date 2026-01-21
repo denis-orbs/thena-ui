@@ -1,12 +1,15 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { usePositions } from '@/hooks/usePositions'
+import { usePositions, usePositionsLoading } from '@/hooks/usePositions'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
@@ -25,6 +28,7 @@ function UserAssets({ setPositionRewards }) {
   const t = useTranslations()
   const { push } = useRouter()
   const { positions, removedClaimablePositions } = usePositions()
+  const isLoading = usePositionsLoading()
   const assets = useAssets()
 
   const [showTable, setShowTable] = useState(true)
@@ -39,6 +43,10 @@ function UserAssets({ setPositionRewards }) {
       }, 0),
     [assets],
   )
+
+  if (isLoading && positions.length === 0 && removedClaimablePositions.length === 0) {
+    return <Skeleton className='h-[278px] w-full rounded-xl' />
+  }
 
   return (
     <>
@@ -65,6 +73,7 @@ function UserAssets({ setPositionRewards }) {
                 positions={positions}
                 removedClaimablePositions={removedClaimablePositions}
                 setPositionRewards={setPositionRewards}
+                isLoading={isLoading}
               />
               {positions.length > 0 && (
                 <>
@@ -91,6 +100,7 @@ function UserAssets({ setPositionRewards }) {
                       setIsHoverFromChart={setIsHoverFromChart}
                       positions={positions}
                       setCurrentHoverTableRow={setCurrentHoverTableRow}
+                      isLoading={isLoading}
                     />
                   </motion.div>
                 </>

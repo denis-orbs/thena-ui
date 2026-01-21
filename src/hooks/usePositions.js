@@ -5,11 +5,11 @@ import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
 import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
 import { MultiFeeDistributionABI } from '@/abis/ve/MultiFeeDistributionABI'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
-import { useManuals } from '@/context/manualsContext'
-import { useVaults } from '@/context/vaultsContext'
+import { useAssets, useIsLoadingAssets } from '@/context/assetsContext'
+import { useIsLoadingManuals, useManuals } from '@/context/manualsContext'
+import { useIsLoadingVaults, useVaults } from '@/context/vaultsContext'
 import { batchCallMulti } from '@/lib/contractActions'
-import { usePools } from '@/state/pools/hooks'
+import { useIsLoadingPools, usePools } from '@/state/pools/hooks'
 import { fromWei, isInvalidAmount, ZERO_VALUE } from '@/utils/utils'
 
 import { useFarmPositions } from './position/useFarmPosition'
@@ -121,6 +121,14 @@ const useRemovedClaimablePositions = () => {
   return [...removedClaimableIchiPositions, ...removedClaimableGammaPositions]
 }
 
+export const usePositionsLoading = () => {
+  const isLoadingManuals = useIsLoadingManuals()
+  const isLoadingPools = useIsLoadingPools()
+  const isLoadingVaults = useIsLoadingVaults()
+  const isLoadingAssets = useIsLoadingAssets()
+  return isLoadingManuals || isLoadingPools || isLoadingVaults || isLoadingAssets
+}
+
 export const usePositions = () => {
   const userManuals = useManuals()
   const pools = usePools()
@@ -132,19 +140,27 @@ export const usePositions = () => {
     return updateWalletBalance(pos)
   }, [userManuals, userPools])
 
-  const manualPositions = useManualPositions(
-    positions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
+  const manualPositionsInput = useMemo(
+    () => positions.filter(pos => pos.type === 'Manual' && pos?.deployer !== zeroAddress),
+    [positions],
   )
-  const farmingPositions = useFarmPositions(
-    positions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
+  const farmingPositionsInput = useMemo(
+    () => positions.filter(pos => pos.type === 'Manual' && pos?.deployer === zeroAddress),
+    [positions],
+  )
+  const stakedPositionInput = useMemo(
+    () => positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.gaugeBalance?.gt(0)),
+    [positions],
+  )
+  const notStakedPositionInput = useMemo(
+    () => positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.walletBalance?.gt(0)),
+    [positions],
   )
 
-  const stakedPosition = useStakedPosition(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.gaugeBalance?.gt(0)),
-  )
-  const notStakedPosition = useNotStakedPositions(
-    positions.filter(pos => pos.type !== 'Manual' && !pos.tokens && pos.account?.walletBalance?.gt(0)),
-  )
+  const manualPositions = useManualPositions(manualPositionsInput)
+  const farmingPositions = useFarmPositions(farmingPositionsInput)
+  const stakedPosition = useStakedPosition(stakedPositionInput)
+  const notStakedPosition = useNotStakedPositions(notStakedPositionInput)
 
   const allPositions = useMemo(
     () =>
@@ -156,7 +172,7 @@ export const usePositions = () => {
   )
 
   const removedClaimablePositions = useRemovedClaimablePositions()
-
+  console.log({ allPositions })
   return {
     positions: allPositions,
     removedClaimablePositions,

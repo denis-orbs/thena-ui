@@ -46,51 +46,48 @@ export const fetchManualInfo = async (account, tokenId, chainId, version) => {
 }
 
 const fetchMPositionInfo = async (positions, account, chainId) => {
-  const manualBalances = []
+  if (!positions?.length) return []
 
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i]
+  const promises = positions.map(pos => {
     const version = pos.version ?? 3
+    return fetchManualInfo(account, pos.tokenId, chainId, version)
+  })
 
-    try {
-      const balance = await fetchManualInfo(account, pos.tokenId, chainId, version)
-      manualBalances.push(balance)
-    } catch (error) {
-      manualBalances.push(null)
-    }
-  }
+  const results = await Promise.allSettled(promises)
 
-  return manualBalances
+  return results.map(result => (result.status === 'fulfilled' ? result.value : null))
 }
 
 export const useManualPositions = positions => {
   const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
 
-  // Fees list for manual positions
-  const feesListKey = useMemo(
-    () => (positions.length > 0 && account && chainId ? ['manuals/fee', positions, account, chainId] : null),
+  const positionDataKey = useMemo(
+    () => (positions.length > 0 && account && chainId ? ['manual/initial', positions, account, chainId] : null),
     [account, positions, chainId],
   )
 
-  const { data: feesList } = useCachedSWR(feesListKey, () => fetchMPositionInfo(positions, account, chainId), {
-    refreshInterval: REFRESH_INTERVAL,
-  })
-
-  // Pool address list
-  const addressListKey = useMemo(
-    () => (positions.length && account && chainId ? ['getFeePoolAddress', chainId, account, positions] : null),
-    [positions, chainId, account],
-  )
-
-  const { data: addressList } = useCachedSWR(
-    addressListKey,
-    () => getListComputePoolAddress(positions, chainId, getAsset),
+  const { data: positionInfo, isLoading: isLoadingPositionInfo } = useCachedSWR(
+    positionDataKey,
+    async () => {
+      const [feesList, addressList] = await Promise.all([
+        fetchMPositionInfo(positions, account, chainId),
+        getListComputePoolAddress(positions, chainId, getAsset),
+      ])
+      return { feesList: feesList || [], addressList: addressList || [] }
+    },
     { refreshInterval: REFRESH_INTERVAL },
   )
 
+  const feesList = useMemo(() => positionInfo?.feesList || [], [positionInfo?.feesList])
+  const addressList = useMemo(() => positionInfo?.addressList || [], [positionInfo?.addressList])
+
   // Fusion states
-  const fusionStates = useGetMultipleFusionState(positions, addressList)
+  const fusionStates = useGetMultipleFusionState(
+    positions,
+    addressList,
+    !isLoadingPositionInfo && addressList?.length > 0,
+  )
   const prevFusionStates = usePrevious(fusionStates)
 
   const _fusionStates = useMemo(() => {
@@ -117,6 +114,7 @@ export const useManualPositions = positions => {
         chainId,
       }),
     { refreshInterval: 60000 },
+    { enabled: addressList?.length > 0 },
   )
 
   // Annual pool fees
@@ -143,7 +141,7 @@ export const useManualPositions = positions => {
   })
 
   const result = useMemo(() => {
-    if (!_fusionStates || _fusionStates.length <= 0) return []
+    if (!positions || positions.length === 0) return []
 
     return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos
@@ -226,7 +224,7 @@ export const useManualPositions = positions => {
         tickSpacing,
       }
     })
-  }, [annualPoolFeesPools, farmInfoList, feesList, _fusionStates, getAsset, positions])
+  }, [_fusionStates, positions, feesList, getAsset, farmInfoList, annualPoolFeesPools])
 
   return result
 }

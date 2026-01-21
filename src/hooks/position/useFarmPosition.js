@@ -69,42 +69,48 @@ export const useFarmPositions = positions => {
   )
 
   // Farm address list
-  const { data: farmAddresses } = useCachedSWR(
+  const { data: farmAddresses, isLoading: isLoadingFarmAddresses } = useCachedSWR(
     farmAddressesKey,
     () => getListComputePoolAddress(positions, chainId, getAsset),
     { refreshInterval: REFRESH_INTERVAL },
   )
 
-  // Farming list
-  const fusionFarmingKey = useMemo(
+  const farmAddressesDataKey = useMemo(
     () =>
-      farmAddresses?.length > 0 && account && chainId
-        ? ['getIntegralFarmingData', chainId, account, farmAddresses]
-        : null,
+      farmAddresses?.length > 0 && account && chainId ? ['farm/addresses-data', chainId, account, farmAddresses] : null,
     [farmAddresses, chainId, account],
   )
 
-  const { data: fusionFarmings } = useCachedSWR(
-    fusionFarmingKey,
-    () => getIntegralFarmingData({ poolIds: farmAddresses, chainId }),
+  const { data: farmAddressesData } = useCachedSWR(
+    farmAddressesDataKey,
+    async () => {
+      const [fusionFarmings, annualPoolFeesPools, poolKeys] = await Promise.all([
+        getIntegralFarmingData({ poolIds: farmAddresses, chainId }),
+        getIntegralFeesData({ chainId, poolIds: farmAddresses, date: dayjs().subtract(7, 'day').unix() }),
+        getPoolKey(farmAddresses, chainId),
+      ])
+      return {
+        fusionFarmings: fusionFarmings || [],
+        annualPoolFeesPools: annualPoolFeesPools || [],
+        poolKeys: poolKeys || [],
+      }
+    },
     { refreshInterval: REFRESH_INTERVAL },
   )
 
-  // Annual pool fees
-  const annualPoolKey = useMemo(
-    () =>
-      farmAddresses?.length > 0 && account && chainId ? ['getIntegralFeesData', chainId, account, farmAddresses] : null,
-    [farmAddresses, chainId, account],
+  const fusionFarmings = useMemo(() => farmAddressesData?.fusionFarmings || [], [farmAddressesData?.fusionFarmings])
+  const annualPoolFeesPools = useMemo(
+    () => farmAddressesData?.annualPoolFeesPools || [],
+    [farmAddressesData?.annualPoolFeesPools],
   )
-
-  const { data: annualPoolFeesPools } = useCachedSWR(
-    annualPoolKey,
-    () => getIntegralFeesData({ chainId, poolIds: farmAddresses, date: dayjs().subtract(7, 'day').unix() }),
-    { refreshInterval: REFRESH_INTERVAL },
-  )
+  const poolKeys = useMemo(() => farmAddressesData?.poolKeys || [], [farmAddressesData?.poolKeys])
 
   // Fusion states
-  const fusionStates = useGetMultipleFusionState(positions, farmAddresses)
+  const fusionStates = useGetMultipleFusionState(
+    positions,
+    farmAddresses,
+    !isLoadingFarmAddresses && farmAddresses?.length > 0,
+  )
   const prevFusionStates = usePrevious(fusionStates)
 
   const _fusionStates = useMemo(() => {
@@ -113,16 +119,6 @@ export const useFarmPositions = positions => {
     }
     return fusionStates
   }, [fusionStates, prevFusionStates])
-
-  // Pool keys
-  const poolKeysKey = useMemo(
-    () => (farmAddresses?.length > 0 && account && chainId ? ['getPoolToKey', chainId, account, farmAddresses] : null),
-    [farmAddresses, chainId, account],
-  )
-
-  const { data: poolKeys = [] } = useCachedSWR(poolKeysKey, () => getPoolKey(farmAddresses, chainId), {
-    refreshInterval: REFRESH_INTERVAL,
-  })
 
   // Farm rewards
   const farmRewardsKey = useMemo(
@@ -153,7 +149,7 @@ export const useFarmPositions = positions => {
   const WBNB = useMemo(() => getAsset(Contracts.WBNB[chainId]), [chainId, getAsset])
 
   const result = useMemo(() => {
-    if (!_fusionStates || !_fusionStates.length) return []
+    if (!positions || positions.length === 0) return []
 
     return positions.map((farmPos, index) => {
       const { asset0, asset1, liquidity, tickLower, tickUpper } = farmPos

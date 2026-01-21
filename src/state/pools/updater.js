@@ -33,7 +33,7 @@ import { fetchFusionPools } from '@/lib/api'
 import { callMulti, simulateCall } from '@/lib/contractActions'
 import { fromWei } from '@/utils/utils'
 
-import { updatePools, updatePoolsMigration } from './actions'
+import { updatePools, updatePoolsLoading, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 const pairABI = {
@@ -46,6 +46,8 @@ const mfdABI = {
   hypervisor: HypervisorMFDABI,
   ichi: IchiMFDABI,
 }
+
+const POOL_TYPES = [...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES, 'DefiEdge']
 
 const simulateICHIEarnedRewards = async (receiver, chainId) => {
   try {
@@ -351,7 +353,7 @@ function Updater() {
   const prices = usePrices()
   const { networkId } = useChainSettings()
 
-  const { data: [v3Pools = [], v2Pools = []] = [] } = useSWR(
+  const { data: [v3Pools = [], v2Pools = []] = [], isLoading: isLoadingPools } = useSWR(
     ['fusions api', networkId],
     () =>
       Promise.all([
@@ -369,7 +371,7 @@ function Updater() {
     },
   )
 
-  const { data: userInfos } = useSWRImmutable(
+  const { data: userInfos, isLoading: isLoadingUserInfos } = useSWRImmutable(
     account && (v2Pools.length > 0 || v3Pools.length > 0)
       ? ['pools user api', account, v2Pools.length, v3Pools.length, networkId]
       : null,
@@ -382,10 +384,16 @@ function Updater() {
     },
   )
 
-  const { data: poolsWithAllowed } = useSWR(
+  const { data: poolsWithAllowed, isLoading: isLoadingPoolsWithAllowed } = useSWR(
     v2Pools.length > 0 || v3Pools.length > 0 ? ['vaults/allowed', networkId, v2Pools.length, v3Pools.length] : null,
     () => fetchIchiAllowed([...v2Pools, ...v3Pools], networkId),
   )
+
+  const isLoading = isLoadingPools || isLoadingUserInfos || isLoadingPoolsWithAllowed
+
+  useEffect(() => {
+    dispatch(updatePoolsLoading(isLoading))
+  }, [dispatch, isLoading])
 
   const fetchInfo = useCallback(async () => {
     if (!poolsWithAllowed || poolsWithAllowed.length === 0) return
@@ -402,7 +410,7 @@ function Updater() {
         .map(pool => {
           const { lpPrice, gauge } = pool
           let kind
-          if ([...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES, 'DefiEdge'].includes(pool.type)) {
+          if (POOL_TYPES.includes(pool.type)) {
             kind = PAIR_TYPES.LSD
           } else {
             kind = pool.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
