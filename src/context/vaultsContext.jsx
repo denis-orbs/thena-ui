@@ -15,16 +15,22 @@ export function VaultsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { account } = useWallet()
   const assets = useAssets()
-  const { data: vaultsData, error } = useSWR(['vaults/total', networkId], () => fetchVaultsData(networkId), {
+  const {
+    data: vaultsData,
+    error,
+    isLoading: isLoadingVaultsData,
+  } = useSWR(['vaults/total', networkId], () => fetchVaultsData(networkId), {
     refreshInterval: 60000,
   })
-  const { data: userInfo, error: userError } = useSWR(
-    account ? ['vaults/user', account, networkId] : null,
-    () => fetchUserVaultsData(account, networkId),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  const {
+    data: userInfo,
+    error: userError,
+    isLoading: isLoadingUserInfo,
+  } = useSWR(account ? ['vaults/user', account, networkId] : null, () => fetchUserVaultsData(account, networkId), {
+    refreshInterval: 60000,
+  })
+
+  const isLoading = isLoadingVaultsData || isLoadingUserInfo
 
   const vaults = useMemo(() => {
     if (!vaultsData || vaultsData.chainId !== networkId || error || userError || !assets || !assets.length) return []
@@ -148,10 +154,19 @@ export function VaultsContextProvider({ children }) {
     })
   }, [vaultsData, userInfo, assets, error, userError, networkId])
 
-  return <VaultsContext.Provider value={vaults}>{children}</VaultsContext.Provider>
+  return (
+    <VaultsContext.Provider value={vaults} isLoading={isLoading}>
+      {children}
+    </VaultsContext.Provider>
+  )
 }
 
 export const useVaults = () => {
   const vaults = useContext(VaultsContext)
   return vaults
+}
+
+export const useIsLoadingVaults = () => {
+  const { isLoading } = useContext(VaultsContext)
+  return isLoading
 }

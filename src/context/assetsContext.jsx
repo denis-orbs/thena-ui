@@ -53,7 +53,7 @@ function AssetsContextProvider({ children }) {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
 
-  const { data: assets = [] } = useSWRImmutable(
+  const { data: assets = [], isLoading: isLoadingAssets } = useSWRImmutable(
     ['assets/total', networkId],
     async () => {
       const data = await fetchAssets(networkId)
@@ -65,7 +65,11 @@ function AssetsContextProvider({ children }) {
     },
   )
 
-  const { data: userAssets, mutate: mutateAssets } = useSWRImmutable(
+  const {
+    data: userAssets,
+    mutate: mutateAssets,
+    isLoading: isLoadingUserAssets,
+  } = useSWRImmutable(
     assets.length > 0 && account && ['assets/user', account, networkId],
     async () => {
       const data = await fetchUserAssetsData(assets, account, networkId)
@@ -102,7 +106,18 @@ function AssetsContextProvider({ children }) {
     }
   }, [assets, account, userAssets, mutateAssets])
 
-  return <AssetsContext.Provider value={final}>{children}</AssetsContext.Provider>
+  const isLoading = useMemo(() => isLoadingAssets || isLoadingUserAssets, [isLoadingAssets, isLoadingUserAssets])
+
+  return (
+    <AssetsContext.Provider value={final} isLoading={isLoading}>
+      {children}
+    </AssetsContext.Provider>
+  )
+}
+
+const useIsLoadingAssets = () => {
+  const { isLoading } = useContext(AssetsContext)
+  return isLoading
 }
 
 const useAssets = () => {
@@ -123,4 +138,4 @@ const useMutateAssets = () => {
   return mutateAssets
 }
 
-export { AssetsContext, AssetsContextProvider, useAssets, useMutateAssets }
+export { AssetsContext, AssetsContextProvider, useAssets, useIsLoadingAssets, useMutateAssets }

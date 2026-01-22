@@ -299,20 +299,22 @@ const getMultiFusionState = async (contracts, pools, poolAddressList, chainId, g
   return fusionStates
 }
 
-export const useGetMultipleFusionState = (pools, poolAddressList) => {
+export const useGetMultipleFusionState = (pools, poolAddressList, enable = true) => {
   const { chainId, account } = useWallet()
   const { getAsset } = useGetAssetFn()
   const prevData = useRef([])
 
   const contracts = (pools || []).map((pool, index) => {
     const { version } = pool
-    const poolAddress = poolAddressList[index]
+    const poolAddress = poolAddressList?.[index]
+    if (!poolAddress) return null
     const poolContract = { address: poolAddress, abi: version === 2 ? FusionPairABI : IntegralPairABI }
     return poolContract
   })
 
   const { data, isLoading } = useSWR(
-    contracts.length > 0 &&
+    enable &&
+      contracts.length > 0 &&
       account &&
       chainId && ['get fusion state list', contracts, pools, poolAddressList, account, chainId],
     () => getMultiFusionState(contracts, pools, poolAddressList, chainId, getAsset),
@@ -329,7 +331,7 @@ export const useGetMultipleFusionState = (pools, poolAddressList) => {
     return data
   }, [data, isLoading])
 
-  return _data
+  return _data || []
 }
 
 export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
@@ -358,7 +360,7 @@ export const getListComputePoolAddress = async (pools, chainId, getAsset) => {
         }
       }),
     )
-    return listAddress.map(address => address.toLowerCase())
+    return listAddress.map(address => address?.toLowerCase())
   } catch (error) {
     console.log(error)
   }

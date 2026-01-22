@@ -132,7 +132,11 @@ function ManualsContextProvider({ children }) {
   const customAssets = useCustomAssets()
   const { account } = useWallet()
 
-  const { data: positionV2 = [], mutate: mutateV2 } = useSWR(
+  const {
+    data: positionV2 = [],
+    mutate: mutateV2,
+    isLoading: isLoadingV2,
+  } = useSWR(
     account && networkId ? ['manuals/info', 'version-2', networkId, account] : null,
     () => fetchManualV2Info(account, networkId),
     {
@@ -140,7 +144,11 @@ function ManualsContextProvider({ children }) {
     },
   )
 
-  const { data: positionV3 = [], mutate: mutateV3 } = useSWR(
+  const {
+    data: positionV3 = [],
+    mutate: mutateV3,
+    isLoading: isLoadingV3,
+  } = useSWR(
     account && networkId ? ['manuals/info', 'version-3', networkId, account] : null,
     () => fetchManualV3Info(account, networkId),
     {
@@ -180,8 +188,12 @@ function ManualsContextProvider({ children }) {
       positions,
     }
   }, [assets, customAssets, mutateV2, mutateV3, positionV2, positionV3])
-
-  return <ManualsContext.Provider value={final}>{children}</ManualsContext.Provider>
+  const isLoading = isLoadingV2 || isLoadingV3
+  return (
+    <ManualsContext.Provider value={final} isLoading={isLoading}>
+      {children}
+    </ManualsContext.Provider>
+  )
 }
 
 const useManuals = () => {
@@ -189,4 +201,9 @@ const useManuals = () => {
   return positions
 }
 
-export { ManualsContext, ManualsContextProvider, useManuals }
+const useIsLoadingManuals = () => {
+  const { isLoading } = useContext(ManualsContext)
+  return isLoading
+}
+
+export { ManualsContext, ManualsContextProvider, useIsLoadingManuals, useManuals }
