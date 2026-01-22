@@ -172,7 +172,6 @@ export const usePositions = () => {
   )
 
   const removedClaimablePositions = useRemovedClaimablePositions()
-  console.log({ allPositions })
   return {
     positions: allPositions,
     removedClaimablePositions,
