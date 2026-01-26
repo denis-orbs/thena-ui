@@ -35,9 +35,8 @@ export async function GET(req, { params }) {
 
   if (!response.ok) {
     const errorText = await response.text()
-    console.error('CoinGecko API error:', response.status, errorText)
     return NextResponse.json(
-      { error: 'Failed to fetch price data', status: response.status },
+      { error: errorText, status: response.status },
       { status: response.status, headers: corsHeaders(origin) },
     )
   }

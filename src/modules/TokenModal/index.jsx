@@ -189,7 +189,7 @@ function TokenModal({
                   key={idx}
                   className={cn(
                     'flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-800 p-3 hover:bg-neutral-600',
-                    item.symbol.length > 5 && 'gap-1.5 px-2',
+                    item?.symbol?.length > 5 && 'gap-1.5 px-2',
                   )}
                   onClick={() => {
                     if (otherAsset && otherAsset.address === item.address) {

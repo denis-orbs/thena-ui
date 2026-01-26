@@ -31,4 +31,14 @@ export const TOKEN_MAPPING = {
     chain: 'binance-smart-chain',
     address: '0x7ca058309053f90b39bfc58de1eda2a89e9c03a8',
   },
+  // arken bsc -> arken tomoscan
+  '0x1d4268a58ee7ec2cc2af5d70a2fd2b3a896527a2': {
+    chain: 'tomochain',
+    address: '0xb55dd628039552a7d93a70fc8932f677499ed479',
+  },
+  // preon-star bsc -> bnbx Arbitrum One
+  '0xc19669a405067927865b40ea045a2baabbbe57f5': {
+    chain: 'arbitrum-one',
+    address: '0xc19669a405067927865b40ea045a2baabbbe57f5',
+  },
 }
