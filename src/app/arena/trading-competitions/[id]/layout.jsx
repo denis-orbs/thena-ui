@@ -27,7 +27,7 @@ const V4_COMPETITION_DATA = gql`
 export async function generateMetadata({ params }) {
   const { id } = params
 
-  const assets = await fetch('https://weddings-johns-sewing-prescribed.trycloudflare.com/api/v1/assets', {
+  const assets = await fetch('https://api.thena.fi/api/v1/assets', {
     method: 'get',
   }).then(res => res.json())
 
