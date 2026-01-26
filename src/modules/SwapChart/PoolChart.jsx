@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/utils/utils'
 
-import { PairDataTimeWindow } from './fetch'
+import { PairDataTimeWindow } from './constants'
 
 function PoolChart({ data, timeWindow, current, upper, lower }) {
   const chartRef = useRef(null)

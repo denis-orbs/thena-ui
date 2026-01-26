@@ -4,7 +4,7 @@ import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
-import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
+import { PairDataTimeWindow } from '@/modules/SwapChart/constants'
 // import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/utils/utils'
 
