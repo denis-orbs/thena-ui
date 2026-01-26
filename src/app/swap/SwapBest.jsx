@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable simple-import-sort/imports */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
@@ -17,22 +17,24 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap, useSolidlySwap } from '@/hooks/useSwap'
+import { useOdosSwap, useTaxTokenSwap, useSolidlySwap, useOdosQuoteSwap } from '@/hooks/useSwap'
 import cn from '@/utils/classes'
-import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
+import { formatAmount, isInvalidAmount } from '@/utils/utils'
+import { getSwapOutAmount, convertOutAmountToDisplay, calculateMinimumReceived } from '@/utils/swapUtils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
+import { thenaSwap } from '@/hooks/thenaSwap/useThenaSwap'
 import TxnSettings from '@/modules/SettingsModal'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
 import Spinner from '@/components/spinner'
-import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
 import InfoIcon from '@/icons/InfoIcon'
 
 import RefreshIcon from '~/svgs/refresh.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
 
 const SwapChart = dynamic(() => import('@/modules/SwapChart').then(mod => mod.default), {
   ssr: false,
@@ -122,10 +124,38 @@ export default function SwapBest({
   } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isEnabledTradeLH)
 
   const isFallbackLH = useMemo(() => {
-    if (!tradeLH) return false
+    if (!tradeLH || !liquidityHubEnabled) return false
     const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
     return new BigNumber(tradeLH.minAmountOut || 0).gt(dexMinAmountOut)
-  }, [tradeLH, slippage, bestTrade])
+  }, [tradeLH, liquidityHubEnabled, slippage, bestTrade?.outAmounts])
+
+  const odosNotGood = useMemo(() => !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT, [bestTrade])
+
+  const isEnabledTheFallback = useMemo(() => {
+    if (isTwap || quotePendingLH || bestTradePending) return false
+    if (!fromAmount) return false
+
+    // Case 1: Odos not good && LiquidityHub enabled -> enable The Fallback if LH failed or not found
+    if (odosNotGood && liquidityHubEnabled) {
+      return !tradeLH || liquidityHubFailed
+    }
+
+    // Case 2: Odos not good && LiquidityHub disabled -> enable The Fallback
+    if (odosNotGood && !liquidityHubEnabled) {
+      return true
+    }
+
+    return false
+  }, [
+    isTwap,
+    quotePendingLH,
+    bestTradePending,
+    fromAmount,
+    odosNotGood,
+    liquidityHubEnabled,
+    tradeLH,
+    liquidityHubFailed,
+  ])
 
   const { mutateAsync: onSwapLH, isLoading: swapLoadingLH } = liquidityHub.useSwap(
     fromAsset,
@@ -143,6 +173,28 @@ export default function SwapBest({
     liquidityHubFailed,
   )
 
+  const {
+    data: tradeThenaSwap,
+    isLoading: quotePendingThenaSwap,
+    refetch: refetchThenaSwap,
+  } = thenaSwap.useTrade(
+    fromAsset,
+    toAsset,
+    debouncedAmount,
+    isEnabledTheFallback,
+    slippage,
+    bestTrade,
+    tradeLH,
+    liquidityHubEnabled,
+  )
+
+  const { onSwap: onThenaSwap, pending: thenaSwapPending } = thenaSwap.useSwap()
+
+  const isThenaSwap = useMemo(() => tradeThenaSwap?.isThenaSwap || false, [tradeThenaSwap])
+
+  // Only use tradeTheFallback data when isFallbackThe === true
+  const tradeThenaSwapToUse = useMemo(() => (isThenaSwap ? tradeThenaSwap : null), [tradeThenaSwap, isThenaSwap])
+
   const { data: solidlyQuoteData, isLoading: solidlyQuotePending } = useSolidlyQuote(
     fromAsset,
     toAsset,
@@ -151,75 +203,118 @@ export default function SwapBest({
     isSolidlySwap,
   )
 
-  const quotePending = useMemo(
-    () =>
-      isSolidlySwap
-        ? solidlyQuotePending
-        : isFallbackLH
-          ? quotePendingLH
-          : isEnabledTradeLH
-            ? quotePendingLH || bestTradePending
-            : bestTradePending,
-    [isFallbackLH, quotePendingLH, isEnabledTradeLH, bestTradePending, isSolidlySwap, solidlyQuotePending],
-  )
+  const quotePending = useMemo(() => {
+    if (isSolidlySwap) {
+      return solidlyQuotePending
+    }
+
+    if (isFallbackLH) {
+      return quotePendingLH
+    }
+
+    if (isThenaSwap) {
+      return quotePendingThenaSwap
+    }
+
+    if (isEnabledTheFallback) {
+      return quotePendingThenaSwap || bestTradePending
+    }
+
+    if (isEnabledTradeLH) {
+      return quotePendingLH || bestTradePending
+    }
+
+    return bestTradePending
+  }, [
+    isFallbackLH,
+    isThenaSwap,
+    isEnabledTheFallback,
+    quotePendingLH,
+    quotePendingThenaSwap,
+    isEnabledTradeLH,
+    bestTradePending,
+    isSolidlySwap,
+    solidlyQuotePending,
+  ])
 
   const onRefreshQuotes = useCallback(() => {
     if (isFallbackLH) {
       refetchTradeLH()
+    } else if (isThenaSwap) {
+      refetchThenaSwap()
     } else {
       mutate()
     }
-  }, [refetchTradeLH, mutate, isFallbackLH])
+  }, [refetchTradeLH, refetchThenaSwap, mutate, isFallbackLH, isThenaSwap])
 
   // NOTE: For the above function, please check if the token pool is CL or Classic
 
-  const outAmount = useMemo(() => {
-    if (isSolidlySwap) {
-      const outAmountThenaQuote = solidlyQuoteData ? Number(solidlyQuoteData[0]) : ''
-      return outAmountThenaQuote
-    }
+  const outAmount = useMemo(
+    () =>
+      getSwapOutAmount({
+        isSolidlySwap,
+        solidlyQuoteData,
+        isFallbackLH,
+        tradeLH,
+        tradeThenaSwapToUse,
+        bestTrade,
+      }),
+    [isSolidlySwap, solidlyQuoteData, isFallbackLH, tradeLH, tradeThenaSwapToUse, bestTrade],
+  )
 
-    return isFallbackLH ? tradeLH?.outAmount : bestTrade?.outAmounts[0] || ''
-  }, [isSolidlySwap, tradeLH?.outAmount, bestTrade?.outAmounts, solidlyQuoteData, isFallbackLH])
+  const toAmount = useMemo(() => convertOutAmountToDisplay(outAmount, toAsset), [outAmount, toAsset])
 
-  const toAmount = useMemo(() => {
-    if (outAmount && Number(outAmount) > 0 && toAsset) {
-      return fromWei(outAmount, toAsset.decimals).toString(10)
-    }
-    return ''
-  }, [toAsset, outAmount])
-
-  const minimumReceived = useMemo(() => {
-    if (!toAsset || !outAmount) return ''
-    if (isFallbackLH && tradeLH?.minAmountOut) {
-      return `${formatAmount(fromWei(tradeLH.minAmountOut, toAsset.decimals))} ${toAsset.symbol}`
-    }
-    if (slippage && Boolean(Number(slippage))) {
-      return `${formatAmount(fromWei(outAmount * (1 - slippage / 100), toAsset.decimals))} ${toAsset.symbol}`
-    }
-    return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
-  }, [toAsset, outAmount, slippage, tradeLH?.minAmountOut, isFallbackLH])
+  const minimumReceived = useMemo(
+    () =>
+      calculateMinimumReceived({
+        toAsset,
+        outAmount,
+        isFallbackLH,
+        tradeLH,
+        tradeThenaSwapToUse,
+        slippage,
+      }),
+    [toAsset, outAmount, isFallbackLH, tradeLH, tradeThenaSwapToUse, slippage],
+  )
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
+
     let fromInUsd = 0
     let toInUsd = 0
     if (fromAsset && toAsset && fromAmount && toAmount) {
       fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
       toInUsd = new BigNumber(toAmount).times(toAsset.price)
     }
-    if (!isFallbackLH && bestTrade) {
+
+    if (!isFallbackLH && !isThenaSwap && !isEnabledTheFallback && bestTrade) {
       const inDiff = Math.abs((fromInUsd - bestTrade.inValues) / bestTrade.inValues) * 100
       const outDiff = Math.abs((toInUsd - bestTrade.outValues) / bestTrade.outValues) * 100
       if (inDiff < 5 && outDiff < 5) {
         return Math.abs(bestTrade.percentDiff)
       }
     }
+
+    if (tradeThenaSwapToUse?.priceImpact) {
+      return tradeThenaSwapToUse.priceImpact
+    }
+
     if (fromAsset && toAsset && fromAmount && toAmount) {
       return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
     }
     return 0
-  }, [bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending, isFallbackLH])
+  }, [
+    quotePending,
+    fromAsset,
+    toAsset,
+    fromAmount,
+    toAmount,
+    isFallbackLH,
+    isThenaSwap,
+    isEnabledTheFallback,
+    bestTrade,
+    tradeThenaSwapToUse?.priceImpact,
+  ])
 
   const percents = useMemo(
     () => [
@@ -278,36 +373,107 @@ export default function SwapBest({
         },
       })
 
-    if (isFallbackLH && tradeLH?.quote) {
-      swapWithLH(tradeLH.quote)
+    const swapWithThenaSwap = async () => {
+      if (!tradeThenaSwapToUse || !tradeThenaSwapToUse.route || tradeThenaSwapToUse.route.length === 0) {
+        return
+      }
+
+      try {
+        await onThenaSwap(
+          {
+            fromAsset,
+            toAsset,
+            fromAmount,
+            tradeThenaSwap: tradeThenaSwapToUse,
+          },
+          () => onSuccess(tradeThenaSwapToUse?.quote, false),
+        )
+      } catch (error) {
+        console.error('The Fallback swap error:', error)
+      }
+    }
+
+    // Case 1: Odos is good -> use Odos
+    if (bestTrade && Math.abs(bestTrade.priceImpact) <= MAX_PRICE_IMPACT) {
+      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(bestTrade, false))
       return
     }
 
-    const result = await compareWithLHCallback()
-    if (isFallbackLH && result?.isLH) {
-      await swapWithLH(result?.quote)
-    } else {
-      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
+    // Case 2: Odos not good && LiquidityHub enabled
+    if (odosNotGood && liquidityHubEnabled) {
+      const result = await compareWithLHCallback()
+
+      // Try LiquidityHub first
+      if (isFallbackLH && tradeLH?.quote) {
+        await swapWithLH(tradeLH.quote)
+        return
+      }
+
+      if (result?.isLH && result?.quote) {
+        await swapWithLH(result.quote)
+        return
+      }
+
+      if (tradeThenaSwapToUse) {
+        await swapWithThenaSwap()
+        return
+      }
+
+      // If The Fallback is not better, compare Odos vs LiquidityHub and choose the better one
+      const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
+      const lhMinAmountOut = subtractSlippage(slippage, tradeLH?.outAmount) || '0'
+
+      if (bestTrade && tradeLH && new BigNumber(lhMinAmountOut).gt(dexMinAmountOut)) {
+        // LiquidityHub is better
+        if (tradeLH?.quote) {
+          await swapWithLH(tradeLH.quote)
+          return
+        }
+      } else if (bestTrade) {
+        // Odos is better or equal
+        await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
+        return
+      } else if (tradeLH?.quote) {
+        // Only LiquidityHub available
+        await swapWithLH(tradeLH.quote)
+        return
+      }
+    }
+
+    if (odosNotGood && !liquidityHubEnabled) {
+      if (tradeThenaSwapToUse) {
+        await swapWithThenaSwap()
+        return
+      }
+    }
+
+    // Case 3: Odos not good but Thena route also not good or not found route-> use Odos if have route
+    if (bestTrade) {
+      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(bestTrade, false))
     }
   }, [
     fromAsset,
     toAsset,
+    isSolidlySwap,
     bestTrade,
+    odosNotGood,
+    liquidityHubEnabled,
     handleTaxTokenSwap,
     fromAmount,
     slippage,
     deadline,
     mutateAssets,
-    onOdosSwap,
-    isSolidlySwap,
-    outAmount,
     handleSolidlySwap,
+    outAmount,
+    onTradeSuccess,
+    onSwapLH,
+    onThenaSwap,
+    tradeThenaSwapToUse,
+    onOdosSwap,
     toAmount,
     compareWithLHCallback,
-    onSwapLH,
     isFallbackLH,
     tradeLH,
-    onTradeSuccess,
   ])
 
   const btnMsg = useMemo(() => {
@@ -359,10 +525,32 @@ export default function SwapBest({
       }
     }
 
-    if (!toAmount) {
+    // Check if all fallbacks have been tried and none found a path
+    const hasLHResult = tradeLH && tradeLH.outAmount && Number(tradeLH.outAmount) > 0
+    const hasThenaSwapResult = tradeThenaSwapToUse?.outAmount
+
+    const allFallbacksFailed =
+      !quotePending &&
+      !quotePendingLH &&
+      !quotePendingThenaSwap &&
+      !bestTradePending &&
+      odosNotGood &&
+      (!liquidityHubEnabled || !hasLHResult) &&
+      (!isEnabledTheFallback || !hasThenaSwapResult) &&
+      !toAmount
+
+    if (allFallbacksFailed) {
       return {
         isError: true,
         label: t('Insufficient liquidity for this trade'),
+      }
+    }
+
+    // Show loading if any quote is pending
+    if (quotePendingThenaSwap || quotePendingLH || bestTradePending) {
+      return {
+        isError: false,
+        label: t('Fetching Quotes'),
       }
     }
 
@@ -370,7 +558,25 @@ export default function SwapBest({
       isError: false,
       label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t, comparingTrade])
+  }, [
+    comparingTrade,
+    fromAsset,
+    toAsset,
+    fromAmount,
+    quotePending,
+    quotePendingLH,
+    quotePendingThenaSwap,
+    bestTradePending,
+    isWrap,
+    isUnwrap,
+    isEnabledTheFallback,
+    toAmount,
+    t,
+    odosNotGood,
+    tradeLH,
+    liquidityHubEnabled,
+    tradeThenaSwapToUse,
+  ])
 
   const title = useMemo(() => {
     switch (swapType) {
@@ -398,6 +604,10 @@ export default function SwapBest({
       })),
     [swapType, setSwapType],
   )
+
+  useEffect(() => {
+    onRefreshQuotes()
+  }, [liquidityHubEnabled, onRefreshQuotes])
 
   return (
     <>
@@ -502,10 +712,9 @@ export default function SwapBest({
                     taxTokenSwapPending ||
                     solidlySwapPending ||
                     swapLoadingLH ||
+                    thenaSwapPending ||
                     comparingTrade ||
                     wrapPending ||
-                    // solidlySwapPending ||
-                    // isLoadingThenaQuote ||
                     btnMsg.isError
                   }
                   onClick={() => {
@@ -564,7 +773,7 @@ export default function SwapBest({
                     <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
                   </div>
                 </div>
-                {!isFallbackLH && (
+                {!isFallbackLH && !isThenaSwap && (
                   <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
                     {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
                   </div>
