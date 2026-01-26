@@ -8,7 +8,7 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 import { ZERO_VALUE } from '../utils/utils'
 
 // TODO: Fix on prod
-const backendApi = 'https://api.thena.fi/api'
+export const backendApi = 'https://weddings-johns-sewing-prescribed.trycloudflare.com/api'
 
 const getApiVersion = version => (version === 3 ? 'v3' : 'v1')
 
@@ -127,7 +127,7 @@ export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
 // export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
-export const fetchRevenue = () => fetch('https://api.thena.fi/api/v1/stats').then(r => r.json())
+export const fetchRevenue = () => fetch(`${backendApi}/v1/stats`).then(r => r.json())
 
 export const fetchHistoricalTokensPrice = async ({ chainId, tokenAddresses, page = 1, limit = 1000, startDate }) => {
   const url = `${backendApi}/v3/historical-token-price/${chainId}`
