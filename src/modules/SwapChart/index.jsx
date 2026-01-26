@@ -11,7 +11,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useLocaleSettings } from '@/state/settings/hooks'
 import { formatAmount, wrappedAddress } from '@/utils/utils'
 
-import { PairDataTimeWindow } from './fetch'
+import { PairDataTimeWindow } from './constants'
 import { useFetchPairPrices } from './hooks'
 import SwapLineChart from './SwapLineChart'
 import { getTimeWindowChange } from './utils'

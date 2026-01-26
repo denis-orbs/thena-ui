@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/utils/utils'
 
-import { PairDataTimeWindow } from './fetch'
+import { PairDataTimeWindow } from './constants'
 
 function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }) {
   const chartRef = useRef(null)

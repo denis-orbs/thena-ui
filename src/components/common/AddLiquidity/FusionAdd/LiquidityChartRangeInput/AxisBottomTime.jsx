@@ -4,7 +4,7 @@ import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
 // import Skeleton from '@/components/skeleton'
-import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
+import { PairDataTimeWindow } from '@/modules/SwapChart/constants'
 
 function ChartAxisTime({
   data,
