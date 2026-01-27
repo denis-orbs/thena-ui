@@ -26,6 +26,7 @@ import { tryParseTick } from '@/state/fusion/utils'
 import { useTxn } from '@/state/transactions/hooks'
 import { fromWei, toWei, wrappedAddress } from '@/utils/utils'
 
+import { getNPMContract } from '../fusion/useAlgebra'
 import useWallet from '../useWallet'
 
 const BASE_ZAPPER_URL = 'https://zap-api.kyberswap.com/bsc/api/v1'
@@ -351,10 +352,21 @@ export const useKyberZapperAddLiquidity = () => {
   )
 
   const handleIncreaseLiquidity = useCallback(
-    async ({ token, amount, route, deadline = 1800000000 }, callback) => {
+    async ({ token, amount, route, deadline = 1800000000, position = null }, callback) => {
       try {
         if (!account) throw new Error('Please connect your wallet')
 
+        let shouldApproveFarming = false
+        let positionManger = null
+        let farmingCenter = null
+        if (position && position.isFarming) {
+          positionManger = getNPMContract(chainId, position.version)
+          farmingCenter = getFarmingCenterContract(chainId)
+          const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [position.tokenId], chainId)
+          const currentApproval = farmingApprovals?.toLowerCase()
+          const newFarmingCenterAddress = farmingCenter.address.toLowerCase()
+          shouldApproveFarming = !currentApproval || currentApproval !== newFarmingCenterAddress
+        }
         const isBNB = token.address === 'BNB'
         if (isBNB) token = WBNB[chainId]
 
@@ -367,6 +379,7 @@ export const useKyberZapperAddLiquidity = () => {
         const wrapId = uuidv4()
         const approveId = uuidv4()
         const increaseLiquidityId = uuidv4()
+        const approveFarmingId = uuidv4()
 
         const transactions = {}
 
@@ -402,6 +415,14 @@ export const useKyberZapperAddLiquidity = () => {
         const allowance = await readCall(tokenContract, 'allowance', [account, buildData.routerAddress])
         const isApproved = fromWei(allowance, token.decimals).gte(amount)
 
+        if (position?.isFarming && shouldApproveFarming) {
+          transactions[approveFarmingId] = {
+            desc: `${t('Approve For Farming')}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
         if (isBNB) {
           transactions[wrapId] = {
             desc: 'Wrap BNB',
@@ -426,6 +447,18 @@ export const useKyberZapperAddLiquidity = () => {
 
         startTxn({ key, transactions, title: t('Increase Liquidity') })
         setPending(true)
+
+        if (position?.isFarming && shouldApproveFarming) {
+          const txHash = await writeTxn(key, approveFarmingId, positionManger, 'approveForFarming', [
+            position.tokenId,
+            true,
+            farmingCenter.address,
+          ])
+          if (!txHash) {
+            setPending(false)
+            return
+          }
+        }
 
         if (isBNB) {
           const wbnb = getWBNBContract(chainId)

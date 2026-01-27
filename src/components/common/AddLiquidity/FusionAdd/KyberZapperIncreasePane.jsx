@@ -83,10 +83,11 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5,
         route: data?.route,
         amount: amountIn,
         token: tokenDeposit,
+        position: position?._position,
       },
       onShowModalSuccess,
     )
-  }, [amountIn, data?.route, handleIncreaseLiquidity, onShowModalSuccess, tokenDeposit])
+  }, [amountIn, data?.route, handleIncreaseLiquidity, onShowModalSuccess, tokenDeposit, position])
 
   return (
     <div className='mt-2! flex flex-col md:gap-4'>
