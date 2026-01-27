@@ -29,6 +29,15 @@ export async function GET(req, { params }) {
     },
   )
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('CoinGecko API error:', response.status, errorText)
+    return NextResponse.json(
+      { error: 'Failed to fetch market chart data', status: response.status },
+      { status: response.status, headers: corsHeaders(origin) },
+    )
+  }
+
   const data = await response.json()
   return NextResponse.json(data, {
     headers: corsHeaders(origin),
