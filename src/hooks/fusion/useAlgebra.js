@@ -22,7 +22,7 @@ import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 import { fromWei, toWei } from '@/utils/utils'
 
-const getNPMContract = (chainId, version) => ({
+export const getNPMContract = (chainId, version) => ({
   abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
   address: version === 3 ? Contracts.NPMIntegral[chainId] : Contracts.NPMFusion[chainId],
 })
