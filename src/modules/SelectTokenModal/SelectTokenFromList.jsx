@@ -54,7 +54,7 @@ export default function SelectTokenFromList({
             className='w-full'
             val={searchText}
             setVal={setSearchText}
-            placeholder='Search by Name, Symbol or Address'
+            placeholder='Search by name, symbol or address'
             autoFocus
           />
         </div>

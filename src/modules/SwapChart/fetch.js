@@ -5,7 +5,7 @@ import { ChainId } from 'thena-sdk-core'
 import { FUSION_MULTI_CHAIN_START_TIME } from '@/constant'
 import { CodexClient, FusionGraphUrl, SolidlyGraphUrl } from '@/lib/graphql'
 
-import { API_COINGECKO_URL, CHAIN_MAP, CHART_CONFIG, PairDataTimeWindow } from './constants'
+import { CHAIN_MAP, CHART_CONFIG, PairDataTimeWindow } from './constants'
 import { roundTimestampByPeriod } from './normalizers'
 import { getAdvanceChartDataCodexQuery, getCurrentPriceUSDCodexQuery, getTVL } from './queries'
 import { NUMBER_CHART_DATA } from './utils'
@@ -37,7 +37,6 @@ const fetchWithTimeout = async (url, timeout = 15000) => {
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', 'x-cg-demo-api-key': process.env.NEXT_PUBLIC_COINGECKO_API_KEY },
     })
     clearTimeout(timeoutId)
     return response
@@ -80,7 +79,7 @@ const getDerivedPriceFromCoinGecko = async (tokenAddress, chain, days) => {
     days,
   })
 
-  const url = `${API_COINGECKO_URL}/coins/${chain}/contract/${contractAddress}/market_chart?${params.toString()}`
+  const url = `/api/coins/market-chart/${chain}/${contractAddress}?${params.toString()}`
 
   const response = await fetchWithTimeout(url)
   if (!response.ok) {
@@ -141,7 +140,7 @@ const getTokenPriceFromCoinGecko = async (tokenAddress, networkId) => {
       include_last_updated_at: true,
       vs_currencies: 'usd',
     })
-    const url = `${API_COINGECKO_URL}/simple/token_price/${chain}?${params.toString()}`
+    const url = `/api/coins/current-price/${chain}?${params.toString()}`
     const response = await fetchWithTimeout(url)
     if (!response.ok) {
       throw new Error(`CoinGecko API error: ${response.status}`)
