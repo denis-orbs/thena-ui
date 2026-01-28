@@ -15,7 +15,7 @@ import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/com
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
-import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
+import { findNewIchiStrategy, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
@@ -321,7 +321,7 @@ function NotStakedItem({ position, isXlDown }) {
                     className={cn('h-8 w-[77px]! rounded-md text-xs leading-4 text-nowrap', {
                       // hidden: hideButton.earn,
                     })}
-                    disabled={ICHI_TYPES.includes(position.title)}
+                    disabled={ICHI_TYPES.includes(position.title) && !findNewIchiStrategy(position.address)}
                     onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
                   >
                     {t('Earn $THE')}
@@ -358,6 +358,7 @@ function NotStakedItem({ position, isXlDown }) {
       priceUpper,
       priceLower,
       handleStake,
+      position?.address,
     ],
   )
 

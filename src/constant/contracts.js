@@ -68,6 +68,9 @@ const Contracts = {
   MFDFactoryAddress: {
     [CHAIN_ID.BSC]: '0xe7cb9d7e77f973e5341de62255be4bc06e2e9e6d',
   },
+  MFDFactoryAddressNew: {
+    [CHAIN_ID.BSC]: '0x998f04847830945e7d30bf80a5da18e31c9ac395',
+  },
   staking: {
     [CHAIN_ID.BSC]: '0xe58E64fb76e3C3246C34Ee596fB8Da300b5Adfbb',
   },

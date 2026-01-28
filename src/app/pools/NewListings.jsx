@@ -313,10 +313,8 @@ function NewListings({
                 {pool.subpools
                   .filter(sub => {
                     const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
-                    if (isNewIchiStrategy) {
-                      return true
-                    }
                     return (
+                      Boolean(isNewIchiStrategy) ||
                       (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
                       !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
                     )

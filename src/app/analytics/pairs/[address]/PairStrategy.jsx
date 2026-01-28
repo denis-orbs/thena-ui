@@ -104,10 +104,11 @@ function PairStrategy({ pair }) {
     return (pair?.subpools || [])
       .filter(sub => {
         const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
-        if (isNewIchiStrategy) {
-          return true
-        }
-        return (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+        return (
+          Boolean(isNewIchiStrategy) ||
+          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+          !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+        )
       })
       .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])

@@ -189,7 +189,9 @@ export default function PoolsPage() {
                 ele =>
                   ele.title === strategy ||
                   (strategy === STRATEGIES.Gamma && GAMMA_TYPES.includes(ele.title)) ||
-                  (strategy === STRATEGIES.ICHI && ICHI_TYPES.includes(ele.title)),
+                  (strategy === STRATEGIES.ICHI &&
+                    ICHI_TYPES.includes(ele.title) &&
+                    Boolean(findNewIchiStrategy(ele.address))),
               ),
           )
     return !searchText
@@ -419,10 +421,8 @@ export default function PoolsPage() {
                   {pool.subpools
                     .filter(sub => {
                       const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
-                      if (isNewIchiStrategy) {
-                        return true
-                      }
                       return (
+                        Boolean(isNewIchiStrategy) ||
                         (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
                         !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
                       )

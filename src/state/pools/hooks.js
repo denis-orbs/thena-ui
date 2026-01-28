@@ -172,10 +172,11 @@ export const usePairInfo = ({
       // TODO:temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
       subpools: found.subpools.filter(sub => {
         const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
-        if (isNewIchiStrategy) {
-          return true
-        }
-        return (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+        return (
+          Boolean(isNewIchiStrategy) ||
+          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+          !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+        )
       }),
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }
