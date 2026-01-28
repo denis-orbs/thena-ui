@@ -11,7 +11,7 @@ import { IchiVaultV3ABI } from '@/abis/ichi/IchiVaultV3ABI'
 import { VaultDepositGaurdABI } from '@/abis/ichi/VaultDepositGaurdABI'
 import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
-import { FARM_CONFIG } from '@/constant/ichiVaults'
+import { FARM_CONFIG, NEW_ICHI_STRATEGIES } from '@/constant/ichiVaults'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getMultiFeeDistributionContract, getWBNBContract } from '@/lib/contracts'
@@ -35,10 +35,22 @@ const getIchiVaultContract = (address, version = 2) => {
   }
 }
 
-const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
+export const findNewIchiStrategy = (address, allowOldPool = false) =>
+  NEW_ICHI_STRATEGIES.find(config => {
+    if (allowOldPool) {
+      return (
+        config.pool.toLowerCase() === address.toLowerCase() || config.oldPool.toLowerCase() === address.toLowerCase()
+      )
+    }
+    return config.pool.toLowerCase() === address.toLowerCase()
+  })
+
+const getVaultDepositContract = (chainId, version = 2, isNewIchiStrategy = false, isFarming = false) => {
   if (version === 3) {
     const address = isFarming
-      ? Contracts.vaultDepositGuardV3Farming[chainId]
+      ? !isNewIchiStrategy
+        ? Contracts.vaultDepositGuardV3Farming[chainId]
+        : Contracts.vaultDepositGuardV3FarmingNew[chainId]
       : Contracts.vaultDepositGuardV3Fee[chainId]
 
     return {
@@ -62,6 +74,13 @@ export const useIchiManage = () => {
 
   const onIchiAdd = useCallback(
     async (vault, amount, slippage) => {
+      const newIchiStrategy = findNewIchiStrategy(vault.address)
+      if (!newIchiStrategy) {
+        errorToast('Error', 'Old Ichi strategies are not supported yet')
+        setPending(false)
+        return
+      }
+
       const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
       if (token0.allowed) {
@@ -162,6 +181,13 @@ export const useIchiManage = () => {
     async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
+
+      const newIchiStrategy = findNewIchiStrategy(vault.address)
+      if (!newIchiStrategy) {
+        errorToast('Error', 'Old Ichi strategies are not supported yet')
+        setPending(false)
+        return
+      }
       if (token0.address === vault.allowed.address) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
         const deposit0Max = fromWei(maxRes, token0.decimals)
@@ -370,13 +396,14 @@ export const useIchiRemove = () => {
       if (isFarming) {
         // Use hardcoded farming contract address from FARM_CONFIG
         // The vault contract's farmingContract will be set to 0, so we can't read it
-        const farmConfig = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase())
-        if (!farmConfig) {
+        const farmConfig = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase()) // if found => old Ichi strategies
+        const newFarmConfig = findNewIchiStrategy(pool.address) // if found => new Ichi strategies
+        if (!farmConfig && !newFarmConfig) {
           errorToast('Error', 'Farming contract not found for this pool')
           setPending(false)
           return
         }
-        const farmContractAddress = farmConfig.farming
+        const farmContractAddress = farmConfig.farming || newFarmConfig.farming
         const farmingContract = {
           address: farmContractAddress,
           abi: IchiFarmingABI,
@@ -428,10 +455,10 @@ export const useIchiManageV3 = () => {
 
   const addIchiPool = useCallback(
     async ({ vault, amount, amountToWrap, slippage }, callback) => {
-      // TODO: temporary block and do no deposit for Ichi pools until update new ICHI strategies
-
-      // eslint-disable-next-line no-constant-condition
-      if (true) {
+      const isNewIchiStrategy = findNewIchiStrategy(vault.address) // if found => new Ichi strategies
+      if (!isNewIchiStrategy) {
+        errorToast('Error', 'Old Ichi strategies are not supported yet')
+        setPending(false)
         return
       }
       // eslint-disable-next-line no-unused-vars
@@ -462,7 +489,7 @@ export const useIchiManageV3 = () => {
       const stakeuuid = uuidv4()
       const depositToken = token0.address === vault.allowed.address ? token0 : token1
       const tokenContract = getERC20Contract(depositToken.address, networkId)
-      const depositContract = getVaultDepositContract(networkId, 3, isFarming)
+      const depositContract = getVaultDepositContract(networkId, 3, Boolean(isNewIchiStrategy), isFarming)
 
       const allowance = await readCall(tokenContract, 'allowance', [account, depositContract.address], networkId)
       const amountToApprove = toWei(amount, depositToken.decimals).minus(allowance)
@@ -614,6 +641,13 @@ export const useIchiManageV3 = () => {
       startTxn({ key, transactions, title: 'Stake' })
       setPending(true)
 
+      const isNewIchiStrategy = findNewIchiStrategy(vaultAddress) // if found => new Ichi strategies
+      if (!isNewIchiStrategy) {
+        errorToast('Error', 'Old Ichi strategies are not supported yet')
+        setPending(false)
+        return
+      }
+
       const vaultContract = getIchiVaultContract(vaultAddress, 3)
       const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
       const allowance = await readCall(vaultContract, 'allowance', [account, farmingAddress], networkId)
@@ -670,6 +704,14 @@ export const useMigrationIchi = () => {
 
       const { address: vaultAddressV2, gauge, token0, token1 } = positionV2
       const { address: vaultAddressV3, allowed: depositToken, isFarming } = strategy
+
+      const isNewIchiStrategy = findNewIchiStrategy(vaultAddressV3) // if found => new Ichi strategies
+      if (!isNewIchiStrategy) {
+        errorToast('Error', 'Old Ichi strategies are not supported yet')
+        setPending(false)
+        return false
+      }
+
       const gaugeContract = getGaugeContract(gauge.address, networkId)
       const depositGuardContract = getVaultDepositContract(networkId, 3, isFarming)
       const vaultContractV2 = getIchiVaultContract(vaultAddressV2, 2)
@@ -919,6 +961,7 @@ export const useMigrationIchi = () => {
   return { migrateIchi, pending }
 }
 
+// for ich V2 withdraw
 export const useIchiWithdraw = () => {
   const t = useTranslations()
 
@@ -1014,16 +1057,19 @@ export const useIchiClaim = () => {
 
       // Use hardcoded farming contract address from FARM_CONFIG for Ichi farming pools
       // The vault contract's farmingContract will be set to 0, so we can't read it
-      const isFarming = pool.title === ICHI_TYPES[0] && pool.account?.version === 3
+      const oldFarm = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase())
+
+      // some pools are back new Ichi strategies, so we need to find the new farming contract address
+      const newFarm = findNewIchiStrategy(pool.address)
+      if (!oldFarm && !newFarm) {
+        errorToast('Error', 'Farming contract not found for this pool')
+        setPending(false)
+        return
+      }
+
       let farmContractAddress
-      if (isFarming) {
-        const farmConfig = FARM_CONFIG.find(config => config.pool.toLowerCase() === pool.address.toLowerCase())
-        if (!farmConfig) {
-          errorToast('Error', 'Farming contract not found for this pool')
-          setPending(false)
-          return
-        }
-        farmContractAddress = farmConfig.farming
+      if (oldFarm) {
+        farmContractAddress = oldFarm.farming
       } else {
         farmContractAddress = await readCall(ichiVault, 'farmingContract', [], networkId)
       }

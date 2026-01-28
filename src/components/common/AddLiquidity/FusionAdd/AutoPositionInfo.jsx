@@ -8,7 +8,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, THE_LOGO, UNKNOWN_LOGO } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim, useStakeGamma } from '@/hooks/fusion/useGamma'
-import { useIchiClaim, useIchiManageV3 } from '@/hooks/fusion/useIchi'
+import { findNewIchiStrategy, useIchiClaim, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGaugeStake } from '@/hooks/useGauge'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
@@ -191,7 +191,10 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
               stakePending ||
               stakeIchiPending ||
               stakeGammaPending ||
-              (ICHI_TYPES.includes(position?.title) && position?.version === 3)
+              // (ICHI_TYPES.includes(position?.title) && position?.version === 3)
+              (ICHI_TYPES.includes(position?.title) &&
+                !findNewIchiStrategy(position?.address) &&
+                position?.version === 3)
             }
           >
             {t('Earn $THE')}
@@ -205,6 +208,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
       handleStake,
       isSwapFee,
       position?.account?.walletBalance,
+      position?.address,
       position?.staked,
       position?.title,
       position?.version,

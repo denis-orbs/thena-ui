@@ -24,6 +24,7 @@ import {
 } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
+import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import {
@@ -101,9 +102,13 @@ function PairStrategy({ pair }) {
     const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }
     // TODO: temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
     return (pair?.subpools || [])
-      .filter(
-        sub => (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
-      )
+      .filter(sub => {
+        const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
+        if (isNewIchiStrategy) {
+          return true
+        }
+        return (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+      })
       .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])
 
