@@ -403,7 +403,7 @@ export const useIchiRemove = () => {
           setPending(false)
           return
         }
-        const farmContractAddress = farmConfig.farming || newFarmConfig.farming
+        const farmContractAddress = farmConfig?.farming || newFarmConfig?.farming
         const farmingContract = {
           address: farmContractAddress,
           abi: IchiFarmingABI,

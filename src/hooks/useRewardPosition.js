@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { encodeFunctionData } from 'viem'
+import { encodeFunctionData, zeroAddress } from 'viem'
 
 import { FusionNPMABI } from '@/abis/fusion/FusionNPMABI'
 import { HypervisorV3ABI } from '@/abis/gamma/HypervisorV3ABI'
@@ -18,6 +18,7 @@ import { useFarmRewards } from '@/state/farmReward/store'
 import { useTxn } from '@/state/transactions/hooks'
 
 import { collectAndClaimRewards, useSimulateFarmReward } from './fusion/useAlgebra'
+import { findNewIchiStrategy } from './fusion/useIchi'
 import useWallet from './useWallet'
 
 export const useRewardPosition = () => {
@@ -201,8 +202,11 @@ export const useRewardPosition = () => {
       )
 
       for (let i = 0; i < receivers.length; i++) {
-        const receiver = receivers[i]
+        let receiver = receivers[i]
         const poolAddress = poolAddresses[i]
+        if (receiver === zeroAddress) {
+          receiver = findNewIchiStrategy(poolAddress, true)?.oldFarming || zeroAddress
+        }
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
         const tx = await writeTxn(key, `ichi-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
         if (!tx) {

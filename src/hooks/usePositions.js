@@ -12,6 +12,7 @@ import { batchCallMulti } from '@/lib/contractActions'
 import { useIsLoadingPools, usePools } from '@/state/pools/hooks'
 import { fromWei, isInvalidAmount, ZERO_VALUE } from '@/utils/utils'
 
+import { findNewIchiStrategy } from './fusion/useIchi'
 import { useFarmPositions } from './position/useFarmPosition'
 import { useManualPositions } from './position/useManualPosition'
 import { useNotStakedPositions } from './position/useNotStakedPosition'
@@ -57,8 +58,11 @@ const useGetPositionClaimableRewards = (pools, type) => {
       })),
     )
     const results = await batchCallMulti(
-      farmContractAddresses.map(address => ({
-        address,
+      farmContractAddresses.map((address, index) => ({
+        address:
+          address === zeroAddress && type === 'ichi'
+            ? findNewIchiStrategy(pools[index].address, true)?.oldFarming || zeroAddress
+            : address,
         abi: MultiFeeDistributionABI,
         functionName: 'claimableRewards',
         args: [account],

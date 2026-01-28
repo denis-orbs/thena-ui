@@ -320,6 +320,12 @@ export const FARM_CONFIG = [
 
 // New Ichi strategies
 // ICHI back in after the migration
+/**
+ *  Pool: ICHIVault
+ *  OldPool: ICHIVault old
+ *  Farming: MultiFeeDistribution
+ *  OldFarming: MultiFeeDistribution old
+ */
 export const NEW_ICHI_STRATEGIES = [
   {
     symbol: 'WBNB-ETH',
