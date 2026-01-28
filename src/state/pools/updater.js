@@ -199,7 +199,7 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
 
         pairClaimIndex++
       } else {
-        const [receiver] = receivers[i]
+        const receiver = receivers[i]
         if (receiver !== ZERO_ADDRESS) {
           claimable0 = claimable0s[pairClaimIndex]
           claimable1 = claimable1s[pairClaimIndex]
