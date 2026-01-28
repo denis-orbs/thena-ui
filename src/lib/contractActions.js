@@ -23,7 +23,6 @@ export const callMultiWithLog = async contracts => {
     contracts,
   })
 
-  console.log({ res })
   return res.map(ele => (ele.status === 'success' ? ele.result : null))
 }
 
