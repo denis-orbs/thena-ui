@@ -27,6 +27,7 @@ import {
 } from '@/constant'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { fetchFusionPools } from '@/lib/api'
@@ -88,11 +89,24 @@ const pairAddressForAccount = async (chainId, pairs, account, type) => {
       params: [account],
     }))
 
-    const receiverCalls = pairsList.map(pair => ({
-      address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
-      name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
-      params: isHypervisorPair ? [] : [pair.address],
-    }))
+    const receiverCalls = pairsList.map(pair => {
+      if (isICHIPair) {
+        const isNewIchiStrategy = findNewIchiStrategy(pair.address)
+        if (isNewIchiStrategy) {
+          return {
+            address: Contracts.MFDFactoryAddressNew[chainId],
+            name: 'vaultToStaker',
+            params: [pair.address],
+          }
+        }
+      }
+
+      return {
+        address: isHypervisorPair ? pair.address : Contracts.MFDFactoryAddress[chainId],
+        name: isHypervisorPair ? 'receiver' : 'vaultToStaker',
+        params: isHypervisorPair ? [] : [pair.address],
+      }
+    })
 
     const [accountLpBalances, receivers] = await Promise.all([
       createCallMulti(accountLpBalanceCalls, pairABI[type]),

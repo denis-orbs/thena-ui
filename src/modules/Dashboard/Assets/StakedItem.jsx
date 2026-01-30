@@ -11,7 +11,7 @@ import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/com
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
-import { useIchiClaim } from '@/hooks/fusion/useIchi'
+import { findNewIchiStrategy, useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useAutomaticRange } from '@/hooks/position/useAutomaticRange'
 import { useGaugeHarvest, useGaugeUnstake } from '@/hooks/useGauge'
 import InfoIcon from '@/icons/InfoIcon'
@@ -346,7 +346,11 @@ function StakedItem({ position, isXlDown }) {
         <EmphasisButton
           className={cn('h-8 flex-1 px-1 text-xs md:h-11 md:text-base')}
           onClick={handleHarvest}
-          disabled={claimPending || isSwapFee || (ICHI_TYPES.includes(position.title) && position.version === 3)}
+          disabled={
+            claimPending ||
+            isSwapFee ||
+            (!findNewIchiStrategy(position.address) && position.version === 3 && ICHI_TYPES.includes(position.title))
+          }
         >
           {t('Claim')}
         </EmphasisButton>
@@ -418,6 +422,7 @@ function StakedItem({ position, isXlDown }) {
     version,
     position?.title,
     position?.version,
+    position?.address,
   ])
 
   return (

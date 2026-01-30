@@ -68,6 +68,9 @@ const Contracts = {
   MFDFactoryAddress: {
     [CHAIN_ID.BSC]: '0xe7cb9d7e77f973e5341de62255be4bc06e2e9e6d',
   },
+  MFDFactoryAddressNew: {
+    [CHAIN_ID.BSC]: '0x998f04847830945e7d30bf80a5da18e31c9ac395',
+  },
   staking: {
     [CHAIN_ID.BSC]: '0xe58E64fb76e3C3246C34Ee596fB8Da300b5Adfbb',
   },
@@ -135,6 +138,9 @@ const Contracts = {
   },
   vaultDepositGuardV3Farming: {
     [CHAIN_ID.BSC]: '0x2b52c416F723F16e883E53f3f16435B51300280a',
+  },
+  vaultDepositGuardV3FarmingNew: {
+    [CHAIN_ID.BSC]: '0x72B735e20210FA8bb38E41287CBaDC6520ff8cE1',
   },
   vaultDeployer: {
     [CHAIN_ID.BSC]: '0x05cC3CA6E768a68A7f86b09e3ceE754437bd5f12',

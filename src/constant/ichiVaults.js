@@ -317,3 +317,91 @@ export const FARM_CONFIG = [
     farming: '0x8cDa3179f3A694DD06873BEd550535E95Ac349cf',
   },
 ]
+
+// New Ichi strategies
+// ICHI back in after the migration
+/**
+ *  Pool: ICHIVault
+ *  OldPool: ICHIVault old
+ *  Farming: MultiFeeDistribution
+ *  OldFarming: MultiFeeDistribution old
+ */
+export const NEW_ICHI_STRATEGIES = [
+  {
+    symbol: 'WBNB-ETH',
+    pool: '0xb9bC3711e4d3807FAB47dc6EA32C15b8033B9A32',
+    oldPool: '0xf20a62ED4541a0360975D391761ADf15EC4b3453',
+    farming: '0x23719Be99bf557fda864DA9B893cc9EDd5eb14e0',
+    oldFarming: '0xB75634f63c8876Ca04961E8425d0353dd82c4ff3',
+  },
+  {
+    symbol: 'ETH-BNB',
+    pool: '0xccDd139adcfC5077531A595a1c1b441304f2919D',
+    oldPool: '0xdaDAdc327c2CD434E65913c11e81a98CF9c9FC95',
+    farming: '0x7e6b7621d76C8719e3F054017047678B16197D91',
+    oldFarming: '0xb6F3C6770aB81f7F7e4E8794d391EF4A3fa1533a',
+  },
+  {
+    symbol: 'BTCB-BNB',
+    pool: '0xAb03c538DFF311139BB0E65866636d1f8fE5B36d',
+    oldPool: '0x756B21617f3782289089991a9A6b6F4c5A455d68',
+    farming: '0xca9223AfEce64aB589fa0848Fb81E141D50A4626',
+    oldFarming: '0x70d6880717968107370593b47C40C9435F90fd1A',
+  },
+  {
+    symbol: 'BNB-BTCB',
+    pool: '0x73C880022A1D1acAB963b79C8d1DcCBe8848eeE9',
+    oldPool: '0x3929E5B7D447ed243Ee2655Dfbd1ed9F24F1aC56',
+    farming: '0xAf1163C96E0560d939F6b7809723da5077D024d5',
+    oldFarming: '0x2e01Ba342d8a7168adc5C9fd9DabC581B355f6dE',
+  },
+  {
+    symbol: 'BNB-SOL',
+    pool: '0xaEBc5C3C1709D68cf64CaC25b6e57edB39d5EEf7',
+    oldPool: '0x048FAaec8c31E0910dAcB4a6Ff4fdD501CbdB125',
+    farming: '0xA542A3e5dda05770aA161656C37396f4eba16230',
+    oldFarming: '0xa8D1E811aF96aae39777691Ef36801Cc4F6a504E',
+  },
+  {
+    symbol: 'BNB-THE',
+    pool: '0x1Fcb4a7E271c1dD8D6a33953F99fc142Bf06a392',
+    oldPool: '0xEddD271ccf0BCeDDC8C720e878d36F2F4824c8c0',
+    farming: '0xf77a0b4e63845C6582d0d847BC5B01A3025DCbFa',
+    oldFarming: '0x3F892Da13b928C33215D2fCFdD680c59ec53d15E',
+  },
+  {
+    symbol: 'BNB-DOGE',
+    pool: '0x9d35f277C7783f39A0Bf95894D70b84356b2C38A',
+    oldPool: '0xDd29B440713C3AEA3204E6259E92c1c58d551aA0',
+    farming: '0xdBbC61C79925992B4f5FbCdED2bC96b45DE396BD',
+    oldFarming: '0x1434da63ebE8E4D4700D7C32ea813E509Da377ca',
+  },
+  {
+    symbol: 'USDT-ETH',
+    pool: '0x3840b22C6b1bbad4ffbB1b790a1c5301cE3F05B3',
+    oldPool: '0xa8c3bF3E437248C5968c45091047D7d9e7d5BF10',
+    farming: '0x700c0d77Df0F2b9F025Fdf9973df89eb115a4a38',
+    oldFarming: '0x7ad238debFf6595786a83AbBAC1c2ef09c1062C4',
+  },
+  {
+    symbol: 'BNB-USDT',
+    pool: '0x0e20AC1161c7282A11e609Da7384b82D30b0C005',
+    oldPool: '0x2B3cf44cd82E4475aeC06f4051Ae4a3ddD16BE24',
+    farming: '0xf76912d33B14cA8dCe290B629A873cDF3CD167E0',
+    oldFarming: '0xc791C9985Fe04E9Dafe2a1893A869e3630A4F389',
+  },
+  {
+    symbol: 'FIL-BNB',
+    pool: '0x91e6e2856616725B0F4a8b00bb6a34bEdc6D6129',
+    oldPool: '0xEF5ab86C303302D7DCe9C7226E18D55Ad029cDa9',
+    farming: '0x49ce1676e66aC938535D801ACcF863863634720F',
+    oldFarming: '0x4d82E9B8557Eb100fa2150842e4673820C738A66',
+  },
+  {
+    symbol: 'BNB-FIL',
+    pool: '0x2D044624843a7497CB908775faC4C5B474A8423A',
+    oldPool: '0xBC0c25B48B2c75672b88bB6668FA5D5894647Ac8',
+    farming: '0xE5fe60Ee6aa027960526bC2Ce9cabae3358cdf85',
+    oldFarming: '0x5Cf32aA07004c9360E0292904A1db6a15fC4647A',
+  },
+]

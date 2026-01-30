@@ -34,6 +34,7 @@ import {
 } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
+import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
 import InfoIcon from '@/icons/InfoIcon'
@@ -188,7 +189,9 @@ export default function PoolsPage() {
                 ele =>
                   ele.title === strategy ||
                   (strategy === STRATEGIES.Gamma && GAMMA_TYPES.includes(ele.title)) ||
-                  (strategy === STRATEGIES.ICHI && ICHI_TYPES.includes(ele.title)),
+                  (strategy === STRATEGIES.ICHI &&
+                    ICHI_TYPES.includes(ele.title) &&
+                    Boolean(findNewIchiStrategy(ele.address))),
               ),
           )
     return !searchText
@@ -416,11 +419,14 @@ export default function PoolsPage() {
                 <div className='flex flex-col gap-1'>
                   {/* TODO: temporary hide Ichi v3 */}
                   {pool.subpools
-                    .filter(
-                      sub =>
+                    .filter(sub => {
+                      const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
+                      return (
+                        Boolean(isNewIchiStrategy) ||
                         (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
-                        !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
-                    )
+                        !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+                      )
+                    })
                     .map((sub, idx) => (
                       <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
                         <div className='flex items-center gap-1'>

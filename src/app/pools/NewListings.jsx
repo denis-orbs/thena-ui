@@ -18,6 +18,7 @@ import {
   MANUAL_TYPES,
   PAIR_TYPES,
 } from '@/constant'
+import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
 import cn from '@/utils/classes'
@@ -310,11 +311,14 @@ function NewListings({
               <TextHeading className='text-sm'>APR</TextHeading>
               <div className='flex flex-col gap-1'>
                 {pool.subpools
-                  .filter(
-                    item =>
-                      (item.title === ICHI_SINGLE_SIDED && item.version === 2) ||
-                      !ICHI_WITHOUT_SINGLE_SIDED.includes(item.title),
-                  )
+                  .filter(sub => {
+                    const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
+                    return (
+                      Boolean(isNewIchiStrategy) ||
+                      (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+                      !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+                    )
+                  })
                   .map((sub, idx) => (
                     <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
                       <div className='flex items-center gap-1'>

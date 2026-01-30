@@ -8,6 +8,7 @@ import { zeroAddress } from 'viem'
 import { GAMMA_TYPES, ICHI_SINGLE_SIDED, ICHI_TYPES, ICHI_WITHOUT_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
+import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { fetchV2SolidlyPairs } from '@/lib/api'
 import { ZERO_VALUE } from '@/utils/utils'
 
@@ -169,9 +170,14 @@ export const usePairInfo = ({
     return {
       ...found,
       // TODO:temporarily hidden ICHI strategies until we have new ICHI strategies, but keep ICHI single sided visible
-      subpools: found.subpools.filter(
-        sub => (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) || !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title),
-      ),
+      subpools: found.subpools.filter(sub => {
+        const isNewIchiStrategy = findNewIchiStrategy(sub?.address || '')
+        return (
+          Boolean(isNewIchiStrategy) ||
+          (sub.title === ICHI_SINGLE_SIDED && sub.version === 2) ||
+          !ICHI_WITHOUT_SINGLE_SIDED.includes(sub.title)
+        )
+      }),
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
