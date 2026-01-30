@@ -82,7 +82,7 @@ export default function ManualAdd({
   useEffect(() => {
     setAPRs({ ...estimateAPR, current: position ? position.apr : estimateAPR.current })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(estimateAPR), position, setAPRs])
+  }, [JSON.stringify(estimateAPR), position?.apr?.toString(), setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
