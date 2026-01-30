@@ -74,13 +74,6 @@ export const useIchiManage = () => {
 
   const onIchiAdd = useCallback(
     async (vault, amount, slippage) => {
-      const newIchiStrategy = findNewIchiStrategy(vault.address)
-      if (!newIchiStrategy) {
-        errorToast('Error', 'Old Ichi strategies are not supported yet')
-        setPending(false)
-        return
-      }
-
       const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
       if (token0.allowed) {
@@ -182,12 +175,6 @@ export const useIchiManage = () => {
       const vaultContract = getIchiVaultContract(vault.address)
       const { token0, token1 } = vault
 
-      const newIchiStrategy = findNewIchiStrategy(vault.address)
-      if (!newIchiStrategy) {
-        errorToast('Error', 'Old Ichi strategies are not supported yet')
-        setPending(false)
-        return
-      }
       if (token0.address === vault.allowed.address) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
         const deposit0Max = fromWei(maxRes, token0.decimals)
