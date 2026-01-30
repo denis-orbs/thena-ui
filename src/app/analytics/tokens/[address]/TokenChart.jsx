@@ -163,7 +163,7 @@ const getFusionChartData = async (chainId, address, skip = 0, version = null) =>
   }
 }
 
-const fetchTokenChartData = async (chainId, token) => {
+export const fetchTokenChartData = async (chainId, token) => {
   console.log('fetch token chart data ======================')
   const { data: fusiondata } = await getFusionChartData(chainId, token.address)
   const { data: fusiondatav3 } = await getFusionChartData(chainId, token.address, 0, 3)
