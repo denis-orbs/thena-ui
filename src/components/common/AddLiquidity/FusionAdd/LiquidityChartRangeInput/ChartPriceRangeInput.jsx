@@ -419,11 +419,6 @@ export default function ChartPriceRangeInput({
     [chartSize],
   )
 
-  // const divideDistanceWidth = useMemo(
-  //   () => chartSize.chartContainerWidth - desktopSizes.rightAxisWidth - (windowSize.width > 768 ? 133 : 41),
-  //   [chartSize.chartContainerWidth, windowSize.width],
-  // )
-
   return (
     <div className='flex w-full! flex-col xl:mb-2' ref={containerWidthRef}>
       <div className='flex flex-col'>

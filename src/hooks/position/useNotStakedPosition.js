@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { SolidlyPairABI } from '@/abis/solidly/SolidlyPairABI'
-import { PAIR_TYPES } from '@/constant'
+import { ICHI_WITHOUT_SINGLE_SIDED, PAIR_TYPES } from '@/constant'
 import { simulateCall } from '@/lib/contractActions'
 import { fromWei, ZERO_VALUE } from '@/utils/utils'
 
@@ -19,19 +19,22 @@ const getFeesOfPools = async (pools, chainId) => {
       reward1: ZERO_VALUE,
     }
 
-    try {
-      const fees = await simulateCall({ abi: SolidlyPairABI, address: pool.address }, 'claimFees', [], chainId)
+    // Skip if is ICHI v3 pool (not support claimFees) --- if not farm -> Idle
+    if (!ICHI_WITHOUT_SINGLE_SIDED.includes(pool.title)) {
+      try {
+        const fees = await simulateCall({ abi: SolidlyPairABI, address: pool.address }, 'claimFees', [], chainId)
 
-      const _reward0 = isV1Pool ? fromWei(fees?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
-      const _reward1 = isV1Pool ? fromWei(fees?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
-      const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
-      const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
+        const _reward0 = isV1Pool ? fromWei(fees?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
+        const _reward1 = isV1Pool ? fromWei(fees?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
+        const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
+        const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
 
-      poolFees.feesInUsd = fees0.plus(fees1)
-      poolFees.reward0 = _reward0
-      poolFees.reward1 = _reward1
-    } catch (error) {
-      console.error('Failed to fetch claimable fees', error)
+        poolFees.feesInUsd = fees0.plus(fees1)
+        poolFees.reward0 = _reward0
+        poolFees.reward1 = _reward1
+      } catch (error) {
+        console.error('Failed to fetch claimable fees', error)
+      }
     }
 
     feesOfPools.push(poolFees)

@@ -8,11 +8,10 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { fetchAdvancedDerivedPriceData, fetchSimpleDerivedPriceData, getTokenBestTvlProtocol } from './fetch'
 import { normalizeSimpleDerivedChartData, normalizeSimpleDerivedPairDataByActiveToken } from './normalizers'
 
-const getSimpleDeriveData = async (token0Address, token1Address, networkId, timeWindow) => {
+const getSimpleDeriveData = async ({ token0Address, token1Address, networkId, timeWindow }) => {
   if (!networkId) return undefined
-  const data = await fetchSimpleDerivedPriceData(token0Address, token1Address, timeWindow, networkId)
-
-  const pairData = normalizeSimpleDerivedChartData(data)
+  const data = await fetchSimpleDerivedPriceData({ token0Address, token1Address, timeWindow, networkId })
+  const pairData = normalizeSimpleDerivedChartData(data, timeWindow)
   const historyData = normalizeSimpleDerivedPairDataByActiveToken({
     activeToken: token1Address,
     pairData,
@@ -41,8 +40,8 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
     isLoading,
   } = useQuery({
     queryKey: ['simple derivedPrice', token0Address, token1Address, networkId, timeWindow],
-    queryFn: async () => getSimpleDeriveData(token0Address, token1Address, networkId, timeWindow),
-    refetchInterval: 1000 * 60 * 3, // 3 minutes
+    queryFn: async () => getSimpleDeriveData({ token0Address, token1Address, networkId, timeWindow }),
+    refetchInterval: 1000 * 60, // 1 minute
     enabled: Boolean(token0Address && networkId && token1Address),
   })
 

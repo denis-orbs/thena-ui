@@ -173,7 +173,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [firstCurrency, secondCurrency] = useMemo(
     () => (position ? [position.baseCurrency, position.quoteCurrency] : [currencyA, currencyB]),
-    [position, currencyB, currencyA],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [position, currencyB?.wrapped?.address, currencyA?.wrapped?.address],
   )
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
@@ -185,7 +186,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
   useEffect(() => {
     setBaseCurrency(isReverse ? secondCurrency : firstCurrency)
     setQuoteCurrency(isReverse ? firstCurrency : secondCurrency)
-  }, [firstCurrency, secondCurrency, isReverse])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firstCurrency?.wrapped?.address, secondCurrency?.wrapped?.address, isReverse])
 
   const isBaseBNB = useMemo(
     () => baseCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
@@ -231,7 +233,14 @@ function AddLiquidityClPool({ pool, handleBack }) {
     if (!quoteCurrency && secondCurrency && mintInfo.noLiquidity) {
       setQuoteCurrency(secondCurrency)
     }
-  }, [baseCurrency, firstCurrency, quoteCurrency, secondCurrency, mintInfo.noLiquidity])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    baseCurrency?.wrapped?.address,
+    firstCurrency?.wrapped?.address,
+    quoteCurrency?.wrapped?.address,
+    secondCurrency?.wrapped?.address,
+    mintInfo.noLiquidity,
+  ])
 
   const currentPrice = useMemo(() => {
     if (position) {

@@ -1,6 +1,8 @@
 import dayjs from 'dayjs'
 import fromPairs from 'lodash/fromPairs'
 
+import { CHART_CONFIG, OHLCV_TIMEFRAME_MAP } from './constants'
+
 /**
  * Round timestamp by period based on CoinGecko granularity:
  * - 1 day: 5-minutely data (round to nearest 5 minutes)
@@ -31,30 +33,95 @@ export const roundTimestampByPeriod = (ts, days) => {
   return m.startOf('hour').unix()
 }
 
-export const normalizeSimpleDerivedChartData = data => {
+const periodToSeconds = (timeframe, aggregate) => {
+  const aggregateNum = Number(aggregate) || 1
+  if (timeframe === 'minute') return aggregateNum * 60
+  if (timeframe === 'hour') return aggregateNum * 60 * 60
+  if (timeframe === 'day') return aggregateNum * 24 * 60 * 60
+  return 60 * 60 // default to hour
+}
+
+const findNearestEntryByTimestamp = (tokenArr, ts) => {
+  if (!tokenArr || tokenArr.length === 0) return null
+
+  // Find the most recent entry before or at the timestamp (previous point)
+  let previousEntry = null
+  let maxTs = -Infinity
+
+  for (const entry of tokenArr) {
+    const entryTs = Number(entry.timestamp)
+    if (entryTs <= ts && entryTs > maxTs) {
+      maxTs = entryTs
+      previousEntry = entry
+    }
+  }
+
+  // If no previous entry found, use the earliest entry
+  if (!previousEntry && tokenArr.length > 0) {
+    return tokenArr.reduce((earliest, entry) => {
+      const entryTs = Number(entry.timestamp || entry.time)
+      const earliestTs = Number(earliest.timestamp || earliest.time)
+      return entryTs < earliestTs ? entry : earliest
+    })
+  }
+
+  return previousEntry
+}
+
+export const normalizeSimpleDerivedChartData = (data, timeWindow) => {
+  if (!timeWindow) {
+    throw new Error('timeWindow is required to normalize simple derived chart data')
+  }
   if (!data?.token0DerivedUSD || data?.token0DerivedUSD.length === 0) {
     return []
   }
 
-  const token1DerivedUSDEntryMap = fromPairs(data?.token1DerivedUSD?.map(entry => [entry.timestamp, entry]) ?? [])
+  // Generate complete time map based on timeWindow configuration
+  const config = OHLCV_TIMEFRAME_MAP[timeWindow]
+  if (!config) {
+    return []
+  }
 
-  const timeMap = new Map()
+  const { limit: span, timeframe, aggregate } = config
+  const periodSeconds = periodToSeconds(timeframe, aggregate)
+  const days = CHART_CONFIG[timeWindow] || 1
 
-  data?.token0DerivedUSD.forEach(token0DerivedUSDEntry => {
-    const token1DerivedUSDEntry = token1DerivedUSDEntryMap[token0DerivedUSDEntry.timestamp]
-    if (token1DerivedUSDEntry && token1DerivedUSDEntry.derivedUSD > 0) {
-      const time = parseInt(token0DerivedUSDEntry.timestamp, 10)
-      timeMap.set(time, {
-        time,
-        token0Id: token0DerivedUSDEntry.tokenAddress,
-        token1Id: token1DerivedUSDEntry.tokenAddress,
-        token0DerivedUSD: token0DerivedUSDEntry.derivedUSD,
-        token1DerivedUSD: token1DerivedUSDEntry.derivedUSD,
+  const endTimestampUnix = dayjs().unix()
+  const roundedEndTs = roundTimestampByPeriod(endTimestampUnix, days)
+
+  const token0Map = fromPairs(data?.token0DerivedUSD?.map(entry => [entry.timestamp, entry]) ?? [])
+  const token1Map = fromPairs(data?.token1DerivedUSD?.map(entry => [entry.timestamp, entry]) ?? [])
+
+  const token0Arr = data?.token0DerivedUSD || []
+  const token1Arr = data?.token1DerivedUSD || []
+
+  const normalizedData = []
+  for (let i = 0; i < span; i++) {
+    const ts = roundedEndTs - i * periodSeconds
+
+    let token0Entry = token0Map[ts.toString()]
+    let token1Entry = token1Map[ts.toString()]
+
+    if (!token0Entry) {
+      token0Entry = findNearestEntryByTimestamp(token0Arr, ts)
+    }
+    if (!token1Entry) {
+      token1Entry = findNearestEntryByTimestamp(token1Arr, ts)
+    }
+
+    if (token0Entry && token1Entry && token1Entry.derivedUSD > 0) {
+      normalizedData.push({
+        time: ts,
+        timestamp: ts.toString(),
+        token0Id: token0Entry.tokenAddress,
+        token1Id: token1Entry.tokenAddress,
+        token0DerivedUSD: token0Entry.derivedUSD,
+        token1DerivedUSD: token1Entry.derivedUSD,
       })
     }
-  })
+  }
 
-  return Array.from(timeMap.values()).sort((a, b) => a.time - b.time)
+  return normalizedData.sort((a, b) => a.time - b.time)
 }
 
 export const normalizeSimpleDerivedPairDataByActiveToken = ({ pairData, activeToken }) =>

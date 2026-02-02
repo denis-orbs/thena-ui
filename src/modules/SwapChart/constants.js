@@ -15,11 +15,38 @@ export const CHART_CONFIG = {
   [PairDataTimeWindow.YEAR]: 365,
 }
 
+export const OHLCV_TIMEFRAME_MAP = {
+  [PairDataTimeWindow.DAY]: {
+    timeframe: 'minute',
+    aggregate: 5,
+    limit: 288,
+  },
+  [PairDataTimeWindow.WEEK]: {
+    timeframe: 'hour',
+    aggregate: '1',
+    limit: 168,
+  },
+  [PairDataTimeWindow.MONTH]: {
+    timeframe: 'hour',
+    aggregate: '1',
+    limit: 720,
+  },
+  [PairDataTimeWindow.YEAR]: {
+    timeframe: 'day',
+    aggregate: '1',
+    limit: 365,
+  },
+}
+
 export const CHAIN_MAP = {
   [ChainId.BSC]: 'binance-smart-chain',
   [ChainId.OPBNB]: 'opbnb',
 }
 
+export const OHLCV_CHAIN_MAP = {
+  [ChainId.BSC]: 'bsc',
+  [ChainId.OPBNB]: 'opbnb',
+}
 export const TOKEN_MAPPING = {
   // USDD bsc -> USDD ethereum
   '0x45e51bc23d592eb2dba86da3985299f7895d66ba': {
