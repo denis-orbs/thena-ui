@@ -28,7 +28,7 @@ const VeRewardsContext = React.createContext({
 
 const USER_POOL_VOTES_QUERY = gql`
   query USER_POOL_VOTES_QUERY($user: String!, $first: Int = 1000, $skip: Int = 0) {
-    userPoolVotes(where: { user: $user, pool_: { isActive: true } }, first: $first, skip: $skip) {
+    userPoolVotes(where: { user: $user }, first: $first, skip: $skip) {
       pool {
         id
         votingIncentive

@@ -54,10 +54,7 @@ const getVoteListData = async (chainId, voter) => {
 const VOTING_REWARDS_QUERY = gql`
   query votingRewards($skip: Int!, $epochStartTimestamps: [BigInt!]!, $poolAddresses: [String!]!) {
     poolRewards: votingRewards(
-      where: {
-        votingIncentive_: { isActive: true, pool_in: $poolAddresses }
-        epochStartTimestamp_in: $epochStartTimestamps
-      }
+      where: { votingIncentive_: { pool_in: $poolAddresses }, epochStartTimestamp_in: $epochStartTimestamps }
       first: 1000
       skip: $skip
       orderBy: epochStartTimestamp
@@ -115,11 +112,7 @@ const getVotingRewardsData = async (chainId, epochStartTimestamps, poolAddresses
 
 const POOL_VOTE_PER_EPOCH_QUERY = gql`
   query poolVotePerEpoches($skip: Int!, $epochStartTimestamps: [BigInt!]!) {
-    poolVotePerEpoches(
-      first: 1000
-      skip: $skip
-      where: { votingIncentive_: { isActive: true }, epochStartTimestamp_in: $epochStartTimestamps }
-    ) {
+    poolVotePerEpoches(first: 1000, skip: $skip, where: { epochStartTimestamp_in: $epochStartTimestamps }) {
       epochStartTimestamp
       totalVotes
       pool
@@ -199,7 +192,7 @@ const VOTE_HISTORIES_QUERY = tokenId => gql`
         tokenId
         epochStartTimestamp
         vetheBalance
-        poolVotes: userPoolVotes(where: { isRemoved: false, votingIncentive_: { isActive: true } }) {
+        poolVotes: userPoolVotes(where: { isRemoved: false }) {
           totalWeight
           weight
           totalVotes
@@ -236,6 +229,9 @@ const fetchVotingHistory = async ({ tokenId, limit = 10, skip = 0, userAddress, 
       getVoteListData(chainId, userAddress),
       getVoteHistoriesData(chainId, userAddress, tokenId, limit, skip),
     ])
+
+    console.log('voteList :>> ', voteList)
+    console.log('history :>> ', history)
 
     const epochStartTimestamps = history.map(h => h.epochStartTimestamp)
     const poolAddresses = history.reduce((acc, curr) => {
