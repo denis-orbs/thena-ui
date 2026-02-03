@@ -29,23 +29,27 @@ export const getNPMContract = (chainId, version) => ({
 
 export function collectAndClaimRewards({ positions, chainId, account }) {
   const farmingCenter = getFarmingCenterContract(chainId)
-
   const calldata = []
-  for (const item of positions) {
-    const collectData = encodeFunctionData({
-      abi: farmingCenter.abi,
-      functionName: 'collectRewards',
-      args: [item.poolKey, item.tokenId],
-    })
-    calldata.push(collectData)
-  }
 
-  const claimRewardData = encodeFunctionData({
-    abi: farmingCenter.abi,
-    functionName: 'claimReward',
-    args: [Contracts.THE[chainId], account, maxUint256],
-  })
-  calldata.push(claimRewardData)
+  try {
+    for (const item of positions) {
+      const collectData = encodeFunctionData({
+        abi: farmingCenter.abi,
+        functionName: 'collectRewards',
+        args: [item.poolKey, item.tokenId],
+      })
+      calldata.push(collectData)
+    }
+
+    const claimRewardData = encodeFunctionData({
+      abi: farmingCenter.abi,
+      functionName: 'claimReward',
+      args: [Contracts.THE[chainId], account, maxUint256],
+    })
+    calldata.push(claimRewardData)
+  } catch (error) {
+    return []
+  }
 
   return calldata
 }

@@ -89,8 +89,16 @@ function AssetsOverview({
         }
       } else if (pos.fees?.[0] > 0n || pos.fees?.[1] > 0n) {
         const [reward0, reward1] = pos.rewards
+        const price0 = pos.asset0.price
+        const price1 = pos.asset1.price
+        const amount0 = fromWei(pos.fees[0], pos.asset0.decimals)
+        const amount1 = fromWei(pos.fees[1], pos.asset1.decimals)
+        const amountInUsd0 = amount0.times(price0)
+        const amountInUsd1 = amount1.times(price1)
+        const amountInUsd = amountInUsd0.plus(amountInUsd1).toNumber()
         addFees({
           amount: [reward0.amount, reward1.amount],
+          amountInUsd,
           symbol: pos.symbol,
           type: pos.version === 2 ? 'manualV2' : 'manualV3',
           args: [account, pos.tokenId, pos.version],
