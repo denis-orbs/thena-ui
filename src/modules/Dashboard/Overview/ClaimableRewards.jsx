@@ -6,8 +6,8 @@ import { useVeTHEsContext } from '@/app/dashboard/VeTHEsContext'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading, Paragraph } from '@/components/typography'
-import { useGaugeAllHarvest } from '@/hooks/useGauge'
 import usePrices from '@/hooks/usePrices'
+import { useRewardPosition } from '@/hooks/useRewardPosition'
 import { useNftClaimAllReward, useTheNftAccountInfo } from '@/hooks/useTheNft'
 import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import { useFarmRewards } from '@/state/farmReward/store'
@@ -22,9 +22,9 @@ function ClaimableRewards({ setClaimableRewards }) {
   const { veRewardsV3, veRewardsV3Mutate, veRewardsV2, veRewardsV2Mutate } = useContext(VeRewardsContext)
   const { veTHEs } = useVeTHEsContext()
   const { claimableUSD, pendingReward: royaltyRewards } = useTheNftAccountInfo()
-  const { rewards } = useFarmRewards()
+  const { rewards, fees } = useFarmRewards()
 
-  const { onGaugeAllHarvest, pending } = useGaugeAllHarvest()
+  const { onClaimAllRewardPosition, pending } = useRewardPosition()
   const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
   const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
   const { onTheNftClaim, pending: theNftPending } = useNftClaimAllReward()
@@ -34,6 +34,7 @@ function ClaimableRewards({ setClaimableRewards }) {
   const farmedRewards = useMemo(() => {
     let totalThe = ZERO_VALUE
     let totalUsd = ZERO_VALUE
+    let totalFeesUsd = ZERO_VALUE
     Object.values(rewards).forEach(list => {
       list.forEach((val, key) => {
         if (key.includes('ichi-single-sided')) {
@@ -43,8 +44,13 @@ function ClaimableRewards({ setClaimableRewards }) {
         }
       })
     })
-    return totalThe.times(prices.THE).plus(totalUsd).toNumber()
-  }, [prices.THE, rewards])
+    Object.values(fees).forEach(list => {
+      list.forEach(val => {
+        totalFeesUsd = totalFeesUsd.plus(val.amountInUsd ?? 0)
+      })
+    })
+    return totalThe.times(prices.THE).plus(totalUsd).plus(totalFeesUsd).toNumber()
+  }, [prices.THE, rewards, fees])
 
   const totalVotingV2Rewards = useMemo(
     () => veRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
@@ -84,7 +90,7 @@ function ClaimableRewards({ setClaimableRewards }) {
   const onClaimAllRewards = useCallback(async () => {
     // Harvest pool rewards
     if (!pending && farmedRewards > 0) {
-      await onGaugeAllHarvest()
+      await onClaimAllRewardPosition()
     }
 
     // Harvest voting V2 rewards
@@ -109,7 +115,7 @@ function ClaimableRewards({ setClaimableRewards }) {
     theNftPending,
     theNftRewards,
     onTheNftClaim,
-    onGaugeAllHarvest,
+    onClaimAllRewardPosition,
     handleClaimAllV2,
     veRewardsV2,
     veRewardsV2Mutate,

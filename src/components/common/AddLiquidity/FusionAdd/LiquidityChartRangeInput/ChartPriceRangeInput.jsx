@@ -194,9 +194,6 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.DAY,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.DAY)
-          setZoomFactor(1)
-          setBoundaryPrices(undefined)
-          setRange(2)
         },
       },
       {
@@ -204,9 +201,6 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.WEEK,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.WEEK)
-          setZoomFactor(1)
-          setBoundaryPrices(undefined)
-          setRange(2)
         },
       },
       {
@@ -214,9 +208,6 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.MONTH,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.MONTH)
-          setZoomFactor(1)
-          setBoundaryPrices(undefined)
-          setRange(2)
         },
       },
       {
@@ -224,14 +215,19 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.YEAR,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.YEAR)
-          setZoomFactor(1)
-          setBoundaryPrices(undefined)
-          setRange(2)
         },
       },
     ],
     [timeWindow],
   )
+
+  useEffect(() => {
+    if (timeWindow) {
+      setZoomFactor(1)
+      setBoundaryPrices(undefined)
+      setRange(2)
+    }
+  }, [timeWindow])
 
   const containerRef = useRef(null)
   const containerWidthRef = useRef(null)
