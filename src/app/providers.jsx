@@ -78,6 +78,9 @@ function IntlProvider({ children }) {
   React.useEffect(() => {
     if (locale !== LOCALES.en) {
       loadMessages(locale).then(setMessages)
+    } else {
+      // If English, set English messages
+      setMessages(enMessage)
     }
   }, [locale])
 
