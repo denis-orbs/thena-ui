@@ -382,6 +382,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 onRightRangeInput={onRightRangeInput}
                 setLastPrice={setLastPrice}
                 viewMode={Boolean(position)}
+                pair={pair}
               />
             ) : (
               <div

@@ -37,6 +37,7 @@ export function RangeAndPricePanel({
   onRightRangeInput,
   setLastPrice,
   viewMode = false,
+  pair,
 }) {
   const t = useTranslations()
   const [degenMode, setDegenMode] = useState(false)
@@ -208,6 +209,7 @@ export function RangeAndPricePanel({
                   strategy={null}
                   onShowModalSuccess={null}
                   position={position}
+                  pair={pair}
                   handleBack={null}
                 />
               </div>
@@ -229,6 +231,7 @@ export function RangeAndPricePanel({
             strategy={null}
             onShowModalSuccess={null}
             position={position}
+            pair={pair}
             handleBack={null}
           />
         ) : (

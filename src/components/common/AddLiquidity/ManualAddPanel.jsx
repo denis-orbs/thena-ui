@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageContent'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -25,12 +26,25 @@ export default function ManualAddPanel({
   onShowModalSuccess,
   position,
   handleBack,
+  pair,
 }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
   const { isLgDown } = useMediaQuery()
+
+  // check if the position is farming and the gauge is alive
+  const isDisabledDeposit = useMemo(() => {
+    if (!position || !pair) return false
+    const pos = position?._position
+    const isFarmingPos = pos.deployer === zeroAddress
+    if (!isFarmingPos) return false
+    if (pair.subpools.find(sub => sub.title === 'CL_Farming' && sub.gauge?.isAlive)) {
+      return false
+    }
+    return true
+  }, [position, pair])
 
   useEffect(() => {
     if (!strategy?.isFarming) {
@@ -87,50 +101,61 @@ export default function ManualAddPanel({
         </div>
         <SlippageContent setSlippage={setSlippage} slippage={slippage} show={show} marginTop={4} />
       </>
-      {isZapper && (
-        <>
-          {position && position?._position?.tokenId ? (
-            <KyberZapperIncreasePane
-              position={position}
-              onShowModalSuccess={onShowModalSuccess}
-              slippage={slippage}
-              classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!' }}
-            />
-          ) : (
-            <KyberZapperPane
+      <>
+        {isZapper && (
+          <>
+            {position && position?._position?.tokenId ? (
+              <KyberZapperIncreasePane
+                position={position}
+                onShowModalSuccess={onShowModalSuccess}
+                slippage={slippage}
+                classNames={{
+                  input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!',
+                }}
+                isDisabledDeposit={isDisabledDeposit}
+              />
+            ) : (
+              <KyberZapperPane
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                mintInfo={mintInfo}
+                currentPrice={currentPrice}
+                strategy={strategy}
+                onShowModalSuccess={onShowModalSuccess}
+                handleBack={handleBack}
+                slippage={slippage}
+                classNames={{
+                  input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!',
+                }}
+                isDisabledDeposit={isDisabledDeposit}
+              />
+            )}
+          </>
+        )}
+
+        {!isZapper && (
+          <div className='mt-2'>
+            <ManualAdd
               baseCurrency={baseCurrency}
               quoteCurrency={quoteCurrency}
+              setBaseCurrency={setBaseCurrency}
+              setQuoteCurrency={setQuoteCurrency}
               mintInfo={mintInfo}
               currentPrice={currentPrice}
               strategy={strategy}
               onShowModalSuccess={onShowModalSuccess}
+              position={position}
               handleBack={handleBack}
               slippage={slippage}
-              classNames={{ input: 'bg-neutral-950! hover:bg-neutral-900! gap-1! max-xl:py-4!' }}
+              className={cn(position && 'grid grid-cols-1! gap-2!')}
+              classNames={{
+                input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!',
+              }}
+              isDisabledDeposit={isDisabledDeposit}
             />
-          )}
-        </>
-      )}
-
-      {!isZapper && (
-        <div className='mt-2'>
-          <ManualAdd
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            setBaseCurrency={setBaseCurrency}
-            setQuoteCurrency={setQuoteCurrency}
-            mintInfo={mintInfo}
-            currentPrice={currentPrice}
-            strategy={strategy}
-            onShowModalSuccess={onShowModalSuccess}
-            position={position}
-            handleBack={handleBack}
-            slippage={slippage}
-            className={cn(position && 'grid grid-cols-1! gap-2!')}
-            classNames={{ input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!' }}
-          />
-        </div>
-      )}
+          </div>
+        )}
+      </>
     </div>
   )
 }

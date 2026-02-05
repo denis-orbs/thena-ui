@@ -88,6 +88,7 @@ export default function DepositCLPanel({
         position={position}
         handleBack={handleBack}
         slippage={slippage}
+        pair={pair}
       />
       <div className='hidden xl:block'>
         <PoolAttributes pair={pair} strategy={strategy} />

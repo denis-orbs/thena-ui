@@ -33,6 +33,7 @@ function KyberZapperPane({
   handleBack,
   slippage = 0.5,
   classNames,
+  isDisabledDeposit,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -93,7 +94,10 @@ function KyberZapperPane({
     [asset0, asset1],
   )
 
-  const isDisabled = useMemo(() => isFetching || !data?.route || isENFPool, [data, isFetching, isENFPool])
+  const isDisabled = useMemo(
+    () => isFetching || !data?.route || isENFPool || isDisabledDeposit,
+    [data, isFetching, isENFPool, isDisabledDeposit],
+  )
 
   const [liquidityAdded, addLiquidityAction, swaps] = useMemo(() => {
     const liquidityData = data?.positionDetails?.addedLiquidity

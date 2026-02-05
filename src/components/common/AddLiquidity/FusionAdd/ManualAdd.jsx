@@ -32,6 +32,7 @@ export default function ManualAdd({
   slippage = 0.5,
   className,
   classNames,
+  isDisabledDeposit,
 }) {
   const t = useTranslations()
   const stableAssets = useStableTokens()
@@ -147,7 +148,7 @@ export default function ManualAdd({
         </EmphasisButton>
         {account ? (
           <PrimaryButton
-            disabled={pending || isPendingIncrease}
+            disabled={pending || isPendingIncrease || isDisabledDeposit}
             onClick={onAddLiquidity}
             className='w-full xl:font-medium'
           >

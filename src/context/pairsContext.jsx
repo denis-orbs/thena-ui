@@ -64,7 +64,15 @@ const usePairs = () => {
 
     const result = data.map(pair => {
       const subpools = [...pools, ...vaults]
-        .filter(ele => ele.basePool.toLowerCase() === pair.address.toLowerCase())
+        .filter(ele => {
+          if (ele.basePool.toLowerCase() === pair.address.toLowerCase()) {
+            if (ele.title === 'CL_Farming' && !ele.gauge?.isAlive) {
+              return false
+            }
+            return true
+          }
+          return false
+        })
         .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
 
       const hasCLFarming = subpools.some(sub => sub.title === 'CL_Farming')

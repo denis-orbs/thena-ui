@@ -190,7 +190,7 @@ export function ManualPaneV1({
         </EmphasisButton>
         {account ? (
           <>
-            {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (
+            {strategy && strategy.gauge.address !== zeroAddress && strategy.gauge.isAlive && strategy.version === 3 ? (
               // Has gauge => Can deposit/stake
               <PrimaryButton disabled={stakePending} onClick={() => onAddAndStake()}>
                 {t('Deposit & Stake')}

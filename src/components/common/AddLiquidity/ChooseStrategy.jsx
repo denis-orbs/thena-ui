@@ -92,7 +92,10 @@ export function StrategyTitle({
     [isAutomatic, toggleStrategyType, t],
   )
 
-  const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
+  const hasFarming = useMemo(
+    () => pair?.subpools?.some(pool => pool.title === 'CL_Farming' && pool.gauge.isAlive),
+    [pair?.subpools],
+  )
   const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
   const hasToggle = useMemo(() => hasSwapFee && hasFarming && !isAutomatic, [hasFarming, hasSwapFee, isAutomatic])

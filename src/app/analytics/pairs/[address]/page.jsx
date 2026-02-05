@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
 import Loading from '@/app/loading'
@@ -120,6 +120,12 @@ export default function PairDetailPage({ params }) {
     },
     [handleChooseStrategy, pair?.subpools],
   )
+
+  useEffect(() => {
+    if (currentStrategy.title !== strategy?.title) {
+      handleChooseStrategy(currentStrategy)
+    }
+  }, [currentStrategy, handleChooseStrategy, strategy])
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
