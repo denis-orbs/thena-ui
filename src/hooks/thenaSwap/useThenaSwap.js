@@ -128,9 +128,6 @@ const calculateCommandsInput = ({
   }
 
   route.forEach(hop => {
-    const isLastHop = route.indexOf(hop) === route.length - 1
-    const shouldUnwrap = isLastHop && tokenOut?.symbol === 'BNB'
-    const recipient = shouldUnwrap ? routerAddress : isLastHop ? userAddress : routerAddress
     const cmd = getCommands(hop.protocol, tradeType)
     const hopInputToken = hop.route?.input || hop.route?.tokenPath?.[0]
     const hopInputDecimals = hopInputToken?.decimals || tokenIn?.decimals
@@ -147,6 +144,8 @@ const calculateCommandsInput = ({
     const routes = []
 
     if (hop.protocol === PROTOCOL.SOLIDLY) {
+      const shouldUnwrap = tokenOut?.symbol === 'BNB'
+      const recipient = shouldUnwrap ? routerAddress : userAddress
       const pairs = hop.route?.pairs || []
       const path = hop.route?.path || []
       if (pairs.length > 0 && path.length > 0) {
@@ -171,6 +170,8 @@ const calculateCommandsInput = ({
         }),
       )
     } else {
+      const shouldUnwrap = tokenOut?.symbol === 'BNB'
+      const recipient = shouldUnwrap ? routerAddress : userAddress
       const path = (hop.route?.tokenPath || []).map(tk => tk.address)
       inputs.push(
         encIntegralExactInput(
@@ -187,7 +188,7 @@ const calculateCommandsInput = ({
     }
     commands.push(cmd)
 
-    if (isLastHop && tokenOut?.symbol === 'BNB') {
+    if (tokenOut?.symbol === 'BNB') {
       commands.push(SWAP_COMMANDS.WRAPPED_TO_NATIVE)
       inputs.push(
         encodeAbiParameters(parseAbiParameters('uint256, address'), [
