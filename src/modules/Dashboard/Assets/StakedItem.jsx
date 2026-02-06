@@ -296,14 +296,14 @@ function StakedItem({ position, isXlDown }) {
           </div>
         ) : (
           <div className='flex items-center gap-1 max-xl:justify-end'>
-            <TextHeading>${formatAmount(position.account.earnedUsd)}</TextHeading>
-            {position.account.earnedUsd.gt(0) && (
+            <TextHeading>${formatAmount(position?.account?.earnedUsd?.toNumber() ?? 0)}</TextHeading>
+            {position?.account?.earnedUsd?.toNumber() > 0 && (
               <>
                 <InfoIcon
                   className='h-4 w-4 stroke-neutral-400 max-xl:hidden'
-                  data-tooltip-id={`stake-${position.address}-${position.account.earnedUsd}`}
+                  data-tooltip-id={`stake-${position.address}-${position?.account?.earnedUsd?.toNumber() ?? 0}`}
                 />
-                <CustomTooltip id={`stake-${position.address}-${position.account.earnedUsd}`}>
+                <CustomTooltip id={`stake-${position.address}-${position?.account?.earnedUsd?.toNumber() ?? 0}`}>
                   <div>
                     {position.account.gaugeEarned && <p>{`${formatAmount(position.account.gaugeEarned)} THE`}</p>}
                     {position.account.earned0 && (
@@ -349,7 +349,8 @@ function StakedItem({ position, isXlDown }) {
           disabled={
             claimPending ||
             isSwapFee ||
-            (!findNewIchiStrategy(position.address) && position.version === 3 && ICHI_TYPES.includes(position.title))
+            (!findNewIchiStrategy(position.address) && position.version === 3 && ICHI_TYPES.includes(position.title)) ||
+            !position?.account?.earnedUsd?.toNumber() > 0
           }
         >
           {t('Claim')}
@@ -411,6 +412,7 @@ function StakedItem({ position, isXlDown }) {
       </div>
     )
   }, [
+    position?.account.earnedUsd,
     claimPending,
     handleAdd,
     handleHarvest,

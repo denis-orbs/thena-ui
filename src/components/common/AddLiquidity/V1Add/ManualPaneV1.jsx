@@ -1,3 +1,4 @@
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useMemo, useState } from 'react'
@@ -36,6 +37,8 @@ export function ManualPaneV1({
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
   const [showModalSuccess, setShowModalSuccess] = useState(false)
   const [poolAddress, setPoolAddress] = useState('')
+  const searchParams = useSearchParams()
+  const isStake = searchParams.get('staked') === 'true' ?? false
 
   const isFromBNB = useMemo(
     () => ['BNB', WBNB[networkId].address.toLowerCase()].includes(firstAsset?.address),
@@ -197,7 +200,7 @@ export function ManualPaneV1({
               </PrimaryButton>
             ) : (
               // No gauge => Can only deposit
-              <PrimaryButton disabled={pending} onClick={() => onAddLiquidity()} className='flex-1'>
+              <PrimaryButton disabled={pending || isStake} onClick={() => onAddLiquidity()} className='flex-1'>
                 {t('Deposit')}
               </PrimaryButton>
             )}

@@ -175,7 +175,10 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         </EmphasisButton>
         <EmphasisButton
           className={cn('flex-1', {
-            hidden: ICHI_TYPES.includes(position?.title) && position?.version === 3,
+            hidden:
+              ICHI_TYPES.includes(position?.title) &&
+              !findNewIchiStrategy(position?.address) &&
+              position?.version === 3,
           })}
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}

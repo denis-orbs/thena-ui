@@ -122,7 +122,7 @@ export default function PairDetailPage({ params }) {
   )
 
   useEffect(() => {
-    if (currentStrategy.title !== strategy?.title) {
+    if (currentStrategy?.title !== strategy?.title) {
       handleChooseStrategy(currentStrategy)
     }
   }, [currentStrategy, handleChooseStrategy, strategy])
