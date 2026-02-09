@@ -17,6 +17,7 @@ export default function AddLiquidityCLPane({
   setBaseCurrency,
   setQuoteCurrency,
   position,
+  pair,
   handleBack,
 }) {
   const { strategy } = useV3MintState()
@@ -55,6 +56,7 @@ export default function AddLiquidityCLPane({
             onShowModalSuccess={onShowModalSuccess}
             position={position}
             handleBack={handleBack}
+            pair={pair}
           />
         )}
       </div>

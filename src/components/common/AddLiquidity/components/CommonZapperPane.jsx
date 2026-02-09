@@ -382,7 +382,7 @@ export function CommonZapperPane({
             className={cn(
               'w-full',
               !gauge && 'hidden',
-              gauge?.address === zeroAddress && 'hidden',
+              (gauge?.address === zeroAddress || !gauge?.isAlive) && 'hidden',
               strategy.version === 2 && 'hidden',
             )}
           >

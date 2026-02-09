@@ -246,7 +246,14 @@ export default function HeaderCLSection({
       Narrow_Farming: 4,
       Wide_Farming: 5,
     }
-    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+    return (
+      (pair?.subpools || [])
+        // not include CL_Farming with gauge not alive
+        .filter(
+          pool => (priority[pool.title] === 1 && pool.gauge.isAlive) || [2, 3, 4, 5].includes(priority[pool.title]),
+        )
+        .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
+    )
   }, [pair?.subpools])
 
   const swrKey = useMemo(

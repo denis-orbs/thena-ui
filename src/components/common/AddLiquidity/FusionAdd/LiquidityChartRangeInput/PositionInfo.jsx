@@ -106,7 +106,7 @@ function PositionInfo({ position }) {
             {t('Unstake')}
           </EmphasisButton>
         )}
-        {hasGauge && !position?.staked && (
+        {hasGauge && !position?.staked && position?.gauge?.isAlive && (
           <PrimaryButton
             disabled={stakePending || stakeV1Pending || stakeGammaPending}
             className='max-xl:flex-1'
@@ -121,6 +121,7 @@ function PositionInfo({ position }) {
     position.gauge?.address,
     position?.rewardUsd,
     position.staked,
+    position?.gauge?.isAlive,
     t,
     claimPending,
     harvestPending,

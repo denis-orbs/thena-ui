@@ -15,7 +15,7 @@ import { warnToast } from '@/lib/notify'
 import cn from '@/utils/classes'
 import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
-function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5, classNames }) {
+function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5, classNames, isDisabledDeposit }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { handleIncreaseLiquidity } = useKyberZapperAddLiquidity()
@@ -41,7 +41,7 @@ function KyberZapperIncreasePane({ position, onShowModalSuccess, slippage = 0.5,
     slippage: slippage * 100,
   })
 
-  const isDisabled = useMemo(() => isFetching || !data, [data, isFetching])
+  const isDisabled = useMemo(() => isFetching || !data || isDisabledDeposit, [data, isFetching, isDisabledDeposit])
 
   const tokens = useMemo(
     () => ({
