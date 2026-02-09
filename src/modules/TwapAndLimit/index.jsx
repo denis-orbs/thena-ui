@@ -2,7 +2,7 @@
 
 /* THENA Dev */
 /* eslint-disable simple-import-sort/imports */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import BN from 'bignumber.js'
 import { useChainId, useWalletClient } from 'wagmi'
@@ -14,7 +14,7 @@ import {
   ORBS_LOGO,
   ORBS_WEBSITE_URL,
   Partners,
-  TWAP,
+  SpotProvider,
   useDisclaimerPanel,
   useDstTokenPanel,
   useDurationPanel,
@@ -23,12 +23,11 @@ import {
   useInvertTradePanel,
   useLimitPricePanel,
   useOrderHistoryPanel,
-  useSrcTokenPanel,
-  useSubmitSwapPanel,
+  useSubmitOrderButton,
+  useSubmitOrderPanel,
   useTradesPanel,
   useTriggerPricePanel,
-  useTypedSrcAmount,
-} from '@orbs-network/twap-ui'
+} from '@orbs-network/spot-react'
 import { zeroAddress } from 'viem'
 import { toast } from 'react-toastify'
 import Image from 'next/image'
@@ -57,6 +56,7 @@ import { useSettings } from '@/state/settings/hooks'
 import Tabs from '@/components/tabs'
 import { formatAmount, toWei } from '@/utils/utils'
 import cn from '@/utils/classes'
+import Spinner from '@/components/spinner'
 
 const TwapContext = createContext({})
 
@@ -132,10 +132,8 @@ function InputContainer({ children, error, className }) {
 }
 
 function TokenPanel({ isSrcToken }) {
-  const srcTokenPanel = useSrcTokenPanel()
-  const dstTokenPanel = useDstTokenPanel()
-  const { value, onChange } = isSrcToken ? srcTokenPanel : dstTokenPanel
-  const { toAsset, fromAsset, setToAddress, setFromAddress } = useTwapContext()
+  const { value: dstAmount } = useDstTokenPanel()
+  const { toAsset, fromAsset, setToAddress, setFromAddress, setFromAmount, fromAmount } = useTwapContext()
 
   return (
     <TokenInput
@@ -143,10 +141,10 @@ function TokenPanel({ isSrcToken }) {
       setAsset={asset => (isSrcToken ? setFromAddress(asset.address) : setToAddress(asset.address))}
       setOtherAsset={asset => (isSrcToken ? setToAddress(asset.address) : setFromAddress(asset.address))}
       otherAsset={isSrcToken ? toAsset : fromAsset}
-      amount={value || ''}
+      amount={isSrcToken ? fromAmount : dstAmount || ''}
       readOnly={!isSrcToken}
       setAmount={it => {
-        onChange(typeof it === 'string' ? it : it.toString())
+        setFromAmount(typeof it === 'string' ? it : it.toString())
       }}
       autoFocus
       disabled={!isSrcToken}
@@ -218,6 +216,8 @@ function LimitPrice() {
   } = useLimitPricePanel()
 
   const { module } = useTwapContext()
+
+  if (module === Module.TAKE_PROFIT) return null
 
   return (
     <div className='flex flex-col gap-2'>
@@ -402,9 +402,12 @@ function DefaultButton({ onClick, className }) {
 }
 
 function TriggerPrice() {
-  const { price, onChange, toToken, hide, onPercentageChange, percentage, usd, error, onSetDefault, label, tooltip } =
+  const { price, onChange, toToken, onPercentageChange, percentage, usd, error, onSetDefault, label, tooltip } =
     useTriggerPricePanel()
-  if (hide) return null
+
+  const { module } = useTwapContext()
+
+  if (module !== Module.STOP_LOSS && module !== Module.TAKE_PROFIT) return null
 
   return (
     <>
@@ -541,7 +544,7 @@ function OrderHistoryCancelOrdersButtons() {
 }
 
 function OrdersModal() {
-  const { onClosePreview, selectedOrder, statuses, selectedStatus, onSelectStatus } = useOrderHistoryPanel()
+  const { onHideSelectedOrder, selectedOrder, statuses, selectedStatus, onSelectStatus } = useOrderHistoryPanel()
   const [isOpen, setIsOpen] = useState(false)
   const onOpenModal = useCallback(() => {
     setIsOpen(true)
@@ -555,11 +558,12 @@ function OrdersModal() {
   return (
     <>
       <Modal
-        onClickHandler={onClosePreview}
+        onClickHandler={onHideSelectedOrder}
         isBack={Boolean(selectedOrder)}
         isOpen={Boolean(isOpen)}
         closeModal={onCloseModal}
         width={520}
+        isIntl
         title={selectedOrder ? selectedOrder.title : 'Orders'}
         fontSizeTitle='text-xl lg:text-2xl'
       >
@@ -592,7 +596,8 @@ function getWeiBalanceFromAsset(asset) {
   return toWei(asset.balance, asset.decimals).toString()
 }
 
-function ShowConfirmationButton({ text, onClick, disabled: _disabled }) {
+function ShowConfirmationButton({ onClick }) {
+  const { text, disabled: _disabled } = useSubmitOrderButton()
   const { account } = useWallet()
   const { quotePending, isWrap, isUnwrap, wrapPending, onWrap, onUnwrap, fromAmount } = useTwapContext()
 
@@ -632,7 +637,8 @@ function ShowConfirmationButton({ text, onClick, disabled: _disabled }) {
 }
 
 function SubmitOrderPanel() {
-  const { onCloseModal, onOpenModal, onSubmitOrder, openSubmitModalButton, status, swapLoading } = useSubmitSwapPanel()
+  const { onCloseModal, onOpenModal, onSubmit, status, allowanceLoading } = useSubmitOrderPanel()
+
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -663,22 +669,18 @@ function SubmitOrderPanel() {
                   <Toggle checked={disclaimerAccepted} onChange={() => setDisclaimerAccepted(!disclaimerAccepted)} />
                 </div>
                 <PrimaryButton
-                  disabled={!disclaimerAccepted || swapLoading}
+                  disabled={!disclaimerAccepted || allowanceLoading}
                   className={`mt-3 w-full ${!disclaimerAccepted ? 'opacity-50' : ''}`}
-                  onClick={onSubmitOrder}
+                  onClick={onSubmit}
                 >
-                  Confirm Order
+                  {allowanceLoading ? <Spinner /> : 'Confirm Order'}
                 </PrimaryButton>
               </div>
             }
           />
         </div>
       </Modal>
-      <ShowConfirmationButton
-        text={openSubmitModalButton.text}
-        onClick={onOpen}
-        disabled={openSubmitModalButton.disabled}
-      />
+      <ShowConfirmationButton onClick={onOpen} />
     </>
   )
 }
@@ -764,17 +766,6 @@ const useGetTranslation = () => {
   )
 }
 
-function Listener() {
-  const { setFromAmount } = useTwapContext()
-  const { amount: typedSrcAmount } = useTypedSrcAmount()
-
-  useEffect(() => {
-    setFromAmount(typedSrcAmount)
-  }, [setFromAmount, typedSrcAmount])
-
-  return null
-}
-
 function useMarketReferencePrice(fromAmount, outAmount, quotePending) {
   return useMemo(
     () => ({
@@ -787,29 +778,28 @@ function useMarketReferencePrice(fromAmount, outAmount, quotePending) {
 }
 
 function PercentTabs() {
-  const { onChange } = useSrcTokenPanel()
-  const { fromAsset } = useTwapContext()
+  const { fromAsset, setFromAmount } = useTwapContext()
 
   const percents = useMemo(
     () => [
       {
         label: '10%',
-        onClickHandler: () => onChange(fromAsset?.balance.times(0.1).toString(10) || '0'),
+        onClickHandler: () => setFromAmount(fromAsset?.balance.times(0.1).toString(10) || '0'),
       },
       {
         label: '25%',
-        onClickHandler: () => onChange(fromAsset?.balance.times(0.25).toString(10) || '0'),
+        onClickHandler: () => setFromAmount(fromAsset?.balance.times(0.25).toString(10) || '0'),
       },
       {
         label: '50%',
-        onClickHandler: () => onChange(fromAsset?.balance.times(0.5).toString(10) || '0'),
+        onClickHandler: () => setFromAmount(fromAsset?.balance.times(0.5).toString(10) || '0'),
       },
       {
         label: 'Max',
-        onClickHandler: () => onChange(fromAsset?.balance.toString(10) || '0'),
+        onClickHandler: () => setFromAmount(fromAsset?.balance.toString(10) || '0'),
       },
     ],
-    [fromAsset, onChange],
+    [fromAsset, setFromAmount],
   )
 
   return <Tabs data={percents} className='w-full justify-end' />
@@ -818,7 +808,7 @@ function PercentTabs() {
 export function Twap(props) {
   const { account } = useWallet()
   const chainId = useChainId()
-  const { fromAsset, toAsset, swapType, fromAmount, outAmount, quotePending } = props
+  const { fromAsset, toAsset, swapType, fromAmount, outAmount, quotePending, setFromAmount } = props
   const { data: walletClient } = useWalletClient()
   const moduleType = useModule(swapType)
   const { priceProtection } = useSettings()
@@ -826,11 +816,12 @@ export function Twap(props) {
   const marketReferencePrice = useMarketReferencePrice(fromAmount, outAmount, quotePending)
   const refetchBalances = useMutateAssets()
   const getTranslation = useGetTranslation()
+  const resetTypedInputAmount = useCallback(() => setFromAmount(''), [setFromAmount])
 
   return (
     <TwapContextProvider props={props} module={moduleType}>
-      <TWAP
-        partner={Partners.THENA}
+      <SpotProvider
+        partner={Partners.Thena}
         provider={walletClient?.transport}
         chainId={chainId}
         account={account}
@@ -848,6 +839,8 @@ export function Twap(props) {
         refetchBalances={refetchBalances}
         callbacks={callbacks}
         useToken={useToken}
+        resetTypedInputAmount={resetTypedInputAmount}
+        typedInputAmount={fromAmount}
         components={{
           Tooltip,
           Button,
@@ -872,8 +865,7 @@ export function Twap(props) {
             <PoweredByOrbs />
           </div>
         </Portal>
-      </TWAP>
-      <Listener />
+      </SpotProvider>
     </TwapContextProvider>
   )
 }
