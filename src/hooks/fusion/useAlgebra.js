@@ -558,7 +558,7 @@ export const useAlgebraRemove = (version = 3) => {
                 hash: null,
               },
             }),
-          ...(rewardAmount > 0 && {
+          ...((rewardAmount > 0 || (Number(liquidityPercentage.toSignificant()) >= 100 && isFarmingPosition)) && {
             [claimRewardId]: {
               desc: t('Claim Rewards'),
               status: TXN_STATUS.START,
@@ -586,7 +586,7 @@ export const useAlgebraRemove = (version = 3) => {
         }
       }
 
-      if (rewardAmount > 0) {
+      if (rewardAmount > 0 || (Number(liquidityPercentage.toSignificant()) >= 100 && isFarmingPosition)) {
         const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
 
         if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
