@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useId, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -21,6 +22,7 @@ import {
 import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import InfoIcon from '@/icons/InfoIcon'
+import { updateStrategy } from '@/state/fusion/actions'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
@@ -50,6 +52,7 @@ function NewListings({
   const t = useTranslations()
   const { push } = useRouter()
   const { isMdDown } = useMediaQuery()
+  const dispatch = useDispatch()
   const id = useId()
 
   const [sort, setSort] = useState(sortOptions[1])
@@ -372,7 +375,7 @@ function NewListings({
             onClick={e => {
               e.stopPropagation()
               e.preventDefault()
-
+              dispatch(updateStrategy({ strategy: null }))
               let url = `/pools/add-liquidity?step=3&poolAddress=${pool.address}`
               if (back) url += `&back=${back}`
               push(url)
@@ -397,6 +400,7 @@ function NewListings({
   }, [
     back,
     classNames?.rowItem,
+    dispatch,
     getDisplayedTitleAndSubTitle,
     id,
     isMdDown,

@@ -135,7 +135,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { isXlDown } = useMediaQuery()
 
   const searchParams = useSearchParams()
-  const pairType = searchParams.get('pairType')
+  const pairType = searchParams.get('type')
 
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
@@ -236,11 +236,11 @@ function AddLiquidityClPool({ pool, handleBack }) {
   }, [])
 
   useEffect(() => {
-    updateSearchParams({ isAutomatic: isAutomatic.toString() })
-    if (isAutomatic) {
-      updateSearchParams({ strategyType: null })
-    }
-  }, [isAutomatic, updateSearchParams])
+    updateSearchParams({
+      isAutomatic: isAutomatic ? 'true' : 'false',
+      strategyType: isAutomatic ? null : strategy?.title,
+    })
+  }, [isAutomatic, strategy?.title, updateSearchParams])
 
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {

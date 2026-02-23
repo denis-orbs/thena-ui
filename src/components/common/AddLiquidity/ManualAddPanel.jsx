@@ -38,7 +38,7 @@ export default function ManualAddPanel({
   const isDisabledDeposit = useMemo(() => {
     if (!position || !pair) return false
     const pos = position?._position
-    const isFarmingPos = pos.deployer === zeroAddress
+    const isFarmingPos = pos?.deployer === zeroAddress
     if (!isFarmingPos) return false
     if (pair.subpools.find(sub => sub.title === 'CL_Farming' && sub.gauge?.isAlive)) {
       return false
