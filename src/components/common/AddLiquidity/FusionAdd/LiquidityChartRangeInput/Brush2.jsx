@@ -109,17 +109,16 @@ const Brush2 = ({
 
   // Only update localBrushExtent if brushInProgress is false and value actually changed
   useEffect(() => {
-    if (brushInProgress) return
-    setLocalBrushExtent(prev => {
-      if (prev?.[0]?.toString() !== brushExtent?.[0]?.toString()) {
-        return [brushExtent?.[0], prev?.[1]]
-      }
-      if (prev?.[1]?.toString() !== brushExtent?.[1]?.toString()) {
-        return [prev?.[0], brushExtent?.[1]]
-      }
-      return prev
-    })
-  }, [brushExtent, brushInProgress])
+    if (brushInProgress || !brushExtent) return
+    if (brushExtent?.[0] !== localBrushExtent?.[0] && brushExtent?.[1] !== localBrushExtent?.[1]) {
+      setLocalBrushExtent(brushExtent)
+    } else if (brushExtent?.[0] !== localBrushExtent?.[0]) {
+      setLocalBrushExtent([brushExtent?.[0], localBrushExtent?.[1]])
+    } else if (brushExtent?.[1] !== localBrushExtent?.[1]) {
+      setLocalBrushExtent([localBrushExtent?.[0], brushExtent?.[1]])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brushExtent?.[0], brushExtent?.[1], brushInProgress, localBrushExtent?.[0], localBrushExtent?.[1]])
 
   // Debounced setter for brush extent
   const debounceRef = useRef()
