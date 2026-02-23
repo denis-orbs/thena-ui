@@ -110,8 +110,16 @@ const Brush2 = ({
   // Only update localBrushExtent if brushInProgress is false and value actually changed
   useEffect(() => {
     if (brushInProgress) return
-    if (localBrushExtent !== brushExtent) setLocalBrushExtent(brushExtent)
-  }, [brushExtent, brushInProgress, localBrushExtent])
+    setLocalBrushExtent(prev => {
+      if (prev?.[0]?.toString() !== brushExtent?.[0]?.toString()) {
+        return [brushExtent?.[0], prev?.[1]]
+      }
+      if (prev?.[1]?.toString() !== brushExtent?.[1]?.toString()) {
+        return [prev?.[0], brushExtent?.[1]]
+      }
+      return prev
+    })
+  }, [brushExtent, brushInProgress])
 
   // Debounced setter for brush extent
   const debounceRef = useRef()

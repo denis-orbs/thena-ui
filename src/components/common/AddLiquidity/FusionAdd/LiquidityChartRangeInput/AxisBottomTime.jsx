@@ -24,7 +24,7 @@ function ChartAxisTime({
         value,
       }))
 
-      return baseData
+      return baseData.sort((a, b) => a.time - b.time)
     }
     return []
   }, [data])
