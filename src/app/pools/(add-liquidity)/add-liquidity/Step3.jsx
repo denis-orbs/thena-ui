@@ -50,11 +50,6 @@ export default function Step3() {
       {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && (
         <AddLiquidityV1Pool pair={pair} handleBack={handleBack} />
       )}
-
-      {/* <div className='mt-16 hidden gap-4 md:flex'>
-        <EmphasisButton onClick={handleBack}>Back</EmphasisButton>
-        <TextButton onClick={() => router.push('/pools')}>Cancel</TextButton>
-      </div> */}
     </div>
   )
 }

@@ -20,6 +20,7 @@ import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
@@ -134,7 +135,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { isXlDown } = useMediaQuery()
 
   const searchParams = useSearchParams()
-  const type = searchParams.get('type')
+  const pairType = searchParams.get('pairType')
 
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
@@ -145,6 +146,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const title = searchParams.get('title')
   const staked = searchParams.get('staked')
   const isStaked = useMemo(() => staked === 'true', [staked])
+  const isAutomaticParam = searchParams.get('isAutomatic')
+
+  const updateSearchParams = useUpdateSearchParams()
 
   const pools = usePools()
   const vaults = useVaults()
@@ -162,7 +166,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const positionStaked = useStakedPosition(isStaked && userPool ? [userPool] : [])
   const positionNotStaked = useNotStakedPositions(!isStaked && userPool ? [userPool] : [])
 
-  const manualPosition = usePositionInfo({ tokenId: pid, poolAddress, type })
+  const manualPosition = usePositionInfo({ tokenId: pid, poolAddress, type: pairType })
 
   const position = title ? (isStaked ? positionStaked[0] : positionNotStaked[0]) : manualPosition
   const firstAsset = useGetAsset(firstAddress)
@@ -179,7 +183,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
-  const [isAutomatic, setIsAutomatic] = useState(!!(strategy?.isAutomatic ?? title))
+  const [isAutomatic, setIsAutomatic] = useState(() => {
+    if (isAutomaticParam !== null) {
+      return isAutomaticParam === 'true'
+    }
+    return !!(strategy?.isAutomatic ?? title)
+  })
   const [lastPrice, setLastPrice] = useState(null)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -227,6 +236,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
   }, [])
 
   useEffect(() => {
+    updateSearchParams({ isAutomatic: isAutomatic.toString() })
+    if (isAutomatic) {
+      updateSearchParams({ strategyType: null })
+    }
+  }, [isAutomatic, updateSearchParams])
+
+  useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
       setBaseCurrency(firstCurrency)
     }
@@ -268,8 +284,10 @@ function AddLiquidityClPool({ pool, handleBack }) {
   )
 
   useEffect(() => {
-    setIsAutomatic(strategy?.isAutomatic ?? false)
-  }, [strategy])
+    if (isAutomaticParam === null) {
+      setIsAutomatic(strategy?.isAutomatic ?? false)
+    }
+  }, [strategy, isAutomaticParam])
 
   const sortedSubPools = useMemo(() => {
     const priority = {
@@ -309,11 +327,11 @@ function AddLiquidityClPool({ pool, handleBack }) {
   )
 
   const isLoading = useMemo(() => {
-    if (pair && mintInfo.noLiquidity && (type === 'CL_Farming' || type === 'CL_SwapFee' || !isAutomatic)) {
+    if (pair && mintInfo.noLiquidity && (pairType === 'CL_Farming' || pairType === 'CL_SwapFee' || !isAutomatic)) {
       return true
     }
     return false
-  }, [isAutomatic, mintInfo.noLiquidity, pair, type])
+  }, [isAutomatic, mintInfo.noLiquidity, pair, pairType])
 
   useEffect(() => {
     if (position && (!strategy || strategy?.title !== position.title)) {
@@ -362,7 +380,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
           setFullRangeWarningShown={setFullRangeWarningShown}
           fullRangeWarningShown={fullRangeWarningShown}
           lastPrice={lastPrice}
-          type={type}
+          type={pairType}
           isLoading={isLoading}
         />
         {isLoading ? (
@@ -430,7 +448,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 mintInfo={mintInfo}
                 currentPrice={currentPrice}
                 strategy={strategy}
-                // onShowModalSuccess={onShowModalSuccess}
                 position={position}
                 handleBack={handleBack}
                 pair={pair}
