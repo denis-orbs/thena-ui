@@ -335,6 +335,7 @@ function PairStrategy({ pair }) {
             currencyA={baseCurrency ?? undefined}
             currencyB={quoteCurrency ?? undefined}
             feeAmount={mintInfo.dynamicFee}
+            tickSpacing={mintInfo.tickSpacing}
             ticksAtLimit={mintInfo.ticksAtLimit}
             price={price ? parseFloat(price) : undefined}
             priceLower={priceLower}
@@ -423,6 +424,7 @@ function PairStrategy({ pair }) {
             currencyA={baseCurrency ?? undefined}
             currencyB={quoteCurrency ?? undefined}
             feeAmount={mintInfo.dynamicFee}
+            tickSpacing={mintInfo.tickSpacing}
             ticksAtLimit={mintInfo.ticksAtLimit}
             price={price ? parseFloat(price) : undefined}
             priceLower={priceLower}

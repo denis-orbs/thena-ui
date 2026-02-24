@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -18,6 +18,7 @@ import { TextHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useBackURL } from '@/hooks/useBackURL'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
@@ -33,6 +34,8 @@ import TransactionTable from './PairTransaction'
 export default function PairDetailPage({ params }) {
   const t = useTranslations()
   const { push } = useRouter()
+  const searchParams = useSearchParams()
+  const updateSearchParams = useUpdateSearchParams()
   const { address } = params
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
@@ -44,6 +47,10 @@ export default function PairDetailPage({ params }) {
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
   )
+
+  // Get strategyType from URL params
+  const strategyTypeParam = searchParams.get('strategyType')
+
   const currentStrategy = useMemo(() => {
     if (pair && pair.type === PAIR_TYPES.LSD) {
       const strategyTitle = strategy ? strategy.title : MANUAL_TYPES[1]
@@ -117,15 +124,33 @@ export default function PairDetailPage({ params }) {
         shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
       )
       handleChooseStrategy(_strategy ?? defaultSwapFees)
+
+      updateSearchParams({ strategyType: targetValue })
     },
-    [handleChooseStrategy, pair?.subpools],
+    [handleChooseStrategy, pair?.subpools, updateSearchParams],
   )
 
+  // Initialize strategy from URL parameter or default strategy
   useEffect(() => {
+    if (!pair || pair.type !== PAIR_TYPES.LSD) return
+
+    // Priority 1: Use URL parameter if present
+    if (strategyTypeParam) {
+      const shouldBeFarming = strategyTypeParam === 'the'
+      const _strategy = pair.subpools.find(item =>
+        shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
+      )
+      if (_strategy && _strategy.title !== strategy?.title) {
+        handleChooseStrategy(_strategy)
+      }
+      return
+    }
+
+    // Priority 2: Use currentStrategy if no URL param
     if (currentStrategy?.title !== strategy?.title) {
       handleChooseStrategy(currentStrategy)
     }
-  }, [currentStrategy, handleChooseStrategy, strategy])
+  }, [pair, strategyTypeParam, currentStrategy, strategy?.title, handleChooseStrategy])
 
   if (isLoading || !pairs || !pair) {
     return <Loading />

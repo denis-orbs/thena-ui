@@ -138,6 +138,7 @@ export function RangeAndPricePanel({
             currencyA={currencyA ?? undefined}
             currencyB={currencyB ?? undefined}
             feeAmount={mintInfo.dynamicFee}
+            tickSpacing={mintInfo.tickSpacing}
             ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
             price={currentPrice ? parseFloat(currentPrice) : undefined}
             priceLower={position?.priceLower ?? priceLower}

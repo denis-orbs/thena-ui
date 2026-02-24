@@ -10,6 +10,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, THE_LOGO } from '@/constant'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { useAprStore } from '@/state/APR/store'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
@@ -228,10 +229,12 @@ export default function HeaderCLSection({
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
   const poolAddress = searchParams.get('poolAddress')
+  const strategyTypeParam = searchParams.get('strategyType')
   const { networkId } = useChainSettings()
   const { strategy } = useV3MintState()
   const { APRs } = useAprStore()
   const activePreset = useActivePreset()
+  const updateSearchParams = useUpdateSearchParams()
 
   const prevStrategyRef = useRef()
 
@@ -271,6 +274,14 @@ export default function HeaderCLSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [position?.pool?.isFarming, strategy?.title],
   )
+
+  // Update URL when strategy type changes (earnFees vs earnThe)
+  useEffect(() => {
+    if (MANUAL_TYPES.includes(strategy?.title)) {
+      const strategyType = strategy?.isFarming ? 'earnThe' : 'earnFees'
+      updateSearchParams({ strategyType })
+    }
+  }, [strategy?.title, strategy?.isFarming, updateSearchParams])
 
   // Stable callback for setting strategy
   const setStrategy = useCallback(
@@ -328,10 +339,21 @@ export default function HeaderCLSection({
     }
 
     if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
-      const defaultStrategy = sortedSubPools[0]
+      let defaultStrategy = sortedSubPools[0]
+
+      // Check URL param for strategy type preference
+      if (strategyTypeParam && MANUAL_TYPES.some(manualType => sortedSubPools.find(s => s.title === manualType))) {
+        const targetStrategy = sortedSubPools.find(item =>
+          strategyTypeParam === 'earnFees' ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+        )
+        if (targetStrategy) {
+          defaultStrategy = targetStrategy
+        }
+      }
+
       handleChooseStrategy(defaultStrategy || defaultSwapFees)
     }
-  }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])
+  }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy, strategyTypeParam])
 
   // Memoize automatic strategy data
   const strategyAutoData = useMemo(

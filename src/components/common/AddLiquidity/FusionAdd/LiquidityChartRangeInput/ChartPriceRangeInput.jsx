@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useDispatch } from 'react-redux'
+import { TickMath } from 'thenafi-fusion-sdk'
 
 import { Warning } from '@/components/alert'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -18,6 +19,7 @@ import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useV3MintState } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { tryParseTick } from '@/state/fusion/utils'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
@@ -57,6 +59,17 @@ const chartStyles = {
   },
 }
 
+// Validate tick range before updating
+const isValidTickRange = (priceValue, baseToken, quoteToken, feeAmount, tickSpacing) => {
+  if (!baseToken || !quoteToken || !feeAmount || !priceValue || priceValue <= 0) return false
+  try {
+    const tick = tryParseTick(baseToken, quoteToken, feeAmount, priceValue, tickSpacing)
+    return tick !== undefined && tick >= TickMath.MIN_TICK && tick <= TickMath.MAX_TICK
+  } catch (e) {
+    return false
+  }
+}
+
 export default function ChartPriceRangeInput({
   currencyA,
   currencyB,
@@ -79,6 +92,7 @@ export default function ChartPriceRangeInput({
   idChart = 'chart-price-range',
   label = 'Liquidity range',
   feeAmount,
+  tickSpacing,
   classNames,
   showLabel = true,
 }) {
@@ -255,6 +269,9 @@ export default function ChartPriceRangeInput({
         leftRangeValue = 1 / 10 ** 6
       }
 
+      const baseToken = isSorted ? currencyA?.wrapped : currencyB?.wrapped
+      const quoteToken = isSorted ? currencyB?.wrapped : currencyA?.wrapped
+
       if (handleShow) {
         batch(() => {
           // simulate user input for auto-formatting and other validations
@@ -262,14 +279,17 @@ export default function ChartPriceRangeInput({
             (!ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER] || mode === 'handle' || mode === 'reset') &&
             leftRangeValue > 0
           ) {
-            onLeftRangeInput(leftRangeValue.toFixed(6))
-            dispatch(updateSelectedPreset({ preset: null }))
+            // Check if leftRangeValue converts to valid tick
+            if (isValidTickRange(leftRangeValue, baseToken, quoteToken, feeAmount, tickSpacing)) {
+              onLeftRangeInput(leftRangeValue.toFixed(6))
+              dispatch(updateSelectedPreset({ preset: null }))
+            }
           }
 
           if ((!ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER] || mode === 'reset') && rightRangeValue > 0) {
             // todo: remove this check. Upper bound for large numbers
             // sometimes fails to parse to tick.
-            if (rightRangeValue < 1e35) {
+            if (isValidTickRange(rightRangeValue, baseToken, quoteToken, feeAmount, tickSpacing)) {
               onRightRangeInput(rightRangeValue.toFixed(6))
               dispatch(updateSelectedPreset({ preset: null }))
             }
@@ -277,7 +297,19 @@ export default function ChartPriceRangeInput({
         })
       }
     },
-    [boundaryPrices, handleShow, ticksAtLimit, isSorted, onLeftRangeInput, dispatch, onRightRangeInput],
+    [
+      boundaryPrices,
+      handleShow,
+      ticksAtLimit,
+      isSorted,
+      onLeftRangeInput,
+      dispatch,
+      onRightRangeInput,
+      currencyA,
+      currencyB,
+      feeAmount,
+      tickSpacing,
+    ],
   )
 
   // eslint-disable-next-line unused-imports/no-unused-vars
