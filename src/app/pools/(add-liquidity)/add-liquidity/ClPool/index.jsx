@@ -136,6 +136,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const searchParams = useSearchParams()
   const pairType = searchParams.get('type')
+  const strategyType = searchParams.get('strategyType')
 
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
@@ -238,9 +239,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
   useEffect(() => {
     updateSearchParams({
       isAutomatic: isAutomatic ? 'true' : 'false',
-      strategyType: isAutomatic ? null : strategy?.title,
+      strategyType: isAutomatic ? null : strategyType,
     })
-  }, [isAutomatic, strategy?.title, updateSearchParams])
+  }, [isAutomatic, strategyType, updateSearchParams])
 
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
