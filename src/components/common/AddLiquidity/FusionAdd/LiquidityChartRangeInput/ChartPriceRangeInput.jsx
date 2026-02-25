@@ -248,7 +248,7 @@ export default function ChartPriceRangeInput({
 
   const onBrushDomainChangeEnded = useCallback(
     (domain, mode) => {
-      if (domain[0] < 0) {
+      if (domain[0] < 0 || (!chartPriceFinishedRender && mode !== 'reset')) {
         return
       }
       // While scrolling we receive updates to the range because the yScale changes,
@@ -309,6 +309,7 @@ export default function ChartPriceRangeInput({
       currencyB,
       feeAmount,
       tickSpacing,
+      chartPriceFinishedRender,
     ],
   )
 
@@ -325,11 +326,13 @@ export default function ChartPriceRangeInput({
   )
 
   useEffect(() => {
+    const baseToken = isSorted ? currencyA?.wrapped : currencyB?.wrapped
+    const quoteToken = isSorted ? currencyB?.wrapped : currencyA?.wrapped
     if (
       priceLower &&
       priceUpper &&
-      Number(priceLower?.toSignificant(6)) > 2.9543e-39 &&
-      Number(priceUpper?.toSignificant(6)) < 3.3849e38 &&
+      isValidTickRange(Number(priceLower?.toSignificant(6)), baseToken, quoteToken, feeAmount, tickSpacing) &&
+      isValidTickRange(Number(priceUpper?.toSignificant(6)), baseToken, quoteToken, feeAmount, tickSpacing) &&
       zoomFactor === 1 &&
       !isFullRange &&
       (isOutOfView || isFlip)
@@ -356,7 +359,20 @@ export default function ChartPriceRangeInput({
     if (isFullRange) {
       setRange(2)
     }
-  }, [isOutOfView, zoomFactor, isFullRange, range, priceLower, priceUpper, isFlip])
+  }, [
+    isOutOfView,
+    zoomFactor,
+    isFullRange,
+    range,
+    priceLower,
+    priceUpper,
+    isFlip,
+    isSorted,
+    currencyA?.wrapped,
+    currencyB?.wrapped,
+    feeAmount,
+    tickSpacing,
+  ])
 
   useEffect(() => {
     const pairPricesLength = pairPrices.length
@@ -430,10 +446,10 @@ export default function ChartPriceRangeInput({
     () => ({
       series: formattedData || [],
       current: price ?? pairPrices[pairPrices.length - 1]?.value,
-      min: boundaryPrices?.[0],
-      max: boundaryPrices?.[1],
+      min: boundaryPrices?.[0] ?? minVisiblePrice,
+      max: boundaryPrices?.[1] ?? maxVisiblePrice,
     }),
-    [formattedData, price, pairPrices, boundaryPrices],
+    [formattedData, price, pairPrices, boundaryPrices, minVisiblePrice, maxVisiblePrice],
   )
 
   const dimensions = useMemo(
@@ -657,7 +673,7 @@ export default function ChartPriceRangeInput({
                           interactive={interactive}
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}
-                          handleShow={handleShow && brushDomain && chartPriceFinishedRender}
+                          handleShow={handleShow && brushDomain}
                           setIsOutOfView={setIsOutOfView}
                           isOutOfView={isOutOfView}
                           isFullRange={isFullRange}
