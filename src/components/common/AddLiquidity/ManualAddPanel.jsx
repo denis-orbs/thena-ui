@@ -27,6 +27,7 @@ export default function ManualAddPanel({
   position,
   handleBack,
   pair,
+  gaugeAlive,
 }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
@@ -40,11 +41,8 @@ export default function ManualAddPanel({
     const pos = position?._position
     const isFarmingPos = pos?.deployer === zeroAddress
     if (!isFarmingPos) return false
-    if (pair.subpools.find(sub => sub.title === 'CL_Farming' && sub.gauge?.isAlive)) {
-      return false
-    }
-    return true
-  }, [position, pair])
+    if (gaugeAlive) return false
+  }, [position, pair, gaugeAlive])
 
   useEffect(() => {
     if (!strategy?.isFarming) {

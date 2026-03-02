@@ -108,7 +108,7 @@ const calculateRewardData = (position, isSwapFee) => {
   }
 }
 
-function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
+function AutoPositionInfo({ position, baseCurrency, quoteCurrency, gaugeAlive }) {
   const { chainId } = useWallet()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const t = useTranslations()
@@ -176,9 +176,10 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         <EmphasisButton
           className={cn('flex-1', {
             hidden:
-              ICHI_TYPES.includes(position?.title) &&
-              !findNewIchiStrategy(position?.address) &&
-              position?.version === 3,
+              (ICHI_TYPES.includes(position?.title) &&
+                !findNewIchiStrategy(position?.address) &&
+                position?.version === 3) ||
+              !gaugeAlive,
           })}
           disabled={claimPending || isSwapFee || !rewardsData.totalRewardUsd.gt(0)}
           onClick={handleHarvest}
@@ -187,7 +188,9 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
         </EmphasisButton>
         {!position?.staked && (
           <PrimaryButton
-            className='flex-1 text-nowrap'
+            className={cn('flex-1 text-nowrap', {
+              hidden: !gaugeAlive,
+            })}
             onClick={() => handleStake(position?.account?.walletBalance.dp(18).toString(10))}
             // TODO: temporary block and do no deposit for Ichi pools until update new ICHI strategies
             disabled={
@@ -207,6 +210,7 @@ function AutoPositionInfo({ position, baseCurrency, quoteCurrency }) {
     ),
     [
       claimPending,
+      gaugeAlive,
       handleHarvest,
       handleStake,
       isSwapFee,

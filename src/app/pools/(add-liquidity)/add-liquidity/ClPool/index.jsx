@@ -20,6 +20,7 @@ import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
 import { useStakedPosition } from '@/hooks/position/useStakedPosition'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
+import { usePositionsLoading } from '@/hooks/usePositions'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
@@ -123,6 +124,11 @@ function StrategyItem({ sub, t }) {
       </div>
     </div>
   )
+}
+
+export const useGaugeAlive = (address = '') => {
+  const pools = usePools()
+  return pools.find(pool => pool.address.toLowerCase() === address?.toLowerCase())?.gauge?.isAlive
 }
 
 function AddLiquidityClPool({ pool, handleBack }) {
@@ -327,12 +333,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
     [sortedSubPools, strategy?.address, handleChooseStrategy, t],
   )
 
+  const isLoadingPositions = usePositionsLoading()
   const isLoading = useMemo(() => {
-    if (pair && mintInfo.noLiquidity && (pairType === 'CL_Farming' || pairType === 'CL_SwapFee' || !isAutomatic)) {
+    if (pair && isLoadingPositions && (pairType === 'CL_Farming' || pairType === 'CL_SwapFee' || !isAutomatic)) {
       return true
     }
     return false
-  }, [isAutomatic, mintInfo.noLiquidity, pair, pairType])
+  }, [isAutomatic, isLoadingPositions, pair, pairType])
 
   useEffect(() => {
     if (position && (!strategy || strategy?.title !== position.title)) {
@@ -366,6 +373,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
       })
     }
   }, [strategy, position, setStrategy])
+
+  const gaugeAlive = useGaugeAlive(pair?.address)
 
   return (
     <>
@@ -429,6 +438,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
                 {position && (
                   <div className='flex flex-col justify-end gap-4'>
                     <FusionAdd
+                      gaugeAlive={gaugeAlive}
                       label={`${getDisplayedStrategy(position.title)} Strategy`}
                       strategy={strategy}
                       onShowModalSuccess={() => {}}

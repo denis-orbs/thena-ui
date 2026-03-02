@@ -9,6 +9,8 @@ import SuccessModal from '@/components/modal/SuccessModal'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useV3MintState } from '@/state/fusion/hooks'
 
+import { useGaugeAlive } from '.'
+
 export default function AddLiquidityCLPane({
   mintInfo,
   currentPrice,
@@ -32,6 +34,8 @@ export default function AddLiquidityCLPane({
     setShowModalSuccess(true)
   }, [setShowModalSuccess])
 
+  const gaugeAlive = useGaugeAlive(pair?.address)
+
   if (!strategy) return <div />
 
   return (
@@ -43,6 +47,7 @@ export default function AddLiquidityCLPane({
             onShowModalSuccess={onShowModalSuccess}
             handleBack={handleBack}
             isSmall={!isXlDown}
+            gaugeAlive={gaugeAlive}
           />
         ) : (
           <ManualAddPanel
@@ -57,6 +62,7 @@ export default function AddLiquidityCLPane({
             position={position}
             handleBack={handleBack}
             pair={pair}
+            gaugeAlive={gaugeAlive}
           />
         )}
       </div>

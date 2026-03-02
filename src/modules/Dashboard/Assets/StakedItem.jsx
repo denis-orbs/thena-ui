@@ -4,6 +4,7 @@ import { useRouter } from 'nextjs-toploader/app'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { useGaugeAlive } from '@/app/pools/(add-liquidity)/add-liquidity/ClPool'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
@@ -283,6 +284,8 @@ function StakedItem({ position, isXlDown }) {
     [depositValueUSD, position.positionId, renderTokenValue, t],
   )
 
+  const gaugeAlive = useGaugeAlive(position?.basePool)
+
   const rewardsCell = useMemo(
     () => (
       <div className='flex flex-col max-xl:flex-1 max-xl:justify-end'>
@@ -350,7 +353,8 @@ function StakedItem({ position, isXlDown }) {
             claimPending ||
             isSwapFee ||
             (!findNewIchiStrategy(position.address) && position.version === 3 && ICHI_TYPES.includes(position.title)) ||
-            !position?.account?.earnedUsd?.toNumber() > 0
+            !position?.account?.earnedUsd?.toNumber() > 0 ||
+            !gaugeAlive
           }
         >
           {t('Claim')}
@@ -425,6 +429,7 @@ function StakedItem({ position, isXlDown }) {
     position?.title,
     position?.version,
     position?.address,
+    gaugeAlive,
   ])
 
   return (

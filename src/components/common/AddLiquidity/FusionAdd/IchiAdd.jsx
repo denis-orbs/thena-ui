@@ -67,6 +67,7 @@ export default function IchiAdd({
   isSmall = false,
   classNames,
   label,
+  gaugeAlive,
 }) {
   const [amount, setAmount] = useState('')
 
@@ -156,7 +157,10 @@ export default function IchiAdd({
             disabled={
               pendingV2 ||
               pendingV3 ||
-              (strategy?.title === ICHI_TYPES[0] && strategy?.version === 3 && !findNewIchiStrategy(strategy?.address))
+              (strategy?.title === ICHI_TYPES[0] &&
+                strategy?.version === 3 &&
+                !findNewIchiStrategy(strategy?.address)) ||
+              !gaugeAlive
             }
             onClick={() => {
               onAddLiquidityAndStake()

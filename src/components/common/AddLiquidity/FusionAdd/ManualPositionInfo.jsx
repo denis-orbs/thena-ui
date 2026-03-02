@@ -19,7 +19,7 @@ import RemoveManualModal from '@/modules/Position/RemoveManualModal'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
 
-export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, type }) {
+export default function ManualPositionInfo({ baseCurrency, quoteCurrency, position, type, gaugeAlive }) {
   const t = useTranslations()
   const [claimPopup, setClaimPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
@@ -82,7 +82,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
         {isLimbo ? (
           <PrimaryButton
             className='max-xl:flex-1'
-            disabled={isEnterFarmLoading}
+            disabled={isEnterFarmLoading || !gaugeAlive}
             onClick={
               () =>
                 onEnterFarming({ tokenId: position.tokenId, poolAddress: farmingPos?.[0]?.poolAddress }, () =>
@@ -116,6 +116,7 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
     onEnterFarming,
     farmingPos,
     mutateManual,
+    gaugeAlive,
   ])
 
   return (
