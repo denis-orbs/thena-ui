@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useDispatch } from 'react-redux'
 import { TickMath } from 'thenafi-fusion-sdk'
 
@@ -27,10 +27,11 @@ import ResetIcon from '~/svgs/reset.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
 import ZoomOutIcon from '~/svgs/zoom-out.svg'
 
-import ActivePriceRangeChart from './ActivePriceRangeChart'
-import ChartAxisTime from './AxisBottomTime'
-import ChartPrice from './ChartPrice'
 import { useDensityChartData } from './hooks'
+
+const ChartAxisTime = lazy(() => import('./AxisBottomTime'))
+const ActivePriceRangeChart = lazy(() => import('./ActivePriceRangeChart'))
+const ChartPrice = lazy(() => import('./ChartPrice'))
 
 const RIGHT_AXIS_WIDTH = 64
 const CHART_CONTAINER_WIDTH = 452 + RIGHT_AXIS_WIDTH
@@ -596,17 +597,39 @@ export default function ChartPriceRangeInput({
                       height: chartSize.chartContainerHeight,
                     }}
                   >
-                    <div className='absolute inset-0 top-0 z-0 h-full'>
-                      <div className={cn('relative z-0 w-full', classNames?.handleArea)}>
-                        <div
-                          style={{
-                            width: chartPriceWidth || '100%',
-                            height: chartSize.chartContainerHeight - 40,
-                          }}
-                        >
-                          {pairPrices.length > 0 && !isLoading && (
-                            <>
-                              <ChartPrice
+                    <Suspense fallback={<Skeleton className='h-full w-full' />}>
+                      <div className='absolute inset-0 top-0 z-0 h-full'>
+                        <div className={cn('relative z-0 w-full', classNames?.handleArea)}>
+                          <div
+                            style={{
+                              width: chartPriceWidth || '100%',
+                              height: chartSize.chartContainerHeight - 40,
+                            }}
+                          >
+                            {pairPrices.length > 0 && !isLoading && (
+                              <>
+                                <ChartPrice
+                                  data={pairPrices}
+                                  timeWindow={timeWindow}
+                                  setBoundaryPrices={setBoundaryPrices}
+                                  minVisiblePrice={minVisiblePrice}
+                                  maxVisiblePrice={maxVisiblePrice}
+                                  isMobile={chartSize?.chartContainerWidth <= 450}
+                                  setFinishedRender={setChartPriceFinishedRender}
+                                />
+                              </>
+                            )}
+                          </div>
+                          <div
+                            className='absolute top-0 left-0'
+                            style={{
+                              width: chartPriceWidth || '100%',
+                              height: `${chartSize.chartContainerHeight}px`,
+                            }}
+                          >
+                            {/* Make a chart just show Time Scale */}
+                            {pairPrices.length > 0 && !isLoading && (
+                              <ChartAxisTime
                                 data={pairPrices}
                                 timeWindow={timeWindow}
                                 setBoundaryPrices={setBoundaryPrices}
@@ -615,78 +638,58 @@ export default function ChartPriceRangeInput({
                                 isMobile={chartSize?.chartContainerWidth <= 450}
                                 setFinishedRender={setChartPriceFinishedRender}
                               />
-                            </>
-                          )}
+                            )}
+                          </div>
+                          <div className='absolute right-0 -bottom-[44px] z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
+                            <CheckBox
+                              className='size-5! rounded-sm'
+                              checked={showLiquidity}
+                              setChecked={setShowLiquidity}
+                            />
+                            <span
+                              className='cursor-pointer leading-5! select-none'
+                              onClick={() => setShowLiquidity(prev => !prev)}
+                            >
+                              Show Liquidity
+                            </span>
+                          </div>
                         </div>
                         <div
-                          className='absolute top-0 left-0'
-                          style={{
-                            width: chartPriceWidth || '100%',
-                            height: `${chartSize.chartContainerHeight}px`,
-                          }}
-                        >
-                          {/* Make a chart just show Time Scale */}
-                          {pairPrices.length > 0 && !isLoading && (
-                            <ChartAxisTime
-                              data={pairPrices}
-                              timeWindow={timeWindow}
-                              setBoundaryPrices={setBoundaryPrices}
-                              minVisiblePrice={minVisiblePrice}
-                              maxVisiblePrice={maxVisiblePrice}
-                              isMobile={chartSize?.chartContainerWidth <= 450}
-                              setFinishedRender={setChartPriceFinishedRender}
-                            />
+                          className={cn(
+                            'flex max-h-10 w-full items-center justify-between border-t-2 border-neutral-800',
+                            classNames?.bottomAxis,
                           )}
-                        </div>
-                        <div className='absolute right-0 -bottom-[44px] z-20 flex h-8 items-center gap-2 rounded-md text-base text-neutral-300 max-xl:hidden'>
-                          <CheckBox
-                            className='size-5! rounded-sm'
-                            checked={showLiquidity}
-                            setChecked={setShowLiquidity}
-                          />
-                          <span
-                            className='cursor-pointer leading-5! select-none'
-                            onClick={() => setShowLiquidity(prev => !prev)}
-                          >
-                            Show Liquidity
-                          </span>
-                        </div>
+                        />
                       </div>
                       <div
-                        className={cn(
-                          'flex max-h-10 w-full items-center justify-between border-t-2 border-neutral-800',
-                          classNames?.bottomAxis,
+                        className='absolute inset-0 top-0 z-10'
+                        style={{
+                          height: chartSize.chartContainerHeight - 40,
+                        }}
+                      >
+                        {chartSize && !isLoadLiquidity ? (
+                          <ActivePriceRangeChart
+                            data={activePriceData}
+                            dimensions={dimensions}
+                            styles={chartStyles}
+                            interactive={interactive}
+                            brushDomain={brushDomain}
+                            onBrushDomainChange={onBrushDomainChangeEnded}
+                            handleShow={handleShow && brushDomain}
+                            setIsOutOfView={setIsOutOfView}
+                            isOutOfView={isOutOfView}
+                            isFullRange={isFullRange}
+                            id={idChart}
+                            divideDistanceWidth={chartPriceWidth - 0.05 * chartPriceWidth}
+                            showLiquidity={showLiquidity}
+                            setIsFlip={setIsFlip}
+                            isStablecoinPair={isStablecoinPair}
+                          />
+                        ) : (
+                          <Skeleton className='h-full w-full' />
                         )}
-                      />
-                    </div>
-                    <div
-                      className='absolute inset-0 top-0 z-10'
-                      style={{
-                        height: chartSize.chartContainerHeight - 40,
-                      }}
-                    >
-                      {chartSize && !isLoadLiquidity ? (
-                        <ActivePriceRangeChart
-                          data={activePriceData}
-                          dimensions={dimensions}
-                          styles={chartStyles}
-                          interactive={interactive}
-                          brushDomain={brushDomain}
-                          onBrushDomainChange={onBrushDomainChangeEnded}
-                          handleShow={handleShow && brushDomain}
-                          setIsOutOfView={setIsOutOfView}
-                          isOutOfView={isOutOfView}
-                          isFullRange={isFullRange}
-                          id={idChart}
-                          divideDistanceWidth={chartPriceWidth - 0.05 * chartPriceWidth}
-                          showLiquidity={showLiquidity}
-                          setIsFlip={setIsFlip}
-                          isStablecoinPair={isStablecoinPair}
-                        />
-                      ) : (
-                        <Skeleton className='h-full w-full' />
-                      )}
-                    </div>
+                      </div>
+                    </Suspense>
                   </div>
                 </div>
               </div>

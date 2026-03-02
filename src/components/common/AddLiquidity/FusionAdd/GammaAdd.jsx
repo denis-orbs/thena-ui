@@ -75,6 +75,7 @@ export default function GammaAdd({
   isSmall = false,
   classNames,
   label,
+  gaugeAlive,
 }) {
   // const t = useTranslations()
 
@@ -161,6 +162,7 @@ export default function GammaAdd({
           isSmall={isSmall}
           classNames={classNames}
           slippage={slippage}
+          gaugeAlive={gaugeAlive}
         />
         {/* )} */}
       </div>
@@ -177,6 +179,7 @@ function ManualPanel({
   isSmall = false,
   classNames,
   slippage,
+  gaugeAlive,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -295,7 +298,7 @@ function ManualPanel({
         </EmphasisButton>
         {account ? (
           <>
-            <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
+            <PrimaryButton disabled={pending || !gaugeAlive} onClick={onAddLiquidity} className='w-full'>
               {t('Deposit')}
             </PrimaryButton>
           </>

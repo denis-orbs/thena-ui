@@ -17,6 +17,7 @@ export default function FusionAdd({
   isSmall = false,
   classNames,
   label,
+  gaugeAlive = true,
 }) {
   return (
     <div className={cn('flex flex-col gap-4 xl:gap-6', classNames?.wrapper)}>
@@ -30,6 +31,7 @@ export default function FusionAdd({
           isSmall={isSmall}
           classNames={classNames}
           label={label}
+          gaugeAlive={gaugeAlive}
         />
       ) : (
         <GammaAdd
@@ -41,6 +43,7 @@ export default function FusionAdd({
           isSmall={isSmall}
           classNames={classNames}
           label={label}
+          gaugeAlive={gaugeAlive}
         />
       )}
     </div>

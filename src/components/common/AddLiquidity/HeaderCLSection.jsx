@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
+import { useGaugeAlive } from '@/app/pools/(add-liquidity)/add-liquidity/ClPool'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
@@ -380,6 +381,8 @@ export default function HeaderCLSection({
     [handleChooseStrategy, setIsAutomatic, sortedSubPools],
   )
 
+  const gaugeAlive = useGaugeAlive(pair?.address)
+
   return (
     <div
       className={cn(
@@ -467,6 +470,7 @@ export default function HeaderCLSection({
                       quoteCurrency={secondAsset}
                       position={position}
                       type={type}
+                      gaugeAlive={gaugeAlive}
                     />
                   ) : (
                     <ManualStrategyDisplay
@@ -484,7 +488,12 @@ export default function HeaderCLSection({
               ) : (
                 <>
                   {position && (
-                    <AutoPositionInfo baseCurrency={firstAsset} quoteCurrency={secondAsset} position={position} />
+                    <AutoPositionInfo
+                      baseCurrency={firstAsset}
+                      quoteCurrency={secondAsset}
+                      position={position}
+                      gaugeAlive={gaugeAlive}
+                    />
                   )}
                 </>
               )}
