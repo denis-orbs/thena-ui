@@ -1,3 +1,4 @@
+import { simulateContract } from '@wagmi/core'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useMemo, useState } from 'react'
@@ -21,6 +22,7 @@ import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 import { fromWei, toWei } from '@/utils/utils'
+import { wagmiConfig } from '@/wallets/rainbowkit'
 
 export const getNPMContract = (chainId, version) => ({
   abi: version === 3 ? IntegralNPMABI : FusionNPMABI,
@@ -294,6 +296,40 @@ export const useSimulateFarmReward = () => {
   return result || fromWei(JSBI.BigInt(0))
 }
 
+/**
+ * @param {{ position: { poolKey, tokenId }, chainId: number, account: string }} params
+ * @returns {Promise<string>} reward amount
+ * @throws
+ */
+export async function simulateFarmRewardPosition({ position, chainId, account }) {
+  const farmingCenter = getFarmingCenterContract(chainId)
+  const calldata = collectAndClaimRewards({
+    positions: [position],
+    chainId,
+    account,
+  })
+
+  const { result: results } = await simulateContract(wagmiConfig, {
+    ...farmingCenter,
+    functionName: 'multicall',
+    args: [calldata],
+    chainId,
+    account,
+  })
+
+  if (results === undefined || !Array.isArray(results)) {
+    throw new Error('Failed to simulate farm reward: invalid result')
+  }
+
+  let rewardAmount = JSBI.BigInt(0)
+  const claimRewardResult = results[results.length - 1]
+  if (claimRewardResult && claimRewardResult !== '0x') {
+    rewardAmount = JSBI.BigInt(claimRewardResult)
+  }
+
+  return fromWei(rewardAmount)
+}
+
 export const useAlgebraClaim = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -530,12 +566,30 @@ export const useAlgebraRemove = (version = 3) => {
       const approveFarmingId = uuidv4()
       const removeuuid = uuidv4()
       const { reward0, reward1, poolkey } = farmReward ?? {}
-      const rewardAmount = Number(reward0?.toSignificant() ?? 0) + Number(reward1?.toSignificant() ?? 0)
+      let rewardAmount = Number(reward0?.toSignificant() ?? 0) + Number(reward1?.toSignificant() ?? 0)
 
       const isFarmingPosition = !!isFarming
       const positionManger = getNPMContract(chainId, version)
       const farmingCenter = getFarmingCenterContract(chainId)
       let isNotApprovedForFarming = false
+
+      // recheck reward amount if it's a farming position and liquidity percentage is 100
+      // for now if reward amount is 0, we will simulate the reward amount and set it to rewardAmount
+      // if simulation fails, we will show error toast and return (ignore lost of reward after burn NFT)
+      if (rewardAmount <= 0 && isFarmingPosition && Number(liquidityPercentage.toSignificant()) >= 100) {
+        try {
+          const amount = await simulateFarmRewardPosition({
+            position: { poolKey: poolkey, tokenId },
+            chainId,
+            account,
+          })
+          rewardAmount = Number(amount) || 0
+        } catch {
+          errorToast('Error', t('Failed to simulate farm reward'))
+          setPending(false)
+          return
+        }
+      }
 
       if (isFarmingPosition) {
         // Check if farming approval is needed
@@ -558,13 +612,15 @@ export const useAlgebraRemove = (version = 3) => {
                 hash: null,
               },
             }),
-          ...((rewardAmount > 0 || (Number(liquidityPercentage.toSignificant()) >= 100 && isFarmingPosition)) && {
-            [claimRewardId]: {
-              desc: t('Claim Rewards'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
+          ...(rewardAmount > 0 &&
+            Number(liquidityPercentage.toSignificant()) >= 100 &&
+            isFarmingPosition && {
+              [claimRewardId]: {
+                desc: t('Claim Rewards'),
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -586,7 +642,7 @@ export const useAlgebraRemove = (version = 3) => {
         }
       }
 
-      if (rewardAmount > 0 || (Number(liquidityPercentage.toSignificant()) >= 100 && isFarmingPosition)) {
+      if (rewardAmount > 0 && Number(liquidityPercentage.toSignificant()) >= 100 && isFarmingPosition) {
         const calldata = collectAndClaimRewards({ positions: [{ poolKey: poolkey, tokenId }], chainId, account })
 
         if (!(await writeTxn(key, claimRewardId, farmingCenter, 'multicall', [calldata]))) {
