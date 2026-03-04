@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES, STRATEGY_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import cn from '@/utils/classes'
 import { formatAmount } from '@/utils/utils'
@@ -124,7 +125,13 @@ export default function PairsTable({ data, hidePagination = false, backUrlNumber
         dayFees: <Paragraph>${formatAmount(item.dayFees)}</Paragraph>,
         weekFees: <Paragraph>${formatAmount(item.weekFees)}</Paragraph>,
         onRowClick: () => {
-          push(`/analytics/pairs/${item.address}?back=${backUrlNumber}`)
+          const params = new URLSearchParams()
+          params.set('back', backUrlNumber)
+          if (item.type === PAIR_TYPES.LSD) {
+            const hasFarming = item.subpools.some(sub => sub.title === 'CL_Farming')
+            params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+          }
+          push(`/analytics/pairs/${item.address}?${params.toString()}`)
         },
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps

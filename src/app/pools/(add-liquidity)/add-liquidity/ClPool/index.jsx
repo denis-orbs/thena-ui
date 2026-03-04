@@ -13,7 +13,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, STRATEGY_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { useNotStakedPositions } from '@/hooks/position/useNotStakedPosition'
@@ -142,7 +142,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const searchParams = useSearchParams()
   const pairType = searchParams.get('type')
-  const strategyType = searchParams.get('strategyType')
+  const strategyParam = searchParams.get('strategy')
 
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
@@ -153,7 +153,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const title = searchParams.get('title')
   const staked = searchParams.get('staked')
   const isStaked = useMemo(() => staked === 'true', [staked])
-  const isAutomaticParam = searchParams.get('isAutomatic')
 
   const updateSearchParams = useUpdateSearchParams()
 
@@ -190,12 +189,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
-  const [isAutomatic, setIsAutomatic] = useState(() => {
-    if (isAutomaticParam !== null) {
-      return isAutomaticParam === 'true'
-    }
-    return !!(strategy?.isAutomatic ?? title)
-  })
+  const [isAutomatic, setIsAutomatic] = useState(strategyParam === STRATEGY_TYPES.AUTO)
   const [lastPrice, setLastPrice] = useState(null)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -244,10 +238,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   useEffect(() => {
     updateSearchParams({
-      isAutomatic: isAutomatic ? 'true' : 'false',
-      strategyType: isAutomatic ? null : strategyType,
+      strategy: isAutomatic ? STRATEGY_TYPES.AUTO : strategyParam,
     })
-  }, [isAutomatic, strategyType, updateSearchParams])
+  }, [isAutomatic, strategyParam, updateSearchParams])
 
   useEffect(() => {
     if (!baseCurrency && firstCurrency && mintInfo.noLiquidity) {
@@ -291,10 +284,10 @@ function AddLiquidityClPool({ pool, handleBack }) {
   )
 
   useEffect(() => {
-    if (isAutomaticParam === null) {
-      setIsAutomatic(strategy?.isAutomatic ?? false)
+    if (strategyParam === null) {
+      setIsAutomatic(strategy?.isAutomatic ?? strategyParam === STRATEGY_TYPES.AUTO)
     }
-  }, [strategy, isAutomaticParam])
+  }, [strategy?.isAutomatic, strategyParam])
 
   const sortedSubPools = useMemo(() => {
     const priority = {
@@ -374,6 +367,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
     }
   }, [strategy, position, setStrategy])
 
+  useEffect(() => {
+    if (strategyParam === STRATEGY_TYPES.AUTO && !position && !strategy?.isAutomatic) {
+      setStrategy(sortedSubPools.find(sub => !MANUAL_TYPES.includes(sub.title)))
+    }
+  }, [strategyParam, sortedSubPools, setStrategy, position, strategy?.isAutomatic])
+
   const gaugeAlive = useGaugeAlive(pair?.address)
 
   return (
@@ -397,7 +396,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
           <Skeleton className='h-[400px]' />
         ) : (
           <>
-            {!strategy?.isAutomatic ? (
+            {!strategy?.isAutomatic && !isAutomatic ? (
               <RangeAndPricePanel
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}

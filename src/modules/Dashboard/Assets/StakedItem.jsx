@@ -9,7 +9,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, STRATEGY_TYPES } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { findNewIchiStrategy, useIchiClaim } from '@/hooks/fusion/useIchi'
@@ -175,6 +175,16 @@ function StakedItem({ position, isXlDown }) {
     position.token1,
   ])
 
+  const linkAnalytics = useMemo(() => {
+    const params = new URLSearchParams({
+      back: '2',
+      ...(position?.type === PAIR_TYPES.LSD && {
+        strategy: STRATEGY_TYPES.FARM,
+      }),
+    })
+    return `/analytics/pairs/${position?.basePool}?${params.toString()}`
+  }, [position?.basePool, position?.type])
+
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -192,7 +202,7 @@ function StakedItem({ position, isXlDown }) {
           {position.version === 2 && position.title !== 'ICHI_Single_Sided' ? (
             <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           ) : (
-            <Link href={`/analytics/pairs/${position.basePool}?back=2`}>
+            <Link href={linkAnalytics}>
               <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
             </Link>
           )}
@@ -202,7 +212,7 @@ function StakedItem({ position, isXlDown }) {
         </div>
       </div>
     ),
-    [position.token0, position.token1, position.symbol, position.title, position.version, position.basePool],
+    [position.token0, position.token1, position.symbol, position.title, position.version, linkAnalytics],
   )
 
   const rangeCell = useMemo(

@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'nextjs-toploader/app'
 import { useCallback, useEffect, useMemo } from 'react'
@@ -21,6 +22,7 @@ import {
   ICHI_WITHOUT_SINGLE_SIDED,
   MANUAL_TYPES,
   STABLE_PAIRS,
+  STRATEGY_TYPES,
 } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
@@ -62,6 +64,7 @@ function PairStrategy({ pair }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { push } = useRouter()
+  const searchParams = useSearchParams()
   const { setAPRs } = useAprStore()
 
   const stableAssets = useStableTokens()
@@ -229,14 +232,52 @@ function PairStrategy({ pair }) {
   )
 
   const handleAddLiquidity = useCallback(
-    strategyType => {
-      const _strategy = sortedSubPools.find(item =>
-        strategyType === 'manual' ? MANUAL_TYPES.includes(item.title) : !MANUAL_TYPES.includes(item.title),
-      )
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
-      push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
+    mode => {
+      const strategyParam = searchParams.get('strategy')
+
+      let _strategy
+      if (mode === 'automatic') {
+        // Always choose an automatic strategy when available
+        _strategy = sortedSubPools.find(item => !MANUAL_TYPES.includes(item.title))
+      } else {
+        // Manual mode: sync with current manual type (manual_farm / manual_fees) if possible
+        if (strategyParam && strategyParam !== STRATEGY_TYPES.AUTO) {
+          const type = strategyParam === STRATEGY_TYPES.FARM ? MANUAL_TYPES[0] : MANUAL_TYPES[1]
+          _strategy = sortedSubPools.find(item => item.title === type)
+        }
+
+        // Fallback: try to keep the currently selected manual strategy
+        if (!_strategy && mintInfo.strategy?.title) {
+          _strategy = sortedSubPools.find(item => item.title === mintInfo.strategy.title)
+        }
+
+        // Final fallback: any manual strategy
+        if (!_strategy) {
+          _strategy = sortedSubPools.find(item => MANUAL_TYPES.includes(item.title))
+        }
+      }
+
+      const chosenStrategy = _strategy ?? defaultSwapFees
+      handleChooseStrategy(chosenStrategy)
+
+      const params = new URLSearchParams({
+        step: '3',
+        poolAddress: pair.address,
+        back: '4',
+      })
+
+      if (mode === 'automatic') {
+        params.set('strategy', STRATEGY_TYPES.AUTO)
+      } else {
+        const isFarming =
+          chosenStrategy.title === 'CL_Farming' ||
+          (typeof chosenStrategy.title === 'string' && chosenStrategy.title.includes('Farming'))
+        params.set('strategy', isFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+      }
+
+      push(`/pools/add-liquidity?${params.toString()}`)
     },
-    [handleChooseStrategy, pair.address, push, sortedSubPools],
+    [handleChooseStrategy, mintInfo.strategy?.title, pair.address, push, searchParams, sortedSubPools],
   )
 
   const bestManualPool = useMemo(() => {
@@ -297,7 +338,10 @@ function PairStrategy({ pair }) {
             {t('Automated Strategy')}
           </TextHeading>
 
-          <EmphasisButton className='hidden lg:block' onClick={() => handleAddLiquidity('automatic')}>
+          <EmphasisButton
+            className={cn('hidden lg:block', strategyAutoData.length === 0 && '!hidden')}
+            onClick={() => handleAddLiquidity('automatic')}
+          >
             {t('View')}
           </EmphasisButton>
         </div>

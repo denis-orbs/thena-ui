@@ -288,6 +288,12 @@ export const STABLE_PAIRS = [
   '0x368416031518556f9dc0996c4b8abb36c8b4c35e', // BNB/BNBx
 ]
 
+export const STRATEGY_TYPES = {
+  AUTO: 'auto',
+  FARM: 'manual_farm',
+  FEES: 'manual_fees',
+}
+
 export const STABLE_FEE = 0.0001
 export const VOLATILE_FEE = 0.002
 export const TVL_INCREASE = 1e6

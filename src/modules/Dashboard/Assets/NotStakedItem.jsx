@@ -12,7 +12,7 @@ import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, STRATEGY_TYPES } from '@/constant'
 import { ICHI_VAULTS } from '@/constant/ichiVaults'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { findNewIchiStrategy, useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -222,6 +222,16 @@ function NotStakedItem({ position, isXlDown }) {
     )
   }, [dispatch, position.basePool, position.title, push, strategy, version])
 
+  const linkAnalytics = useMemo(() => {
+    const params = new URLSearchParams({
+      back: '2',
+      ...(position?.type === PAIR_TYPES.LSD && {
+        strategy: position?.title?.includes('Farming') ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES,
+      }),
+    })
+    return `/analytics/pairs/${position?.basePool}?${params.toString()}`
+  }, [position?.basePool, position?.title, position?.type])
+
   const pairCell = useMemo(
     () => (
       <div className='flex w-full items-center gap-2'>
@@ -239,7 +249,7 @@ function NotStakedItem({ position, isXlDown }) {
           {position.version === 2 && position.title !== 'ICHI_Single_Sided' ? (
             <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
           ) : (
-            <Link href={`/analytics/pairs/${position.basePool}?back=2`}>
+            <Link href={linkAnalytics}>
               <NewTextSubHeading className='text-xl font-semibold md:text-xl'>{position.symbol}</NewTextSubHeading>
             </Link>
           )}
@@ -249,7 +259,7 @@ function NotStakedItem({ position, isXlDown }) {
         </div>
       </div>
     ),
-    [position.token0, position.token1, position.symbol, position.title, position.version, position.basePool],
+    [position.token0, position.token1, position.version, position.title, position.symbol, linkAnalytics],
   )
 
   const rangeCell = useMemo(
