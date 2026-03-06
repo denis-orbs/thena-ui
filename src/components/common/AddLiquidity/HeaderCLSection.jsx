@@ -242,6 +242,8 @@ export default function HeaderCLSection({
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
+  const isGaugeAlive = useGaugeAlive(pair?.address)
+
   const sortedSubPools = useMemo(() => {
     const priority = {
       CL_Farming: 1,
@@ -249,16 +251,16 @@ export default function HeaderCLSection({
       ICHI_Farming: 3,
       Narrow_Farming: 4,
       Wide_Farming: 5,
+      CL_Stable_Farming: 6,
+      Correlated_Farming: 7,
     }
     return (
       (pair?.subpools || [])
         // not include CL_Farming with gauge not alive
-        .filter(
-          pool => (priority[pool.title] === 1 && pool.gauge.isAlive) || [2, 3, 4, 5].includes(priority[pool.title]),
-        )
+        .filter(pool => ([1, 3, 4, 5, 6, 7].includes(priority[pool.title]) ? isGaugeAlive : true))
         .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
     )
-  }, [pair?.subpools])
+  }, [pair?.subpools, isGaugeAlive])
 
   const swrKey = useMemo(
     () => (strategy && pair ? ['strategy/info', strategy.address, networkId] : null),
@@ -375,6 +377,8 @@ export default function HeaderCLSection({
         })),
     [sortedSubPools, strategy?.address, handleChooseStrategy, t],
   )
+
+  console.log('strategyAutoData', strategyAutoData)
 
   // Stable callback for toggling strategy type
   const toggleStrategyType = useCallback(
