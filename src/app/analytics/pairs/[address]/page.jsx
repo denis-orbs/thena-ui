@@ -15,7 +15,7 @@ import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import IconGroup from '@/components/icongroup'
 import RadioInput from '@/components/radioInput'
 import { TextHeading } from '@/components/typography'
-import { MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, STRATEGY_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useBackURL } from '@/hooks/useBackURL'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
@@ -48,16 +48,27 @@ export default function PairDetailPage({ params }) {
     [pairs, address],
   )
 
-  // Get strategyType from URL params
-  const strategyTypeParam = searchParams.get('strategyType')
+  // Get strategy from URL params: auto | manual_farm | manual_fees
+  const strategyParam = searchParams.get('strategy')
 
   const currentStrategy = useMemo(() => {
     if (pair && pair.type === PAIR_TYPES.LSD) {
-      const strategyTitle = strategy ? strategy.title : MANUAL_TYPES[1]
-      return pair.subpools.find(item => item.title === strategyTitle)
+      switch (strategyParam) {
+        case STRATEGY_TYPES.AUTO:
+          return pair.subpools.find(item => !MANUAL_TYPES.includes(item.title)) ?? undefined
+        case STRATEGY_TYPES.FARM:
+          return pair.subpools.find(item => item.title === 'CL_Farming') ?? undefined
+        case STRATEGY_TYPES.FEES:
+          return pair.subpools.find(item => item.title === 'CL_SwapFee') ?? undefined
+        default: {
+          // Fallback: use existing selected strategy or default manual
+          const strategyTitle = strategy ? strategy.title : MANUAL_TYPES[1]
+          return pair.subpools.find(item => item.title === strategyTitle)
+        }
+      }
     }
     return undefined
-  }, [pair, strategy])
+  }, [pair, strategyParam, strategy])
 
   const pairFee = useMemo(() => currentStrategy?.fee ?? pair?.fee ?? 0, [currentStrategy, pair])
   const pairAddress = useMemo(() => currentStrategy?.address ?? pair?.address, [currentStrategy, pair])
@@ -118,14 +129,14 @@ export default function PairDetailPage({ params }) {
 
   const handleChangeManualType = useCallback(
     targetValue => {
-      // targetValue: 'the' for farming, 'fees' for swap fees
-      const shouldBeFarming = targetValue === 'the'
+      // targetValue: manual_farm for farming, manual_fees for swap fees
+      const shouldBeFarming = targetValue === STRATEGY_TYPES.FARM
       const _strategy = pair?.subpools.find(item =>
         shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
       )
       handleChooseStrategy(_strategy ?? defaultSwapFees)
 
-      updateSearchParams({ strategyType: targetValue })
+      updateSearchParams({ strategy: targetValue })
     },
     [handleChooseStrategy, pair?.subpools, updateSearchParams],
   )
@@ -135,11 +146,23 @@ export default function PairDetailPage({ params }) {
     if (!pair || pair.type !== PAIR_TYPES.LSD) return
 
     // Priority 1: Use URL parameter if present
-    if (strategyTypeParam) {
-      const shouldBeFarming = strategyTypeParam === 'the'
-      const _strategy = pair.subpools.find(item =>
-        shouldBeFarming ? item.title === 'CL_Farming' : item.title === 'CL_SwapFee',
-      )
+    if (strategyParam) {
+      let _strategy
+      switch (strategyParam) {
+        case STRATEGY_TYPES.AUTO:
+          _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
+          break
+        case STRATEGY_TYPES.FARM:
+          _strategy = pair.subpools.find(item => item.title === MANUAL_TYPES[0])
+          break
+        case STRATEGY_TYPES.FEES:
+          _strategy = pair.subpools.find(item => item.title === MANUAL_TYPES[1])
+          break
+        default:
+          _strategy = pair.subpools.find(item => MANUAL_TYPES.includes(item.title))
+          break
+      }
+
       if (_strategy && _strategy.title !== strategy?.title) {
         handleChooseStrategy(_strategy)
       }
@@ -150,7 +173,7 @@ export default function PairDetailPage({ params }) {
     if (currentStrategy?.title !== strategy?.title) {
       handleChooseStrategy(currentStrategy)
     }
-  }, [pair, strategyTypeParam, currentStrategy, strategy?.title, handleChooseStrategy])
+  }, [pair, strategyParam, currentStrategy, strategy?.title, handleChooseStrategy])
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
@@ -208,16 +231,16 @@ export default function PairDetailPage({ params }) {
               >
                 <RadioInput
                   name='earn-type'
-                  value='the'
-                  onChange={() => handleChangeManualType('the')}
+                  value={STRATEGY_TYPES.FARM}
+                  onChange={() => handleChangeManualType(STRATEGY_TYPES.FARM)}
                   label='Earn THE'
                   checked={strategy?.isFarming}
                   className='size-5'
                 />
                 <RadioInput
                   name='earn-type'
-                  value='fees'
-                  onChange={() => handleChangeManualType('fees')}
+                  value={STRATEGY_TYPES.FEES}
+                  onChange={() => handleChangeManualType(STRATEGY_TYPES.FEES)}
                   checked={!strategy?.isFarming}
                   label='Earn Fees'
                   className='size-5'
@@ -227,7 +250,19 @@ export default function PairDetailPage({ params }) {
 
             <EmphasisButton
               className={cn('h-8! w-full py-2! text-xs! max-xl:hidden')}
-              onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)}
+              onClick={() => {
+                const _searchParams = new URLSearchParams({
+                  step: '3',
+                  poolAddress: pair.address,
+                  back: '4',
+                })
+                if (pair.type === PAIR_TYPES.LSD) {
+                  const strategyValue =
+                    strategyParam || (strategy?.isFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+                  _searchParams.set('strategy', strategyValue)
+                }
+                push(`/pools/add-liquidity?${_searchParams.toString()}`)
+              }}
             >
               {t('Deposit')}
             </EmphasisButton>
@@ -238,7 +273,17 @@ export default function PairDetailPage({ params }) {
           <EmphasisButton
             className='z-40 h-8 w-full rounded-md! text-xs! xl:hidden'
             onClick={() => {
-              push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=4`)
+              const _searchParams = new URLSearchParams({
+                step: '3',
+                poolAddress: pair.address,
+                back: '4',
+              })
+              if (pair.type === PAIR_TYPES.LSD) {
+                const strategyValue =
+                  strategyParam || (!strategy?.isFarming ? STRATEGY_TYPES.FEES : STRATEGY_TYPES.FARM)
+                _searchParams.set('strategy', strategyValue)
+              }
+              push(`/pools/add-liquidity?${_searchParams.toString()}`)
             }}
           >
             {t('Deposit')}

@@ -31,6 +31,7 @@ import {
   MANUAL_TYPES,
   PAIR_TYPES,
   SPECIAL_POOLS,
+  STRATEGY_TYPES,
 } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
@@ -464,7 +465,13 @@ export default function PoolsPage() {
               onClick={e => {
                 e.stopPropagation()
                 e.preventDefault()
-                push(`/analytics/pairs/${pool?.address}?back=1`)
+                const params = new URLSearchParams()
+                params.set('back', '1')
+                if (pool.type === PAIR_TYPES.LSD) {
+                  const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+                  params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+                }
+                push(`/analytics/pairs/${pool?.address}?${params.toString()}`)
               }}
               data-tooltip-id='analytics-tooltip'
             />
@@ -474,7 +481,15 @@ export default function PoolsPage() {
                 e.stopPropagation()
                 e.preventDefault()
                 dispatch(updateStrategy({ strategy: null }))
-                push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}&back=1`)
+                const params = new URLSearchParams()
+                params.set('step', '3')
+                params.set('poolAddress', pool.address)
+                params.set('back', '1')
+                if (pool.type === PAIR_TYPES.LSD) {
+                  const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+                  params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+                }
+                push(`/pools/add-liquidity?${params.toString()}`)
               }}
             >
               {t('Deposit')}
@@ -482,7 +497,15 @@ export default function PoolsPage() {
           </div>
         ),
         onRowClick: () => {
-          push(`/analytics/pairs/${pool.address}`)
+          const params = new URLSearchParams()
+          params.set('back', '1')
+          if (pool.type === PAIR_TYPES.LSD) {
+            if (pool.subpools.some(sub => sub.title === 'CL_Farming')) {
+              const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+              params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+            }
+          }
+          push(`/analytics/pairs/${pool.address}?${params.toString()}`)
         },
       }))
     },
@@ -545,7 +568,13 @@ export default function PoolsPage() {
       }
       dispatch(updateStrategy({ strategy: newStrategy }))
       dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
-      push(`/pools/add-liquidity?step=3&poolAddress=${position.algebra}&back=1`)
+      const params = new URLSearchParams({
+        step: '3',
+        poolAddress: position.algebra,
+        back: '1',
+        strategy: 'auto',
+      })
+      push(`/pools/add-liquidity?${params.toString()}`)
     },
     [dispatch, push],
   )

@@ -10,7 +10,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, THE_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, STRATEGY_TYPES, THE_LOGO } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { useAprStore } from '@/state/APR/store'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
@@ -230,7 +230,7 @@ export default function HeaderCLSection({
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
   const poolAddress = searchParams.get('poolAddress')
-  const strategyTypeParam = searchParams.get('strategyType')
+  const strategyParam = searchParams.get('strategy')
   const { networkId } = useChainSettings()
   const { strategy } = useV3MintState()
   const { APRs } = useAprStore()
@@ -242,6 +242,8 @@ export default function HeaderCLSection({
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
+  const isGaugeAlive = useGaugeAlive(pair?.address)
+
   const sortedSubPools = useMemo(() => {
     const priority = {
       CL_Farming: 1,
@@ -249,16 +251,16 @@ export default function HeaderCLSection({
       ICHI_Farming: 3,
       Narrow_Farming: 4,
       Wide_Farming: 5,
+      CL_Stable_Farming: 6,
+      Correlated_Farming: 7,
     }
     return (
       (pair?.subpools || [])
         // not include CL_Farming with gauge not alive
-        .filter(
-          pool => (priority[pool.title] === 1 && pool.gauge.isAlive) || [2, 3, 4, 5].includes(priority[pool.title]),
-        )
+        .filter(pool => ([1, 3, 4, 5, 6, 7].includes(priority[pool.title]) ? isGaugeAlive : true))
         .sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
     )
-  }, [pair?.subpools])
+  }, [pair?.subpools, isGaugeAlive])
 
   const swrKey = useMemo(
     () => (strategy && pair ? ['strategy/info', strategy.address, networkId] : null),
@@ -276,11 +278,12 @@ export default function HeaderCLSection({
     [position?.pool?.isFarming, strategy?.title],
   )
 
-  // Update URL when strategy type changes (earnFees vs earnThe)
   useEffect(() => {
     if (MANUAL_TYPES.includes(strategy?.title)) {
-      const strategyType = strategy?.isFarming ? 'earnThe' : 'earnFees'
-      updateSearchParams({ strategyType })
+      const strategyValue = strategy?.isFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES
+      updateSearchParams({ strategy: strategyValue })
+    } else {
+      updateSearchParams({ strategy: STRATEGY_TYPES.AUTO })
     }
   }, [strategy?.title, strategy?.isFarming, updateSearchParams])
 
@@ -342,10 +345,16 @@ export default function HeaderCLSection({
     if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
       let defaultStrategy = sortedSubPools[0]
 
-      // Check URL param for strategy type preference
-      if (strategyTypeParam && MANUAL_TYPES.some(manualType => sortedSubPools.find(s => s.title === manualType))) {
-        const targetStrategy = sortedSubPools.find(item =>
-          strategyTypeParam === 'earnFees' ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+      if (isAutomatic) {
+        // For automatic mode, prefer non-manual strategies
+        defaultStrategy = sortedSubPools.find(sub => !MANUAL_TYPES.includes(sub.title))
+      } else if (strategyParam && MANUAL_TYPES.some(manualType => sortedSubPools.find(s => s.title === manualType))) {
+        // For manual mode, respect URL param when possible
+        const targetStrategy = sortedSubPools.find(
+          item =>
+            strategyParam === STRATEGY_TYPES.FEES
+              ? item.title === MANUAL_TYPES[1] // CL_SwapFee
+              : item.title === MANUAL_TYPES[0], // CL_Farming
         )
         if (targetStrategy) {
           defaultStrategy = targetStrategy
@@ -354,7 +363,7 @@ export default function HeaderCLSection({
 
       handleChooseStrategy(defaultStrategy || defaultSwapFees)
     }
-  }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy, strategyTypeParam])
+  }, [firstAsset, handleChooseStrategy, isAutomatic, poolAddress, secondAsset, sortedSubPools, strategy, strategyParam])
 
   // Memoize automatic strategy data
   const strategyAutoData = useMemo(
@@ -368,6 +377,8 @@ export default function HeaderCLSection({
         })),
     [sortedSubPools, strategy?.address, handleChooseStrategy, t],
   )
+
+  console.log('strategyAutoData', strategyAutoData)
 
   // Stable callback for toggling strategy type
   const toggleStrategyType = useCallback(

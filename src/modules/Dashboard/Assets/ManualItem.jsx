@@ -10,7 +10,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, STRATEGY_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
@@ -173,7 +173,7 @@ function ManualItem({ position, isXlDown }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </NewTextSubHeading>
           ) : (
-            <Link href={`/analytics/pairs/${poolInfo?.basePool}?back=2`}>
+            <Link href={`/analytics/pairs/${poolInfo?.basePool}?back=2&strategy=${STRATEGY_TYPES.FEES}`}>
               <NewTextSubHeading className='text-xl font-semibold md:text-xl'>
                 {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
               </NewTextSubHeading>

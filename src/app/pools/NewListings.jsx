@@ -18,6 +18,7 @@ import {
   ICHI_WITHOUT_SINGLE_SIDED,
   MANUAL_TYPES,
   PAIR_TYPES,
+  STRATEGY_TYPES,
 } from '@/constant'
 import { findNewIchiStrategy } from '@/hooks/fusion/useIchi'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -361,9 +362,13 @@ function NewListings({
             classNames='group-hover:[&>path]:stroke-neutral-100 size-4!'
             Icon={BarChartIcon}
             onClick={() => {
-              let url = `/analytics/pairs/${pool?.address}`
-              if (back) url += `?back=${back}`
-              push(url)
+              const params = new URLSearchParams()
+              if (back) params.set('back', back)
+              if (pool.type === PAIR_TYPES.LSD) {
+                const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+                params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+              }
+              push(`/analytics/pairs/${pool?.address}?${params.toString()}`)
             }}
             data-tooltip-id='analytics-tooltip'
           />
@@ -376,9 +381,16 @@ function NewListings({
               e.stopPropagation()
               e.preventDefault()
               dispatch(updateStrategy({ strategy: null }))
-              let url = `/pools/add-liquidity?step=3&poolAddress=${pool.address}`
-              if (back) url += `&back=${back}`
-              push(url)
+              const params = new URLSearchParams({
+                step: '3',
+                poolAddress: pool.address,
+              })
+              if (back) params.set('back', back)
+              if (pool.type === PAIR_TYPES.LSD) {
+                const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+                params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+              }
+              push(`/pools/add-liquidity?${params.toString()}`)
             }}
           >
             <Paragraph
@@ -392,9 +404,13 @@ function NewListings({
       ),
       className: cn('items-center', classNames?.rowItem),
       onRowClick: () => {
-        let url = `/analytics/pairs/${pool?.address}`
-        if (back) url += `?back=${back}`
-        push(url)
+        const params = new URLSearchParams()
+        if (back) params.set('back', back)
+        if (pool.type === PAIR_TYPES.LSD) {
+          const hasFarming = pool.subpools.some(sub => sub.title === 'CL_Farming')
+          params.set('strategy', hasFarming ? STRATEGY_TYPES.FARM : STRATEGY_TYPES.FEES)
+        }
+        push(`/analytics/pairs/${pool?.address}?${params.toString()}`)
       },
     }))
   }, [

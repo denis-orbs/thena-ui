@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
+import { useGaugeAlive } from '@/app/pools/(add-liquidity)/add-liquidity/ClPool'
 import Selection from '@/components/selection'
 import Toggle from '@/components/toggle'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
@@ -92,9 +93,10 @@ export function StrategyTitle({
     [isAutomatic, toggleStrategyType, t],
   )
 
+  const isGaugeAlive = useGaugeAlive(pair?.address)
   const hasFarming = useMemo(
-    () => pair?.subpools?.some(pool => pool.title === 'CL_Farming' && pool.gauge.isAlive),
-    [pair?.subpools],
+    () => pair?.subpools?.some(pool => pool.title === 'CL_Farming' && isGaugeAlive),
+    [pair?.subpools, isGaugeAlive],
   )
   const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
