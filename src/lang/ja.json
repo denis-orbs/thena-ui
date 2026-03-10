@@ -1660,7 +1660,6 @@
   "Share Image": "Share Image",
   "Download": "Download",
   "Background Image": "Background Image",
-  "Search by name, symbol or address": "Search by name, symbol or address",
   "Write your description here": "Write your description here...",
 
   "Type here": "Type here",
@@ -1676,5 +1675,8 @@
   "Selected Pair": "Selected Pair",
   "Image size must not exceed 20 MB": "Image size must not exceed 20 MB",
   "Token Analytics": "Token Analytics",
-  "Generate Token Analytics": "Generate Token Analytics"
+  "Generate Token Analytics": "Generate Token Analytics",
+  "Mispriced warning message": "The pool is currently mispriced. Your funds might be exposed to arbitrage",
+  "Mispriced warning message subtitle": "Please do not continue if you do not know what you are doing.",
+  "Attention": "Attention"
 }
