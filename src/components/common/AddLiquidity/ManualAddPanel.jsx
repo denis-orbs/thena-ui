@@ -6,6 +6,7 @@ import SlippageContent from '@/app/pools/(add-liquidity)/add-liquidity/SlippageC
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
 import Selection from '@/components/selection'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import cn from '@/utils/classes'
 
@@ -35,6 +36,9 @@ export default function ManualAddPanel({
   const [slippage, setSlippage] = useState(0.5)
   const { isLgDown } = useMediaQuery()
 
+  const asset0 = useGetAsset(mintInfo?.pool?.token0?.address)
+  const asset1 = useGetAsset(mintInfo?.pool?.token1?.address)
+
   // check if the position is farming and the gauge is alive
   const isDisabledDeposit = useMemo(() => {
     if (!position || !pair) return false
@@ -43,6 +47,19 @@ export default function ManualAddPanel({
     if (!isFarmingPos) return false
     if (gaugeAlive) return false
   }, [position, pair, gaugeAlive])
+
+  const isPriceDifferenceTooHigh = useMemo(() => {
+    if (!mintInfo?.price) return true
+    const poolPrice = Number(mintInfo?.price?.toSignificant(6))
+
+    const marketPoolPrice = asset0?.price && asset1?.price ? Number(asset0?.price) / Number(asset1?.price) : 0
+
+    const percentageDifference = Math.abs((poolPrice - marketPoolPrice) / marketPoolPrice) * 100
+
+    if (percentageDifference > 5) return true // 5% difference
+
+    return false
+  }, [asset0?.price, asset1?.price, mintInfo?.price])
 
   useEffect(() => {
     if (!strategy?.isFarming) {
@@ -125,6 +142,7 @@ export default function ManualAddPanel({
                 input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!',
               }}
               isDisabledDeposit={isDisabledDeposit}
+              isPriceDifferenceTooHigh={isPriceDifferenceTooHigh}
             />
           )}
         </>
@@ -147,6 +165,7 @@ export default function ManualAddPanel({
               input: 'bg-neutral-950 hover:bg-neutral-900 gap-1! max-xl:py-4!',
             }}
             isDisabledDeposit={isDisabledDeposit}
+            isPriceDifferenceTooHigh={isPriceDifferenceTooHigh}
           />
         </div>
       )}

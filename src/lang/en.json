@@ -1767,5 +1767,8 @@
   "setToDefault": "Set to default",
   "Token Analytics": "Token Analytics",
   "Generate Token Analytics": "Generate Token Analytics",
-  "Fetching best price": "Fetching best price"
+  "Fetching best price": "Fetching best price",
+  "Mispriced warning message": "The pool is currently mispriced. Your funds might be exposed to arbitrage",
+  "Mispriced warning message subtitle": "Please do not continue if you do not know what you are doing.",
+  "Attention": "Attention"
 }

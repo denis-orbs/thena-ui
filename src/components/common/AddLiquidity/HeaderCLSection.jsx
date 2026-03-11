@@ -378,8 +378,6 @@ export default function HeaderCLSection({
     [sortedSubPools, strategy?.address, handleChooseStrategy, t],
   )
 
-  console.log('strategyAutoData', strategyAutoData)
-
   // Stable callback for toggling strategy type
   const toggleStrategyType = useCallback(
     enable => {

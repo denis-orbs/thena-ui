@@ -1,7 +1,8 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -19,6 +20,8 @@ import cn from '@/utils/classes'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 
+const MispricedWarningModal = dynamic(() => import('./MispricedWarningModal'), { ssr: false })
+
 export default function ManualAdd({
   baseCurrency,
   quoteCurrency,
@@ -33,6 +36,7 @@ export default function ManualAdd({
   className,
   classNames,
   isDisabledDeposit,
+  isPriceDifferenceTooHigh,
 }) {
   const t = useTranslations()
   const stableAssets = useStableTokens()
@@ -42,6 +46,7 @@ export default function ManualAdd({
   const { startPriceTypedValue } = useV3MintState()
   const { onAlgebraAdd, pending } = useAlgebraAdd()
   const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
+  const [showMispricedWarning, setShowMispricedWarning] = useState(false)
 
   const errorMessage = useMemo(
     () => (position ? position.errorMessage : mintInfo.errorMessage),
@@ -126,6 +131,19 @@ export default function ManualAdd({
     strategy?.title,
   ])
 
+  const handleDepositClick = useCallback(() => {
+    if (isPriceDifferenceTooHigh) {
+      setShowMispricedWarning(true)
+      return
+    }
+    onAddLiquidity()
+  }, [isPriceDifferenceTooHigh, onAddLiquidity])
+
+  const handleConfirmMispriced = useCallback(() => {
+    setShowMispricedWarning(false)
+    onAddLiquidity()
+  }, [onAddLiquidity])
+
   return (
     <section className='flex flex-col gap-4 xl:gap-6'>
       <div className={cn('flex flex-col gap-4 xl:gap-2', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
@@ -149,7 +167,7 @@ export default function ManualAdd({
         {account ? (
           <PrimaryButton
             disabled={pending || isPendingIncrease || isDisabledDeposit}
-            onClick={onAddLiquidity}
+            onClick={handleDepositClick}
             className='w-full xl:font-medium'
           >
             {t('Deposit')}
@@ -158,6 +176,11 @@ export default function ManualAdd({
           <ConnectButton className='w-full' />
         )}
       </div>
+      <MispricedWarningModal
+        isOpen={showMispricedWarning}
+        onCancel={() => setShowMispricedWarning(false)}
+        onConfirm={handleConfirmMispriced}
+      />
     </section>
   )
 }

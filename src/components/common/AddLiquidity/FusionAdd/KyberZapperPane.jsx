@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -22,6 +23,8 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/utils/utils'
 
 import WarningZapper from '../components/WarningZapper'
 
+const MispricedWarningModal = dynamic(() => import('./MispricedWarningModal'), { ssr: false })
+
 function KyberZapperPane({
   baseCurrency,
   quoteCurrency,
@@ -34,12 +37,15 @@ function KyberZapperPane({
   slippage = 0.5,
   classNames,
   isDisabledDeposit,
+  isPriceDifferenceTooHigh,
 }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
   const stableAssets = useStableTokens()
   const { handleAddLiquidity } = useKyberZapperAddLiquidity()
+
+  const [showMispricedWarning, setShowMispricedWarning] = useState(false)
 
   const [token0, token1] = useMemo(() => {
     const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]
@@ -184,6 +190,14 @@ function KyberZapperPane({
     tokenDeposit,
   ])
 
+  const handleDepositClick = useCallback(() => {
+    if (isPriceDifferenceTooHigh) {
+      setShowMispricedWarning(true)
+      return
+    }
+    handleKyberAddLiquidity()
+  }, [isPriceDifferenceTooHigh, handleKyberAddLiquidity])
+
   return (
     <div className='mt-4! flex flex-col md:gap-4'>
       <div className='flex flex-col gap-2 md:gap-4'>
@@ -263,13 +277,18 @@ function KyberZapperPane({
           {t('Cancel')}
         </EmphasisButton>
         {account ? (
-          <PrimaryButton disabled={isDisabled} onClick={handleKyberAddLiquidity} className='w-full'>
+          <PrimaryButton disabled={isDisabled} onClick={handleDepositClick} className='w-full'>
             {isENFPool ? 'Zapper is not available for this pool.' : t('Add Liquidity')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />
         )}
       </div>
+      <MispricedWarningModal
+        isOpen={showMispricedWarning}
+        onCancel={() => setShowMispricedWarning(false)}
+        onConfirm={handleKyberAddLiquidity}
+      />
     </div>
   )
 }
