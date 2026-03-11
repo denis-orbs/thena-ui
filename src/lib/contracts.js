@@ -49,6 +49,8 @@ export const getWBNBContract = chainId => getContract(WbnbABI, Contracts.WBNB, c
 
 export const getSolidlyRouterContract = chainId => getContract(SolidlyRouterABI, Contracts.SolidlyRouter, chainId)
 
+export const getRouterV2Contract = chainId => getContract(SolidlyRouterABI, Contracts.RouterV2, chainId)
+
 export const getVeTHEContract = chainId => getContract(VeTHEABI, Contracts.veTHE, chainId)
 
 export const getVeDistContract = chainId => getContract(VeDistABI, Contracts.veDist, chainId)

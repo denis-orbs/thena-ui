@@ -204,5 +204,8 @@ const Contracts = {
   UniversalRouter: {
     [CHAIN_ID.BSC]: '0x146c3126932B6908DF8a4e8664f22082A97a0840',
   },
+  RouterV2: {
+    [CHAIN_ID.BSC]: '0xd4ae6eca985340dd434d38f470accce4dc78d109',
+  },
 }
 export default Contracts

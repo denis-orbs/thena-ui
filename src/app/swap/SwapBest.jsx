@@ -35,6 +35,8 @@ import InfoIcon from '@/icons/InfoIcon'
 import RefreshIcon from '~/svgs/refresh.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import { useSolidlyQuote } from '@/hooks/fusion/useSolidlyQuote'
+import { feeOnTransferTokens } from '@/hooks/thenaSwap/feeOnTransferTokens'
+import { routeHasFeeOnTransferToken, useFeeOnTransferSwap } from '@/hooks/thenaSwap/useFeeOnTransferSwap'
 
 const SwapChart = dynamic(() => import('@/modules/SwapChart').then(mod => mod.default), {
   ssr: false,
@@ -78,6 +80,14 @@ export default function SwapBest({
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
   const isTwap = useMemo(() => TWAP_TYPES.includes(swapType), [swapType])
+  const isFeeOnTransferFromAsset = useMemo(
+    () => feeOnTransferTokens.includes(fromAsset?.address?.toLowerCase()),
+    [fromAsset?.address],
+  )
+  const isFeeOnTransferToAsset = useMemo(
+    () => feeOnTransferTokens.includes(toAsset?.address?.toLowerCase()),
+    [toAsset?.address],
+  )
 
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
@@ -110,12 +120,21 @@ export default function SwapBest({
   const { handleSolidlySwap, pending: solidlySwapPending } = useSolidlySwap()
 
   const isEnabledTradeLH = useMemo(() => {
+    if (isFeeOnTransferFromAsset || isFeeOnTransferToAsset) return false
     if (!liquidityHubEnabled || isTwap) return false
     if (!fromAmount) return false
     if (!bestTrade && !bestTradePending) return true
     if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) return true
     return false
-  }, [bestTrade, bestTradePending, fromAmount, liquidityHubEnabled, isTwap])
+  }, [
+    bestTrade,
+    bestTradePending,
+    fromAmount,
+    liquidityHubEnabled,
+    isTwap,
+    isFeeOnTransferFromAsset,
+    isFeeOnTransferToAsset,
+  ])
 
   const {
     data: tradeLH,
@@ -132,6 +151,9 @@ export default function SwapBest({
   const odosNotGood = useMemo(() => !bestTrade || Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT, [bestTrade])
 
   const isEnabledTheFallback = useMemo(() => {
+    if (isFeeOnTransferFromAsset || isFeeOnTransferToAsset) {
+      return true
+    }
     if (isTwap || quotePendingLH || bestTradePending) return false
     if (!fromAmount) return false
 
@@ -147,6 +169,8 @@ export default function SwapBest({
 
     return false
   }, [
+    isFeeOnTransferFromAsset,
+    isFeeOnTransferToAsset,
     isTwap,
     quotePendingLH,
     bestTradePending,
@@ -186,11 +210,22 @@ export default function SwapBest({
     bestTrade,
     tradeLH,
     liquidityHubEnabled,
+    isFeeOnTransferFromAsset || isFeeOnTransferToAsset ? 1 : null,
   )
 
   const { onSwap: onThenaSwap, pending: thenaSwapPending } = thenaSwap.useSwap()
+  const { onSwap: onFeeOnTransferSwap, pending: feeOnTransferSwapPending } = useFeeOnTransferSwap()
 
-  const isThenaSwap = useMemo(() => tradeThenaSwap?.isThenaSwap || false, [tradeThenaSwap])
+  const isFeeOnTransferRoute = useMemo(() => routeHasFeeOnTransferToken(tradeThenaSwap?.route), [tradeThenaSwap?.route])
+
+  const isThenaSwap = useMemo(
+    () =>
+      isFeeOnTransferFromAsset ||
+      isFeeOnTransferToAsset ||
+      isFeeOnTransferRoute ||
+      Boolean(tradeThenaSwap?.isThenaSwap),
+    [isFeeOnTransferFromAsset, isFeeOnTransferToAsset, isFeeOnTransferRoute, tradeThenaSwap?.isThenaSwap],
+  )
 
   // Only use tradeTheFallback data when isFallbackThe === true
   const tradeThenaSwapToUse = useMemo(() => (isThenaSwap ? tradeThenaSwap : null), [tradeThenaSwap, isThenaSwap])
@@ -393,6 +428,23 @@ export default function SwapBest({
       }
     }
 
+    if ((isFeeOnTransferFromAsset || isFeeOnTransferToAsset || isFeeOnTransferRoute) && tradeThenaSwapToUse) {
+      try {
+        await onFeeOnTransferSwap(
+          {
+            fromAsset,
+            toAsset,
+            fromAmount,
+            tradeThenaSwap: tradeThenaSwapToUse,
+          },
+          () => onSuccess(tradeThenaSwapToUse?.quote, false),
+        )
+      } catch (error) {
+        console.error('Fee-on-transfer swap error:', error)
+      }
+      return
+    }
+
     // Case 1: Odos is good -> use Odos
     if (bestTrade && Math.abs(bestTrade.priceImpact) <= MAX_PRICE_IMPACT) {
       await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(bestTrade, false))
@@ -468,6 +520,10 @@ export default function SwapBest({
     onTradeSuccess,
     onSwapLH,
     onThenaSwap,
+    onFeeOnTransferSwap,
+    isFeeOnTransferFromAsset,
+    isFeeOnTransferToAsset,
+    isFeeOnTransferRoute,
     tradeThenaSwapToUse,
     onOdosSwap,
     toAmount,
@@ -713,6 +769,7 @@ export default function SwapBest({
                     solidlySwapPending ||
                     swapLoadingLH ||
                     thenaSwapPending ||
+                    feeOnTransferSwapPending ||
                     comparingTrade ||
                     wrapPending ||
                     btnMsg.isError
