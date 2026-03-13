@@ -18,6 +18,8 @@ import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 import { fromWei, toWei, toWeiRound } from '@/utils/utils'
 
+import { getExactOutputAmountFeeOnTransfer } from './useExactOutputFeeOnTransfer'
+
 export const subtractSlippage = (allowedSlippage, outAmount) => {
   if (!outAmount) return undefined
   return BigNumber(outAmount)
@@ -218,7 +220,18 @@ const calculateCommandsInput = ({
  * @param {object} tradeLH - The trade from LiquidityHub
  * @param {boolean} liquidityHubEnabled - Whether LiquidityHub is enabled
  */
-const useTrade = (fromAsset, toAsset, fromAmountUI, enabled, slippage, bestTrade, tradeLH, liquidityHubEnabled) =>
+const useTrade = ({
+  fromAsset,
+  toAsset,
+  fromAmountUI,
+  enabled,
+  slippage,
+  bestTrade,
+  tradeLH,
+  liquidityHubEnabled,
+  maxHop = null,
+  isFeeOnTransfer = false,
+}) =>
   useQuery({
     queryKey: [
       'the-fallback-trade',
@@ -228,6 +241,7 @@ const useTrade = (fromAsset, toAsset, fromAmountUI, enabled, slippage, bestTrade
       liquidityHubEnabled,
       bestTrade?.outAmounts[0] || '',
       tradeLH?.outAmount || '',
+      maxHop,
     ],
     queryFn: async () => {
       const tokenIn = fromAsset.address === 'BNB' ? Contracts.WBNB[fromAsset.chainId]?.toLowerCase() : fromAsset.address
@@ -240,10 +254,18 @@ const useTrade = (fromAsset, toAsset, fromAmountUI, enabled, slippage, bestTrade
         amountIn,
         networkId: ChainId.BSC,
         tradeType: 0,
+        maxHop,
       })
 
       const data = response?.data || response
-      const outAmount = data?.outAmount || data?.quote
+      let outAmount = BigNumber(data?.outAmount || data?.quote || 0)
+      if (isFeeOnTransfer) {
+        outAmount = await getExactOutputAmountFeeOnTransfer({
+          isEnabled: true,
+          outputAmount: outAmount,
+          chainId: ChainId.BSC,
+        })
+      }
       const minAmountOut = subtractSlippage(slippage, outAmount) || '0'
       const priceImpact = data?.priceImpact || response?.priceImpact || 0
       const route = data?.route || response?.route || []
@@ -300,6 +322,8 @@ const useSwap = () => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
+      const currentDeadline = parseInt(new Date().getTime() / 1000, 10) + deadline * 60
+
       const routerAddress = routerContract?.address
 
       if (!routerAddress) {
@@ -312,7 +336,6 @@ const useSwap = () => {
 
       // Calculate commands and inputs on-demand when swapping
       const routerAddressForCommands = Contracts.UniversalRouter?.[chainId] || Contracts.fusionRouter[chainId]
-      const currentDeadline = parseInt(new Date().getTime() / 1000, 10) + deadline * 60
       const { commands, inputs } = calculateCommandsInput({
         route: tradeThenaSwap.route,
         isNativeTokenInput: fromAsset?.symbol === 'BNB',

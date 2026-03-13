@@ -7,6 +7,7 @@ import { PROTOCOL, SWAP_COMMANDS, TRADE_TYPE } from '@/constant/thenaSwap'
 import { useSettings } from '@/state/settings/hooks'
 import { toWeiRound } from '@/utils/utils'
 
+import { feeOnTransferTokens } from './feeOnTransferTokens'
 import useWallet from '../useWallet'
 
 function packAddresses(addresses, insertZero = false) {
@@ -98,7 +99,6 @@ const useCommandsInput = ({
     const amountInWei = toWeiRound(amountIn ?? '0', tokenIn?.decimals)
     const commands = []
     const inputs = []
-
     // check if wrapped native to wrapped or unwrap
     if (isJustWrap) {
       commands.push(SWAP_COMMANDS.NATIVE_TO_WRAPPED)
@@ -131,7 +131,7 @@ const useCommandsInput = ({
 
     route.forEach(hop => {
       const recipient = tokenOut?.symbol === 'BNB' ? routerAddress : userAddress
-      const cmd = getCommands(hop.protocol, tradeType)
+      const cmd = getCommands(hop.protocol, tradeType, feeOnTransferTokens.includes(tokenIn?.address?.toLowerCase()))
       const _amountIn = toWeiRound(BigNumber(amountIn).times(hop.percent).div(100).toString(), tokenIn?.decimals)
       // Calculate amountOutMin with slippage: amountOut * (1 - slippage / 100)
       const _amountOutMin = toWeiRound(
