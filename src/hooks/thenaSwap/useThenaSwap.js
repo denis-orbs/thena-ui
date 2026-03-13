@@ -18,6 +18,8 @@ import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 import { fromWei, toWei, toWeiRound } from '@/utils/utils'
 
+import { getExactOutputAmountFeeOnTransfer } from './useExactOutputFeeOnTransfer'
+
 export const subtractSlippage = (allowedSlippage, outAmount) => {
   if (!outAmount) return undefined
   return BigNumber(outAmount)
@@ -218,7 +220,7 @@ const calculateCommandsInput = ({
  * @param {object} tradeLH - The trade from LiquidityHub
  * @param {boolean} liquidityHubEnabled - Whether LiquidityHub is enabled
  */
-const useTrade = (
+const useTrade = ({
   fromAsset,
   toAsset,
   fromAmountUI,
@@ -228,7 +230,8 @@ const useTrade = (
   tradeLH,
   liquidityHubEnabled,
   maxHop = null,
-) =>
+  isFeeOnTransfer = false,
+}) =>
   useQuery({
     queryKey: [
       'the-fallback-trade',
@@ -255,7 +258,14 @@ const useTrade = (
       })
 
       const data = response?.data || response
-      const outAmount = data?.outAmount || data?.quote
+      let outAmount = BigNumber(data?.outAmount || data?.quote || 0)
+      if (isFeeOnTransfer) {
+        outAmount = await getExactOutputAmountFeeOnTransfer({
+          isEnabled: true,
+          outputAmount: outAmount,
+          chainId: ChainId.BSC,
+        })
+      }
       const minAmountOut = subtractSlippage(slippage, outAmount) || '0'
       const priceImpact = data?.priceImpact || response?.priceImpact || 0
       const route = data?.route || response?.route || []

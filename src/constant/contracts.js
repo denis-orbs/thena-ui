@@ -207,5 +207,8 @@ const Contracts = {
   RouterV2: {
     [CHAIN_ID.BSC]: '0xd4ae6eca985340dd434d38f470accce4dc78d109',
   },
+  ElitenessOFT: {
+    [CHAIN_ID.BSC]: '0x31fca0083a2b0b99ab044eb21625acc6ed87e4fe',
+  },
 }
 export default Contracts

@@ -44,6 +44,38 @@ function getHopSolidlyRoutes(hop) {
   }
   return routes
 }
+// return routes, hopAmountIn, hopAmountOutMin, account, currentDeadline
+export function getFeeOnTransferInput({ chainId, fromAsset, toAsset, fromAmount, tradeThenaSwap, deadline, account }) {
+  const feeOnTransferRouter = getRouterV2Contract(chainId)
+  const feeRouterAddress = feeOnTransferRouter?.address
+  if (!feeRouterAddress) throw new Error('Fee-on-transfer router not found')
+  if (!tradeThenaSwap?.route?.length) throw new Error('Trade route is required')
+
+  const v1Hops = tradeThenaSwap.route.filter(h => h.protocol === PROTOCOL.SOLIDLY)
+  if (v1Hops.length === 0) throw new Error('No V1 route for fee-on-transfer swap')
+
+  const hop = v1Hops[0]
+  const hopInputToken = hop.route?.input || hop.route?.tokenPath?.[0]
+  const hopInputDecimals = hopInputToken?.decimals || fromAsset?.decimals || 18
+  const hopOutputDecimals = hop.quoteToken?.decimals || toAsset?.decimals || 18
+  const currentDeadline = parseInt(new Date().getTime() / 1000, 10) + deadline * 60
+  const hopAmountOutMin = toWeiRound(
+    BigNumber(hop.quote || '0')
+      .times(85)
+      .div(100)
+      .toString(),
+    hopOutputDecimals,
+  )
+  const hopAmountIn = toWeiRound(
+    BigNumber(fromAmount || '0')
+      .times(hop.percent || 0)
+      .div(100)
+      .toString(),
+    hopInputDecimals,
+  )
+
+  return { routes: getHopSolidlyRoutes(hop), hopAmountIn, hopAmountOutMin, account, currentDeadline }
+}
 
 export function useFeeOnTransferSwap() {
   const [pending, setPending] = useState(false)
@@ -61,7 +93,6 @@ export function useFeeOnTransferSwap() {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
-      const currentDeadline = parseInt(new Date().getTime() / 1000, 10) + deadline * 60
 
       const feeOnTransferRouter = getRouterV2Contract(chainId)
       const feeRouterAddress = feeOnTransferRouter?.address
@@ -105,44 +136,26 @@ export function useFeeOnTransferSwap() {
             return false
           }
         }
+        const {
+          routes,
+          hopAmountIn,
+          hopAmountOutMin,
+          account: feeOnTransferAccount,
+          currentDeadline: feeOnTransferCurrentDeadline,
+        } = getFeeOnTransferInput({ chainId, fromAsset, toAsset, fromAmount, tradeThenaSwap, deadline, account })
 
-        for (const hop of v1Hops) {
-          const routes = getHopSolidlyRoutes(hop).map(({ from, to, stable }) => ({
-            from: String(from),
-            to: String(to),
-            stable: Boolean(stable),
-          }))
-
-          if (routes.length) {
-            const hopInputToken = hop.route?.input || hop.route?.tokenPath?.[0]
-            const hopInputDecimals = hopInputToken?.decimals || fromAsset?.decimals || 18
-
-            const hopAmountIn = toWeiRound(
-              BigNumber(fromAmount || '0')
-                .times(hop.percent || 0)
-                .div(100)
-                .toString(),
-              hopInputDecimals,
-            )
-
-            const hopOutputDecimals = hop.quoteToken?.decimals || toAsset?.decimals || 18
-            const hopAmountOutMin = toWeiRound(
-              BigNumber(hop.quote || '0')
-                .times(85)
-                .div(100)
-                .toString(),
-              hopOutputDecimals,
-            )
-
-            await writeTxn(
-              key,
-              swapuuid,
-              feeOnTransferRouter,
-              'swapExactTokensForTokensSupportingFeeOnTransferTokens',
-              [hopAmountIn, hopAmountOutMin, routes, account, currentDeadline],
-            )
-          }
-        }
+        const functionName = isNativeIn
+          ? 'swapExactETHForTokensSupportingFeeOnTransferTokens'
+          : 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
+        const msgValue = isNativeIn ? hopAmountIn : '0'
+        await writeTxn(
+          key,
+          swapuuid,
+          feeOnTransferRouter,
+          functionName,
+          [hopAmountIn, hopAmountOutMin, routes, feeOnTransferAccount, feeOnTransferCurrentDeadline],
+          msgValue,
+        )
         endTxn({
           key,
           final: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),

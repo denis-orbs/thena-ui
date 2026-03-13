@@ -113,7 +113,16 @@ export default function SwapBest({
     data: bestTrade,
     isLoading: bestTradePending,
     mutate,
-  } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId, isTwap)
+  } = useOdosQuoteSwap(
+    account,
+    fromAsset,
+    toAsset,
+    debouncedAmount,
+    slippage,
+    networkId,
+    isTwap,
+    !(isFeeOnTransferFromAsset || isFeeOnTransferToAsset),
+  )
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
@@ -140,7 +149,12 @@ export default function SwapBest({
     data: tradeLH,
     isLoading: quotePendingLH,
     refetch: refetchTradeLH,
-  } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isEnabledTradeLH)
+  } = liquidityHub.useTrade(
+    fromAsset,
+    toAsset,
+    debouncedAmount,
+    isEnabledTradeLH && !(isFeeOnTransferFromAsset || isFeeOnTransferToAsset),
+  )
 
   const isFallbackLH = useMemo(() => {
     if (!tradeLH || !liquidityHubEnabled) return false
@@ -201,17 +215,18 @@ export default function SwapBest({
     data: tradeThenaSwap,
     isLoading: quotePendingThenaSwap,
     refetch: refetchThenaSwap,
-  } = thenaSwap.useTrade(
+  } = thenaSwap.useTrade({
     fromAsset,
     toAsset,
-    debouncedAmount,
-    isEnabledTheFallback,
+    fromAmountUI: debouncedAmount,
+    enabled: isEnabledTheFallback,
     slippage,
     bestTrade,
     tradeLH,
     liquidityHubEnabled,
-    isFeeOnTransferFromAsset || isFeeOnTransferToAsset ? 1 : null,
-  )
+    maxHop: isFeeOnTransferFromAsset || isFeeOnTransferToAsset ? 1 : null,
+    isFeeOnTransfer: isFeeOnTransferFromAsset || isFeeOnTransferToAsset,
+  })
 
   const { onSwap: onThenaSwap, pending: thenaSwapPending } = thenaSwap.useSwap()
   const { onSwap: onFeeOnTransferSwap, pending: feeOnTransferSwapPending } = useFeeOnTransferSwap()

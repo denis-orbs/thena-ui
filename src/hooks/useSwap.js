@@ -77,7 +77,16 @@ export const fetchOdosQuote = async ({
   return quote
 }
 
-export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId, isTwap = false) => {
+export const useOdosQuoteSwap = (
+  account,
+  fromAsset,
+  toAsset,
+  fromAmount,
+  slippage,
+  networkId,
+  isTwap = false,
+  isEnabled = true,
+) => {
   const inputAmount = toWei(fromAmount, fromAsset?.decimals).dp(0).toString(10)
   const inputToken = getAddress(fromAsset?.address === 'BNB' ? zeroAddress : fromAsset?.address ?? zeroAddress)
   const outputToken = getAddress(toAsset?.address === 'BNB' ? zeroAddress : toAsset?.address ?? zeroAddress)
@@ -99,7 +108,7 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         isTwap,
       }),
     refetchInterval: 60000,
-    enabled: Boolean(fromAsset && toAsset && networkId === ChainId.BSC && !isInvalidAmount(fromAmount)),
+    enabled: isEnabled && Boolean(fromAsset && toAsset && networkId === ChainId.BSC && !isInvalidAmount(fromAmount)),
     gcTime: 0,
   })
 
@@ -848,12 +857,13 @@ export const useOdosQuoteSwapTradeTC = (
   enabled = true,
   fromAssetDecimals = 18,
 ) => {
+  const queryKey = enabled &&
+    fromAddress &&
+    toAddress &&
+    networkId === ChainId.BSC &&
+    !isInvalidAmount(fromAmount) && ['useOdosQuoteSwap', tcAddress, fromAddress, toAddress, fromAmount, slippage]
   const res = useSWR(
-    enabled &&
-      fromAddress &&
-      toAddress &&
-      networkId === ChainId.BSC &&
-      !isInvalidAmount(fromAmount) && ['useOdosQuoteSwap', tcAddress, fromAddress, toAddress, fromAmount, slippage],
+    queryKey,
     async () => {
       const inputAmount = toWei(fromAmount, fromAssetDecimals).dp(0).toString(10)
 

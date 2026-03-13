@@ -11,6 +11,7 @@ import {
   tcSpotAbi,
   thenaIdAbi,
 } from '@/abis/core'
+import { ElitenessOFTABI } from '@/abis/ElitenessOFTABI'
 import { FarmingCenterABI } from '@/abis/integral/FarmingCenterABI'
 import { IncentiveMakerABI } from '@/abis/integral/IncentiveMakerABI'
 import { SolidlyRouterABI } from '@/abis/solidly/SolidlyRouterABI'
@@ -24,7 +25,7 @@ import { VeDistABI } from '@/abis/ve/VeDistABI'
 import { VeTHEABI } from '@/abis/ve/VeTHEABI'
 import { VoterV3ABI } from '@/abis/ve/VoterV3ABI'
 import { WbnbABI } from '@/abis/WbnbABI'
-import Contracts from '@/constant/contracts'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
@@ -124,3 +125,8 @@ export const getIncentiveContract = chainId => ({
  *  UniversalRouter
  */
 export const geUniversalRouterContract = chainId => getContract(UniversalRouterABI, Contracts.UniversalRouter, chainId)
+
+/** **************************************************************************************************
+                                            ElitenessOFT
+*************************************************************************************************** */
+export const getElitenessOFTContract = () => getContract(ElitenessOFTABI, Contracts.ElitenessOFT, CHAIN_ID.BSC)

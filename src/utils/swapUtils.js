@@ -10,14 +10,14 @@ export function getSwapOutAmount({
   tradeThenaSwapToUse,
   bestTrade,
 }) {
+  if (tradeThenaSwapToUse?.outAmount) return tradeThenaSwapToUse.outAmount
+
   if (isSolidlySwap) {
     const outAmountThenaQuote = solidlyQuoteData ? Number(solidlyQuoteData[0]) : ''
     return outAmountThenaQuote
   }
 
   if (isFallbackLH) return tradeLH?.outAmount
-  if (tradeThenaSwapToUse?.outAmount) return tradeThenaSwapToUse.outAmount
-
   return bestTrade?.outAmounts[0] || ''
 }
 
