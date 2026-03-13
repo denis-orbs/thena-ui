@@ -571,7 +571,7 @@ function Header() {
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
-                  onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  onClickHandler: () => window.open('https://snapshot.org/#/s:thenafi.eth', '_blank'),
                   isExternal: true,
                 },
                 {
@@ -614,7 +614,7 @@ function Header() {
                 {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
-                  onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                  onClickHandler: () => window.open('https://snapshot.org/#/s:thenafi.eth', '_blank'),
                   isExternal: true,
                 },
                 {
