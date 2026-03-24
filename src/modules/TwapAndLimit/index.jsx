@@ -837,6 +837,7 @@ export function Twap(props) {
         fees={0.25}
         priceProtection={priceProtection}
         refetchBalances={refetchBalances}
+        minChunkSizeUsd={10}
         callbacks={callbacks}
         useToken={useToken}
         resetTypedInputAmount={resetTypedInputAmount}
