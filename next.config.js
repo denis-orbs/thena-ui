@@ -68,6 +68,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'ipfs.filebase.io',
+      },
+      {
+        protocol: 'https',
         hostname: 'raw.githubusercontent.com',
       },
     ],
