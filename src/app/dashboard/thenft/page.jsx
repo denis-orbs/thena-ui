@@ -146,7 +146,11 @@ export default function TheNftPage() {
                   {yourNfts.map((nft, idx) => (
                     <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 pb-6' key={`thenft-${idx}`}>
                       <div className='relative'>
-                        <NextImage className='w-full min-w-[200px] rounded-lg' src={nft.image} alt='' />
+                        <NextImage
+                          className='w-full min-w-[200px] rounded-lg'
+                          src={nft.image.replace('ipfs.io', 'ipfs.filebase.io')}
+                          alt={`theNFT image ${nft.name}`}
+                        />
                         <div className='absolute top-2 right-1'>
                           {stakedIds.includes(nft.id) ? (
                             <GreenBadge>{t('Staked')}</GreenBadge>

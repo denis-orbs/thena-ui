@@ -124,7 +124,7 @@ export const fetchTopTokens = async ({ networkId, version = 3 }) => {
 }
 
 export const fetchNfts = nftId =>
-  fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
+  fetch(`https://ipfs.filebase.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
 // export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 export const fetchRevenue = () => fetch(`${backendApi}/v1/stats`).then(r => r.json())
