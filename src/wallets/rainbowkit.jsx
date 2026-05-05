@@ -45,7 +45,7 @@ export const wagmiConfig = createConfig({
   transports: {
     [bsc.id]: fallback([
       http('https://bsc-dataseed2.ninicoin.io'),
-      http('https://bsc.blockrazor.xyz'),
+      http('https://bsc.drpc.org'),
       http('https://binance.llamarpc.com'),
       unstable_connector(injected),
     ]),
