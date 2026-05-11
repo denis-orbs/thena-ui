@@ -53,11 +53,26 @@ function InfoBox({ value, title, amount }) {
 
 const fetchNftInfo = async (url, nftIds) => {
   if (!nftIds || nftIds.length === 0) return
-  const res = await Promise.all(nftIds.map(ele => fetchNfts(ele)))
-  return res.map((ele, idx) => ({
-    ...ele,
-    id: nftIds[idx],
-  }))
+  const res = await Promise.allSettled(nftIds.map(ele => fetchNfts(ele)))
+  return res.map((ele, idx) => {
+    const baseInfo = {
+      id: nftIds[idx],
+      status: ele.status,
+    }
+
+    if (ele.status === 'fulfilled') {
+      return {
+        ...ele.value,
+        ...baseInfo,
+      }
+    }
+
+    return {
+      ...baseInfo,
+      image: '',
+      name: '',
+    }
+  })
 }
 
 export default function TheNftPage() {
@@ -146,11 +161,17 @@ export default function TheNftPage() {
                   {yourNfts.map((nft, idx) => (
                     <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 pb-6' key={`thenft-${idx}`}>
                       <div className='relative'>
-                        <NextImage
-                          className='w-full min-w-[200px] rounded-lg'
-                          src={nft.image.replace('ipfs.io', 'ipfs.filebase.io')}
-                          alt={`theNFT image ${nft.name}`}
-                        />
+                        {nft.image ? (
+                          <NextImage
+                            className='w-full min-w-[200px] rounded-lg'
+                            src={nft.image.replace('ipfs.io', 'ipfs.filebase.io')}
+                            alt={`theNFT image ${nft.name || nft.id}`}
+                          />
+                        ) : (
+                          <div className='flex aspect-square w-full min-w-[200px] items-center justify-center rounded-lg bg-neutral-800 text-sm text-neutral-400'>
+                            {`#${nft.id}`}
+                          </div>
+                        )}
                         <div className='absolute top-2 right-1'>
                           {stakedIds.includes(nft.id) ? (
                             <GreenBadge>{t('Staked')}</GreenBadge>
@@ -160,7 +181,9 @@ export default function TheNftPage() {
                         </div>
                       </div>
                       <div className='flex flex-col gap-2 px-3'>
-                        <TextHeading className='text-base leading-tight lg:text-2xl'>{nft.name}</TextHeading>
+                        <TextHeading className='text-base leading-tight lg:text-2xl'>
+                          {nft.name || `#${nft.id}`}
+                        </TextHeading>
                       </div>
                     </div>
                   ))}
