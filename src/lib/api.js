@@ -123,8 +123,53 @@ export const fetchTopTokens = async ({ networkId, version = 3 }) => {
     .then(r => r.data)
 }
 
-export const fetchNfts = nftId =>
-  fetch(`https://ipfs.filebase.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
+const NFT_IPFS_CID = 'QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn'
+const NFT_FETCH_TIMEOUT_MS = 10000
+const NFT_IPFS_GATEWAYS = [
+  'ipfs.filebase.io',
+  '4everland.io',
+  'dweb.link',
+  'dget.top',
+  'ipfs.io',
+  'ipfs.ecolatam.com',
+  'w3s.link',
+]
+
+let cachedNftGateway = null
+
+const getNftGatewayOrder = () => {
+  if (!cachedNftGateway) return NFT_IPFS_GATEWAYS
+  return [cachedNftGateway, ...NFT_IPFS_GATEWAYS.filter(gateway => gateway !== cachedNftGateway)]
+}
+
+export const fetchNfts = async nftId => {
+  const gateways = getNftGatewayOrder()
+  let lastError = null
+
+  for (const gateway of gateways) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), NFT_FETCH_TIMEOUT_MS)
+
+    try {
+      const response = await fetch(`https://${gateway}/ipfs/${NFT_IPFS_CID}/${nftId}`, {
+        signal: controller.signal,
+      })
+      if (!response.ok) {
+        throw new Error(`Gateway ${gateway} responded ${response.status}`)
+      }
+
+      const data = await response.json()
+      cachedNftGateway = gateway
+      return data
+    } catch (error) {
+      lastError = error
+    } finally {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  throw lastError || new Error('All NFT IPFS gateways failed')
+}
 
 // export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 export const fetchRevenue = () => fetch(`${backendApi}/v1/stats`).then(r => r.json())
