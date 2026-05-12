@@ -2,10 +2,8 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
-import useSWR from 'swr'
 
 import { Info, Neutral } from '@/components/alert'
-import { GreenBadge, NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, SecondaryButton, TertiaryButton } from '@/components/buttons/Button'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
@@ -17,7 +15,6 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import useWallet from '@/hooks/useWallet'
 import InfoIcon from '@/icons/InfoIcon'
-import { fetchNfts } from '@/lib/api'
 import { formatAmount } from '@/utils/utils'
 
 import BankIcon from '~/svgs/bank.svg'
@@ -26,6 +23,7 @@ import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 
 import NftModal from './nftModal'
+import ThenftCollectionItem from './ThenftCollectionItem'
 import NotConnected from '../NotConnected'
 
 function InfoBox({ value, title, amount }) {
@@ -51,15 +49,6 @@ function InfoBox({ value, title, amount }) {
   )
 }
 
-const fetchNftInfo = async (url, nftIds) => {
-  if (!nftIds || nftIds.length === 0) return
-  const res = await Promise.all(nftIds.map(ele => fetchNfts(ele)))
-  return res.map((ele, idx) => ({
-    ...ele,
-    id: nftIds[idx],
-  }))
-}
-
 export default function TheNftPage() {
   const [isManageOpen, setIsManageOpen] = useState(false)
   const { account } = useWallet()
@@ -75,9 +64,7 @@ export default function TheNftPage() {
     userLoading,
     mutate,
   } = useTheNftAccountInfo()
-  const { data: yourNfts } = useSWR(['thenft image info', [...walletIds, ...stakedIds].length], url =>
-    fetchNftInfo(url, [...walletIds, ...stakedIds]),
-  )
+  const allNftIds = [...walletIds, ...stakedIds]
   const { onHarvest, pending } = useNftFeesClaim()
   const { onRoyaltyClaim, pending: royaltyPending } = useNftRoyaltyClaim()
   const t = useTranslations()
@@ -141,28 +128,10 @@ export default function TheNftPage() {
             </div>
             <div className='flex flex-col gap-4'>
               <TextHeading className='text-xl'>{t('My Collection')}</TextHeading>
-              {yourNfts && yourNfts.length > 0 ? (
+              {allNftIds.length > 0 ? (
                 <div className='flex gap-4 overflow-auto pb-4 lg:grid lg:grid-cols-4'>
-                  {yourNfts.map((nft, idx) => (
-                    <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 pb-6' key={`thenft-${idx}`}>
-                      <div className='relative'>
-                        <NextImage
-                          className='w-full min-w-[200px] rounded-lg'
-                          src={nft.image.replace('ipfs.io', 'ipfs.filebase.io')}
-                          alt={`theNFT image ${nft.name}`}
-                        />
-                        <div className='absolute top-2 right-1'>
-                          {stakedIds.includes(nft.id) ? (
-                            <GreenBadge>{t('Staked')}</GreenBadge>
-                          ) : (
-                            <NeutralBadge>{t('Not Staked')}</NeutralBadge>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex flex-col gap-2 px-3'>
-                        <TextHeading className='text-base leading-tight lg:text-2xl'>{nft.name}</TextHeading>
-                      </div>
-                    </div>
+                  {allNftIds.map((id, idx) => (
+                    <ThenftCollectionItem key={`thenft-${id}-${idx}`} nftId={id} isStaked={stakedIds.includes(id)} />
                   ))}
                 </div>
               ) : (

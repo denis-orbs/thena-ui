@@ -52,11 +52,7 @@ export function FollowedProfileItem({ user }) {
         className={cn('flex w-2/3 cursor-pointer items-center justify-start gap-1 md:gap-2')}
         href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
       >
-        <CircleImage
-          src={avatar?.replace('ipfs.io', 'ipfs.filebase.io') ?? '/images/home/stats/socials/social-1.png'}
-          alt='avatar'
-          className='size-8'
-        />
+        <CircleImage src={avatar ?? '/images/home/stats/socials/social-1.png'} alt='avatar' className='size-8' />
 
         <TextHeading className={cn('text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}>
           <span

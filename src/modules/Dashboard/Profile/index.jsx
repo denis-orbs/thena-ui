@@ -113,9 +113,7 @@ function DashboardProfile() {
                 <div
                   className='flex min-h-[432px] flex-col justify-between rounded-l-xl bg-cover bg-center bg-no-repeat pb-4 md:w-[211px]!'
                   style={{
-                    backgroundImage: `url('${
-                      userInfo?.avatar?.replace('ipfs.io', 'ipfs.filebase.io') || '/images/profile-bg.png'
-                    }')`,
+                    backgroundImage: `url('${userInfo?.avatar || '/images/profile-bg.png'}')`,
                   }}
                 >
                   <NewTextHeading
@@ -213,9 +211,7 @@ function DashboardProfile() {
               </div>
               <Image
                 alt='avatar'
-                src={
-                  userInfo?.avatar?.replace('ipfs.io', 'ipfs.filebase.io') ?? '/images/home/stats/socials/social-1.png'
-                }
+                src={userInfo?.avatar ?? '/images/home/stats/socials/social-1.png'}
                 className='mx-auto rounded-full'
                 width={124}
                 height={124}

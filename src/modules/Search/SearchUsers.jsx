@@ -29,11 +29,7 @@ function SearchUserItem({ user, setIsPopoverOpen }) {
         href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
         onClick={() => setIsPopoverOpen(false)}
       >
-        <CircleImage
-          src={avatar?.replace('ipfs.io', 'ipfs.filebase.io') ?? '/images/home/stats/socials/social-1.png'}
-          alt='avatar'
-          className='size-8'
-        />
+        <CircleImage src={avatar ?? '/images/home/stats/socials/social-1.png'} alt='avatar' className='size-8' />
         <div>
           <div className='mr-1 mb-1 flex items-center gap-1'>
             <TextHeading
