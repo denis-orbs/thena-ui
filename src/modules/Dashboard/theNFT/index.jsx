@@ -128,7 +128,7 @@ function TheNFT() {
                   <NextImage
                     key={`thenft-${nft.id}-${idx}`}
                     className='h-full w-full object-cover'
-                    src={nft.image.replace('ipfs.io', 'ipfs.io')}
+                    src={nft.image}
                     alt={nft.name}
                   />
                 ))}

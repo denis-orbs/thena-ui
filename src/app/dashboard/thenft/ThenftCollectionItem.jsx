@@ -44,11 +44,7 @@ export default function ThenftCollectionItem({ nftId, isStaked }) {
     <div className='flex flex-col gap-4 rounded-xl bg-neutral-900 p-4 pb-6'>
       <div className='relative'>
         {image ? (
-          <NextImage
-            className='w-full min-w-[200px] rounded-lg'
-            src={image.replace('ipfs.io', 'ipfs.io')}
-            alt={`theNFT image ${name || nftId}`}
-          />
+          <NextImage className='w-full min-w-[200px] rounded-lg' src={image} alt={`theNFT image ${name || nftId}`} />
         ) : (
           <div className='flex aspect-square w-full min-w-[200px] items-center justify-center rounded-lg bg-neutral-800 text-sm text-neutral-400'>
             {`#${nftId}`}

@@ -66,11 +66,7 @@ export function UserProfileCard({
   return (
     <div className='flex items-center gap-1'>
       <LinkComponent>
-        <CircleImage
-          src={avatar?.replace('ipfs.io', 'ipfs.io') ?? '/images/home/stats/socials/social-1.png'}
-          alt='avatar'
-          className={avatarSize}
-        />
+        <CircleImage src={avatar ?? '/images/home/stats/socials/social-1.png'} alt='avatar' className={avatarSize} />
         <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
             className={cn(

@@ -86,7 +86,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
               )}
               width={100}
               height={100}
-              onClick={() => onSelectAvatar(thenianNfts?.meatadata?.image?.replace('ipfs.io', 'ipfs.io'))}
+              onClick={() => onSelectAvatar(thenianNfts?.meatadata?.image)}
               key={thenianNfts?.id ?? index}
             />
           ))}
