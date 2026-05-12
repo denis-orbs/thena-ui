@@ -125,15 +125,7 @@ export const fetchTopTokens = async ({ networkId, version = 3 }) => {
 
 const NFT_IPFS_CID = 'QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn'
 const NFT_FETCH_TIMEOUT_MS = 10000
-const NFT_IPFS_GATEWAYS = [
-  'ipfs.filebase.io',
-  '4everland.io',
-  'dweb.link',
-  'dget.top',
-  'ipfs.io',
-  'ipfs.ecolatam.com',
-  'w3s.link',
-]
+const NFT_IPFS_GATEWAYS = ['dweb.link', 'dget.top', 'ipfs.io', 'ipfs.ecolatam.com', 'w3s.link']
 
 let cachedNftGateway = null
 

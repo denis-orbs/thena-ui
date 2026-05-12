@@ -67,7 +67,7 @@ export function UserProfileCard({
     <div className='flex items-center gap-1'>
       <LinkComponent>
         <CircleImage
-          src={avatar?.replace('ipfs.io', 'ipfs.filebase.io') ?? '/images/home/stats/socials/social-1.png'}
+          src={avatar?.replace('ipfs.io', 'ipfs.io') ?? '/images/home/stats/socials/social-1.png'}
           alt='avatar'
           className={avatarSize}
         />

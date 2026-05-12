@@ -302,7 +302,7 @@ export const useThenianNftsOwnedAndStaked = userId => {
       return thenianNftsStakedAndOwned.map(nft => ({
         ...nft,
         meatadata: {
-          image: nft?.meatadata?.image?.replace('ipfs.io', 'ipfs.filebase.io'),
+          image: nft?.meatadata?.image?.replace('ipfs.io', 'ipfs.io'),
         },
       }))
     }

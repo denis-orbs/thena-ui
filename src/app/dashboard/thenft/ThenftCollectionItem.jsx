@@ -46,7 +46,7 @@ export default function ThenftCollectionItem({ nftId, isStaked }) {
         {image ? (
           <NextImage
             className='w-full min-w-[200px] rounded-lg'
-            src={image.replace('ipfs.io', 'ipfs.filebase.io')}
+            src={image.replace('ipfs.io', 'ipfs.io')}
             alt={`theNFT image ${name || nftId}`}
           />
         ) : (

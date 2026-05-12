@@ -30,7 +30,7 @@ function SearchUserItem({ user, setIsPopoverOpen }) {
         onClick={() => setIsPopoverOpen(false)}
       >
         <CircleImage
-          src={avatar?.replace('ipfs.io', 'ipfs.filebase.io') ?? '/images/home/stats/socials/social-1.png'}
+          src={avatar?.replace('ipfs.io', 'ipfs.io') ?? '/images/home/stats/socials/social-1.png'}
           alt='avatar'
           className='size-8'
         />

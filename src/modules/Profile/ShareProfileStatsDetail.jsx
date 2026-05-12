@@ -45,7 +45,7 @@ export default function ShareProfileStatsDetail({
                 alt='avatar'
                 crossOrigin='anonymous'
                 src={
-                  userInfo.avatar?.replace('ipfs.io', 'ipfs.filebase.io').includes('https://w3s.link/')
+                  userInfo.avatar?.replace('ipfs.io', 'ipfs.io').includes('https://w3s.link/')
                     ? userInfo.ipfsAvatar
                       ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
                       : '/images/home/stats/socials/social-1.png'
@@ -103,7 +103,7 @@ export default function ShareProfileStatsDetail({
               alt='avatar'
               crossOrigin='anonymous'
               src={
-                userInfo.avatar?.replace('ipfs.io', 'ipfs.filebase.io').includes('https://w3s.link/')
+                userInfo.avatar?.replace('ipfs.io', 'ipfs.io').includes('https://w3s.link/')
                   ? userInfo.ipfsAvatar
                     ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
                     : '/images/home/stats/socials/social-1.png'

@@ -68,7 +68,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ipfs.filebase.io',
+        hostname: 'ipfs.io',
       },
       {
         protocol: 'https',
