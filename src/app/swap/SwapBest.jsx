@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable simple-import-sort/imports */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
@@ -693,23 +693,25 @@ export default function SwapBest({
           </div>
 
           {isTwap ? (
-            <Twap
-              setFromAmount={setFromAmount}
-              fromAsset={fromAsset}
-              toAsset={toAsset}
-              setFromAddress={setFromAddress}
-              setToAddress={setToAddress}
-              updateSearchParams={updateSearchParams}
-              outAmount={bestTrade?.outAmounts[0]}
-              fromAmount={fromAmount}
-              swapType={swapType}
-              isWrap={isWrap}
-              isUnwrap={isUnwrap}
-              onWrap={onWrap}
-              onUnwrap={onUnwrap}
-              wrapPending={wrapPending}
-              quotePending={quotePending}
-            />
+            <Suspense>
+              <Twap
+                setFromAmount={setFromAmount}
+                fromAsset={fromAsset}
+                toAsset={toAsset}
+                setFromAddress={setFromAddress}
+                setToAddress={setToAddress}
+                updateSearchParams={updateSearchParams}
+                outAmount={bestTrade?.outAmounts[0]}
+                fromAmount={fromAmount}
+                swapType={swapType}
+                isWrap={isWrap}
+                isUnwrap={isUnwrap}
+                onWrap={onWrap}
+                onUnwrap={onUnwrap}
+                wrapPending={wrapPending}
+                quotePending={quotePending}
+              />
+            </Suspense>
           ) : (
             <>
               <div className='my-3 flex flex-col items-end gap-2'>
