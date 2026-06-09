@@ -2444,34 +2444,30 @@
   resolved "https://registry.yarnpkg.com/@orbs-network/liquidity-hub-sdk/-/liquidity-hub-sdk-1.0.78.tgz#77145c3b9ab92bafa548b37f703a33d586d27dca"
   integrity sha512-SWOmwIdPEQOWKhJuekdcbc4lHFDHhhiob79LbAgFaphSDBOUfhRqxVoNgDAs/+SFZpQ1fJhNFeEVNvWkEiiiwg==
 
-"@orbs-network/spot-react@0.0.64":
-  version "0.0.64"
-  resolved "https://registry.yarnpkg.com/@orbs-network/spot-react/-/spot-react-0.0.64.tgz#3286660daf0023053152daeb058f6860da6a9cb4"
-  integrity sha512-vZmwyhLgDELyHDvxIZzhpvlzFU5OBWhxZ+iy7YCUhxmKEKL9HOgkjQxzOsAA1k40dJElNFKMD5pmyTUhhFHCIA==
+"@orbs-network/spot-react@^1.1.28":
+  version "1.1.28"
+  resolved "https://registry.yarnpkg.com/@orbs-network/spot-react/-/spot-react-1.1.28.tgz#9a81a29fabb4770fa50f82b64727c54dae2bcc0f"
+  integrity sha512-S3VcWUB3U8i7H0mAHig2qL+aWnPpyPd9FOq8Z39jIeHfkcTzrFfUUwtL2AmPHb8tLt9n+RnUUQBCHn2mchg5KQ==
   dependencies:
-    "@orbs-network/spot-ui" "0.0.28"
-    "@orbs-network/swap-ui" "^0.0.61"
-    "@react-icons/all-files" "^4.1.0"
-    "@tanstack/react-query" "^5.90.12"
-    bignumber.js "^9.3.1"
-    moment "^2.30.1"
-    react-error-boundary "^6.0.0"
-    react-number-format "^5.4.4"
-    react-virtuoso "^4.17.0"
-    viem "^2.43.3"
-    zustand "^5.0.9"
+    "@orbs-network/spot-ui" "1.0.15"
 
-"@orbs-network/spot-ui@0.0.28":
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/@orbs-network/spot-ui/-/spot-ui-0.0.28.tgz#1dcb08975a123219eb3d1d4a0d9fe99f38ea4c4d"
-  integrity sha512-lUoIxWo0Ipx003M9Metvspkk74V0BSLlcdTGnoyosAtzkV6ARipycgg0Qh7ak1JrR1WdI2mQJ4Pu7rHiaI/Jrg==
+"@orbs-network/spot-ui@1.0.15":
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/@orbs-network/spot-ui/-/spot-ui-1.0.15.tgz#6773dd5446d3eb0ba88d05c7ad5762bed4ecc93c"
+  integrity sha512-iHXvDKA/V9Y2Ah1VhnfZzFl0pqgvYMsByHpSpgCtGl1NQ6hsMPacucrjQV+ZYrT2DpZUqeRWP0piVF4G4YQYJQ==
   dependencies:
+    "@orbs-network/spot" "^2.6.1"
     "@orbs-network/twap" "^2.7.28"
 
-"@orbs-network/swap-ui@^0.0.61":
-  version "0.0.61"
-  resolved "https://registry.yarnpkg.com/@orbs-network/swap-ui/-/swap-ui-0.0.61.tgz#ec82fffbd68274373f965f247e405aa7d17d86b3"
-  integrity sha512-GCPAXf69usNQulQbMNGpGW+cgvoeu/R6T8xKiL7pSMMYs6L2sMP8b2YBeHn53lO8/LRaFrFDf28EB7Gh7xzgiQ==
+"@orbs-network/spot@^2.6.1":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@orbs-network/spot/-/spot-2.6.1.tgz#2e3cc2475823a0932004cbd01a0e38a10785db1d"
+  integrity sha512-zuZ5j/OMpTcN0KK5VRHgiA127A6/jK7hkrZYMBOBLm5vNN1JprFdwhjkAvlGcfbHkU/RvnaLQrjuYGwIP4SPRA==
+
+"@orbs-network/swap-ui@^0.0.63":
+  version "0.0.63"
+  resolved "https://registry.yarnpkg.com/@orbs-network/swap-ui/-/swap-ui-0.0.63.tgz#a18abe93d6e70097ff913ba0916ca4d8856b3137"
+  integrity sha512-2cIh6uI5r/jlkT9wp8sbRGv/AENekZ+DyJbpsz/xsICjkTBLSHlF7pe9xoxSsQXrGapAYF6qk1KlltobpAgUpg==
 
 "@orbs-network/twap@^2.7.28":
   version "2.7.29"
@@ -2607,11 +2603,6 @@
     cuer "0.0.3"
     react-remove-scroll "2.6.2"
     ua-parser-js "^1.0.37"
-
-"@react-icons/all-files@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@react-icons/all-files/-/all-files-4.1.0.tgz#477284873a0821928224b6fc84c62d2534d6650b"
-  integrity sha512-hxBI2UOuVaI3O/BhQfhtb4kcGn9ft12RWAFVMUeNjqqhLsHvFtzIkFaptBJpFDANTKoDfdVoHTKZDlwKCACbMQ==
 
 "@reduxjs/toolkit@1.x.x || 2.x.x", "@reduxjs/toolkit@^2.0.1":
   version "2.8.2"
@@ -3087,29 +3078,17 @@
     postcss "^8.4.41"
     tailwindcss "4.1.8"
 
-"@tanstack/query-core@5.17.19":
-  version "5.17.19"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.17.19.tgz#212515ccc7a6b913afee6b71ce3e7df2c4d85f7d"
-  integrity sha512-Lzw8FUtnLCc9Jwz0sw9xOjZB+/mCCmJev38v2wHMUl/ioXNIhnNWeMxu0NKUjIhAd62IRB3eAtvxAGDJ55UkyA==
-
-"@tanstack/query-core@5.90.20":
-  version "5.90.20"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.90.20.tgz#e12128e39210715d4ce4fb299c33498ac297771e"
-  integrity sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==
+"@tanstack/query-core@5.100.14":
+  version "5.100.14"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.100.14.tgz#6bf11c9a6a33dbbbba21f05d880b93930d80000c"
+  integrity sha512-5X41dGpxgeaHISCRW2oYwcSycZeULZzAunaudXT9ov1KOTj9xwt0CH6hbwqP1/z74ZWF7rYFnDpyYH07XFcZew==
 
 "@tanstack/react-query@^5.17.19":
-  version "5.17.19"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.17.19.tgz#d6fc243faa469bb84952dd810faea47dabe389fc"
-  integrity sha512-qaQENB6/03Gj3dFZGvdmUoqeUGlGm7P1p0RmaR04Bf1Ib1T9lLGimcC9T3oCFbrx0b2ZF21ngjFZNjj9uPJMcg==
+  version "5.100.14"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.100.14.tgz#799fe305421fd84bf2f6df40930c859c945b42ab"
+  integrity sha512-oOr6aRdSFEwWhzxEkD/9ZcItM3+LjBSkeVmadWKwUssAHTsqd/7bOjWrX4AbvEkoEhgAxzN0Xk6H/aYzXiYBAw==
   dependencies:
-    "@tanstack/query-core" "5.17.19"
-
-"@tanstack/react-query@^5.90.12":
-  version "5.90.20"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.90.20.tgz#42bb7018bfedc72f216b6e9b4052c919063f350b"
-  integrity sha512-vXBxa+qeyveVO7OA0jX1z+DeyCA4JKnThKv411jd5SORpBKgkcVnYKCiBgECvADvniBX7tobwBmg01qq9JmMJw==
-  dependencies:
-    "@tanstack/query-core" "5.90.20"
+    "@tanstack/query-core" "5.100.14"
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
@@ -3742,11 +3721,6 @@ abitype@1.1.0:
   resolved "https://registry.yarnpkg.com/abitype/-/abitype-1.1.0.tgz#510c5b3f92901877977af5e864841f443bf55406"
   integrity sha512-6Vh4HcRxNMLA0puzPjM5GBgT4aAcFGKZzSgAXvuZ27shJP6NEpielTuqbBmZILR5/xd0PizkBGy5hReKz9jl5A==
 
-abitype@1.2.3, abitype@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/abitype/-/abitype-1.2.3.tgz#bec3e09dea97d99ef6c719140bee663a329ad1f4"
-  integrity sha512-Ofer5QUnuUdTFsBRwARMoWKOH1ND5ehwYhJ3OJ/BQO+StkwQjHw0XyVh4vDttzHB7QOFhPHa/o413PJ82gU/Tg==
-
 abitype@^0.9.8:
   version "0.9.10"
   resolved "https://registry.npmjs.org/abitype/-/abitype-0.9.10.tgz"
@@ -4091,11 +4065,6 @@ big.js@^5.2.2:
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
 bignumber.js@^9.1.2:
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
-  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
-
-bignumber.js@^9.3.1:
   version "9.3.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.3.1.tgz#759c5aaddf2ffdc4f154f7b493e1c8770f88c4d7"
   integrity sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==
@@ -7465,11 +7434,6 @@ modern-ahocorasick@^1.0.0:
   resolved "https://registry.yarnpkg.com/modern-ahocorasick/-/modern-ahocorasick-1.1.0.tgz#9b1fa15d4f654be20a2ad7ecc44ec9d7645bb420"
   integrity sha512-sEKPVl2rM+MNVkGQt3ChdmD8YsigmXdn5NifZn6jiwn9LRJpWm8F3guhaqrJT/JOat6pwpbXEk6kv+b9DMIjsQ==
 
-moment@^2.30.1:
-  version "2.30.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
-  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
-
 mri@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mri/-/mri-1.2.0.tgz#6721480fec2a11a4889861115a48b6cbe7cc8f0b"
@@ -7807,20 +7771,6 @@ ordinal@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/ordinal/-/ordinal-1.0.3.tgz"
   integrity sha512-cMddMgb2QElm8G7vdaa02jhUNbTSrhsgAGUz1OokD83uJTwSUn+nKoNoKVVaRa08yF6sgfO7Maou1+bgLd9rdQ==
-
-ox@0.11.3:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/ox/-/ox-0.11.3.tgz#f50be1cae88822f5111b1e3f4a324c4c07eed422"
-  integrity sha512-1bWYGk/xZel3xro3l8WGg6eq4YEKlaqvyMtVhfMFpbJzK2F6rj4EDRtqDCWVEJMkzcmEi9uW2QxsqELokOlarw==
-  dependencies:
-    "@adraffy/ens-normalize" "^1.11.0"
-    "@noble/ciphers" "^1.3.0"
-    "@noble/curves" "1.9.1"
-    "@noble/hashes" "^1.8.0"
-    "@scure/bip32" "^1.7.0"
-    "@scure/bip39" "^1.6.0"
-    abitype "^1.2.3"
-    eventemitter3 "5.0.1"
 
 ox@0.6.7:
   version "0.6.7"
@@ -8323,11 +8273,6 @@ react-dropzone@^14.2.3:
     file-selector "^0.6.0"
     prop-types "^15.8.1"
 
-react-error-boundary@^6.0.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/react-error-boundary/-/react-error-boundary-6.1.0.tgz#d2965de0723d65d60d20aef2e120bd2c171ae4d7"
-  integrity sha512-02k9WQ/mUhdbXir0tC1NiMesGzRPaCsJEWU/4bcFrbY1YMZOtHShtZP6zw0SJrBWA/31H0KT9/FgdL8+sPKgHA==
-
 react-fast-compare@^3.0.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
@@ -8374,11 +8319,6 @@ react-modal@^3.16.1:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
-
-react-number-format@^5.4.4:
-  version "5.4.4"
-  resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-5.4.4.tgz#d31f0e260609431500c8d3f81bbd3ae1fb7cacad"
-  integrity sha512-wOmoNZoOpvMminhifQYiYSTCLUDOiUbBunrMrMjA+dV52sY+vck1S4UhR6PkgnoCquvvMSeJjErXZ4qSaWCliA==
 
 react-onclickoutside@^6.13.0:
   version "6.13.0"
@@ -8489,11 +8429,6 @@ react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
-
-react-virtuoso@^4.17.0:
-  version "4.18.1"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-4.18.1.tgz#3eb7078f2739a31b96c723374019e587deeb6ebc"
-  integrity sha512-KF474cDwaSb9+SJ380xruBB4P+yGWcVkcu26HtMqYNMTYlYbrNy8vqMkE+GpAApPPufJqgOLMoWMFG/3pJMXUA==
 
 react@^18.3.1:
   version "18.3.1"
@@ -9927,20 +9862,6 @@ viem@>=2.29.0, viem@^2.1.1, viem@^2.21.26, viem@^2.27.2, viem@^2.31.7:
     ox "0.9.6"
     ws "8.18.3"
 
-viem@^2.43.3:
-  version "2.45.1"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.45.1.tgz#c1c373efcf2a0b30f5e454cfb4a9c18ac5bb5452"
-  integrity sha512-LN6Pp7vSfv50LgwhkfSbIXftAM5J89lP9x8TeDa8QM7o41IxlHrDh0F9X+FfnCWtsz11pEVV5sn+yBUoOHNqYA==
-  dependencies:
-    "@noble/curves" "1.9.1"
-    "@noble/hashes" "1.8.0"
-    "@scure/bip32" "1.7.0"
-    "@scure/bip39" "1.6.0"
-    abitype "1.2.3"
-    isows "1.0.7"
-    ox "0.11.3"
-    ws "8.18.3"
-
 wagmi@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-2.18.1.tgz#bc21ecc0c091a3d6b7880e338e78553a91dbc7e3"
@@ -10267,8 +10188,3 @@ zustand@^5.0.1:
   version "5.0.8"
   resolved "https://registry.yarnpkg.com/zustand/-/zustand-5.0.8.tgz#b998a0c088c7027a20f2709141a91cb07ac57f8a"
   integrity sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==
-
-zustand@^5.0.9:
-  version "5.0.11"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-5.0.11.tgz#99f912e590de1ca9ce6c6d1cab6cdb1f034ab494"
-  integrity sha512-fdZY+dk7zn/vbWNCYmzZULHRrss0jx5pPFiOuMZ/5HJN6Yv3u+1Wswy/4MpZEkEGhtNH+pwxZB8OKgUBPzYAGg==

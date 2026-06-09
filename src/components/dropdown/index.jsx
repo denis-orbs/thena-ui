@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import ChevronDownIcon from '@/icons/ChevronDownIcon'
@@ -27,12 +27,25 @@ function Dropdown({
   const dropdownRef = useRef(null)
   const t = useTranslations()
 
+  const updatePosition = useCallback(() => {
+    if (!wrapperRef.current) return
+    const rect = wrapperRef.current.getBoundingClientRect()
+    setPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+    })
+  }, [])
+
   const handleOpen = useCallback(
     e => {
       e.preventDefault()
+      if (!open) {
+        updatePosition()
+      }
       setOpen(!open)
     },
-    [open],
+    [open, updatePosition],
   )
 
   useEffect(() => {
@@ -52,17 +65,7 @@ function Dropdown({
     }
   }, [])
 
-  useEffect(() => {
-    function updatePosition() {
-      if (!wrapperRef.current) return
-      const rect = wrapperRef.current.getBoundingClientRect()
-      setPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      })
-    }
-
+  useLayoutEffect(() => {
     if (open) {
       updatePosition()
       window.addEventListener('resize', updatePosition)
@@ -73,7 +76,7 @@ function Dropdown({
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition, true)
     }
-  }, [open])
+  }, [open, updatePosition])
 
   return (
     <div className={cn('relative', className)} ref={wrapperRef}>

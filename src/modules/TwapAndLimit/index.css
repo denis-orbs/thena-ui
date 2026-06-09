@@ -32,7 +32,7 @@
   opacity: 0.7;
 }
 .twap-powered-by {
-  padding-top: 15px;
+  margin-top: 15px;
   font-size: 15px;
   color: rgb(243 242 244 / 1);
   font-weight: 500;
@@ -75,143 +75,340 @@
 }
 .twap-orders__list {
   height: 600px;
-  max-height: 55vh;
+  max-height: 62vh;
+  padding-right: 8px;
 }
-.twap-orders__list-item-progress {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  width: 100%;
+.twap-orders__list::-webkit-scrollbar {
+  width: 4px;
 }
-.twap-orders__list-item-token-progress-label {
-  width: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: right;
+.twap-orders__list::-webkit-scrollbar-track {
+  background: rgb(13 9 15 / 0.5);
 }
-.twap-orders__list-item-progress-bar {
-  height: 6px;
-  flex: 1;
-  background: rgb(220 0 212/0.3);
-  border-radius: 10px;
-}
-.twap-orders__list-item-progress-bar-filled {
-  height: 100%;
-  background: rgb(220 0 212/1);
-  border-radius: 10px;
-}
-.twap-orders__list-item-token-progress-label {
-  font-size: 13px;
+.twap-orders__list::-webkit-scrollbar-thumb {
+  background: rgb(68 42 78 / 1);
+  border-radius: 999px;
 }
 .twap-orders__list-item {
-  border: 1px solid rgb(53 36 61 / 1);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 10px;
+  border: 1px solid rgb(63 38 73 / 1);
+  border-radius: 12px;
+  padding: 18px 16px;
+  margin-bottom: 12px;
   cursor: pointer;
   transition: 0.2s all;
 }
 .twap-orders__list-item-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 18px;
 }
 .twap-orders__list-item:hover {
-  background: rgb(53 36 61 / 0.5);
+  background: rgb(53 36 61 / 0.35);
+}
+.twap-orders__list-item:focus-visible {
+  outline: 2px solid rgb(220 0 212 / 0.8);
+  outline-offset: 2px;
+}
+.twap-orders__list-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.twap-orders__list-item-header-title {
+  min-width: 0;
+  color: rgb(243 242 244 / 1);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.twap-orders__list-item-header-title span {
+  color: rgb(195 187 201 / 1);
+  font-weight: 600;
+  font-size: 12px;
+}
+.twap-orders__list-item-header-status {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgb(55 35 64 / 1);
+  color: rgb(205 196 211 / 1);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 9px;
+}
+.twap-orders__list-item-progress {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+}
+.twap-orders__list-item-token-progress-label {
+  width: 44px;
+  color: rgb(243 242 244 / 1);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: right;
+}
+.twap-orders__list-item-progress-bar {
+  height: 6px;
+  flex: 1;
+  background: rgb(126 25 119 / 0.82);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.twap-orders__list-item-progress-bar-filled {
+  height: 100%;
+  background: rgb(235 0 220 / 1);
+  border-radius: 999px;
+}
+.twap-orders__list-item-tokens {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .twap-orders__list-item-token {
   display: flex;
   flex-direction: row;
-  gap: 5px;
+  gap: 8px;
   align-items: center;
+  min-width: 0;
 }
-.twap-orders__list-item-token img {
+.twap-orders__list-item-token-logo {
   width: 20px;
   height: 20px;
+  object-fit: cover;
 }
 .twap-orders__list-item-token-symbol {
-  font-size: 13px;
-  font-weight: 500;
-}
-.twap-orders__list-item-tokens {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.twap-orders__list-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.twap-orders__list-item-header-title {
-  font-size: 13px;
-  font-weight: 500;
-}
-.twap-orders__list-item-header-title span {
-  opacity: 0.7;
-  font-size: 12px;
-}
-.twap-orders__list-item-header-status {
-  font-size: 11px;
-  opacity: 0.7;
-  font-weight: 500;
-  padding: 3px 7px;
-  border-radius: 10px;
-  background: rgb(53 36 61 / 1);
-}
-
-.twap-orders__selected-order-header {
-  margin-bottom: 20px;
+  color: rgb(243 242 244 / 1);
   font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+.twap-orders__list-item-token-arrow {
+  width: 18px;
+  height: 18px;
+  color: rgb(243 242 244 / 1);
+  flex: 0 0 auto;
+}
+.twap-orders__selected-order {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 78vh;
+}
+.twap-orders__selected-order-token-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+}
+.twap-orders__selected-order-token-copy {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+.twap-orders__selected-order-token-copy p {
+  color: rgb(185 174 193 / 1);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+.twap-orders__selected-order-token-copy strong {
+  color: rgb(243 242 244 / 1);
+  font-size: 17px;
   font-weight: 500;
+  line-height: 1.1;
+}
+.twap-orders__selected-order-token-copy strong + p {
+  margin-top: 28px;
+}
+.twap-orders__selected-order-token-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+  align-items: center;
+}
+.twap-orders__selected-order-token-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
 }
 .twap-orders__selected-order-accordions {
   display: flex;
-  gap: 10px;
   flex-direction: column;
-  margin-top: 20px;
+  gap: 12px;
 }
 .twap-orders__selected-order-accordion-trigger {
+  width: 100%;
   display: flex;
   gap: 10px;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  padding: 12px;
+  padding: 16px 14px;
+  color: rgb(243 242 244 / 1);
   font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: left;
 }
 .twap-orders__selected-order-accordion {
-  border: 1px solid rgb(53 36 61 / 1);
-  border-radius: 0.75rem;
-  background: rgb(53 36 61 / 0.5);
+  overflow: hidden;
+  border: 1px solid rgb(63 38 73 / 1);
+  border-radius: 12px;
+  background: rgb(42 26 49 / 0.76);
+}
+.twap-orders__selected-order-accordion-icon {
+  flex: 0 0 auto;
+  color: rgb(243 242 244 / 1);
+  stroke: currentColor !important;
 }
 .twap-order-details__fill-delay-text {
   font-size: 14px;
   margin-top: 10px;
 }
 .twap-orders__selected-order-accordion .twap-order-details {
-  padding: 12px;
-  padding-top: 0px;
-  gap: 7px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  padding: 0 14px 18px;
 }
 .twap-order-details__detail-row-label {
-  font-size: 14px;
+  min-width: 0;
   color: rgb(243 242 244 / 1);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.25;
 }
 .twap-order-details__detail-row-value {
-  font-size: 13px;
   color: rgb(243 242 244 / 1);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.25;
   margin-left: auto;
+  max-width: 62%;
+  text-align: right;
 }
-.twap-orders__selected-order-header-back-icon {
-  margin-right: 10px;
+.twap-order-details__copy-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
 }
-
-.twap-orders__selected-order-header-back-icon svg {
+.twap-order-details__copy-link {
+  color: rgb(243 242 244 / 1);
+  text-decoration: none;
+}
+.twap-order-details__copy-link:hover {
+  color: rgb(235 0 220 / 1);
+}
+.twap-order-details__copy-button {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  color: rgb(205 196 211 / 1);
+  flex: 0 0 auto;
+}
+.twap-order-details__copy-button svg {
   width: 16px;
   height: 16px;
+  stroke: currentColor;
+}
+.twap-orders__selected-order-fills-button {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border: 1px solid rgb(63 38 73 / 1);
+  border-radius: 12px;
+  background: rgb(42 26 49 / 0.76);
+  padding: 16px 14px;
+  color: rgb(243 242 244 / 1);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: left;
+}
+.twap-orders__selected-order-fills-button:hover {
+  background: rgb(53 36 61 / 0.8);
+}
+.twap-orders__selected-order-fills-button:focus-visible {
+  outline: 2px solid rgb(220 0 212 / 0.8);
+  outline-offset: 2px;
+}
+.twap-orders__selected-order-fills-button-icon {
+  flex: 0 0 auto;
+  color: rgb(243 242 244 / 1);
+  stroke: currentColor !important;
+  transform: rotate(-90deg);
+}
+.twap-order-fills-view {
+  display: flex;
+  min-height: 560px;
+  max-height: 78vh;
+  flex-direction: column;
+  gap: 18px;
+}
+.twap-order-fills-view__token-route {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.twap-order-fills-view__token {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: rgb(243 242 244 / 1);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+.twap-order-fills-view__token-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+.twap-order-fills-view__token-route-arrow {
+  width: 16px;
+  height: 16px;
+  color: rgb(205 196 211 / 1);
+  flex: 0 0 auto;
+}
+.twap-order-fills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: min(420px, 44vh);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.twap-order-fills--view {
+  max-height: min(500px, 62vh);
+}
+.twap-order-fills__item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgb(63 38 73 / 0.85);
+  border-radius: 8px;
+  background: rgb(24 15 27 / 0.6);
+}
+.twap-order-fills__empty {
+  color: rgb(185 174 193 / 1);
+  font-size: 13px;
+  line-height: 1.25;
+}
+.twap-orders__selected-order-cancel {
+  width: 100%;
+  margin-top: 2px;
+  padding: 12px 16px;
 }
 .orbs_MainTokenLeft {
   gap: 6px;
@@ -263,8 +460,54 @@
   background: rgb(220 0 212/1) !important;
 }
 
+.twap-orders-modal__header {
+  padding: 36px 24px 22px;
+}
+.twap-orders-modal__header--detail {
+  padding-bottom: 20px;
+}
+.twap-orders-modal__header--detail > div {
+  min-width: 0;
+  gap: 12px;
+}
+.twap-orders-modal__header--detail > div > button:first-child {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  margin-right: 0;
+  color: rgb(174 160 181 / 1);
+}
+.twap-orders-modal__header--detail > div > button:first-child svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+}
+.twap-orders-modal__close {
+  color: rgb(174 160 181 / 1);
+}
+.twap-orders-modal__close svg {
+  width: 24px;
+  height: 24px;
+}
 .twap-orders-modal .twap-select-menu {
+  width: 150px;
   max-width: 150px;
+}
+.twap-orders-modal input.twap-select-menu {
+  width: 150px;
+  height: 36px;
+  border-color: transparent;
+  border-radius: 10px;
+  background: rgb(55 35 64 / 1);
+  padding: 0 40px 0 12px;
+  color: rgb(243 242 244 / 1);
+  font-size: 14px;
+  line-height: 1;
+}
+.twap-orders-modal input.twap-select-menu:hover,
+.twap-orders-modal input.twap-select-menu:focus {
+  border-color: transparent;
+  background: rgb(65 42 75 / 1);
 }
 .twap-select-menu-portal {
   z-index: 999;
@@ -298,10 +541,69 @@
 }
 
 @media (max-width: 768px) {
+  .twap-orders-modal__header {
+    padding: 28px 18px 18px;
+  }
+  .twap-orders-modal {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+  .twap-orders__list {
+    height: auto;
+    max-height: 62vh;
+    padding-right: 4px;
+  }
+  .twap-orders__list-item {
+    padding: 16px 14px;
+  }
+  .twap-orders__list-item-header {
+    align-items: flex-start;
+  }
+  .twap-orders__list-item-header-title {
+    font-size: 14px;
+  }
+  .twap-orders__list-item-header-status {
+    font-size: 11px;
+    padding: 5px 9px;
+  }
+  .twap-orders__list-item-token-progress-label {
+    width: 38px;
+    font-size: 13px;
+  }
+  .twap-orders__list-item-token-symbol {
+    font-size: 14px;
+  }
+  .twap-orders__selected-order-token-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .twap-orders__selected-order-token-copy p {
+    font-size: 14px;
+  }
+  .twap-orders__selected-order-token-copy strong {
+    font-size: 17px;
+  }
+  .twap-orders__selected-order-accordion-trigger {
+    font-size: 15px;
+  }
+  .twap-orders__selected-order {
+    max-height: 82vh;
+  }
+  .twap-order-fills-view {
+    min-height: 480px;
+    max-height: 82vh;
+  }
+  .twap-order-fills {
+    max-height: min(340px, 38vh);
+  }
+  .twap-order-fills--view {
+    max-height: min(400px, 58vh);
+  }
   .twap-order-details__detail-row-label {
     font-size: 12px;
   }
   .twap-order-details__detail-row-value {
     font-size: 12px;
+    max-width: 58%;
   }
 }
