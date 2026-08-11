@@ -120,7 +120,7 @@ export default function SwapBest({
     debouncedAmount,
     slippage,
     networkId,
-    isTwap,
+    false,
     !(isFeeOnTransferFromAsset || isFeeOnTransferToAsset),
   )
   const mutateAssets = useMutateAssets()
@@ -130,20 +130,12 @@ export default function SwapBest({
 
   const isEnabledTradeLH = useMemo(() => {
     if (isFeeOnTransferFromAsset || isFeeOnTransferToAsset) return false
-    if (!liquidityHubEnabled || isTwap) return false
+    if (!liquidityHubEnabled) return false
     if (!fromAmount) return false
     if (!bestTrade && !bestTradePending) return true
     if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) return true
     return false
-  }, [
-    bestTrade,
-    bestTradePending,
-    fromAmount,
-    liquidityHubEnabled,
-    isTwap,
-    isFeeOnTransferFromAsset,
-    isFeeOnTransferToAsset,
-  ])
+  }, [bestTrade, bestTradePending, fromAmount, liquidityHubEnabled, isFeeOnTransferFromAsset, isFeeOnTransferToAsset])
 
   const {
     data: tradeLH,
@@ -168,7 +160,7 @@ export default function SwapBest({
     if (isFeeOnTransferFromAsset || isFeeOnTransferToAsset) {
       return true
     }
-    if (isTwap || quotePendingLH || bestTradePending) return false
+    if (quotePendingLH || bestTradePending) return false
     if (!fromAmount) return false
 
     // Case 1: Odos not good && LiquidityHub enabled -> enable The Fallback if LH failed or not found
@@ -185,7 +177,6 @@ export default function SwapBest({
   }, [
     isFeeOnTransferFromAsset,
     isFeeOnTransferToAsset,
-    isTwap,
     quotePendingLH,
     bestTradePending,
     fromAmount,
@@ -701,7 +692,7 @@ export default function SwapBest({
                 setFromAddress={setFromAddress}
                 setToAddress={setToAddress}
                 updateSearchParams={updateSearchParams}
-                outAmount={bestTrade?.outAmounts[0]}
+                outAmount={outAmount}
                 fromAmount={fromAmount}
                 swapType={swapType}
                 isWrap={isWrap}
